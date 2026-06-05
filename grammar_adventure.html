@@ -70,64 +70,148 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,"PingFang SC","H
 /* ══════════════════════════════════════════ 森林模式 ══════════════════════════════════════════ */
 .forest-view{position:fixed;inset:0;z-index:90;background:#F5EDD8;display:none}
 .forest-view.active{display:block}
-.forest-scene{position:fixed;inset:0;background:linear-gradient(180deg,#EDE3D0 0%,#F5EDD8 35%,#F0E6D4 65%,#E8DCC8 100%);overflow:hidden;cursor:default}
+.forest-scene{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,#1a2a1a 0%,#0d1a0f 40%,#060e08 100%);overflow:hidden;cursor:default}
 
-.f-topbar{position:fixed;top:0;left:0;right:0;z-index:20;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}
+.f-topbar{position:fixed;top:0;left:0;right:0;z-index:20;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;pointer-events:none;background:linear-gradient(180deg,rgba(6,14,8,.8) 0%,transparent 100%)}
 .f-topbar>*{pointer-events:all}
-.f-back{font-size:12px;color:#9A8060;cursor:pointer;background:none;border:none;font-family:inherit;display:flex;align-items:center;gap:4px;transition:color .2s;padding:6px 0}
-.f-back:hover{color:#2A1E08}
-.f-info{font-size:11px;color:#9A8060}
+.f-back{font-size:12px;color:rgba(184,220,150,.7);cursor:pointer;background:none;border:none;font-family:inherit;display:flex;align-items:center;gap:4px;transition:color .2s;padding:6px 0}
+.f-back:hover{color:#B8DC96}
+.f-info{font-size:11px;color:rgba(184,220,150,.5);letter-spacing:.06em}
 
-/* 森林场景元素 */
-.f-ground{position:absolute;bottom:0;left:0;right:0;height:18%;background:linear-gradient(180deg,transparent 0%,rgba(180,160,130,.15) 30%,rgba(160,140,110,.25) 100%);pointer-events:none}
-.f-ground::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 10%,rgba(184,149,106,.3) 30%,rgba(184,149,106,.5) 50%,rgba(184,149,106,.3) 70%,transparent 90%)}
-.f-cabin{position:absolute;bottom:8%;left:8%;pointer-events:none;opacity:.7;z-index:2}
-.f-cabin-body{width:44px;height:32px;background:rgba(180,155,120,.5);border-radius:4px 4px 0 0;position:relative;border:1.5px solid rgba(160,130,100,.4)}
-.f-cabin-body::after{content:'';position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:12px;height:14px;background:rgba(140,110,80,.6);border-radius:3px 3px 0 0;border:1.5px solid rgba(160,130,100,.4);border-bottom:none}
-.f-cabin-roof{width:0;height:0;border-left:28px solid transparent;border-right:28px solid transparent;border-bottom:20px solid rgba(160,120,80,.5);position:absolute;top:-19px;left:-7px}
-.f-cabin-w{position:absolute;width:8px;height:8px;background:rgba(255,220,150,.7);border-radius:50%;top:6px;left:10px;box-shadow:0 0 6px rgba(255,200,100,.5)}
-.f-cabin-w2{position:absolute;width:8px;height:8px;background:rgba(255,220,150,.6);border-radius:50%;top:6px;right:10px;box-shadow:0 0 4px rgba(255,200,100,.4)}
-.f-cabin-ch{position:absolute;top:-24px;right:4px;width:10px;height:16px;background:rgba(160,130,100,.5);border-radius:2px 2px 0 0}
-.f-cabin-smoke{position:absolute;top:-32px;right:2px;width:10px;height:10px;background:rgba(220,210,195,.5);border-radius:50%;animation:fsmoke 3s ease-out infinite}
-.f-cabin-smoke2{top:-44px;right:-4px;width:14px;height:14px;animation-delay:.8s;animation-duration:3.5s}
-@keyframes fsmoke{0%{opacity:.6;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-28px) scale(2.5)}}
-.f-cabin2{left:auto;right:6%;bottom:10%;opacity:.55}
-.f-cabin2 .f-cabin-body{width:36px;height:26px}
-.f-cabin2 .f-cabin-roof{border-left-width:23px;border-right-width:23px;border-bottom-width:16px;top:-15px;left:-6px}
-.f-tree{position:absolute;pointer-events:none;z-index:1}
-.f-tree-trunk{width:4px;height:20px;background:rgba(160,130,100,.5);margin:0 auto;border-radius:1px}
-.f-tree-top{width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:28px solid rgba(140,170,100,.4);margin:0 auto -2px}
-.f-tree-top2{width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:24px solid rgba(150,175,110,.35);margin:-14px auto 0}
+/* 星空 */
+.f-stars{position:absolute;inset:0;z-index:0;pointer-events:none}
+.f-star{position:absolute;border-radius:50%;background:#fff;animation:fstarTwinkle ease-in-out infinite}
+@keyframes fstarTwinkle{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
 
-.f-mist-top{position:absolute;top:0;left:0;right:0;height:55%;z-index:6;pointer-events:none;
-  background:linear-gradient(180deg,rgba(240,232,215,.95) 0%,rgba(242,235,220,.85) 30%,rgba(245,237,216,.5) 60%,transparent 100%);
-  transition:height .8s ease}
-.f-mist-wave{position:absolute;bottom:-20px;left:-10%;right:-10%;height:50px;background:rgba(245,237,216,.7);filter:blur(18px);border-radius:50%;animation:fmistWave 5s ease-in-out infinite}
-.f-mist-wave2{bottom:-35px;height:40px;animation-delay:-2.5s;animation-duration:6s;opacity:.6}
-@keyframes fmistWave{0%,100%{transform:translateX(-15px)}50%{transform:translateX(15px)}}
-.f-mist-particles{position:absolute;inset:0;z-index:7;pointer-events:none}
-.f-mp{position:absolute;border-radius:50%;background:rgba(245,238,220,.55);filter:blur(25px);animation:ffloat linear infinite}
-@keyframes ffloat{0%{transform:translateX(0) translateY(0)}25%{transform:translateX(30px) translateY(-15px)}50%{transform:translateX(10px) translateY(-30px)}75%{transform:translateX(-20px) translateY(-15px)}100%{transform:translateX(0) translateY(0)}}
+/* 月亮 */
+.f-moon{position:absolute;top:6%;right:15%;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 38% 38%,#fffde0 0%,#f5e8a0 50%,#d4c060 100%);box-shadow:0 0 40px rgba(255,240,120,.35),0 0 80px rgba(255,240,120,.15);z-index:1;pointer-events:none}
+.f-moon::after{content:'';position:absolute;top:6px;right:4px;width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 40% 40%,rgba(255,255,200,.15) 0%,transparent 70%)}
 
-.f-path-container{position:absolute;inset:0;z-index:3;pointer-events:none}
-.f-path-svg{width:100%;height:100%}
-.f-path-line{fill:none;stroke:rgba(184,149,106,.2);stroke-width:2;stroke-dasharray:6 4}
-.f-path-line.done{stroke:rgba(184,149,106,.45);stroke-dasharray:none;stroke-width:2.5}
+/* 远景树林剪影 */
+.f-treeline-far{position:absolute;bottom:0;left:0;right:0;height:55%;z-index:2;pointer-events:none;
+  background:
+    radial-gradient(ellipse 18px 90px at 4% 100%,#0a1a0c 49%,transparent 50%),
+    radial-gradient(ellipse 14px 70px at 7% 100%,#081508 49%,transparent 50%),
+    radial-gradient(ellipse 20px 110px at 11% 100%,#0c1e0e 49%,transparent 50%),
+    radial-gradient(ellipse 15px 80px at 15% 100%,#0a1a0c 49%,transparent 50%),
+    radial-gradient(ellipse 22px 100px at 19% 100%,#071208 49%,transparent 50%),
+    radial-gradient(ellipse 16px 90px at 23% 100%,#0c1e0e 49%,transparent 50%),
+    radial-gradient(ellipse 19px 115px at 28% 100%,#0a1a0c 49%,transparent 50%),
+    radial-gradient(ellipse 14px 75px at 32% 100%,#081508 49%,transparent 50%),
+    radial-gradient(ellipse 21px 95px at 37% 100%,#0c1e0e 49%,transparent 50%),
+    radial-gradient(ellipse 17px 105px at 42% 100%,#0a1a0c 49%,transparent 50%),
+    radial-gradient(ellipse 23px 120px at 47% 100%,#071208 49%,transparent 50%),
+    radial-gradient(ellipse 15px 85px at 52% 100%,#0c1e0e 49%,transparent 50%),
+    radial-gradient(ellipse 20px 100px at 57% 100%,#0a1a0c 49%,transparent 50%),
+    radial-gradient(ellipse 18px 90px at 62% 100%,#081508 49%,transparent 50%),
+    radial-gradient(ellipse 22px 110px at 67% 100%,#0c1e0e 49%,transparent 50%),
+    radial-gradient(ellipse 16px 80px at 72% 100%,#0a1a0c 49%,transparent 50%),
+    radial-gradient(ellipse 19px 105px at 77% 100%,#071208 49%,transparent 50%),
+    radial-gradient(ellipse 14px 75px at 82% 100%,#0c1e0e 49%,transparent 50%),
+    radial-gradient(ellipse 21px 95px at 87% 100%,#0a1a0c 49%,transparent 50%),
+    radial-gradient(ellipse 17px 88px at 92% 100%,#081508 49%,transparent 50%),
+    radial-gradient(ellipse 20px 112px at 97% 100%,#0c1e0e 49%,transparent 50%),
+    linear-gradient(180deg,transparent 0%,#081408 100%)}
+.f-treeline-mid{position:absolute;bottom:0;left:0;right:0;height:35%;z-index:3;pointer-events:none;
+  background:
+    radial-gradient(ellipse 24px 140px at 2% 100%,#0e200f 49%,transparent 50%),
+    radial-gradient(ellipse 18px 110px at 6% 100%,#0a1a0c 49%,transparent 50%),
+    radial-gradient(ellipse 26px 160px at 10% 100%,#0c1e0e 49%,transparent 50%),
+    radial-gradient(ellipse 20px 125px at 14% 100%,#0e200f 49%,transparent 50%),
+    radial-gradient(ellipse 28px 150px at 18% 100%,#081408 49%,transparent 50%),
+    radial-gradient(ellipse 22px 135px at 22% 100%,#0c1e0e 49%,transparent 50%),
+    radial-gradient(ellipse 25px 155px at 27% 100%,#0e200f 49%,transparent 50%),
+    radial-gradient(ellipse 19px 120px at 31% 100%,#0a1a0c 49%,transparent 50%),
+    radial-gradient(ellipse 27px 165px at 36% 100%,#0c1e0e 49%,transparent 50%),
+    radial-gradient(ellipse 21px 140px at 41% 100%,#0e200f 49%,transparent 50%),
+    radial-gradient(ellipse 29px 170px at 46% 100%,#081408 49%,transparent 50%),
+    radial-gradient(ellipse 23px 130px at 51% 100%,#0c1e0e 49%,transparent 50%),
+    radial-gradient(ellipse 26px 155px at 56% 100%,#0e200f 49%,transparent 50%),
+    radial-gradient(ellipse 20px 120px at 61% 100%,#0a1a0c 49%,transparent 50%),
+    radial-gradient(ellipse 28px 160px at 66% 100%,#0c1e0e 49%,transparent 50%),
+    radial-gradient(ellipse 22px 135px at 71% 100%,#0e200f 49%,transparent 50%),
+    radial-gradient(ellipse 24px 150px at 76% 100%,#081408 49%,transparent 50%),
+    radial-gradient(ellipse 19px 115px at 81% 100%,#0c1e0e 49%,transparent 50%),
+    radial-gradient(ellipse 27px 158px at 86% 100%,#0e200f 49%,transparent 50%),
+    radial-gradient(ellipse 21px 128px at 91% 100%,#0a1a0c 49%,transparent 50%),
+    radial-gradient(ellipse 25px 148px at 96% 100%,#0c1e0e 49%,transparent 50%),
+    linear-gradient(180deg,transparent 0%,#0a1a0c 100%)}
 
-.f-nodes-layer{position:absolute;inset:0;z-index:4}
-.f-node{position:absolute;display:flex;align-items:center;justify-content:center;transition:all .6s cubic-bezier(.25,.8,.25,1.2);cursor:default}
-.f-node-dot{width:22px;height:22px;border-radius:50%;background:rgba(200,180,150,.4);border:2px solid rgba(184,149,106,.3);transition:all .5s ease;position:relative}
-.f-node.done .f-node-dot{background:rgba(184,149,106,.5);border-color:rgba(184,149,106,.5);width:19px;height:19px;box-shadow:0 0 10px rgba(184,149,106,.35)}
-.f-node.current .f-node-dot{width:32px;height:32px;background:rgba(255,245,225,.9);border:2.5px solid #B8956A;box-shadow:0 0 20px rgba(184,149,106,.5),0 0 40px rgba(184,149,106,.25);animation:flanternPulse 2.2s ease-in-out infinite}
-.f-node.current{cursor:pointer;z-index:10}
-.f-node.current:hover .f-node-dot{transform:scale(1.15)}
-@keyframes flanternPulse{0%,100%{box-shadow:0 0 20px rgba(184,149,106,.5),0 0 40px rgba(184,149,106,.25)}50%{box-shadow:0 0 30px rgba(184,149,106,.7),0 0 55px rgba(184,149,106,.35)}}
-.f-node-label{position:absolute;top:50%;left:calc(100% + 13px);transform:translateY(-50%);white-space:nowrap;font-size:11px;font-weight:600;color:#B8956A;pointer-events:none}
-.f-node.current .f-node-label{font-size:13px;color:#2A1E08;left:calc(100% + 16px)}
-.f-node-num{position:absolute;font-size:9px;font-weight:700;color:#9A8060;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0}
+/* 地面 canvas */
+.f-ground-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}
+
+/* 萤火虫 */
+.f-fireflies{position:absolute;inset:0;z-index:5;pointer-events:none}
+.f-firefly{position:absolute;width:3px;height:3px;border-radius:50%;background:#c8ff80;animation:fflyFloat linear infinite}
+@keyframes fflyFloat{0%{opacity:0;transform:translate(0,0)}15%{opacity:.9}50%{opacity:.4;transform:translate(var(--fx),var(--fy))}85%{opacity:.8}100%{opacity:0;transform:translate(var(--fx2),var(--fy2))}}
+
+/* 迷雾主层 */
+.f-fog-layer{position:absolute;left:0;right:0;top:0;z-index:8;pointer-events:none;transition:height 1.2s cubic-bezier(.4,0,.2,1);
+  background:linear-gradient(180deg,rgba(180,210,190,.97) 0%,rgba(160,200,175,.92) 20%,rgba(140,185,160,.8) 50%,rgba(100,160,130,.4) 75%,transparent 100%)}
+.f-fog-edge{position:absolute;left:-5%;right:-5%;z-index:9;height:80px;pointer-events:none;transition:top 1.2s cubic-bezier(.4,0,.2,1);
+  background:radial-gradient(ellipse 60% 100% at 50% 0%,rgba(170,210,185,.6) 0%,transparent 100%);
+  filter:blur(8px);animation:fFogEdgeWave 6s ease-in-out infinite}
+@keyframes fFogEdgeWave{0%,100%{transform:scaleX(1) translateX(0)}33%{transform:scaleX(1.04) translateX(-10px)}66%{transform:scaleX(.97) translateX(8px)}}
+
+/* 迷雾颗粒 */
+.f-mist-particles{position:absolute;inset:0;z-index:10;pointer-events:none}
+.f-mp{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(200,230,210,.4) 0%,transparent 70%);filter:blur(20px);animation:ffloat linear infinite}
+@keyframes ffloat{0%{transform:translate(0,0)}25%{transform:translate(40px,-20px)}50%{transform:translate(15px,-45px)}75%{transform:translate(-30px,-20px)}100%{transform:translate(0,0)}}
+
+/* path canvas */
+.f-path-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none}
+
+/* 节点层 */
+.f-nodes-layer{position:absolute;inset:0;z-index:11}
+
+/* 节点样式 — 灯笼风格 */
+.f-node{position:absolute;display:flex;flex-direction:column;align-items:center;transition:all .7s cubic-bezier(.25,.8,.25,1.2);cursor:default}
+/* 通关节点：点亮的灯笼 */
+.f-node.done .f-lantern{
+  width:28px;height:34px;
+  background:radial-gradient(ellipse at 50% 40%,#ffe88a 0%,#f5c842 40%,#c8960a 100%);
+  border-radius:50% 50% 45% 45%;
+  border:2px solid rgba(200,150,10,.6);
+  box-shadow:0 0 18px rgba(255,220,80,.8),0 0 40px rgba(255,200,60,.4),0 0 70px rgba(255,180,40,.2);
+  position:relative}
+.f-node.done .f-lantern::before{content:'';position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:4px;height:8px;background:rgba(180,130,20,.8);border-radius:2px 2px 0 0}
+.f-node.done .f-lantern::after{content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:2px;height:6px;background:rgba(180,130,20,.6)}
+/* 当前节点：闪烁的大灯笼 */
+.f-node.current .f-lantern{
+  width:42px;height:52px;
+  background:radial-gradient(ellipse at 45% 35%,#fff5c0 0%,#ffe060 30%,#f5a820 70%,#c07808 100%);
+  border-radius:50% 50% 45% 45%;
+  border:2.5px solid rgba(240,170,20,.8);
+  box-shadow:0 0 30px rgba(255,220,80,1),0 0 60px rgba(255,180,40,.7),0 0 100px rgba(255,150,20,.4);
+  position:relative;
+  animation:fLanternGlow 2s ease-in-out infinite}
+.f-node.current .f-lantern::before{content:'';position:absolute;top:-11px;left:50%;transform:translateX(-50%);width:5px;height:11px;background:rgba(160,110,10,.9);border-radius:2px 2px 0 0}
+.f-node.current .f-lantern::after{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:2px;height:8px;background:rgba(160,110,10,.7)}
+.f-node.current{cursor:pointer;z-index:15}
+.f-node.current:hover .f-lantern{transform:scale(1.1);box-shadow:0 0 40px rgba(255,220,80,1),0 0 80px rgba(255,180,40,.8),0 0 120px rgba(255,150,20,.5)}
+@keyframes fLanternGlow{0%,100%{box-shadow:0 0 30px rgba(255,220,80,1),0 0 60px rgba(255,180,40,.7),0 0 100px rgba(255,150,20,.4)}50%{box-shadow:0 0 45px rgba(255,240,100,1),0 0 85px rgba(255,200,60,.85),0 0 140px rgba(255,160,30,.55)}}
+
+/* 灯笼光晕地面投影 */
+.f-node.done .f-glow-ground{width:40px;height:10px;background:radial-gradient(ellipse,rgba(255,200,60,.35) 0%,transparent 70%);border-radius:50%;margin-top:2px;filter:blur(3px)}
+.f-node.current .f-glow-ground{width:70px;height:16px;background:radial-gradient(ellipse,rgba(255,200,60,.55) 0%,transparent 70%);border-radius:50%;margin-top:3px;filter:blur(4px);animation:fGroundGlow 2s ease-in-out infinite}
+@keyframes fGroundGlow{0%,100%{opacity:.7}50%{opacity:1}}
+
+.f-node-label{
+  position:absolute;
+  top:50%;left:calc(100% + 16px);
+  transform:translateY(-50%);
+  white-space:nowrap;font-size:11px;font-weight:600;
+  color:rgba(255,220,140,.7);pointer-events:none;
+  text-shadow:0 0 8px rgba(255,200,80,.5)}
+.f-node.current .f-node-label{font-size:13px;color:#ffe090;left:calc(100% + 20px);text-shadow:0 0 12px rgba(255,200,80,.8)}
+.f-node-num{
+  position:absolute;font-size:9px;font-weight:800;
+  color:rgba(100,60,0,.8);top:50%;left:50%;
+  transform:translate(-50%,-50%);opacity:0}
 .f-node.done .f-node-num,.f-node.current .f-node-num{opacity:1}
-.f-node.current .f-node-num{font-size:12px;color:#2A1E08}
+.f-node.current .f-node-num{font-size:12px;color:rgba(80,40,0,.9)}
 
+/* 烟花 */
 .f-fireworks{position:fixed;inset:0;z-index:80;pointer-events:none}
 .f-spark{position:absolute;width:6px;height:6px;border-radius:50%;animation:fsparkBurst .8s ease-out forwards}
 @keyframes fsparkBurst{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0)}}
@@ -259,23 +343,26 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,"PingFang SC","H
     <span class="f-info" id="fInfo">🏮 开始探索</span>
   </div>
   <div class="forest-scene" id="forestScene">
-    <div class="f-ground"></div>
-    <!-- 小屋1 -->
-    <div class="f-cabin"><div class="f-cabin-roof"></div><div class="f-cabin-ch"></div><div class="f-cabin-smoke"></div><div class="f-cabin-smoke f-cabin-smoke2"></div><div class="f-cabin-body"><div class="f-cabin-w"></div><div class="f-cabin-w2"></div></div></div>
-    <!-- 小屋2 -->
-    <div class="f-cabin f-cabin2"><div class="f-cabin-roof"></div><div class="f-cabin-ch"></div><div class="f-cabin-smoke"></div><div class="f-cabin-body"><div class="f-cabin-w"></div><div class="f-cabin-w2"></div></div></div>
-    <!-- 树 -->
-    <div class="f-tree" style="bottom:12%;left:20%"><div class="f-tree-top"></div><div class="f-tree-top2"></div><div class="f-tree-trunk"></div></div>
-    <div class="f-tree" style="bottom:10%;left:35%"><div class="f-tree-top"></div><div class="f-tree-top2"></div><div class="f-tree-trunk"></div></div>
-    <div class="f-tree" style="bottom:13%;right:22%"><div class="f-tree-top"></div><div class="f-tree-top2"></div><div class="f-tree-trunk"></div></div>
-    <div class="f-tree" style="bottom:11%;right:38%"><div class="f-tree-top"></div><div class="f-tree-top2"></div><div class="f-tree-trunk"></div></div>
-    <!-- 迷雾 -->
-    <div class="f-mist-particles" id="fMistParticles"></div>
-    <div class="f-mist-top" id="fMistTop"><div class="f-mist-wave"></div><div class="f-mist-wave f-mist-wave2"></div></div>
+    <!-- 星空背景 -->
+    <div class="f-stars" id="fStars"></div>
+    <!-- 月亮 -->
+    <div class="f-moon"></div>
+    <!-- 远景树林剪影 -->
+    <div class="f-treeline-far"></div>
+    <div class="f-treeline-mid"></div>
+    <!-- 地面石板路 -->
+    <canvas class="f-ground-canvas" id="fGroundCanvas"></canvas>
+    <!-- 萤火虫 -->
+    <div class="f-fireflies" id="fFireflies"></div>
+    <!-- 迷雾层 -->
+    <div class="f-fog-layer" id="fFogLayer"></div>
+    <div class="f-fog-edge" id="fFogEdge"></div>
     <!-- 路径 -->
-    <div class="f-path-container" id="fPathContainer"><svg class="f-path-svg" id="fPathSvg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg></div>
+    <canvas class="f-path-canvas" id="fPathCanvas"></canvas>
     <!-- 节点 -->
     <div class="f-nodes-layer" id="fNodesLayer"></div>
+    <!-- 迷雾颗粒 -->
+    <div class="f-mist-particles" id="fMistParticles"></div>
   </div>
   <div class="f-fireworks" id="fFireworks"></div>
 </div>
@@ -525,17 +612,22 @@ function allDone() { return LEVELS.every(l => isDone(l.id)); }
 // ══════════════════════════════════════════════════════════
 function startNormal() {
   currentMode = 'normal';
+  closeLvlOverlay(); // 关闭可能打开的森林弹窗，避免 ID 冲突
   document.getElementById('entryPage').classList.add('hide');
   document.getElementById('normalView').classList.add('active');
   renderNormalMap();
   document.getElementById('nWelcome').style.display = 'block';
   document.getElementById('nContent').style.display = 'none';
+  document.getElementById('nContent').innerHTML = ''; // 清空旧内容
   if (allDone()) document.getElementById('nChallengeBtn').classList.add('show');
 }
 function startForest() {
   currentMode = 'forest';
   document.getElementById('entryPage').classList.add('hide');
   document.getElementById('forestView').classList.add('active');
+  // 清空普通模式内容，避免 nqItem / nfill 等 ID 冲突
+  document.getElementById('nContent').innerHTML = '';
+  document.getElementById('nWelcome').style.display = 'block';
   buildForestScene();
 }
 function backToEntry() {
@@ -544,6 +636,7 @@ function backToEntry() {
   document.getElementById('normalView').classList.remove('active');
   document.getElementById('forestView').classList.remove('active');
   document.getElementById('challengeView').classList.remove('active');
+  document.getElementById('nContent').innerHTML = ''; // 清空避免 ID 冲突
   closeLvlOverlay();
 }
 
@@ -618,9 +711,27 @@ function buildQuizItem(q, qi) {
     <div class="qz-q">${q.q}</div>
     ${q.type==='choice' ? `
       <div class="qz-opts">${q.opts.map((o, oi) => `<button class="qo" id="nopt${qi}_${oi}" onclick="pickNormal(${qi},${oi},${q.ans})">${String.fromCharCode(65+oi)}. ${o}</button>`).join('')}</div>
-    ` : `<input class="qz-input" id="nfill${qi}" placeholder="输入答案..." onkeydown="if(event.key==='Enter')submitNormalQuiz(${normalOpenLevelId})">`}
+    ` : `<input class="qz-input" id="nfill${qi}" placeholder="输入答案..." onkeydown="if(event.key==='Enter')submitQuiz(${normalOpenLevelId})">`}
     <div class="qz-explain" id="nexplain${qi}">💡 ${q.explain}</div>
   </div>`;
+}
+
+function buildPopupQuizItem(q, qi) {
+  return `<div class="qz-item" id="fqItem${qi}">
+    <div class="qz-num">第 ${qi+1} 题 · ${q.type==='choice'?'选择':'填空'}</div>
+    <div class="qz-q">${q.q}</div>
+    ${q.type==='choice' ? `
+      <div class="qz-opts">${q.opts.map((o, oi) => `<button class="qo" id="fopt${qi}_${oi}" onclick="pickForest(${qi},${oi})">${String.fromCharCode(65+oi)}. ${o}</button>`).join('')}</div>
+    ` : `<input class="qz-input" id="ffill${qi}" placeholder="输入答案...">`}
+    <div class="qz-explain" id="fexplain${qi}">💡 ${q.explain}</div>
+  </div>`;
+}
+
+function pickForest(qi, oi) {
+  if (document.getElementById('fqItem'+qi).classList.contains('graded')) return;
+  document.querySelectorAll('#fqItem'+qi+' .qo').forEach(o => o.classList.remove('picked'));
+  document.getElementById('fopt'+qi+'_'+oi).classList.add('picked');
+  quizAnswers[qi] = oi;
 }
 
 function buildLvlContentPopup(lvl, id) {
@@ -639,7 +750,7 @@ function buildLvlContentPopup(lvl, id) {
     ${!isDone(id) ? `
       <div class="qz-area">
         <div class="qz-title">⚔️ 闯关测验（答对 ${need}/${lvl.quiz.length} 题通关）</div>
-        ${lvl.quiz.map((q, qi) => buildQuizItem(q, qi)).join('')}
+        ${lvl.quiz.map((q, qi) => buildPopupQuizItem(q, qi)).join('')}
       </div>` : `<p style="font-size:12px;color:#4A7C3F;margin-top:12px">✅ 此关已通关</p>`}
     <div class="act-row">
       ${!isDone(id) ? `<button class="btn btn-p" onclick="submitForestQuiz(${id})">✓ 提交批改</button>` : ''}
@@ -649,9 +760,10 @@ function buildLvlContentPopup(lvl, id) {
 }
 
 function normalUndo() {
+  normalOpenLevelId = null;
   document.getElementById('nWelcome').style.display = 'block';
   document.getElementById('nContent').style.display = 'none';
-  normalOpenLevelId = null;
+  document.getElementById('nContent').innerHTML = ''; // 清空内容，避免 ID 冲突
 }
 
 function pickNormal(qi, oi, correctAns) {
@@ -659,6 +771,12 @@ function pickNormal(qi, oi, correctAns) {
   document.querySelectorAll('#nqItem'+qi+' .qo').forEach(o => o.classList.remove('picked'));
   document.getElementById('nopt'+qi+'_'+oi).classList.add('picked');
   quizAnswers[qi] = oi;
+}
+
+// 统一提交入口：根据当前模式调用正确的提交函数
+function submitQuiz(levelId) {
+  if (currentMode === 'normal') submitNormalQuiz(levelId);
+  else if (currentMode === 'forest') submitForestQuiz(levelId);
 }
 
 function submitNormalQuiz(levelId) {
@@ -671,39 +789,93 @@ function submitNormalQuiz(levelId) {
 function submitForestQuiz(levelId) {
   const lvl = LEVELS.find(l => l.id === levelId);
   if (!lvl || isDone(levelId)) return;
-  const result = gradeQuiz(lvl, 'n');
-  if (result.passed) {
-    onLevelPassed(levelId, 'forest');
-    closeLvlOverlay();
-    setTimeout(() => {
-      forestCelebrate();
-      setTimeout(() => buildForestScene(), 600);
-    }, 300);
-  }
-}
 
-function gradeQuiz(lvl, prefix) {
   let correct = 0;
   lvl.quiz.forEach((q, qi) => {
-    const item = document.getElementById((prefix==='n'?'nqItem':'nqItem')+qi);
-    const explain = document.getElementById((prefix==='n'?'nexplain':'nexplain')+qi);
+    const item = document.getElementById('fqItem' + qi);
+    const explain = document.getElementById('fexplain' + qi);
+    if (!item) return;
     if (q.type === 'choice') {
       const chosen = quizAnswers[qi];
-      document.querySelectorAll('#'+(prefix==='n'?'nqItem':'nqItem')+qi+' .qo').forEach((o, oi) => {
+      item.querySelectorAll('.qo').forEach((o, oi) => {
         o.disabled = true;
         if (oi === q.ans) o.classList.add('correct');
         if (oi === chosen && oi !== q.ans) o.classList.add('wrong');
       });
       if (chosen === q.ans) correct++;
     } else {
-      const inp = document.getElementById((prefix==='n'?'nfill':'nfill')+qi);
+      const inp = document.getElementById('ffill' + qi);
+      if (!inp) return;
+      const val = (inp.value || '').trim().toLowerCase();
+      inp.disabled = true;
+      if (val === q.ans.toLowerCase()) {
+        inp.style.borderColor = '#4A7C3F'; inp.style.background = 'rgba(74,124,63,.1)'; correct++;
+      } else {
+        inp.style.borderColor = '#C0392B'; inp.style.background = 'rgba(192,57,43,.06)';
+      }
+    }
+    item.classList.add('graded');
+    if (explain) explain.classList.add('show');
+  });
+
+  const total = lvl.quiz.length;
+  const pct = Math.round(correct / total * 100);
+  const passed = pct >= 60;
+  progress.quizResults[levelId] = { correct, total, passed };
+  if (passed && !progress.completed.includes(levelId)) progress.completed.push(levelId);
+  saveProg();
+  quizAnswers = {};
+
+  const block = document.getElementById('forestResult');
+  if (block) {
+    block.innerHTML = `<div class="r-stars">${pct===100?'🌟🌟🌟':pct>=80?'🌟🌟':pct>=60?'🌟':'💪'}</div>
+      <div class="r-score">${correct}<span>/${total}</span></div>
+      <div style="font-size:11px;color:#9A8060">得分率 ${pct}% · ${passed?'✅ 通关':'❌ 未通过（需≥60%）'}</div>
+      <div class="r-msg">${passed?(pct===100?'满分通关！✨':'恭喜通关！🏮'):'再试一次吧📚'}</div>`;
+    block.classList.add('show');
+    block.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  if (passed) {
+    // 推进 forestCurrentId 到下一个未完成的关卡
+    forestCurrentId = 1;
+    while (progress.completed.includes(forestCurrentId) && forestCurrentId < LEVELS.length) forestCurrentId++;
+
+    if (allDone()) {
+      document.getElementById('nChallengeBtn').classList.add('show');
+      document.getElementById('fInfo').textContent = '🏆 全部通关！点击首页终极挑战';
+    }
+    setTimeout(() => {
+      closeLvlOverlay();
+      setTimeout(() => { forestCelebrate(); setTimeout(() => buildForestScene(), 600); }, 300);
+    }, 1200);
+  }
+}
+
+function gradeQuiz(lvl, prefix) {
+  let correct = 0;
+  lvl.quiz.forEach((q, qi) => {
+    const item = document.getElementById('nqItem'+qi);
+    const explain = document.getElementById('nexplain'+qi);
+    if (!item) return;
+    if (q.type === 'choice') {
+      const chosen = quizAnswers[qi];
+      item.querySelectorAll('.qo').forEach((o, oi) => {
+        o.disabled = true;
+        if (oi === q.ans) o.classList.add('correct');
+        if (oi === chosen && oi !== q.ans) o.classList.add('wrong');
+      });
+      if (chosen === q.ans) correct++;
+    } else {
+      const inp = document.getElementById('nfill'+qi);
+      if (!inp) return;
       const val = (inp.value || '').trim().toLowerCase();
       inp.disabled = true;
       if (val === q.ans.toLowerCase()) { inp.style.borderColor = '#4A7C3F'; inp.style.background = 'rgba(74,124,63,.1)'; correct++; }
       else { inp.style.borderColor = '#C0392B'; inp.style.background = 'rgba(192,57,43,.06)'; }
     }
     item.classList.add('graded');
-    explain.classList.add('show');
+    if (explain) explain.classList.add('show');
   });
   const total = lvl.quiz.length;
   const pct = Math.round(correct / total * 100);
@@ -712,14 +884,17 @@ function gradeQuiz(lvl, prefix) {
   if (passed && !progress.completed.includes(levelId)) progress.completed.push(levelId);
   saveProg();
   quizAnswers = {};
-  // 显示结果
-  const block = document.getElementById(prefix==='n'?'normalResult':'forestResult');
+  // 显示结果 —— 同时尝试两个 result block ID，确保无论哪种模式都能找到
+  var block = document.getElementById(prefix==='n'?'normalResult':'forestResult');
+  if (!block) block = document.getElementById('normalResult');
+  if (!block) block = document.getElementById('forestResult');
   if (block) {
     block.innerHTML = `<div class="r-stars">${pct===100?'🌟🌟🌟':pct>=80?'🌟🌟':pct>=60?'🌟':'💪'}</div>
       <div class="r-score">${correct}<span>/${total}</span></div>
       <div style="font-size:11px;color:#9A8060">得分率 ${pct}% · ${passed?'✅ 通关':'❌ 未通过（需≥60%）'}</div>
       <div class="r-msg">${passed?(pct===100?'满分通关！✨':'恭喜通关！🏮'):'再试一次吧📚'}</div>`;
     block.classList.add('show');
+    block.scrollIntoView({behavior:'smooth',block:'nearest'});
   }
   return { correct, total, pct, passed };
 }
@@ -757,103 +932,203 @@ function restoreDoneState(lvl) {
 //  森林模式
 // ══════════════════════════════════════════════════════════
 function buildForestScene() {
-  // 迷雾颗粒
-  const mc = document.getElementById('fMistParticles');
-  if (!mc.children.length) {
-    for (let i = 0; i < 25; i++) {
-      const p = document.createElement('div');
-      p.className = 'f-mp';
-      p.style.cssText = `width:${60+Math.random()*140}px;height:${60+Math.random()*140}px;left:${Math.random()*100}%;top:${10+Math.random()*80}%;animation-duration:${8+Math.random()*12}s;animation-delay:${-Math.random()*12}s;opacity:${0.15+Math.random()*0.3}`;
-      mc.appendChild(p);
-    }
-  }
-
+  initStars();
+  initFireflies();
   const positions = calcForestPositions();
-  renderForestPath(positions);
+  drawGroundCanvas(positions);
+  drawPathCanvas(positions);
   renderForestNodes(positions);
-  updateForestMist(positions);
+  updateForestFog(positions);
   updateForestInfo();
 }
 
-function calcForestPositions() {
-  const ps = [];
-  const vw = window.innerWidth, vh = window.innerHeight;
-  const total = progress.completed.length + 1;
-  LEVELS.forEach(l => {
-    const id = l.id;
-    if (!isDone(id) && id !== forestCurrentId) { ps.push(null); return; }
-    let vi;
-    if (id === forestCurrentId) vi = total - 1;
-    else vi = progress.completed.indexOf(id);
-    const fromBottom = total - 1 - vi;
-    const col = (vi % 2 === 0) ? vw * 0.28 : vw * 0.72;
-    const y = vh - 120 - fromBottom * 95;
-    ps.push({ id, x: col, y, done: isDone(id), current: id === forestCurrentId });
-  });
-  return ps;
+function initStars() {
+  const c = document.getElementById('fStars');
+  if (c.children.length) return;
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'f-star';
+    const sz = Math.random() < 0.15 ? 2.5 : Math.random() < 0.4 ? 1.5 : 1;
+    s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*55}%;animation-duration:${2+Math.random()*4}s;animation-delay:${-Math.random()*4}s`;
+    c.appendChild(s);
+  }
 }
 
-function renderForestPath(positions) {
-  const svg = document.getElementById('fPathSvg');
-  const vis = positions.filter(Boolean);
-  if (vis.length < 2) { svg.innerHTML = ''; return; }
-  let d = '';
-  vis.forEach((p, i) => {
-    const px = (p.x / window.innerWidth) * 100, py = (p.y / window.innerHeight) * 100;
-    d += (i === 0 ? 'M ' : ' L ') + px + ' ' + py;
-  });
-  svg.innerHTML = `<path class="f-path-line done" d="${d}" />`;
+function initFireflies() {
+  const c = document.getElementById('fFireflies');
+  if (c.children.length) return;
+  for (let i = 0; i < 18; i++) {
+    const f = document.createElement('div');
+    f.className = 'f-firefly';
+    const sx = 10+Math.random()*80, sy = 30+Math.random()*55;
+    const dx = (Math.random()-.5)*25, dy = (Math.random()-.5)*30;
+    const dx2 = dx+(Math.random()-.5)*20, dy2 = dy+(Math.random()-.5)*20;
+    f.style.cssText = `left:${sx}%;top:${sy}%;--fx:${dx}vw;--fy:${dy}vh;--fx2:${dx2}vw;--fy2:${dy2}vh;animation-duration:${5+Math.random()*8}s;animation-delay:${-Math.random()*8}s;box-shadow:0 0 ${4+Math.random()*6}px #c8ff80`;
+    c.appendChild(f);
+  }
 }
+
+function initMistParticles() {
+  const mc = document.getElementById('fMistParticles');
+  if (mc.children.length) return;
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'f-mp';
+    p.style.cssText = `width:${80+Math.random()*160}px;height:${80+Math.random()*160}px;left:${Math.random()*100}%;top:${5+Math.random()*60}%;animation-duration:${10+Math.random()*14}s;animation-delay:${-Math.random()*14}s;opacity:${0.3+Math.random()*0.4}`;
+    mc.appendChild(p);
+  }
+}
+
+function drawGroundCanvas(positions) {
+  const canvas = document.getElementById('fGroundCanvas');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  positions.forEach(p => {
+    const lit = p.done || p.current;
+    const r = p.current ? 52 : 36;
+    const grd = ctx.createRadialGradient(p.x, p.y+20, 0, p.x, p.y+20, r);
+    if (lit) {
+      const alpha = p.current ? 0.55 : 0.35;
+      grd.addColorStop(0, `rgba(255,210,80,${alpha})`);
+      grd.addColorStop(0.5, `rgba(200,160,40,${alpha*0.5})`);
+      grd.addColorStop(1, 'rgba(0,0,0,0)');
+    } else {
+      grd.addColorStop(0, 'rgba(50,80,55,0.12)');
+      grd.addColorStop(1, 'rgba(0,0,0,0)');
+    }
+    ctx.fillStyle = grd;
+    ctx.beginPath();
+    ctx.ellipse(p.x, p.y+22, r*1.4, r*0.5, 0, 0, Math.PI*2);
+    ctx.fill();
+    if (lit) {
+      ctx.save();
+      ctx.globalAlpha = p.current ? 0.5 : 0.3;
+      ctx.strokeStyle = p.current ? 'rgba(255,200,80,.6)' : 'rgba(180,140,40,.4)';
+      ctx.lineWidth = 1;
+      const stones = p.current ? 5 : 3;
+      for (let s = 0; s < stones; s++) {
+        const sw = (12+s*8)*(p.current?1.4:1), sh = (6+s*3)*(p.current?1.4:1);
+        ctx.beginPath(); ctx.ellipse(p.x, p.y+20, sw, sh, 0, 0, Math.PI*2); ctx.stroke();
+      }
+      ctx.restore();
+    }
+  });
+}
+
+function drawPathCanvas(positions) {
+  const canvas = document.getElementById('fPathCanvas');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (positions.length < 2) return;
+  for (let i = 0; i < positions.length-1; i++) {
+    const a = positions[i], b = positions[i+1];
+    const grd = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
+    if (a.done && b.done) {
+      grd.addColorStop(0, 'rgba(255,200,80,.7)'); grd.addColorStop(1, 'rgba(255,180,60,.7)');
+      ctx.lineWidth = 3; ctx.setLineDash([]);
+    } else if (a.done && b.current) {
+      grd.addColorStop(0, 'rgba(255,200,80,.6)'); grd.addColorStop(1, 'rgba(255,150,40,.3)');
+      ctx.lineWidth = 2.5; ctx.setLineDash([]);
+    } else {
+      grd.addColorStop(0, 'rgba(100,140,110,.15)'); grd.addColorStop(1, 'rgba(80,120,90,.08)');
+      ctx.lineWidth = 1.5; ctx.setLineDash([5,6]);
+    }
+    ctx.beginPath(); ctx.strokeStyle = grd;
+    const mx = (a.x+b.x)/2, my = (a.y+b.y)/2-20;
+    ctx.moveTo(a.x, a.y); ctx.quadraticCurveTo(mx, my, b.x, b.y); ctx.stroke();
+    ctx.setLineDash([]);
+    if (a.done) {
+      for (let d = 1; d <= 3; d++) {
+        const t = d/4, dx = a.x+(b.x-a.x)*t, dy = a.y+(b.y-a.y)*t;
+        ctx.beginPath(); ctx.arc(dx, dy, 2.5, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,210,100,.6)'; ctx.fill();
+      }
+    }
+  }
+}
+
+function calcForestPositions() {
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const doneIds = progress.completed;
+  const visibleIds = [...doneIds];
+  if (!visibleIds.includes(forestCurrentId)) visibleIds.push(forestCurrentId);
+  const cols = [vw*0.25, vw*0.75];
+  const stepY = Math.min(100, (vh*0.72)/Math.max(visibleIds.length,1));
+  const baseY = vh-110;
+  return visibleIds.map((id,i) => ({
+    id, x: cols[i%2], y: baseY-i*stepY,
+    done: doneIds.includes(id), current: id===forestCurrentId
+  }));
+}
+
+function renderForestPath(positions) { /* replaced by drawPathCanvas */ }
 
 function renderForestNodes(positions) {
   let h = '';
   positions.forEach(p => {
-    if (!p) return;
     const lvl = LEVELS.find(l => l.id === p.id);
-    let cls = p.done ? 'done' : 'current';
-    h += `<div class="f-node ${cls}" style="left:${p.x}px;top:${p.y}px;transform:translate(-50%,-50%)" onclick="${cls==='current'?'forestOpen('+p.id+')':''}">
-      ${p.done ? '<span style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:12px;opacity:.7">🏮</span>' : ''}
-      <div class="f-node-dot"><span class="f-node-num">${p.id}</span></div>
+    if (!lvl) return;
+    const cls = p.done ? 'done' : 'current';
+    const clickable = p.current ? `onclick="forestOpen(${p.id})"` : '';
+    h += `<div class="f-node ${cls}" style="left:${p.x}px;top:${p.y}px;transform:translate(-50%,-50%)" ${clickable}>
+      <div class="f-lantern"><span class="f-node-num">${p.id}</span></div>
+      <div class="f-glow-ground"></div>
       <span class="f-node-label">${p.current ? '✨ '+lvl.title : lvl.title}</span>
     </div>`;
   });
   document.getElementById('fNodesLayer').innerHTML = h;
 }
 
-function updateForestMist(positions) {
-  const vis = positions.filter(Boolean);
-  const cur = vis.find(p => p.current);
-  if (!cur) return;
-  const mt = Math.max(0, cur.y - 80);
-  document.getElementById('fMistTop').style.height = Math.max(15, (mt / window.innerHeight) * 100) + '%';
+function updateForestFog(positions) {
+  initMistParticles();
+  const vh = window.innerHeight;
+  const cur = positions.find(p => p.current);
+  const fogLayer = document.getElementById('fFogLayer');
+  const fogEdge = document.getElementById('fFogEdge');
+  if (!cur) { fogLayer.style.height='100%'; fogEdge.style.top='95%'; return; }
+  const fogBottom = Math.max(cur.y-80, 60);
+  const fogPct = Math.round((fogBottom/vh)*100);
+  fogLayer.style.height = fogPct+'%';
+  fogEdge.style.top = (fogPct-4)+'%';
+  document.querySelectorAll('.f-mp').forEach(p => {
+    const topPct = parseFloat(p.style.top);
+    p.style.opacity = topPct < fogPct ? (0.3+Math.random()*0.4).toString() : '0';
+  });
 }
 
+function updateForestMist(positions) { updateForestFog(positions); }
+
 function updateForestInfo() {
-  const d = progress.completed.length;
-  document.getElementById('fInfo').textContent = d === 0 ? '🏮 开始探索' : d >= LEVELS.length ? '🏆 全部通关！' : `🏮 ${d}/${LEVELS.length} 盏灯笼`;
+  const d = progress.completed.length, total = LEVELS.length;
+  document.getElementById('fInfo').textContent =
+    d===0 ? '🏮 点燃第一盏灯笼' :
+    d>=total ? '🏆 迷雾已散 · 全部通关！' :
+    `🏮 ${d} / ${total} 盏灯笼已点亮`;
 }
 
 function forestOpen(id) {
+  normalOpenLevelId = id; // 修复：森林模式下也需要设置，供 buildQuizItem 的 Enter 键使用
   const lvl = LEVELS.find(l => l.id === id);
   if (!lvl) return;
   quizAnswers = {};
   document.getElementById('lvlCard').innerHTML = buildLvlContentPopup(lvl, id);
   document.getElementById('lvlOverlay').classList.add('show');
   if (isDone(id) && progress.quizResults[id]) {
-    // Restore for popup version
     const r = progress.quizResults[id];
     if (r && r.passed) {
       lvl.quiz.forEach((q, qi) => {
-        const item = document.getElementById('nqItem'+qi);
+        const item = document.getElementById('fqItem' + qi);
         if (!item) return;
-        const explain = document.getElementById('nexplain'+qi);
+        const explain = document.getElementById('fexplain' + qi);
         if (q.type === 'choice') {
-          document.querySelectorAll('#nqItem'+qi+' .qo').forEach((o, oi) => {
+          item.querySelectorAll('.qo').forEach((o, oi) => {
             o.disabled = true;
             if (oi === q.ans) o.classList.add('correct');
           });
         } else {
-          const inp = document.getElementById('nfill'+qi);
+          const inp = document.getElementById('ffill' + qi);
           if (inp) { inp.value = q.ans; inp.disabled = true; inp.style.borderColor = '#4A7C3F'; inp.style.background = 'rgba(74,124,63,.1)'; }
         }
         item.classList.add('graded');
