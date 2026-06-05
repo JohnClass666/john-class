@@ -4,248 +4,215 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>John Class</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
   height: 100%;
-  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+  overflow: hidden;
+  background: #F5EDD8;
   -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ── 左：图片铺满 ── */
+.left {
+  flex: 0 0 58%;
+  height: 100vh;
+  position: relative;
   overflow: hidden;
 }
-
-/* ── 全屏背景图 ── */
-.bg {
-  position: fixed;
-  inset: 0;
-  background: url('bg.png') center center / cover no-repeat;
-  z-index: 0;
+.left img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
 }
-
-/* 底部渐变遮罩，让按钮区域更清晰 */
-.bg::after {
+/* 右侧自然过渡 */
+.left::after {
   content: '';
   position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    transparent 52%,
-    rgba(0,0,0,.18) 70%,
-    rgba(0,0,0,.52) 88%,
-    rgba(0,0,0,.68) 100%
-  );
+  top: 0; right: 0;
+  width: 100px; height: 100%;
+  background: linear-gradient(to right, transparent, #F5EDD8);
 }
 
-/* ── 内容层 ── */
-.page {
+/* ── 右：纯文字 ── */
+.right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 52px 0 20px;
+  background: #F5EDD8;
   position: relative;
-  z-index: 10;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 0 28px 52px;
 }
 
-/* ── 按钮组 ── */
-.btn-group {
-  width: 100%;
-  max-width: 420px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* 主按钮 — 英语学习提升 */
-.btn-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px;
-  background: rgba(255, 255, 255, 0.22);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 22px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background .2s, transform .18s;
-  animation: slideUp .6s cubic-bezier(.22,1,.36,1) both;
-  animation-delay: .1s;
-}
-.btn-main:hover {
-  background: rgba(255,255,255,.32);
-  transform: translateY(-2px);
-}
-.btn-main:active { transform: scale(.98); }
-
-.btn-main-left {}
-.btn-main-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.75);
-  margin-bottom: 5px;
-}
-.btn-main-title {
-  font-size: 22px;
-  font-weight: 600;
-  color: #ffffff;
-  letter-spacing: -.3px;
-  text-shadow: 0 1px 8px rgba(0,0,0,.2);
-}
-.btn-main-sub {
-  font-size: 12px;
+/* 品牌小字 */
+.brand {
+  position: absolute;
+  top: 42px; left: 20px;
+  font-family: 'Noto Serif SC', 'STKaiti', 'KaiTi', '楷体', 'SimKai', Georgia, serif;
+  font-size: 15px;
   font-weight: 400;
-  color: rgba(255,255,255,.65);
-  margin-top: 4px;
-}
-.btn-main-arrow {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.25);
-  border: 1px solid rgba(255,255,255,.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: background .2s, transform .2s;
-}
-.btn-main:hover .btn-main-arrow {
-  background: rgba(255,255,255,.4);
-  transform: translateX(3px);
+  letter-spacing: .06em;
+  color: rgba(160,120,70,.5);
 }
 
-/* 次按钮 — Better Call John */
-.btn-bcj {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 22px;
-  background: rgba(20, 14, 6, 0.62);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(201,169,110,.35);
-  border-radius: 18px;
+/* 内容 */
+.inner {
+  animation: fadeIn .8s cubic-bezier(.22,1,.36,1) .1s both;
+}
+
+/* 小分割标签 */
+.divider {
+  width: 32px;
+  height: 1px;
+  background: rgba(160,120,70,.3);
+  margin-bottom: 32px;
+}
+
+/* 可点击文字入口 */
+.entry {
+  display: block;
   text-decoration: none;
+  margin-bottom: 36px;
   cursor: pointer;
-  transition: background .2s, transform .18s;
-  animation: slideUp .6s cubic-bezier(.22,1,.36,1) both;
-  animation-delay: .22s;
+  position: relative;
 }
-.btn-bcj:hover {
-  background: rgba(20,14,6,.78);
-  transform: translateY(-2px);
-}
-.btn-bcj:active { transform: scale(.98); }
+.entry:last-of-type { margin-bottom: 0; }
 
-.bcj-title {
-  font-size: 19px;
-  font-weight: 600;
-  color: #C9A96E;
+.entry-title {
+  font-family: 'Noto Serif SC', 'STKaiti', 'KaiTi', '楷体', 'SimKai', Georgia, serif;
+  font-size: clamp(32px, 3.5vw, 46px);
+  font-weight: 700;
+  color: #2A1E08;
+  line-height: 1.1;
   letter-spacing: .01em;
+  transition: color .2s, transform .2s;
+  display: inline-block;
 }
-.bcj-sub {
-  font-size: 12px;
-  color: rgba(253,248,240,.5);
-  margin-top: 3px;
-  font-weight: 300;
-}
-.bcj-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(201,169,110,.15);
-  border: 1px solid rgba(201,169,110,.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 17px;
-  flex-shrink: 0;
+.entry:hover .entry-title {
+  color: #8A6030;
+  transform: translateX(6px);
 }
 
-/* 底部署名 */
+.entry-sub {
+  font-family: 'Noto Serif SC', 'STKaiti', 'KaiTi', '楷体', 'SimKai', Georgia, serif;
+  font-size: clamp(14px, 1.6vw, 18px);
+  font-weight: 400;
+  color: rgba(140,100,50,.55);
+  margin-top: 4px;
+  letter-spacing: .02em;
+  transition: color .2s;
+}
+.entry:hover .entry-sub { color: rgba(140,100,50,.8); }
+
+/* hover时左边出现小线 */
+.entry::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%) scaleX(0);
+  transform-origin: left;
+  width: 8px; height: 2px;
+  background: #8A6030;
+  border-radius: 1px;
+  transition: transform .2s;
+}
+.entry:hover::before { transform: translateY(-50%) scaleX(1); }
+
+/* 底部小字 */
 .foot {
-  margin-top: 20px;
-  font-size: 11px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.38);
-  text-align: center;
-  animation: slideUp .6s cubic-bezier(.22,1,.36,1) .35s both;
+  position: absolute;
+  bottom: 40px; left: 20px;
+  font-family: 'Noto Serif SC', 'STKaiti', 'KaiTi', '楷体', 'SimKai', Georgia, serif;
+  font-size: 13px;
+  color: rgba(160,120,70,.35);
+  letter-spacing: .06em;
 }
 
-/* 页面跳转遮罩 */
+/* 遮罩 */
 .overlay {
-  position: fixed;
-  inset: 0;
-  background: #FDF8F0;
-  z-index: 999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .35s ease;
+  position: fixed; inset: 0;
+  background: #F5EDD8; z-index: 999;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s ease;
 }
 .overlay.show { opacity: 1; pointer-events: all; }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(22px); }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(20px); }
   to   { opacity: 1; transform: none; }
 }
 
-/* 手机适配 */
-@media (max-width: 430px) {
-  .page { padding: 0 20px 44px; }
-  .btn-main-title { font-size: 20px; }
-  .bcj-title { font-size: 17px; }
+/* 移동단 */
+@media (max-width: 640px) {
+  html, body { overflow-y: auto; }
+  .page { flex-direction: column; height: auto; min-height: 100vh; }
+  .left {
+    flex: none;
+    width: 100%;
+    height: 100vw;
+    max-height: 480px;
+  }
+  .left::after {
+    top: auto; bottom: 0; left: 0; right: 0;
+    width: 100%; height: 80px;
+    background: linear-gradient(to bottom, transparent, #F5EDD8);
+  }
+  .right {
+    flex: none;
+    padding: 32px 36px 64px;
+  }
+  .brand { position: static; margin-bottom: 24px; display: block; }
+  .foot  { position: static; margin-top: 40px; display: block; }
+  .entry::before { display: none; }
 }
 </style>
 </head>
 <body>
-
 <div class="overlay" id="ov"></div>
-<div class="bg"></div>
 
 <div class="page">
-  <div class="btn-group">
-
-    <!-- 英语学习提升 -->
-    <a class="btn-main" href="study.html" onclick="go(event,'study.html')">
-      <div class="btn-main-left">
-        <div class="btn-main-label">核心入口</div>
-        <div class="btn-main-title">英语学习提升</div>
-        <div class="btn-main-sub">学习工具 · 武林秘籍 · 期末备考</div>
-      </div>
-      <div class="btn-main-arrow">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-             stroke="white" stroke-width="2.5" stroke-linecap="round">
-          <path d="M5 12h14M12 5l7 7-7 7"/>
-        </svg>
-      </div>
-    </a>
-
-    <!-- Better Call John -->
-    <a class="btn-bcj" href="teacher.html" onclick="go(event,'teacher.html')">
-      <div>
-        <div class="bcj-title">Better Call John</div>
-        <div class="bcj-sub">联系 John · 学习咨询 · 了解课程</div>
-      </div>
-      <div class="bcj-icon">📞</div>
-    </a>
-
+  <div class="left">
+    <img src="bg.png" alt="John Class">
   </div>
-  <div class="foot">John Class · Changsha · 2025</div>
+
+  <div class="right">
+    <div class="brand">John Class</div>
+
+    <div class="inner">
+      <div class="divider"></div>
+
+      <a class="entry" href="study.html" onclick="go(event,'study.html')">
+        <div class="entry-title">英语学习提升</div>
+        <div class="entry-sub">词汇 · 语法 · 阅读 · 武林秘籍</div>
+      </a>
+
+      <a class="entry" href="teacher.html" onclick="go(event,'teacher.html')">
+        <div class="entry-title">和 John 说说</div>
+        <div class="entry-sub">提问 · 炫耀 · 反馈 · 了解</div>
+      </a>
+    </div>
+
+    <div class="foot">Changsha · 2026</div>
+  </div>
 </div>
 
 <script>
 function go(e, href) {
   e.preventDefault();
-  const ov = document.getElementById('ov');
-  ov.classList.add('show');
-  setTimeout(() => { window.location.href = href; }, 320);
+  document.getElementById('ov').classList.add('show');
+  setTimeout(() => { window.location.href = href; }, 280);
 }
 </script>
 </body>
