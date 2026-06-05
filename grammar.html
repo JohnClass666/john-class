@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>语法训练 · John Class</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased;background:#F5EDD8;color:#2A1E08}
+.layout{display:flex;min-height:100vh}
+.left{position:fixed;top:0;left:0;width:52%;height:100vh;overflow:hidden}
+.left img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.left::after{content:'';position:absolute;top:0;right:0;width:80px;height:100%;background:linear-gradient(to right,transparent,#F5EDD8)}
+.right{margin-left:52%;flex:1;background:#F5EDD8;min-height:100vh;padding:52px 44px 80px 28px;position:relative}
+.right::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 15%,rgba(201,169,110,.07) 0%,transparent 50%),radial-gradient(circle at 20% 85%,rgba(120,160,80,.05) 0%,transparent 40%);pointer-events:none}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px;position:relative;z-index:1}
+.nav-brand{font-size:13px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8956A;text-decoration:none}
+.nav-back{font-size:12px;color:#9A8060;text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .2s}
+.nav-back:hover{color:#2A1E08}
+.page-title{font-size:clamp(22px,3vw,30px);font-weight:600;color:#2A1E08;letter-spacing:-.4px;margin-bottom:4px;position:relative;z-index:1}
+.page-sub{font-size:13px;color:#9A8060;margin-bottom:28px;position:relative;z-index:1}
+
+/* 年级标签 */
+.grade-bar{display:flex;gap:8px;margin-bottom:20px;position:relative;z-index:1;flex-wrap:wrap}
+.grade-btn{padding:7px 18px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.06em;cursor:pointer;border:1.5px solid rgba(184,149,106,.3);background:transparent;color:#9A8060;transition:all .2s}
+.grade-btn:hover{border-color:#B8956A;color:#B8956A}
+.grade-btn.active{background:#B8956A;border-color:#B8956A;color:#fff}
+
+/* 套题 tab */
+.set-bar{display:flex;gap:6px;margin-bottom:22px;position:relative;z-index:1;flex-wrap:wrap}
+.set-btn{padding:6px 14px;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid rgba(184,149,106,.25);background:transparent;color:#9A8060;transition:all .18s;min-width:52px;text-align:center}
+.set-btn:hover{border-color:#B8956A;color:#B8956A}
+.set-btn.active{background:#2A1E08;border-color:#2A1E08;color:#F5EDD8}
+.set-btn.done{border-color:rgba(74,124,63,.4);color:#4A7C3F}
+.set-btn.done.active{background:#4A7C3F;border-color:#4A7C3F;color:#fff}
+
+/* 进度 */
+.prog-wrap{margin-bottom:20px;position:relative;z-index:1}
+.prog-bar{height:3px;background:rgba(184,149,106,.15);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:#B8956A;border-radius:2px;transition:width .4s ease;width:0%}
+.prog-txt{font-size:11px;color:#B8956A;margin-top:6px;letter-spacing:.04em}
+
+/* 文章卡 */
+.article-card{background:rgba(255,255,255,.55);border:1px solid rgba(184,149,106,.2);border-radius:18px;padding:26px 24px;margin-bottom:22px;position:relative;z-index:1;backdrop-filter:blur(4px)}
+.article-title{font-size:15px;font-weight:700;margin-bottom:3px;color:#2A1E08}
+.article-meta{font-size:11px;color:#B8956A;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px;display:flex;gap:8px;align-items:center}
+.meta-tag{padding:2px 8px;border-radius:8px;background:rgba(184,149,106,.12);font-size:10px}
+.article-body{font-size:14.5px;line-height:2.1;color:#3A2E18}
+.article-body p{margin-bottom:12px}
+.article-body p:last-child{margin-bottom:0}
+
+/* 填空 */
+.gw{display:inline-block;position:relative;vertical-align:baseline;margin:0 2px}
+.gn{font-size:9.5px;font-weight:700;color:#B8956A;position:absolute;top:-14px;left:1px;pointer-events:none}
+.gi{border:none;border-bottom:2px solid #B8956A;background:transparent;width:90px;font-size:14.5px;color:#2A1E08;text-align:center;outline:none;padding:2px 4px;font-family:inherit;transition:border-color .2s,background .2s;border-radius:4px 4px 0 0}
+.gi:focus{background:rgba(184,149,106,.08);border-color:#7A5C2A}
+.gi.ok{border-color:#4A7C3F;background:rgba(74,124,63,.09);color:#1E5A18}
+.gi.ng{border-color:#C0392B;background:rgba(192,57,43,.07);color:#8B1A10}
+.gi.sh{border-color:#9A8060;background:rgba(154,128,96,.1);color:#6A5030;font-style:italic}
+.gh{font-size:10px;color:#4A7C3F;position:absolute;bottom:-17px;left:50%;transform:translateX(-50%);white-space:nowrap;display:none;font-weight:600}
+.gw.rev .gh{display:block}
+.clue{font-size:13px;color:#9A8060;font-style:italic}
+
+/* 操作按钮 */
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:18px;position:relative;z-index:1}
+.btn{padding:10px 20px;border-radius:22px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .18s;letter-spacing:.02em}
+.btn-p{background:#B8956A;color:#fff}
+.btn-p:hover{background:#9A7A52}
+.btn-o{background:transparent;color:#9A8060;border:1.5px solid rgba(184,149,106,.35)}
+.btn-o:hover{border-color:#B8956A;color:#B8956A}
+.btn-r{color:#C0392B;border:1.5px solid rgba(192,57,43,.22);background:transparent}
+.btn-r:hover{border-color:#C0392B;background:rgba(192,57,43,.06)}
+
+/* 结果 */
+.result{background:rgba(255,255,255,.6);border:1px solid rgba(184,149,106,.22);border-radius:16px;padding:22px 22px;position:relative;z-index:1;display:none}
+.result.show{display:block}
+.r-stars{font-size:28px;margin-bottom:6px}
+.r-score{font-size:34px;font-weight:700;color:#2A1E08;margin-bottom:3px}
+.r-score span{color:#B8956A}
+.r-lbl{font-size:13px;color:#9A8060;margin-bottom:12px}
+.r-msg{font-size:14px;color:#5A4020;line-height:1.7;margin-bottom:16px}
+.r-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px;margin-bottom:4px}
+.r-item{background:rgba(255,255,255,.55);border-radius:10px;padding:8px 11px;font-size:12px}
+.r-no{color:#9A8060;font-size:10.5px;margin-bottom:2px}
+.r-your{font-weight:600}
+.r-your.ok{color:#4A7C3F}
+.r-your.ng{color:#C0392B}
+.r-ans{color:#9A8060;font-size:11px}
+
+/* 知识点 */
+.tips-sec{margin-top:22px;position:relative;z-index:1}
+.tips-lbl{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#B8956A;padding-bottom:10px;border-bottom:1px solid rgba(184,149,106,.2);margin-bottom:12px}
+.tip{background:rgba(255,255,255,.45);border:1px solid rgba(184,149,106,.15);border-radius:14px;padding:14px 16px;margin-bottom:9px;cursor:pointer;transition:background .18s}
+.tip:hover{background:rgba(255,255,255,.7)}
+.tip-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tip-ttl{font-size:13.5px;font-weight:600;color:#2A1E08}
+.tip-tag{font-size:10px;padding:3px 8px;border-radius:8px;font-weight:600;background:rgba(184,149,106,.12);color:#B8956A;white-space:nowrap;flex-shrink:0}
+.tip-body{font-size:13px;color:#6A5030;line-height:1.75;margin-top:10px;display:none;white-space:pre-line}
+.tip.open .tip-body{display:block}
+.tip-eg{background:rgba(184,149,106,.08);border-left:3px solid #B8956A;padding:7px 11px;border-radius:0 8px 8px 0;font-size:13px;color:#4A3010;margin-top:8px;font-style:italic}
+
+/* footer */
+.foot{margin-top:48px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(184,149,106,.4);position:relative;z-index:1}
+
+/* overlay */
+.overlay{position:fixed;inset:0;background:#F5EDD8;z-index:999;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.overlay.show{opacity:1;pointer-events:all}
+
+/* 入场动画 */
+.right > *{animation:fi .55s cubic-bezier(.22,1,.36,1) both}
+.nav{animation-delay:.04s}.page-title{animation-delay:.09s}.page-sub{animation-delay:.11s}
+.grade-bar{animation-delay:.13s}.set-bar{animation-delay:.15s}.prog-wrap{animation-delay:.17s}
+.article-card{animation-delay:.2s}.actions{animation-delay:.23s}
+@keyframes fi{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+
+@media(max-width:680px){
+  .layout{flex-direction:column}
+  .left{position:relative;width:100%;height:56vw;min-height:220px;max-height:360px}
+  .left::after{top:auto;bottom:0;left:0;right:0;width:100%;height:60px;background:linear-gradient(to bottom,transparent,#F5EDD8)}
+  .right{margin-left:0;padding:28px 18px 60px}
+  .gi{width:74px}
+  .r-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="overlay" id="ov"></div>
+<div class="layout">
+  <div class="left"><img src="bg.png" alt="John Class"></div>
+  <div class="right">
+    <div class="nav">
+      <a class="nav-brand" href="index.html">John Class</a>
+      <a class="nav-back" href="grammar_hub.html" onclick="pg(event,'grammar_hub.html')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>返回
+      </a>
+    </div>
+    <div class="page-title">语法训练</div>
+    <div class="page-sub">阅读短文，在空白处填入适当单词或括号内单词的适当形式。</div>
+
+    <div class="grade-bar" id="gradeBar"></div>
+    <div class="set-bar" id="setBar"></div>
+
+    <div class="prog-wrap">
+      <div class="prog-bar"><div class="prog-fill" id="pf"></div></div>
+      <div class="prog-txt" id="pt">0 / 0 空已填写</div>
+    </div>
+
+    <div class="article-card" id="ac"></div>
+
+    <div class="actions">
+      <button class="btn btn-p" onclick="checkAll()">✓ 批改</button>
+      <button class="btn btn-o" onclick="showAns()">👁 显示答案</button>
+      <button class="btn btn-r" onclick="resetAll()">↺ 重做</button>
+    </div>
+
+    <div class="result" id="rp"></div>
+    <div class="tips-sec" id="ts"></div>
+
+    <div class="foot">Growing Skills · Shaping Futures</div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  题库
+// ══════════════════════════════════════════════════════
+const SETS=[
+{id:1,grade:"初一下",title:"Reading and Books",meta:"期末 · 第1套",type:"首字母填空",
+paras:[
+  [{t:"Reading is an important part of any child's growth. B"},{g:{n:46,c:"B___",a:["Books"]}},{t:" can open up a new world to children. They teach them how the world works, tell them old stories and help them tell r"},{g:{n:47,c:"r___",a:["right"]}},{t:" from wrong."}],
+  [{t:"A good parent always reads to the kid at an e"},{g:{n:48,c:"e___",a:["early"]}},{t:" age and goes on reading as he grows up. Some children may become future book lovers and do well in some areas with the help of r"},{g:{n:49,c:"r___",a:["reading"]}},{t:". They will always remember the wonderful time when they read with their loved ones."}],
+  [{t:"Children's Day is here. Maybe you can choose a book below as the g"},{g:{n:50,c:"g___",a:["gift"]}},{t:" for your kid. An's Seeds is my recommendation."}],
+  [{t:"An's Seeds tells the story about t"},{g:{n:51,c:"t___",a:["three"]}},{t:" young men who each gets a lotus seed from their master in w"},{g:{n:52,c:"w___",a:["winter"]}},{t:". They talk about their ideas. The first man d"},{g:{n:53,c:"d___",a:["decides","decided"]}},{t:" to plant it in the cold land right away. The second man will plant it in an expensive box. The third man An says he will w"},{g:{n:54,c:"w___",a:["wait"]}},{t:" for spring to plant his seed, because the nature is the best way for the plants to grow. It is a story of waiting and every child is like a \"seed\". We should learn to wait while teaching them and follow their nature. Give them enough t"},{g:{n:55,c:"t___",a:["time"]}},{t:", they will grow into \"lotus\"."}],
+],
+tips:[
+  {n:46,title:"Books — B首字母",tag:"首字母",body:"语境：能打开新世界、教孩子认识世界……主语是复数能做这些事的，答案是 Books（书）。",eg:"Books can open up a new world."},
+  {n:47,title:"right — 分辨是非",tag:"固定短语",body:"tell right from wrong = 分辨是非，固定短语。r 开头，填 right。",eg:"We teach children to tell right from wrong."},
+  {n:48,title:"early — 年幼时",tag:"首字母",body:"at an early age = 在年幼时，固定短语。e 开头形容词 = early。",eg:"She started learning at an early age."},
+  {n:49,title:"reading — 阅读",tag:"首字母",body:"with the help of reading = 在阅读的帮助下。r 开头名词，语境全是 reading。",eg:"Reading helps us grow."},
+  {n:50,title:"gift — 礼物",tag:"首字母",body:"as the gift = 作为礼物。儿童节送孩子的 g 开头名词。",eg:"Choose a book as the gift."},
+  {n:51,title:"three — 三个",tag:"首字母",body:"后文提到\"第一、第二、第三个人\"，t 开头数字 = three。",eg:"Three young men each got a seed."},
+  {n:52,title:"winter — 冬天",tag:"首字母",body:"后文说\"等春天种\"，说明现在是 winter（冬天），w 开头名词。",eg:"They received seeds in winter."},
+  {n:53,title:"decides/decided — 决定",tag:"固定搭配",body:"d 开头动词，\"第一个人决定\"立刻种。decide to do sth = 决定做某事。",eg:"He decided to plant it right away."},
+  {n:54,title:"wait — 等待",tag:"首字母",body:"wait for spring = 等待春天，w 开头动词。",eg:"An will wait for spring."},
+  {n:55,title:"time — 时间",tag:"首字母",body:"Give them enough time = 给他们足够的时间，t 开头名词。",eg:"Give children enough time to grow."},
+]},
+
+{id:2,grade:"初一下",title:"The Qiangan Dance",meta:"期末 · 第2套",type:"词形变化",
+paras:[
+  [{t:"Look at the picture! The boy"},{g:{n:46,c:"do",a:["is doing"]}},{t:" the Qiangan Dance now."}],
+  [{t:"The Qiangan Dance is a folk dance and it is very popular in Jiangsu and Anhui Provinces. In those"},{g:{n:47,c:"place",a:["places"]}},{t:", many people are good at it. A qiangan is a wooden stick with copper coins on it. Dancers wear"},{g:{n:48,c:"colour",a:["colourful","colorful"]}},{t:" clothes during the performances. When the dancers dance to the music, they use the qiangan to tap"},{g:{n:49,c:"they",a:["their"]}},{t:" arms, legs and other body parts, creating a clink-clink sound."}],
+  [{t:"The boy in the picture is Sun Zihao from Sihong, Jiangsu. About ten years ago, he first tried the Qiangan Dance to have fun. He"},{g:{n:50,c:"find",a:["found"]}},{t:" it was also a way to keep fit. Then, he decided"},{g:{n:51,c:"join",a:["to join"]}},{t:" a Qiangan dance team and started to learn the dance. The Qiangan Dance mixes wushu and dance moves, making it both energetic and beautiful."},{g:{n:52,c:"",a:["Although","Though","Even though"]}},{t:" it was not easy for him to dance well, Sun still kept practising the dance. He practised the dance"},{g:{n:53,c:"careful",a:["carefully"]}},{t:" at home and now he is"},{g:{n:54,c:"",a:["an"]}},{t:" excellent Qiangan dancer."}],
+  [{t:"Sun shared that Sihong is near the Huaihe River and that the Qiangan Dance is part of the Huaihe culture. Because"},{g:{n:55,c:"",a:["of"]}},{t:" its cultural importance, Qiangan Dance became an intangible cultural heritage in Jiangsu province in 2023. He hopes to pass down the culture and let more people know about and fall in love with the Qiangan Dance!"}],
+],
+tips:[
+  {n:46,title:"现在进行时 be doing",tag:"时态",body:"now 是现在进行时的标志词。主语 The boy（第三人称单数），be动词用 is。\nbe + V-ing = 现在进行时",eg:"He is doing the dance now."},
+  {n:47,title:"those + 名词复数",tag:"名词复数",body:"those 后面必须接复数名词。place → places",eg:"In those places, many people dance."},
+  {n:48,title:"colour → colourful",tag:"词形变化",body:"空格修饰名词 clothes，需要形容词。colour (n.) → colourful (adj.) 色彩丰富的",eg:"They wear colourful clothes."},
+  {n:49,title:"they → their（物主代词）",tag:"代词",body:"空格后有名词 arms，需要形容词性物主代词 their。\nthey → their → them → themselves",eg:"They tap their arms."},
+  {n:50,title:"find → found（过去式）",tag:"时态",body:"ten years ago 是过去时标志。find 的过去式是 found（不规则）。\nfind → found → found",eg:"He found it was a way to keep fit."},
+  {n:51,title:"decide to do sth",tag:"固定搭配",body:"decide + to do（不定式）是固定搭配，不用 decide doing。",eg:"He decided to join the team."},
+  {n:52,title:"Although/Though 让步从句",tag:"连词",body:"前后语义转折：\"不容易\" vs \"坚持练习\"。用 Although/Though 引导让步从句。",eg:"Although it was hard, he kept going."},
+  {n:53,title:"careful → carefully",tag:"词形变化",body:"修饰动词 practised，需要副词。careful (adj.) → carefully (adv.)",eg:"He practised carefully every day."},
+  {n:54,title:"an（元音前冠词）",tag:"冠词",body:"excellent 以元音音素 /e/ 开头，用 an 而不是 a。",eg:"He is an excellent dancer."},
+  {n:55,title:"because of + 名词",tag:"介词短语",body:"because + 从句；because of + 名词/代词。\n后面是 its cultural importance（名词短语），用 because of。",eg:"Because of its importance, it became a heritage."},
+]},
+
+{id:3,grade:"初一下",title:"To Rise with the Rooster",meta:"期末 · 第3套",type:"词形变化",
+paras:[
+  [{t:"Zu Ti was a great man of the Jin Dynasty. He was famous for his hard work. But when he was a child, he showed little interest in"},{g:{n:46,c:"read",a:["reading"]}},{t:". As he grew up, Zu Ti knew he had to learn more. And he deeply"},{g:{n:47,c:"feel",a:["felt"]}},{t:" that he could not make contributions to his country well. So he made up"},{g:{n:48,c:"he",a:["his"]}},{t:" mind to study hard."}],
+  [{t:"Zu Ti had a good friend named Liu Kun. They had a deep friendship and they both wanted to be useful"},{g:{n:49,c:"man",a:["men"]}},{t:". So they studied together every day. One day, when they were sleeping, Zu Ti heard the rooster crowing."},{g:{n:50,c:"",a:["An"]}},{t:" idea came to him. He woke up Liu Kun and said, \"How about getting up to play swords?\" Though he was still sleepy, Liu Kun agreed"},{g:{n:51,c:"",a:["with"]}},{t:" Zu Ti gladly. From then on, they got up quickly"},{g:{n:52,c:"",a:["and"]}},{t:" played swords as soon as the rooster began crowing."}],
+  [{t:"They kept their words day after day. They never gave up no matter"},{g:{n:53,c:"",a:["how"]}},{t:" cold in winter or hot in summer. Besides, they began to study history carefully and put all their time into reading books. In this way, they learned a lot."},{g:{n:54,c:"final",a:["Finally"]}},{t:", their dreams came true and they succeeded in making great contributions to the country. This is the Chinese story To Rise with the Rooster. To tell the"},{g:{n:55,c:"true",a:["truth"]}},{t:", the story is popular with people of all ages. It teaches us that hard work is the key to success."}],
+],
+tips:[
+  {n:46,title:"interest in doing sth",tag:"固定搭配",body:"show interest in doing = 对做某事感兴趣。\nin 是介词，后接动名词（V-ing）。read → reading",eg:"He showed little interest in reading."},
+  {n:47,title:"feel → felt（过去式）",tag:"时态",body:"全文讲祖逖过去的故事，用一般过去时。\nfeel → felt（不规则变化）",eg:"He felt he couldn't serve his country."},
+  {n:48,title:"make up one's mind（固定短语）",tag:"固定短语",body:"make up one's mind = 下定决心（固定短语）。\n空格后有名词 mind，用形容词性物主代词 his。",eg:"He made up his mind to study hard."},
+  {n:49,title:"man → men（不规则复数）",tag:"名词复数",body:"useful men（有用的人），man 的复数是 men（不规则变化）。\nman→men, woman→women, child→children",eg:"They wanted to be useful men."},
+  {n:50,title:"An idea（冠词）",tag:"冠词",body:"idea 以元音音素 /aɪ/ 开头，用 An。\n表示\"一个想法\"，用不定冠词。",eg:"An idea came to him."},
+  {n:51,title:"agree with sb",tag:"固定搭配",body:"agree with sb = 同意某人（固定搭配）。\nLiu Kun agreed with Zu Ti.",eg:"Liu Kun agreed with Zu Ti gladly."},
+  {n:52,title:"并列连词 and",tag:"连词",body:"got up quickly 和 played swords 是连续并列动作，用 and 连接。",eg:"They got up and played swords."},
+  {n:53,title:"no matter how（固定句型）",tag:"固定句型",body:"no matter how + 形容词/副词 = 无论多么……\nno matter how cold = 无论多冷",eg:"No matter how cold, they never gave up."},
+  {n:54,title:"final → finally",tag:"词形变化",body:"修饰整个句子，需要副词。\nfinal (adj.) → finally (adv.) 最终地",eg:"Finally, their dreams came true."},
+  {n:55,title:"tell the truth（固定短语）",tag:"固定短语",body:"tell the truth = 说实话（固定短语）。\ntrue (adj.) → truth (n.)",eg:"To tell the truth, the story is popular."},
+]},
+
+{id:4,grade:"初一下",title:"Learning to Walk in Handan",meta:"期末 · 第4套",type:"词形变化",
+paras:[
+  [{t:"In ancient times, there was a place called Handan in the State of Zhao. People there had a beautiful way of walking. On hearing about this, a young man from the State of Yan made a"},{g:{n:26,c:"decide",a:["decision"]}},{t:" to travel all the way to Handan to learn how to do it."}],
+  [{t:"After getting there, the young man spent"},{g:{n:27,c:"",a:["a"]}},{t:" period of time in the streets watching the local people. And then he"},{g:{n:28,c:"discover",a:["discovered"]}},{t:" their style of walking to be very beautiful. He began to copy their walking style. However,"},{g:{n:29,c:"",a:["no"]}},{t:" matter how hard he tried, he couldn't get it right."}],
+  [{t:"The young man thought he must start from the beginning to learn"},{g:{n:30,c:"exact",a:["exactly"]}},{t:" the new style of walking. The next day, he began to follow the"},{g:{n:31,c:"step",a:["steps"]}},{t:" of toddlers. He felt very uncomfortable and"},{g:{n:32,c:"pain",a:["painful"]}},{t:"."}],
+  [{t:"The situation went from bad to worse as the young man continued his efforts for a few more weeks. He not only failed to learn the walking style of the Handan people, but even forgot"},{g:{n:33,c:"he",a:["his"]}},{t:" own way of walking. When he finally decided"},{g:{n:34,c:"give",a:["to give"]}},{t:" up, he found he didn't know how to walk at all."},{g:{n:35,c:"",a:["As"]}},{t:" a result, he had to climb all the way home. So we must learn in our own way, and we shouldn't follow others blindly."}],
+],
+tips:[
+  {n:26,title:"make a decision（名词）",tag:"词形变化",body:"make a decision = 做决定（固定短语）。\ndecide (v.) → decision (n.)",eg:"He made a decision to go to Handan."},
+  {n:27,title:"a period of time",tag:"冠词",body:"a period of time = 一段时间（固定短语）。\nperiod 以辅音音素开头，用 a。",eg:"He spent a period of time watching."},
+  {n:28,title:"discover → discovered（过去式）",tag:"时态",body:"文章描述过去的故事，用一般过去时。\ndiscover → discovered（规则变化，加 -ed）",eg:"He discovered their style was beautiful."},
+  {n:29,title:"no matter how",tag:"固定句型",body:"no matter how = 无论怎样（固定搭配）。\n这里 no matter how hard = 无论多努力。",eg:"No matter how hard he tried, he failed."},
+  {n:30,title:"exact → exactly（副词）",tag:"词形变化",body:"修饰动词 learn，需要副词。\nexact (adj.) → exactly (adv.)",eg:"He wanted to learn exactly the new style."},
+  {n:31,title:"step → steps（复数）",tag:"名词复数",body:"follow the steps of = 跟随……的步伐。\nsteps 用复数（多个步骤/步伐）。",eg:"He followed the steps of toddlers."},
+  {n:32,title:"pain → painful（形容词）",tag:"词形变化",body:"felt + 形容词（系表结构）。\npain (n.) → painful (adj.) 痛苦的",eg:"He felt uncomfortable and painful."},
+  {n:33,title:"he → his（物主代词）",tag:"代词",body:"空格后有名词 way，用形容词性物主代词 his。",eg:"He forgot his own way of walking."},
+  {n:34,title:"decide to do sth",tag:"固定搭配",body:"decide + to do = 决定做某事（固定搭配）。",eg:"He decided to give up."},
+  {n:35,title:"as a result（固定短语）",tag:"固定短语",body:"as a result = 结果，因此（固定短语，句首大写 As）。",eg:"As a result, he had to crawl home."},
+]},
+
+{id:5,grade:"初一下",title:"Study Travel",meta:"期末 · 第5套",type:"词形变化",
+paras:[
+  [{t:"When you have study travel, you can go to many great"},{g:{n:28,c:"place",a:["places"]}},{t:". And you can travel with your family, friends"},{g:{n:29,c:"",a:["or"]}},{t:" classmates. On the trip, you can learn about other cultures. You can also have different kinds"},{g:{n:30,c:"",a:["of"]}},{t:" food. Of course, you have to speak English if you are in"},{g:{n:31,c:"",a:["an"]}},{t:" English-speaking country. You must also learn"},{g:{n:32,c:"live",a:["to live"]}},{t:" by yourself. Maybe you worry about what you can do if you get"},{g:{n:33,c:"lose",a:["lost"]}},{t:". However, this is not a real problem if you go with a group."}],
+  [{t:"I'm having study travel in London now. Look! My classmates and I"},{g:{n:34,c:"listen",a:["are listening"]}},{t:" to the guide in a museum. It is very"},{g:{n:35,c:"interest",a:["interesting"]}},{t:". London is a good place to have fun and I want to bring my parents to this city one day."}],
+],
+tips:[
+  {n:28,title:"many + 名词复数",tag:"名词复数",body:"many 后面接可数名词复数。place → places",eg:"There are many great places to visit."},
+  {n:29,title:"A, B or C（列举）",tag:"连词",body:"三项并列选择，用 or（或者）。family, friends or classmates。",eg:"You can go with friends or classmates."},
+  {n:30,title:"different kinds of",tag:"固定短语",body:"different kinds of = 各种各样的（固定搭配），of 不能省略。",eg:"You can try different kinds of food."},
+  {n:31,title:"an English-speaking（冠词）",tag:"冠词",body:"English-speaking 以元音音素 /ɪ/ 开头，用 an。",eg:"They live in an English-speaking country."},
+  {n:32,title:"learn to do sth",tag:"固定搭配",body:"learn to do = 学会做某事（固定搭配，用不定式）。",eg:"You must learn to live by yourself."},
+  {n:33,title:"get lost（固定短语）",tag:"固定短语",body:"get lost = 迷路（固定短语）。\nlose → lost（形容词）",eg:"What if you get lost?"},
+  {n:34,title:"现在进行时 are listening",tag:"时态",body:"Look! 是现在进行时标志。主语 My classmates and I（复数），be动词用 are。",eg:"We are listening to the guide now."},
+  {n:35,title:"interest → interesting",tag:"词形变化",body:"It is very + 形容词（系表结构）。\ninteresting 修饰物（物本身有趣）\ninterested 修饰人（人感到有兴趣）",eg:"It is very interesting."},
+]},
+
+{id:6,grade:"初一下",title:"Volunteering",meta:"期末 · 第6套",type:"词形变化",
+paras:[
+  [{t:"Volunteering lets us make"},{g:{n:26,c:"",a:["the"]}},{t:" world better. I like"},{g:{n:27,c:"help",a:["helping"]}},{t:" children, the elderly and the environment."}],
+  [{t:"Last year, I volunteered at a recycling center in Indonesia. As soon as I arrived, I saw many plastic"},{g:{n:28,c:"bottle",a:["bottles"]}},{t:" on the ground. I wondered, \"What are we going to do with those?\" A group of workers welcomed us. One person said that bottles and caps were made"},{g:{n:29,c:"",a:["of"]}},{t:" different kinds of plastic, so we needed to separate"},{g:{n:30,c:"they",a:["them"]}},{t:" for different uses. So with my mask and gloves on, I started to take the caps off the plastic bottles"},{g:{n:31,c:"quick",a:["quickly"]}},{t:"."}],
+  [{t:"\"There"},{g:{n:32,c:"be",a:["are"]}},{t:" straws and trash inside the bottles, so you have to take these things out,\" another worker told us. Some of my friends didn't like this work. To be honest, I didn't like it either. But it was important and good for the environment. After a while, we crushed all the plastic bottles"},{g:{n:33,c:"",a:["and"]}},{t:" put them all in a large box."}],
+  [{t:"After a long day, we finally finished"},{g:{n:34,c:"do",a:["doing"]}},{t:" our work. Though it was a simple job, it would have a lasting influence on our lives and our environment. That's what volunteering is about. How"},{g:{n:35,c:"meaning",a:["meaningful"]}},{t:" it is!"}],
+],
+tips:[
+  {n:26,title:"make the world better",tag:"冠词",body:"make the world better = 让世界变得更好（固定表达）。\nworld 前用定冠词 the，表示我们共同的世界。",eg:"Volunteering lets us make the world better."},
+  {n:27,title:"like doing sth",tag:"固定搭配",body:"like + doing sth = 喜欢做某事（固定搭配）。\nhelp → helping",eg:"I like helping children."},
+  {n:28,title:"many + 名词复数",tag:"名词复数",body:"many 后接可数名词复数。bottle → bottles",eg:"I saw many plastic bottles."},
+  {n:29,title:"be made of（固定搭配）",tag:"固定搭配",body:"be made of = 由...制成（能看出原材料）\nbe made from = 看不出原材料\n塑料瓶能看出材质，用 be made of。",eg:"Bottles are made of plastic."},
+  {n:30,title:"they → them（宾格）",tag:"代词",body:"separate 后需要宾语，用宾格 them。\nthey（主格）→ them（宾格）",eg:"We needed to separate them."},
+  {n:31,title:"quick → quickly",tag:"词形变化",body:"修饰动词 take off，需要副词。\nquick (adj.) → quickly (adv.)",eg:"I took the caps off quickly."},
+  {n:32,title:"There are（there be句型）",tag:"句型",body:"There be 句型，be 动词的数由后面名词决定。\nstraws and trash（复数），用 are。",eg:"There are straws inside the bottles."},
+  {n:33,title:"并列连词 and",tag:"连词",body:"crushed 和 put 是连续动作，用 and 连接。",eg:"We crushed the bottles and put them in a box."},
+  {n:34,title:"finish doing sth",tag:"固定搭配",body:"finish + doing sth = 完成做某事（固定搭配，后接动名词）。\ndo → doing",eg:"We finished doing our work."},
+  {n:35,title:"meaning → meaningful",tag:"词形变化",body:"How + 形容词 + 主语 + 谓语！= 感叹句。\nmeaning (n.) → meaningful (adj.) 有意义的",eg:"How meaningful it is!"},
+]},
+
+{id:7,grade:"初一下",title:"The Dragon Culture",meta:"期末 · 第7套",type:"词形变化",
+paras:[
+  [{t:"The dragon is very important in Chinese culture. It's one of China's"},{g:{n:46,c:"symbol",a:["symbols"]}},{t:". We Chinese people call ourselves \"descendants of the dragon\". China is a country with many"},{g:{n:47,c:"colour",a:["colourful","colorful"]}},{t:" days and festivals about dragons."}],
+  [{t:"The Dragon Head-Raising Day is one of them. It is the start of spring and farming. It was said that a haircut during the first lunar month may"},{g:{n:48,c:"easy",a:["easily"]}},{t:" bring bad luck to the mother's brothers."},{g:{n:49,c:"",a:["So","Therefore","Thus"]}},{t:" many people usually cut their hair on the Dragon Head-Raising Day. And there are some other ways to celebrate it. For example, people eat \"dragon whisker noodles\" and dumplings called \"dragon"},{g:{n:50,c:"tooth",a:["teeth"]}},{t:"\"."}],
+  [{t:"The Dragon Boat Festival is also"},{g:{n:51,c:"",a:["an"]}},{t:" important and interesting Chinese festival about dragons. It is"},{g:{n:52,c:"",a:["on"]}},{t:" the fifth day of the fifth lunar month. Chinese people do some different kinds of activities. The dragon boat races are the most"},{g:{n:53,c:"excite",a:["exciting"]}},{t:". Dragon boats are long and beautiful. About ten people sit on a boat. They practise hard because they look forward to"},{g:{n:54,c:"win",a:["winning"]}},{t:" the races. People also eat zongzi on the Dragon Boat Festival. Look! My mum and aunt"},{g:{n:55,c:"make",a:["are making"]}},{t:" zongzi for us."}],
+],
+tips:[
+  {n:46,title:"one of + 名词复数",tag:"名词复数",body:"one of China's symbols（中国的象征之一）。\none of + 名词，名词必须用复数！symbol → symbols",eg:"It's one of China's symbols."},
+  {n:47,title:"colour → colourful",tag:"词形变化",body:"修饰名词 days and festivals，需要形容词。\ncolour (n.) → colourful (adj.) 丰富多彩的",eg:"China has many colourful festivals."},
+  {n:48,title:"easy → easily（副词）",tag:"词形变化",body:"修饰动词 bring，需要副词。\neasy (adj.) → easily (adv.)",eg:"It may easily bring bad luck."},
+  {n:49,title:"So/Therefore（因果连词）",tag:"连词",body:"前文说可能带来厄运，后文说人们去理发，是因果关系。\nSo / Therefore = 因此（So 更口语，Therefore 更书面）。",eg:"So many people cut their hair on that day."},
+  {n:50,title:"tooth → teeth（不规则复数）",tag:"名词复数",body:"dragon teeth（龙牙）。tooth 的复数是 teeth（不规则变化）。\ntooth→teeth, foot→feet",eg:"Dumplings called \"dragon teeth\"."},
+  {n:51,title:"an important（冠词）",tag:"冠词",body:"important 以元音音素 /ɪ/ 开头，用 an。",eg:"It is an important festival."},
+  {n:52,title:"on + 具体日期",tag:"介词",body:"on + 具体日期/星期几（固定搭配）。\non the fifth day = 在第五天",eg:"It is on the fifth day of the fifth month."},
+  {n:53,title:"excite → exciting",tag:"词形变化",body:"修饰名词 races，需要形容词。\nexciting 修饰物（事物令人兴奋）\nexcited 修饰人（人感到兴奋）",eg:"The races are the most exciting."},
+  {n:54,title:"look forward to doing",tag:"固定搭配",body:"look forward to + doing（动名词）= 期待做某事。\nto 是介词，后接 V-ing。win → winning",eg:"They look forward to winning the races."},
+  {n:55,title:"现在进行时 are making",tag:"时态",body:"Look! 是现在进行时标志。主语 My mum and aunt（复数），be动词用 are。",eg:"Look! They are making zongzi."},
+]},
+
+{id:8,grade:"初一下",title:"Antarctica",meta:"期末 · 第8套",type:"词形变化",
+paras:[
+  [{t:"The Antarctica is the most"},{g:{n:26,c:"south",a:["southern"]}},{t:" part of land on the earth and is mostly covered"},{g:{n:27,c:"",a:["by","with"]}},{t:" ice. People have never wanted to live there because of its coldest temperature. But now,"},{g:{n:28,c:"learn",a:["to learn"]}},{t:" more about the earth's history, scientists from all over the world come to study the ice."}],
+  [{t:"Some scientists live on Antarctica for part of the year, but they don't usually stay there for more than six months because there are six months of light and six months of darkness."}],
+  [{t:"Antarctica usually has a good deal of fine weather without any wind at all. The strong winds are"},{g:{n:29,c:"usual",a:["usually"]}},{t:" only in some parts of it. It is also"},{g:{n:30,c:"interest",a:["interesting"]}},{t:" to learn that it isn't very wet there. There is very little snow"},{g:{n:31,c:"",a:["or"]}},{t:" rain. It snows on the ice in winter, but at other times Antarctica is dry, just like the Sahara Desert."}],
+  [{t:"In winter, the sea around Antarctica freezes for"},{g:{n:32,c:"thousand",a:["thousands"]}},{t:" of kilometers. But scientists tell us that the earth is"},{g:{n:33,c:"get",a:["getting"]}},{t:" warmer. So in the future, there may be less ice in the Antarctic Sea. When that"},{g:{n:34,c:"happen",a:["happens"]}},{t:", our weather will never be the same again. So we need to protect"},{g:{n:35,c:"",a:["the"]}},{t:" earth so that such changes don't come too quickly."}],
+],
+tips:[
+  {n:26,title:"south → southern（形容词）",tag:"词形变化",body:"修饰名词 part，需要形容词。\nthe most southern = 最南端的（方位形容词）\nsouth (n./adj.) → southern (adj.)",eg:"It is the most southern part of the earth."},
+  {n:27,title:"be covered by/with（固定搭配）",tag:"固定搭配",body:"be covered by/with = 被...覆盖（固定搭配）。\nby 和 with 均可，with 更常用。",eg:"Antarctica is covered with ice."},
+  {n:28,title:"不定式作目的状语",tag:"非谓语动词",body:"come to learn = 来学习（不定式表目的）。\nto learn more about = 为了了解更多关于……",eg:"Scientists come to learn about the earth."},
+  {n:29,title:"usual → usually（副词）",tag:"词形变化",body:"修饰整个句子（强风通常只在某些地方），需要副词。\nusual (adj.) → usually (adv.)",eg:"The strong winds are usually only in some parts."},
+  {n:30,title:"interest → interesting",tag:"词形变化",body:"It is + 形容词 + to do（固定句型）。\ninteresting 修饰事情本身。",eg:"It is interesting to learn about Antarctica."},
+  {n:31,title:"little snow or rain",tag:"连词",body:"snow 和 rain 是两种并列的事物，表示\"雪或雨都很少\"，用 or。",eg:"There is little snow or rain."},
+  {n:32,title:"thousands of（固定短语）",tag:"固定短语",body:"thousands of = 数千（固定短语，thousand 用复数）。\nhundreds of, thousands of, millions of",eg:"It freezes for thousands of kilometers."},
+  {n:33,title:"is getting（现在进行时）",tag:"时态",body:"the earth is getting warmer = 地球正在变暖（描述正在发生的变化趋势）。\nget → getting（双写 t）",eg:"The earth is getting warmer."},
+  {n:34,title:"一般现在时第三人称单数",tag:"时态",body:"when 引导时间状语从句，用一般现在时代替将来时。\nthat（单数）→ happens",eg:"When that happens, weather will change."},
+  {n:35,title:"protect the earth（定冠词）",tag:"冠词",body:"protect the earth = 保护地球（固定表达）。\nthe earth 是特指，用定冠词 the。",eg:"We need to protect the earth."},
+]},
+
+{id:9,grade:"初一下",title:"Anna's Family Sunday",meta:"期末 · 第9套",type:"词形变化",
+paras:[
+  [{t:"Today is Sunday. Anna doesn't need to go to school. Her"},{g:{n:26,c:"parent",a:["parents"]}},{t:" don't go to work. They are very busy now. What are they doing?"}],
+  [{t:"Anna's father likes sports very much. He is"},{g:{n:27,c:"real",a:["really"]}},{t:" a sports fan. Look! He is"},{g:{n:28,c:"watch",a:["watching"]}},{t:" a basketball game on TV because he likes"},{g:{n:29,c:"play",a:["playing"]}},{t:" basketball. Anna's mother is a teacher. She likes reading. She is reading in the study. Anna's sister, Lisa, likes drawing a lot. She is watching pictures in"},{g:{n:30,c:"she",a:["her"]}},{t:" room."}],
+  [{t:"Anna's grandparents are in the garden. They are watering"},{g:{n:31,c:"flower",a:["flowers"]}},{t:". Anna is in her room. She"},{g:{n:32,c:"play",a:["is playing"]}},{t:" chess with her friend. Where is Anna's brother, Dale? He is playing"},{g:{n:33,c:"",a:["an"]}},{t:" instrument in the park. There are some children listening to him around. Sometimes Dale"},{g:{n:34,c:"go",a:["goes"]}},{t:" out to take exercise. He likes football"},{g:{n:35,c:"well",a:["as well","too"]}},{t:". It's his favourite."}],
+],
+tips:[
+  {n:26,title:"parent → parents（复数）",tag:"名词复数",body:"Her parents（她的父母），parents 是复数。\n后文 they don't go to work 也证明是复数。",eg:"Her parents don't go to work today."},
+  {n:27,title:"real → really（副词）",tag:"词形变化",body:"修饰 a sports fan（名词短语），用副词强调程度。\nreal (adj.) → really (adv.) 真正地",eg:"He is really a sports fan."},
+  {n:28,title:"现在进行时 watching",tag:"时态",body:"Look! 是现在进行时标志。\nHe is watching = 他正在看",eg:"Look! He is watching a game."},
+  {n:29,title:"like doing sth",tag:"固定搭配",body:"like + doing = 喜欢做某事。\nplay → playing",eg:"He likes playing basketball."},
+  {n:30,title:"she → her（物主代词）",tag:"代词",body:"空格后有名词 room，用形容词性物主代词 her。",eg:"She is in her room."},
+  {n:31,title:"flower → flowers（复数）",tag:"名词复数",body:"water flowers = 给花浇水，flowers 用复数。",eg:"They are watering flowers."},
+  {n:32,title:"现在进行时 is playing",tag:"时态",body:"全文描述此刻正在发生的事，用现在进行时。\n主语 She（第三人称单数），is playing。",eg:"She is playing chess with her friend."},
+  {n:33,title:"an instrument（冠词）",tag:"冠词",body:"instrument 以元音音素 /ɪ/ 开头，用 an。",eg:"He is playing an instrument."},
+  {n:34,title:"一般现在时第三人称单数",tag:"时态",body:"Sometimes 表示习惯性动作，用一般现在时。\nDale（第三人称单数），go → goes。",eg:"Sometimes he goes out to exercise."},
+  {n:35,title:"as well / too（也，放句尾）",tag:"副词",body:"as well 和 too 都表示\"也\"，放在句尾。\n括号给的是 well，组成 as well。",eg:"He likes football as well."},
+]},
+];
+
+// ══════════════════════════════════════════════════════
+//  状态
+// ══════════════════════════════════════════════════════
+const GRADES=[...new Set(SETS.map(s=>s.grade))];
+let curGrade=GRADES[0], curIdx=0;
+const SK_PRACTICE='grammar_practice_done';
+let done={};
+function loadDone(){try{const r=localStorage.getItem(SK_PRACTICE);if(r)done=JSON.parse(r);}catch(e){}}
+function saveDone(){localStorage.setItem(SK_PRACTICE,JSON.stringify(done));}
+loadDone();
+
+function filteredSets(){return SETS.filter(s=>s.grade===curGrade)}
+
+// ══════════════════════════════════════════════════════
+//  渲染
+// ══════════════════════════════════════════════════════
+function init(){
+  // 年级按钮
+  const gb=document.getElementById('gradeBar');
+  gb.innerHTML=GRADES.map(g=>`<button class="grade-btn${g===curGrade?' active':''}" onclick="switchGrade('${g}')">${g}</button>`).join('');
+  renderSetBar();
+  loadSet();
+}
+
+function switchGrade(g){
+  curGrade=g;curIdx=0;
+  document.getElementById('rp').classList.remove('show');
+  document.getElementById('gradeBar').querySelectorAll('.grade-btn').forEach(b=>{
+    b.classList.toggle('active',b.textContent.trim()===g);
+  });
+  renderSetBar();loadSet();
+}
+
+function renderSetBar(){
+  const sets=filteredSets();
+  document.getElementById('setBar').innerHTML=sets.map((s,i)=>{
+    const key=s.grade+'-'+s.id;
+    return `<button class="set-btn${i===curIdx?' active':''}${done[key]?' done':''}" onclick="switchSet(${i})">第${s.id}套${done[key]?' ✓':''}</button>`;
+  }).join('');
+}
+
+function switchSet(i){
+  if(i===curIdx)return;
+  curIdx=i;
+  document.getElementById('rp').classList.remove('show');
+  renderSetBar();loadSet();
+}
+
+function loadSet(){
+  const s=filteredSets()[curIdx];
+  const card=document.getElementById('ac');
+  card.innerHTML=`
+    <div class="article-title">${s.title}</div>
+    <div class="article-meta">
+      <span>${s.grade}</span>
+      <span class="meta-tag">${s.meta}</span>
+      <span class="meta-tag">${s.type}</span>
+    </div>
+    <div class="article-body">
+      ${s.paras.map(para=>`<p>${para.map(seg=>seg.g?buildGap(seg.g):esc(seg.t)).join('')}</p>`).join('')}
+    </div>`;
+  renderTips(s);updateProg();
+  card.querySelectorAll('.gi').forEach(i=>i.addEventListener('input',updateProg));
+}
+
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function buildGap(g){
+  // 首字母题：c字段是"B___"这种格式，首字母已在文章里，不显示括号提示
+  const isInitial = g.c && /^[a-zA-Z]_+$/.test(g.c);
+  const clue = (g.c && !isInitial) ? ` <span class="clue">(${g.c})</span>` : '';
+  return `<span class="gw" id="gw${g.n}"><span class="gn">${g.n}</span><input class="gi" id="g${g.n}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="________"><span class="gh" id="gh${g.n}"></span></span>${clue}`;
+}
+
+function updateProg(){
+  const ins=document.querySelectorAll('.gi');
+  const filled=[...ins].filter(i=>i.value.trim()!=='').length;
+  const pct=ins.length?filled/ins.length*100:0;
+  document.getElementById('pf').style.width=pct+'%';
+  document.getElementById('pt').textContent=`${filled} / ${ins.length} 空已填写`;
+}
+
+// ══════════════════════════════════════════════════════
+//  批改
+// ══════════════════════════════════════════════════════
+function allGaps(){
+  const s=filteredSets()[curIdx];
+  const gaps=[];
+  s.paras.forEach(p=>p.forEach(seg=>{if(seg.g)gaps.push(seg.g)}));
+  return gaps;
+}
+
+function checkAll(){
+  const gaps=allGaps();let got=0;const details=[];
+  gaps.forEach(g=>{
+    const inp=document.getElementById('g'+g.n);
+    const wrap=document.getElementById('gw'+g.n);
+    const hint=document.getElementById('gh'+g.n);
+    if(!inp)return;
+    const val=inp.value.trim().toLowerCase();
+    const ok=g.a.some(a=>a.toLowerCase()===val);
+    inp.classList.remove('ok','ng','sh');wrap.classList.remove('rev');
+    if(ok){inp.classList.add('ok');got++;}
+    else{inp.classList.add('ng');wrap.classList.add('rev');hint.textContent='✓ '+g.a[0];}
+    details.push({n:g.n,your:inp.value.trim(),ans:g.a[0],ok});
+  });
+  const s=filteredSets()[curIdx];
+  const allCorrect=(got===gaps.length);
+  if(allCorrect)done[s.grade+'-'+s.id]=true;
+  saveDone();
+  renderSetBar();showResult(got,gaps.length,details,allCorrect);
+}
+
+function showAns(){
+  allGaps().forEach(g=>{
+    const inp=document.getElementById('g'+g.n);
+    if(!inp)return;
+    inp.value=g.a[0];inp.classList.remove('ok','ng');inp.classList.add('sh');
+  });
+  updateProg();
+}
+
+function resetAll(){
+  document.getElementById('rp').classList.remove('show');
+  document.querySelectorAll('.gi').forEach(i=>{i.value='';i.classList.remove('ok','ng','sh');});
+  document.querySelectorAll('.gw').forEach(w=>w.classList.remove('rev'));
+  updateProg();
+}
+
+function showResult(got,total,details,allCorrect){
+  const pct=Math.round(got/total*100);
+  const stars=pct===100?'⭐⭐⭐':pct>=70?'⭐⭐':'⭐';
+  const msg=pct===100?'太棒了！全部答对，语法掌握得很扎实！':pct>=70?'做得不错！错误的题目认真看下方知识点讲解，找找规律。':'加油！仔细阅读每道题的知识点，再重做一遍试试。';
+  const sets=filteredSets();
+  const hasNext=allCorrect&&(curIdx+1<sets.length);
+  const rp=document.getElementById('rp');
+  rp.innerHTML=`<div class="r-stars">${stars}</div>
+    <div class="r-score">${got}<span>/${total}</span></div>
+    <div class="r-lbl">答对 ${got} 题 · 得分率 ${pct}%</div>
+    <div class="r-msg">${msg}</div>
+    <div class="r-grid">${details.map(d=>`<div class="r-item"><div class="r-no">第 ${d.n} 空</div><div class="r-your ${d.ok?'ok':'ng'}">${d.your||'（未填）'}</div>${!d.ok?`<div class="r-ans">正确：${d.ans}</div>`:''}</div>`).join('')}</div>
+    ${hasNext?`<div style="margin-top:14px;text-align:center"><button class="btn btn-p" onclick="switchSet(${curIdx+1});document.getElementById('rp').classList.remove('show')" style="background:#4A7C3F">→ 进入下一套（第${sets[curIdx+1].id}套）</button></div>`:allCorrect?`<div style="margin-top:14px;text-align:center;font-size:13px;color:#4A7C3F;font-weight:600">🏆 当前年级所有套题已完成！</div>`:''}`;
+  rp.classList.add('show');
+  rp.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ══════════════════════════════════════════════════════
+//  知识点
+// ══════════════════════════════════════════════════════
+function renderTips(s){
+  const sec=document.getElementById('ts');
+  if(!s.tips||!s.tips.length){sec.innerHTML='';return;}
+  sec.innerHTML=`<div class="tips-lbl">知识点讲解</div>`+s.tips.map(t=>`
+    <div class="tip" onclick="this.classList.toggle('open')">
+      <div class="tip-head"><div class="tip-ttl">第${t.n}空 · ${t.title}</div><span class="tip-tag">${t.tag}</span></div>
+      <div class="tip-body"><div style="white-space:pre-line">${t.body}</div>${t.eg?`<div class="tip-eg">${t.eg}</div>`:''}</div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════
+//  页面跳转
+// ══════════════════════════════════════════════════════
+function pg(e,href){
+  e.preventDefault();
+  const ov=document.getElementById('ov');
+  ov.classList.add('show');
+  setTimeout(()=>{window.location.href=href;},280);
+}
+
+init();
+</script>
+</body>
+</html>
