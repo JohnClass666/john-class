@@ -453,10 +453,12 @@ footer {
     <p class="hero-sub">
       湖南大学教育学硕士，新东方演讲师与师训主管，英语专业八级。
       从大学讲台到中学课堂，从口语演讲到应试备考——
-      我相信每一位学生都有突破的可能，只要找到正确的方法。
+      March winds and April showers bring May flowers.
+
+一起努力找对方法，终将通过英语看到另一个世界。
     </p>
     <button class="hero-cta" onclick="copyWechat()">
-      微信咨询
+      John 微信
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     </button>
   </div>
@@ -626,9 +628,9 @@ footer {
       <div class="method-num">02</div>
       <div>
         <div class="method-title">小班精讲，每人都被看见</div>
-        <div class="method-desc">上限8人的小班规模，确保每位学生的薄弱点都能被关注到。个人任务制度让每个人的练习有针对性，不是一刀切的大班教学。</div>
+        <div class="method-desc">上限12人的小班规模，确保每位学生的薄弱点都能被关注到。个人任务制度让每个人的练习有针对性，不是一刀切的大班教学。</div>
         <div class="method-tags">
-          <span class="method-tag">≤8人小班</span>
+          <span class="method-tag">≤12人小班</span>
           <span class="method-tag">个人任务</span>
           <span class="method-tag">差异化辅导</span>
         </div>
@@ -711,23 +713,13 @@ footer {
 
 <!-- ── 联系 ── -->
 <section class="section" id="contact">
-  <div class="contact-card">
-    <div>
-      <div class="contact-title">想让孩子加入？</div>
-      <div class="contact-desc">
-        目前开设初中英语小班，每班不超过8人。<br>
-        如有意向，请添加微信了解详情，我们会根据孩子的具体情况给出最合适的建议。
-      </div>
-      <div class="wechat-id" onclick="copyWechat()" title="点击复制微信号">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        WeChat：JiahaoLee6666
-      </div>
-      <div class="copy-hint" id="copy-hint">点击微信号即可复制</div>
+  <div style="display:flex;flex-direction:column;align-items:center;padding:48px 0 32px;gap:16px">
+    <div style="font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--mid)">联系 John</div>
+    <div onclick="copyWechat()" title="点击复制" style="display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid rgba(201,169,110,.25);border-radius:14px;padding:14px 24px;cursor:pointer;transition:border-color .2s" onmouseover="this.style.borderColor='rgba(201,169,110,.5)'" onmouseout="this.style.borderColor='rgba(201,169,110,.25)'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A96E" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span style="font-size:15px;font-weight:500;color:var(--gold);letter-spacing:.04em">JiahaoLee6666</span>
     </div>
-    <div style="text-align:center">
-      <div style="font-size:64px;line-height:1;margin-bottom:10px">💬</div>
-      <div style="font-size:12px;color:var(--mid);line-height:1.6">添加时请备注<br>John Class 咨询</div>
-    </div>
+    <div style="font-size:12px;color:var(--mid)" id="copy-hint">点击复制微信号</div>
   </div>
 </section>
 
