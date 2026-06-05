@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>John Class · 英语学习</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Serif+SC:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream: #F7F3EE;
+  --ink:   #1A1814;
+  --ink2:  #3D3A35;
+  --mid:   #8A8479;
+  --rule:  #E0D9D0;
+  --left-bg:  #1A1814;
+  --left-fg:  #F7F3EE;
+  --right-bg: #F7F3EE;
+  --right-fg: #1A1814;
+  --accent-l: #C9A96E;  /* gold on dark */
+  --accent-r: #3B5BDB;  /* blue on light */
+  --serif: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
+  --sans:  'DM Sans', -apple-system, sans-serif;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── SPLIT LAYOUT ─────────────────────────────────────── */
+.split {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+}
+
+.panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 48px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: flex .65s cubic-bezier(.77,0,.175,1);
+  text-decoration: none;
+}
+.panel:focus-visible { outline: 3px solid var(--accent-l); outline-offset: -3px; }
+
+/* center divider line */
+.split::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 10%;
+  height: 80%;
+  width: 1px;
+  background: rgba(255,255,255,.18);
+  pointer-events: none;
+  z-index: 10;
+  transition: opacity .4s;
+}
+.split:hover::after { opacity: 0; }
+
+/* ── LEFT PANEL (dark) ────────────────────────────────── */
+.panel-left {
+  background: var(--left-bg);
+  color: var(--left-fg);
+}
+
+/* subtle noise texture */
+.panel-left::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: .6;
+  pointer-events: none;
+}
+
+/* geometric accent circles */
+.panel-left .geo {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(201,169,110,.12);
+  pointer-events: none;
+}
+.geo-1 { width: 420px; height: 420px; top: -120px; right: -140px; }
+.geo-2 { width: 240px; height: 240px; bottom: 40px; left: -80px; border-color: rgba(201,169,110,.07); }
+
+/* ── RIGHT PANEL (light) ──────────────────────────────── */
+.panel-right {
+  background: var(--right-bg);
+  color: var(--right-fg);
+}
+
+.panel-right::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 30%, rgba(59,91,219,.04) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.panel-right .geo {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(59,91,219,.08);
+  pointer-events: none;
+}
+.geo-r1 { width: 380px; height: 380px; bottom: -100px; left: -100px; }
+.geo-r2 { width: 200px; height: 200px; top: 30px; right: -60px; border-color: rgba(59,91,219,.05); }
+
+/* ── HOVER EXPAND ─────────────────────────────────────── */
+.panel:hover { flex: 1.22; }
+.panel:hover .panel-arrow { transform: translateX(6px); opacity: 1; }
+.panel:hover .tag-line { opacity: 1; transform: translateY(0); }
+.panel:hover .sub-items { opacity: 1; transform: translateY(0); }
+
+/* ── PANEL CONTENT ────────────────────────────────────── */
+.panel-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 340px;
+  width: 100%;
+}
+
+.panel-eyebrow {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.panel-left .panel-eyebrow { color: var(--accent-l); }
+.panel-right .panel-eyebrow { color: var(--accent-r); }
+
+.eyebrow-line {
+  display: inline-block;
+  height: 1px;
+  width: 32px;
+}
+.panel-left .eyebrow-line { background: var(--accent-l); }
+.panel-right .eyebrow-line { background: var(--accent-r); }
+
+.panel-title {
+  font-family: var(--serif);
+  font-size: clamp(32px, 3.2vw, 48px);
+  font-weight: 400;
+  line-height: 1.18;
+  margin-bottom: 10px;
+  letter-spacing: -.3px;
+}
+.panel-left .panel-title { color: var(--left-fg); }
+.panel-right .panel-title { color: var(--right-fg); }
+
+.panel-title em {
+  font-style: italic;
+  display: block;
+}
+.panel-left .panel-title em { color: var(--accent-l); }
+.panel-right .panel-title em { color: var(--accent-r); }
+
+.tag-line {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.7;
+  margin-bottom: 32px;
+  opacity: .72;
+  transition: opacity .4s .1s, transform .4s .1s;
+}
+.panel-left .tag-line { color: rgba(247,243,238,.72); }
+.panel-right .tag-line { color: var(--ink2); }
+
+/* sub items — the feature list */
+.sub-items {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-bottom: 36px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .4s .15s, transform .4s .15s;
+}
+.sub-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 400;
+}
+.panel-left .sub-item { color: rgba(247,243,238,.82); }
+.panel-right .sub-item { color: var(--ink2); }
+
+.sub-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.panel-left .sub-dot { background: var(--accent-l); }
+.panel-right .sub-dot { background: var(--accent-r); }
+
+/* CTA */
+.panel-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .04em;
+  padding: 12px 24px;
+  border-radius: 40px;
+  transition: gap .2s, transform .2s;
+}
+.panel-left .panel-cta {
+  background: var(--accent-l);
+  color: var(--left-bg);
+}
+.panel-right .panel-cta {
+  background: var(--accent-r);
+  color: #fff;
+}
+.panel:hover .panel-cta { gap: 14px; transform: translateY(-1px); }
+
+.panel-arrow {
+  transition: transform .25s, opacity .25s;
+  opacity: .7;
+}
+
+/* ── CENTER BADGE ─────────────────────────────────────── */
+.center-badge {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  background: var(--cream);
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 24px rgba(0,0,0,.12);
+  transition: transform .3s, box-shadow .3s;
+  pointer-events: none;
+}
+.split:hover .center-badge {
+  transform: translate(-50%,-50%) scale(.88);
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+}
+.center-badge-j {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+.center-badge-c {
+  font-family: var(--sans);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-top: 2px;
+}
+
+/* ── BOTTOM TAGLINE ───────────────────────────────────── */
+.bottom-line {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mid);
+  z-index: 20;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ── MOBILE ───────────────────────────────────────────── */
+@media (max-width: 680px) {
+  html, body { overflow: auto; }
+  .split {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+  .panel {
+    flex: none;
+    min-height: 50vh;
+    padding: 52px 36px;
+    transition: none;
+  }
+  .panel:hover { flex: none; }
+  .split::after { display: none; }
+  .center-badge {
+    top: 50vh;
+    transform: translate(-50%,-50%);
+    width: 52px;
+    height: 52px;
+  }
+  .center-badge-j { font-size: 18px; }
+  .center-badge-c { font-size: 7px; }
+  .split:hover .center-badge { transform: translate(-50%,-50%) scale(1); }
+  .sub-items { opacity: 1; transform: none; }
+  .tag-line { opacity: .72; transform: none; }
+  .bottom-line { display: none; }
+  .geo-1, .geo-2, .geo-r1, .geo-r2 { display: none; }
+}
+
+/* ── PAGE TRANSITIONS ─────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--ink);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .45s cubic-bezier(.4,0,.2,1);
+}
+.overlay.show { opacity: 1; pointer-events: all; }
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay"></div>
+
+<main class="split" role="main">
+
+  <!-- ── LEFT: SELF-STUDY ──────────────────────────────── -->
+  <a class="panel panel-left" href="study.html" onclick="transition(event, 'study.html')" aria-label="自我提升 — 英语学习工具">
+    <div class="geo geo-1"></div>
+    <div class="geo geo-2"></div>
+
+    <div class="panel-inner">
+      <div class="panel-eyebrow">
+        <span class="eyebrow-line"></span>
+        自我提升
+      </div>
+
+      <h2 class="panel-title">
+        掌握英语，<em>从这里开始。</em>
+      </h2>
+
+      <p class="tag-line">系统化学习工具，词汇、语法、阅读一站覆盖，按自己的节奏进步。</p>
+
+      <div class="sub-items" aria-hidden="true">
+        <div class="sub-item"><span class="sub-dot"></span>词汇精练 · 分级记忆系统</div>
+        <div class="sub-item"><span class="sub-dot"></span>语法手册 · 中考核心考点</div>
+        <div class="sub-item"><span class="sub-dot"></span>阅读训练 · 三步定位方法</div>
+        <div class="sub-item"><span class="sub-dot"></span>写作模板 · 高分句式积累</div>
+        <div class="sub-item"><span class="sub-dot"></span>期末备考 · 真题精讲资料</div>
+      </div>
+
+      <div class="panel-cta">
+        开始学习
+        <svg class="panel-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <!-- ── CENTER BADGE ──────────────────────────────────── -->
+  <div class="center-badge" aria-hidden="true">
+    <div class="center-badge-j">J</div>
+    <div class="center-badge-c">Class</div>
+  </div>
+
+  <!-- ── RIGHT: TEACHER ────────────────────────────────── -->
+  <a class="panel panel-right" href="teacher.html" onclick="transition(event, 'teacher.html')" aria-label="需要一点帮助 — 了解John老师">
+    <div class="geo geo-r1"></div>
+    <div class="geo geo-r2"></div>
+
+    <div class="panel-inner">
+      <div class="panel-eyebrow">
+        <span class="eyebrow-line"></span>
+        需要一点帮助
+      </div>
+
+      <h2 class="panel-title">
+        让专业的人，<em>助你一程。</em>
+      </h2>
+
+      <p class="tag-line">量身定制的教学方案，从薄弱点出发，看得见的进步。</p>
+
+      <div class="sub-items" aria-hidden="true">
+        <div class="sub-item"><span class="sub-dot"></span>初中英语 · 系统专项提升</div>
+        <div class="sub-item"><span class="sub-dot"></span>期末备考 · 精准查漏补缺</div>
+        <div class="sub-item"><span class="sub-dot"></span>小班授课 · 8人以内精讲</div>
+        <div class="sub-item"><span class="sub-dot"></span>每课反馈 · 家长实时了解</div>
+        <div class="sub-item"><span class="sub-dot"></span>方法论先行 · 授人以渔</div>
+      </div>
+
+      <div class="panel-cta">
+        了解详情
+        <svg class="panel-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+  </a>
+
+  <div class="bottom-line" aria-hidden="true">John Class · 长沙</div>
+</main>
+
+<script>
+function transition(e, href) {
+  e.preventDefault();
+  const ov = document.getElementById('overlay');
+  ov.classList.add('show');
+  setTimeout(() => { window.location.href = href; }, 420);
+}
+</script>
+</body>
+</html>

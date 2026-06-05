@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自我提升 · John Class</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #F7F3EE;
+  --ink: #1A1814;
+  --ink2: #3D3A35;
+  --mid: #8A8479;
+  --rule: #E0D9D0;
+  --white: #FFFFFF;
+  --gold: #C9A96E;
+  --blue: #3B5BDB;
+  --green: #2D8653;
+  --orange: #D4602A;
+  --purple: #6B48C8;
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'DM Sans', -apple-system, sans-serif;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── NAV ─────────────────────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  background: rgba(247,243,238,.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  z-index: 100;
+}
+.nav-logo {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--ink);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-logo span { color: var(--gold); }
+.nav-back {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mid);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color .2s;
+}
+.nav-back:hover { color: var(--ink); }
+.nav-tag {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mid);
+  background: rgba(201,169,110,.12);
+  border: 1px solid rgba(201,169,110,.25);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* ── HERO ─────────────────────────────────── */
+.hero {
+  padding: 120px 48px 72px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.hero-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 32px;
+  height: 1px;
+  background: var(--gold);
+}
+.hero-title {
+  font-family: var(--serif);
+  font-size: clamp(36px, 4.5vw, 64px);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -.5px;
+  max-width: 700px;
+  margin-bottom: 20px;
+}
+.hero-title em { font-style: italic; color: var(--gold); }
+.hero-sub {
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--mid);
+  max-width: 520px;
+  line-height: 1.75;
+}
+
+/* ── GRID ─────────────────────────────────── */
+.grid-section {
+  padding: 0 48px 80px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.section-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.tool-card {
+  background: var(--white);
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  padding: 28px 28px 24px;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: transform .22s, box-shadow .22s, border-color .22s;
+  position: relative;
+  overflow: hidden;
+}
+.tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 16px 16px 0 0;
+  opacity: 0;
+  transition: opacity .22s;
+}
+.tool-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(26,24,20,.08);
+  border-color: transparent;
+}
+.tool-card:hover::before { opacity: 1; }
+
+/* color themes */
+.card-gold::before  { background: var(--gold); }
+.card-blue::before  { background: var(--blue); }
+.card-green::before { background: var(--green); }
+.card-orange::before{ background: var(--orange); }
+.card-purple::before{ background: var(--purple); }
+
+.card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+.icon-gold   { background: rgba(201,169,110,.12); }
+.icon-blue   { background: rgba(59,91,219,.10); }
+.icon-green  { background: rgba(45,134,83,.10); }
+.icon-orange { background: rgba(212,96,42,.10); }
+.icon-purple { background: rgba(107,72,200,.10); }
+
+.card-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.label-gold   { color: var(--gold); }
+.label-blue   { color: var(--blue); }
+.label-green  { color: var(--green); }
+.label-orange { color: var(--orange); }
+.label-purple { color: var(--purple); }
+
+.card-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 10px;
+  line-height: 1.25;
+}
+.card-desc {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--mid);
+  line-height: 1.7;
+  flex: 1;
+  margin-bottom: 20px;
+}
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.card-tag {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: var(--bg);
+  color: var(--mid);
+}
+.card-arrow {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  opacity: 0;
+  transform: translate(-4px, 4px);
+  transition: opacity .2s, transform .2s;
+  color: var(--mid);
+}
+.tool-card:hover .card-arrow {
+  opacity: 1;
+  transform: translate(0,0);
+}
+
+/* ── COMING SOON ──────────────────────────── */
+.tool-card.coming {
+  opacity: .55;
+  cursor: default;
+}
+.tool-card.coming:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--rule);
+}
+.coming-badge {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  background: var(--bg);
+  color: var(--mid);
+  border: 1px solid var(--rule);
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+/* ── FOOTER ───────────────────────────────── */
+footer {
+  border-top: 1px solid var(--rule);
+  padding: 24px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.footer-text { font-size: 12px; color: var(--mid); }
+.footer-logo { font-family: var(--serif); font-size: 14px; color: var(--ink); }
+.footer-logo span { color: var(--gold); }
+
+@media (max-width: 680px) {
+  nav { padding: 0 20px; }
+  .hero { padding: 88px 24px 48px; }
+  .grid-section { padding: 0 24px 60px; }
+  footer { padding: 20px 24px; flex-direction: column; gap: 8px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">John <span>Class</span></a>
+  <span class="nav-tag">自我提升</span>
+  <a class="nav-back" href="index.html">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    返回首页
+  </a>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow">英语学习工具库</div>
+  <h1 class="hero-title">系统学习，<em>看得见的进步。</em></h1>
+  <p class="hero-sub">从词汇到写作，每一个模块都有方法、有练习、有反馈。按自己的节奏，把基础打牢。</p>
+</section>
+
+<div class="grid-section">
+  <div class="section-label">核心学习模块</div>
+  <div class="tool-grid">
+
+    <!-- 词汇 -->
+    <a class="tool-card card-gold" href="vocab.html">
+      <div class="card-icon icon-gold">📚</div>
+      <div class="card-label label-gold">词汇</div>
+      <div class="card-title">词汇精练系统</div>
+      <div class="card-desc">按单元分组的核心词汇，英文释义 + 中文释义 + 例句，配合记忆曲线复习。</div>
+      <div class="card-tags">
+        <span class="card-tag">初二下</span>
+        <span class="card-tag">单元词汇</span>
+        <span class="card-tag">高频词</span>
+      </div>
+      <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+
+    <!-- 语法 -->
+    <a class="tool-card card-blue" href="grammar.html">
+      <div class="card-icon icon-blue">📐</div>
+      <div class="card-label label-blue">语法</div>
+      <div class="card-title">语法填空手册</div>
+      <div class="card-desc">中考十大语法考点精讲，每个考点配秒杀口诀 + 例题 + 易错提醒，一页一考点。</div>
+      <div class="card-tags">
+        <span class="card-tag">时态</span>
+        <span class="card-tag">非谓语</span>
+        <span class="card-tag">词性转换</span>
+      </div>
+      <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+
+    <!-- 阅读 -->
+    <a class="tool-card card-green" href="reading.html">
+      <div class="card-icon icon-green">🔍</div>
+      <div class="card-label label-green">阅读</div>
+      <div class="card-title">阅读理解方法论</div>
+      <div class="card-desc">三步定位排除法 + 六大题型策略，把阅读题从"靠感觉"变成"有方法可循"。</div>
+      <div class="card-tags">
+        <span class="card-tag">细节题</span>
+        <span class="card-tag">推断题</span>
+        <span class="card-tag">主旨题</span>
+      </div>
+      <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+
+    <!-- 写作 -->
+    <a class="tool-card card-orange" href="writing.html">
+      <div class="card-icon icon-orange">✍️</div>
+      <div class="card-label label-orange">写作</div>
+      <div class="card-title">写作框架与句型</div>
+      <div class="card-desc">说明文、记叙文、日记体三大框架，高分句式积累，评分维度对照表。</div>
+      <div class="card-tags">
+        <span class="card-tag">三段框架</span>
+        <span class="card-tag">过渡词</span>
+        <span class="card-tag">高分句型</span>
+      </div>
+      <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+
+    <!-- 期末备考 -->
+    <a class="tool-card card-purple" href="exam.html">
+      <div class="card-icon icon-purple">🎯</div>
+      <div class="card-label label-purple">备考</div>
+      <div class="card-title">期末真题精讲</div>
+      <div class="card-desc">长沙各区历年期末真题讲解，答案精析 + 方法论对标，每题都有解题逻辑。</div>
+      <div class="card-tags">
+        <span class="card-tag">雨花区</span>
+        <span class="card-tag">长郡双语</span>
+        <span class="card-tag">中雅培粹</span>
+      </div>
+      <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+
+    <!-- 五选四 coming soon -->
+    <div class="tool-card coming card-blue">
+      <div class="coming-badge">即将上线</div>
+      <div class="card-icon icon-blue">🔗</div>
+      <div class="card-label label-blue">专项</div>
+      <div class="card-title">五选四专项训练</div>
+      <div class="card-desc">三步走策略 + 三大对应原则，逻辑衔接从此不失分。</div>
+      <div class="card-tags">
+        <span class="card-tag">代词指向</span>
+        <span class="card-tag">段首宏观</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="grid-section" style="padding-top:0">
+  <div class="section-label">下载资料</div>
+  <div class="tool-grid">
+
+    <a class="tool-card card-gold" href="downloads/四年级英语下册期末复习资料.docx" download>
+      <div class="card-icon icon-gold">📄</div>
+      <div class="card-label label-gold">下载</div>
+      <div class="card-title">四年级期末复习宝典</div>
+      <div class="card-desc">外研版四年级下册 Unit 1–6，双面A4打印，知识点归纳 + 模拟练习，对标雨花区真题。</div>
+      <div class="card-tags">
+        <span class="card-tag">四年级</span>
+        <span class="card-tag">Word文档</span>
+        <span class="card-tag">可打印</span>
+      </div>
+      <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+    </a>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">John <span>Class</span></div>
+  <div class="footer-text">长沙 · 初中英语专项 · 方法论驱动</div>
+</footer>
+
+</body>
+</html>
