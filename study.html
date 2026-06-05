@@ -3,438 +3,167 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>自我提升 · John Class</title>
+<title>英语学习提升 · John Class</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Caveat:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg: #F7F3EE;
-  --ink: #1A1814;
-  --ink2: #3D3A35;
-  --mid: #8A8479;
-  --rule: #E0D9D0;
-  --white: #FFFFFF;
-  --gold: #C9A96E;
-  --blue: #3B5BDB;
-  --green: #2D8653;
-  --orange: #D4602A;
-  --purple: #6B48C8;
-  --serif: 'Playfair Display', Georgia, serif;
-  --sans: 'DM Sans', -apple-system, sans-serif;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FDF8F0;--bg2:#F5EED8;--ink:#2A1E08;--ink2:#4A3A1A;
+  --mid:#8A7050;--rule:#E8DBBD;--white:#FFFFFF;
+  --gold:#C9A96E;--warm:#D4882A;--green:#4A7C3F;
+  --serif:'Playfair Display',Georgia,serif;
+  --script:'Caveat',cursive;
+  --sans:'DM Sans',-apple-system,sans-serif;
 }
-html { scroll-behavior: smooth; }
-body {
-  font-family: var(--sans);
-  background: var(--bg);
-  color: var(--ink);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ── NAV ─────────────────────────────────── */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 56px;
-  background: rgba(247,243,238,.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--rule);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 32px;
-  z-index: 100;
-}
-.nav-logo {
-  font-family: var(--serif);
-  font-size: 18px;
-  color: var(--ink);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.nav-logo span { color: var(--gold); }
-.nav-back {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--mid);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: color .2s;
-}
-.nav-back:hover { color: var(--ink); }
-.nav-tag {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--mid);
-  background: rgba(201,169,110,.12);
-  border: 1px solid rgba(201,169,110,.25);
-  padding: 4px 12px;
-  border-radius: 20px;
-}
-
-/* ── HERO ─────────────────────────────────── */
-.hero {
-  padding: 120px 48px 72px;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-.hero-eyebrow {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--gold);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.hero-eyebrow::before {
-  content: '';
-  display: inline-block;
-  width: 32px;
-  height: 1px;
-  background: var(--gold);
-}
-.hero-title {
-  font-family: var(--serif);
-  font-size: clamp(36px, 4.5vw, 64px);
-  font-weight: 400;
-  line-height: 1.12;
-  letter-spacing: -.5px;
-  max-width: 700px;
-  margin-bottom: 20px;
-}
-.hero-title em { font-style: italic; color: var(--gold); }
-.hero-sub {
-  font-size: 16px;
-  font-weight: 300;
-  color: var(--mid);
-  max-width: 520px;
-  line-height: 1.75;
-}
-
-/* ── GRID ─────────────────────────────────── */
-.grid-section {
-  padding: 0 48px 80px;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-.section-label {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--mid);
-  margin-bottom: 24px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--rule);
-}
-
-.tool-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-}
-
-.tool-card {
-  background: var(--white);
-  border: 1px solid var(--rule);
-  border-radius: 16px;
-  padding: 28px 28px 24px;
-  cursor: pointer;
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  transition: transform .22s, box-shadow .22s, border-color .22s;
-  position: relative;
-  overflow: hidden;
-}
-.tool-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  border-radius: 16px 16px 0 0;
-  opacity: 0;
-  transition: opacity .22s;
-}
-.tool-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(26,24,20,.08);
-  border-color: transparent;
-}
-.tool-card:hover::before { opacity: 1; }
-
-/* color themes */
-.card-gold::before  { background: var(--gold); }
-.card-blue::before  { background: var(--blue); }
-.card-green::before { background: var(--green); }
-.card-orange::before{ background: var(--orange); }
-.card-purple::before{ background: var(--purple); }
-
-.card-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-  font-size: 20px;
-}
-.icon-gold   { background: rgba(201,169,110,.12); }
-.icon-blue   { background: rgba(59,91,219,.10); }
-.icon-green  { background: rgba(45,134,83,.10); }
-.icon-orange { background: rgba(212,96,42,.10); }
-.icon-purple { background: rgba(107,72,200,.10); }
-
-.card-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-.label-gold   { color: var(--gold); }
-.label-blue   { color: var(--blue); }
-.label-green  { color: var(--green); }
-.label-orange { color: var(--orange); }
-.label-purple { color: var(--purple); }
-
-.card-title {
-  font-family: var(--serif);
-  font-size: 20px;
-  font-weight: 400;
-  color: var(--ink);
-  margin-bottom: 10px;
-  line-height: 1.25;
-}
-.card-desc {
-  font-size: 13px;
-  font-weight: 300;
-  color: var(--mid);
-  line-height: 1.7;
-  flex: 1;
-  margin-bottom: 20px;
-}
-.card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.card-tag {
-  font-size: 11px;
-  font-weight: 500;
-  padding: 3px 9px;
-  border-radius: 20px;
-  background: var(--bg);
-  color: var(--mid);
-}
-.card-arrow {
-  position: absolute;
-  bottom: 24px;
-  right: 24px;
-  opacity: 0;
-  transform: translate(-4px, 4px);
-  transition: opacity .2s, transform .2s;
-  color: var(--mid);
-}
-.tool-card:hover .card-arrow {
-  opacity: 1;
-  transform: translate(0,0);
-}
-
-/* ── COMING SOON ──────────────────────────── */
-.tool-card.coming {
-  opacity: .55;
-  cursor: default;
-}
-.tool-card.coming:hover {
-  transform: none;
-  box-shadow: none;
-  border-color: var(--rule);
-}
-.coming-badge {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  background: var(--bg);
-  color: var(--mid);
-  border: 1px solid var(--rule);
-  padding: 3px 8px;
-  border-radius: 20px;
-}
-
-/* ── FOOTER ───────────────────────────────── */
-footer {
-  border-top: 1px solid var(--rule);
-  padding: 24px 48px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-.footer-text { font-size: 12px; color: var(--mid); }
-.footer-logo { font-family: var(--serif); font-size: 14px; color: var(--ink); }
-.footer-logo span { color: var(--gold); }
-
-@media (max-width: 680px) {
-  nav { padding: 0 20px; }
-  .hero { padding: 88px 24px 48px; }
-  .grid-section { padding: 0 24px 60px; }
-  footer { padding: 20px 24px; flex-direction: column; gap: 8px; text-align: center; }
-}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+nav{position:sticky;top:0;height:54px;background:rgba(253,248,240,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:100}
+.nav-brand{font-family:var(--script);font-size:20px;color:var(--ink);text-decoration:none}
+.nav-brand span{color:var(--gold)}
+.nav-back{font-size:13px;color:var(--mid);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .2s}
+.nav-back:hover{color:var(--ink)}
+.hero{padding:52px 28px 36px;max-width:680px;margin:0 auto;text-align:center}
+.hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.hero-title{font-family:var(--serif);font-size:clamp(30px,5vw,44px);font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:12px}
+.hero-title em{font-style:italic;color:var(--warm)}
+.hero-sub{font-size:14px;font-weight:300;color:var(--mid);line-height:1.7;max-width:400px;margin:0 auto}
+.section{max-width:680px;margin:0 auto;padding:0 28px 64px}
+.sec-hdr{display:flex;align-items:flex-end;gap:12px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--rule)}
+.sec-icon{font-size:28px;line-height:1}
+.sec-title{font-family:var(--serif);font-size:24px;font-weight:400;color:var(--ink)}
+.sec-title em{font-style:italic;color:var(--warm)}
+.sec-badge{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:20px;margin-bottom:3px}
+.badge-live{background:#E8F5E0;color:#3A7A20;border:1px solid #B8DCA0}
+.badge-soon{background:var(--bg2);color:var(--mid);border:1px solid var(--rule)}
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.tool-grid{grid-template-columns:1fr}}
+.tool-card{background:var(--white);border:1px solid var(--rule);border-radius:18px;padding:22px 20px;text-decoration:none;color:inherit;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s}
+.tool-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;opacity:0;transition:opacity .2s}
+.tool-card:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(42,30,8,.08);border-color:transparent}
+.tool-card:hover::before{opacity:1}
+.tool-card.disabled{opacity:.55;cursor:default;pointer-events:none}
+.tc-gold::before{background:var(--gold)}
+.tc-blue::before{background:#4A7CB8}
+.tc-green::before{background:var(--green)}
+.tc-orange::before{background:var(--warm)}
+.tc-icon{font-size:28px;margin-bottom:14px;display:block}
+.tc-kicker{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.kicker-gold{color:var(--gold)}.kicker-blue{color:#4A7CB8}.kicker-green{color:var(--green)}.kicker-orange{color:var(--warm)}
+.tc-title{font-family:var(--serif);font-size:18px;font-weight:400;color:var(--ink);margin-bottom:8px;line-height:1.25}
+.tc-desc{font-size:12.5px;font-weight:300;color:var(--mid);line-height:1.65;flex:1;margin-bottom:14px}
+.tc-tags{display:flex;flex-wrap:wrap;gap:5px}
+.tc-tag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--bg);color:var(--mid);border:1px solid var(--rule)}
+.tc-arrow{position:absolute;bottom:18px;right:18px;opacity:0;transform:translate(-3px,3px);transition:opacity .2s,transform .2s;color:var(--mid)}
+.tool-card:hover .tc-arrow{opacity:1;transform:translate(0,0)}
+.soon-badge{position:absolute;top:14px;right:14px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--bg2);color:var(--mid);border:1px solid var(--rule);padding:3px 8px;border-radius:20px}
+.live-badge{position:absolute;top:14px;right:14px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:#E8F5E0;color:#3A7A20;border:1px solid #B8DCA0;padding:3px 8px;border-radius:20px}
+.wulin-card{background:var(--ink);border-radius:20px;padding:30px 28px;position:relative;overflow:hidden;text-align:center}
+.wulin-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 50%,rgba(201,169,110,.12) 0%,transparent 60%),radial-gradient(circle at 80% 30%,rgba(201,169,110,.08) 0%,transparent 50%)}
+.wulin-icon{font-size:48px;margin-bottom:14px;position:relative;z-index:1;display:block}
+.wulin-title{font-family:var(--script);font-size:32px;color:var(--gold);margin-bottom:8px;position:relative;z-index:1}
+.wulin-sub{font-size:13px;font-weight:300;color:rgba(253,248,240,.6);line-height:1.6;margin-bottom:20px;position:relative;z-index:1}
+.wulin-coming{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:rgba(201,169,110,.7);background:rgba(201,169,110,.08);border:1px solid rgba(201,169,110,.2);padding:8px 18px;border-radius:20px;position:relative;z-index:1}
+.wulin-items{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px;position:relative;z-index:1}
+.wulin-item{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 14px;text-align:left}
+.wi-title{font-size:13px;font-weight:500;color:rgba(253,248,240,.7);margin-bottom:2px}
+.wi-desc{font-size:11px;color:rgba(253,248,240,.35)}
+footer{max-width:680px;margin:0 auto;padding:20px 28px 40px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--rule)}
+.footer-brand{font-family:var(--script);font-size:16px;color:var(--ink)}
+.footer-brand span{color:var(--gold)}
+.footer-text{font-size:11px;color:var(--mid)}
+@media(max-width:480px){nav{padding:0 18px}.hero{padding:40px 18px 28px}.section{padding:0 18px 52px}footer{padding:16px 18px 32px;flex-direction:column;gap:6px;text-align:center}}
+.section{animation:rise .55s cubic-bezier(.22,1,.36,1) both}
+.section:nth-child(3){animation-delay:.1s}
+.section:nth-child(4){animation-delay:.2s}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
-
 <nav>
-  <a class="nav-logo" href="index.html">John <span>Class</span></a>
-  <span class="nav-tag">自我提升</span>
+  <a class="nav-brand" href="index.html">John <span>Class</span></a>
   <a class="nav-back" href="index.html">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-    返回首页
+    返回
   </a>
 </nav>
 
-<section class="hero">
-  <div class="hero-eyebrow">英语学习工具库</div>
-  <h1 class="hero-title">系统学习，<em>看得见的进步。</em></h1>
-  <p class="hero-sub">从词汇到写作，每一个模块都有方法、有练习、有反馈。按自己的节奏，把基础打牢。</p>
+<div class="hero">
+  <div class="hero-eyebrow">英语学习提升</div>
+  <h1 class="hero-title">工具在手，<em>进步看得见。</em></h1>
+  <p class="hero-sub">选择你需要的模块，系统学习，一步一步来。</p>
+</div>
+
+<section class="section">
+  <div class="sec-hdr">
+    <span class="sec-icon">🛠️</span>
+    <div><div class="sec-title">学习<em>工具</em></div></div>
+    <span class="sec-badge badge-live">部分上线</span>
+  </div>
+  <div class="tool-grid">
+    <a class="tool-card tc-gold" href="vocab.html">
+      <span class="live-badge">已上线</span>
+      <span class="tc-icon">📚</span>
+      <div class="tc-kicker kicker-gold">词汇</div>
+      <div class="tc-title">英语训练之路</div>
+      <div class="tc-desc">分级闯关，错词本，连击奖励，成绩卡一键生成。</div>
+      <div class="tc-tags"><span class="tc-tag">闯关模式</span><span class="tc-tag">错词复习</span><span class="tc-tag">等级系统</span></div>
+      <svg class="tc-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+    <div class="tool-card tc-blue disabled">
+      <span class="soon-badge">即将上线</span>
+      <span class="tc-icon">📐</span>
+      <div class="tc-kicker kicker-blue">语法</div>
+      <div class="tc-title">语法填空手册</div>
+      <div class="tc-desc">十大考点秒杀口诀，每个空格都有逻辑依据。</div>
+      <div class="tc-tags"><span class="tc-tag">时态</span><span class="tc-tag">非谓语</span><span class="tc-tag">词性转换</span></div>
+    </div>
+    <div class="tool-card tc-green disabled">
+      <span class="soon-badge">即将上线</span>
+      <span class="tc-icon">🔍</span>
+      <div class="tc-kicker kicker-green">阅读</div>
+      <div class="tc-title">阅读理解方法论</div>
+      <div class="tc-desc">三步定位排除法，六大题型全覆盖，从靠感觉到有方法。</div>
+      <div class="tc-tags"><span class="tc-tag">细节题</span><span class="tc-tag">推断题</span><span class="tc-tag">主旨题</span></div>
+    </div>
+    <div class="tool-card tc-orange disabled">
+      <span class="soon-badge">即将上线</span>
+      <span class="tc-icon">✍️</span>
+      <div class="tc-kicker kicker-orange">写作</div>
+      <div class="tc-title">写作框架与句型</div>
+      <div class="tc-desc">三段式框架，四维度评分，高分句型积累与运用。</div>
+      <div class="tc-tags"><span class="tc-tag">三段框架</span><span class="tc-tag">过渡词</span><span class="tc-tag">高分句型</span></div>
+    </div>
+  </div>
 </section>
 
-<div class="grid-section">
-  <div class="section-label">核心学习模块</div>
-  <div class="tool-grid">
-
-    <!-- 词汇 -->
-    <a class="tool-card card-gold" href="vocab.html">
-      <div style="position:absolute;top:18px;right:18px;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:#FEF3C7;color:#D97706;border:1px solid #FDE68A;padding:3px 8px;border-radius:20px;">可直接使用</div>
-      <div class="card-icon icon-gold">📚</div>
-      <div class="card-label label-gold">词汇</div>
-      <div class="card-title">英语训练之路</div>
-      <div class="card-desc">分级闯关词汇系统，错词本、连击奖励、成绩卡一键生成，闯关式记忆效果更持久。</div>
-      <div class="card-tags">
-        <span class="card-tag">闯关模式</span>
-        <span class="card-tag">错词复习</span>
-        <span class="card-tag">成绩追踪</span>
-      </div>
-      <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-
-    <!-- 语法 -->
-    <a class="tool-card card-blue" href="grammar.html">
-      <div class="card-icon icon-blue">📐</div>
-      <div class="card-label label-blue">语法</div>
-      <div class="card-title">语法填空手册</div>
-      <div class="card-desc">中考十大语法考点精讲，每个考点配秒杀口诀 + 例题 + 易错提醒，一页一考点。</div>
-      <div class="card-tags">
-        <span class="card-tag">时态</span>
-        <span class="card-tag">非谓语</span>
-        <span class="card-tag">词性转换</span>
-      </div>
-      <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-
-    <!-- 阅读 -->
-    <a class="tool-card card-green" href="reading.html">
-      <div class="card-icon icon-green">🔍</div>
-      <div class="card-label label-green">阅读</div>
-      <div class="card-title">阅读理解方法论</div>
-      <div class="card-desc">三步定位排除法 + 六大题型策略，把阅读题从"靠感觉"变成"有方法可循"。</div>
-      <div class="card-tags">
-        <span class="card-tag">细节题</span>
-        <span class="card-tag">推断题</span>
-        <span class="card-tag">主旨题</span>
-      </div>
-      <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-
-    <!-- 写作 -->
-    <a class="tool-card card-orange" href="writing.html">
-      <div class="card-icon icon-orange">✍️</div>
-      <div class="card-label label-orange">写作</div>
-      <div class="card-title">写作框架与句型</div>
-      <div class="card-desc">说明文、记叙文、日记体三大框架，高分句式积累，评分维度对照表。</div>
-      <div class="card-tags">
-        <span class="card-tag">三段框架</span>
-        <span class="card-tag">过渡词</span>
-        <span class="card-tag">高分句型</span>
-      </div>
-      <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-
-    <!-- 期末备考 -->
-    <a class="tool-card card-purple" href="exam.html">
-      <div class="card-icon icon-purple">🎯</div>
-      <div class="card-label label-purple">备考</div>
-      <div class="card-title">期末真题精讲</div>
-      <div class="card-desc">长沙各区历年期末真题讲解，答案精析 + 方法论对标，每题都有解题逻辑。</div>
-      <div class="card-tags">
-        <span class="card-tag">雨花区</span>
-        <span class="card-tag">长郡双语</span>
-        <span class="card-tag">中雅培粹</span>
-      </div>
-      <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-
-    <!-- 五选四 coming soon -->
-    <div class="tool-card coming card-blue">
-      <div class="coming-badge">即将上线</div>
-      <div class="card-icon icon-blue">🔗</div>
-      <div class="card-label label-blue">专项</div>
-      <div class="card-title">五选四专项训练</div>
-      <div class="card-desc">三步走策略 + 三大对应原则，逻辑衔接从此不失分。</div>
-      <div class="card-tags">
-        <span class="card-tag">代词指向</span>
-        <span class="card-tag">段首宏观</span>
-      </div>
+<section class="section">
+  <div class="sec-hdr">
+    <span class="sec-icon">📜</span>
+    <div><div class="sec-title">武林<em>秘籍</em></div></div>
+    <span class="sec-badge badge-soon">待开发</span>
+  </div>
+  <div class="wulin-card">
+    <span class="wulin-icon">🥋</span>
+    <div class="wulin-title">武林秘籍</div>
+    <div class="wulin-sub">精选学习资料，期末真题，备考宝典。<br>John 老师亲自整理，独家内部资料。</div>
+    <div class="wulin-coming">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      正在整理中，敬请期待
     </div>
-
+    <div class="wulin-items">
+      <div class="wulin-item"><div class="wi-title">📄 期末复习宝典</div><div class="wi-desc">各年级精华归纳</div></div>
+      <div class="wulin-item"><div class="wi-title">📝 真题精讲</div><div class="wi-desc">长沙各区历年真题</div></div>
+      <div class="wulin-item"><div class="wi-title">🎯 专项训练集</div><div class="wi-desc">完形、语法、阅读</div></div>
+      <div class="wulin-item"><div class="wi-title">🏆 学神秘籍</div><div class="wi-desc">拉分题型深度解析</div></div>
+    </div>
   </div>
-</div>
-
-<div class="grid-section" style="padding-top:0">
-  <div class="section-label">下载资料</div>
-  <div class="tool-grid">
-
-    <a class="tool-card card-gold" href="downloads/四年级英语下册期末复习资料.docx" download>
-      <div class="card-icon icon-gold">📄</div>
-      <div class="card-label label-gold">下载</div>
-      <div class="card-title">四年级期末复习宝典</div>
-      <div class="card-desc">外研版四年级下册 Unit 1–6，双面A4打印，知识点归纳 + 模拟练习，对标雨花区真题。</div>
-      <div class="card-tags">
-        <span class="card-tag">四年级</span>
-        <span class="card-tag">Word文档</span>
-        <span class="card-tag">可打印</span>
-      </div>
-      <svg class="card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-    </a>
-
-  </div>
-</div>
+</section>
 
 <footer>
-  <div class="footer-logo">John <span>Class</span></div>
-  <div class="footer-text">长沙 · 初中英语专项 · 方法论驱动</div>
+  <div class="footer-brand">John <span>Class</span></div>
+  <div class="footer-text">Growing Skills · Shaping Futures</div>
 </footer>
-
 </body>
 </html>

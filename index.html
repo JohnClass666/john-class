@@ -3,434 +3,518 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>John Class · 英语学习</title>
+<title>John Class</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Serif+SC:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Caveat:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --cream: #F7F3EE;
-  --ink:   #1A1814;
-  --ink2:  #3D3A35;
-  --mid:   #8A8479;
-  --rule:  #E0D9D0;
-  --left-bg:  #1A1814;
-  --left-fg:  #F7F3EE;
-  --right-bg: #F7F3EE;
-  --right-fg: #1A1814;
-  --accent-l: #C9A96E;  /* gold on dark */
-  --accent-r: #3B5BDB;  /* blue on light */
-  --serif: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
-  --sans:  'DM Sans', -apple-system, sans-serif;
+  --sky:    #87CEEB;
+  --gold:   #C9A96E;
+  --cream:  #FDF8F0;
+  --ink:    #2A1E08;
+  --ink2:   #4A3A1A;
+  --mid:    #8A7050;
+  --white:  #FFFFFF;
+  --green:  #4A7C3F;
+  --warm:   #E8A030;
+  --serif:  'Playfair Display', Georgia, serif;
+  --script: 'Caveat', cursive;
+  --sans:   'DM Sans', -apple-system, sans-serif;
 }
 
 html, body {
   height: 100%;
-  overflow: hidden;
   font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-/* ── SPLIT LAYOUT ─────────────────────────────────────── */
-.split {
-  display: flex;
-  height: 100vh;
-  width: 100vw;
+/* ── FULL BLEED CANVAS ─────────────────────────────── */
+.page {
+  min-height: 100vh;
   position: relative;
-}
-
-.panel {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  padding: 60px 48px;
-  cursor: pointer;
-  position: relative;
+  justify-content: flex-start;
   overflow: hidden;
-  transition: flex .65s cubic-bezier(.77,0,.175,1);
-  text-decoration: none;
 }
-.panel:focus-visible { outline: 3px solid var(--accent-l); outline-offset: -3px; }
 
-/* center divider line */
-.split::after {
+/* Layered background — sky gradient + field gradient */
+.page::before {
   content: '';
-  position: absolute;
-  left: 50%;
-  top: 10%;
-  height: 80%;
-  width: 1px;
-  background: rgba(255,255,255,.18);
-  pointer-events: none;
-  z-index: 10;
-  transition: opacity .4s;
-}
-.split:hover::after { opacity: 0; }
-
-/* ── LEFT PANEL (dark) ────────────────────────────────── */
-.panel-left {
-  background: var(--left-bg);
-  color: var(--left-fg);
-}
-
-/* subtle noise texture */
-.panel-left::before {
-  content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  opacity: .6;
-  pointer-events: none;
+  background:
+    /* clouds hint */
+    radial-gradient(ellipse 60% 30% at 25% 15%, rgba(255,255,255,.7) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 20% at 70% 8%, rgba(255,255,255,.5) 0%, transparent 50%),
+    /* sky */
+    linear-gradient(180deg,
+      #6BB8D4 0%,
+      #8ECDE8 18%,
+      #AEE0F0 35%,
+      #D4F0F8 50%,
+      /* horizon glow */
+      #F0E8C8 58%,
+      /* field */
+      #C8DC70 65%,
+      #A0C040 75%,
+      #78A828 88%,
+      #5A8A20 100%
+    );
+  z-index: 0;
 }
 
-/* geometric accent circles */
-.panel-left .geo {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(201,169,110,.12);
-  pointer-events: none;
-}
-.geo-1 { width: 420px; height: 420px; top: -120px; right: -140px; }
-.geo-2 { width: 240px; height: 240px; bottom: 40px; left: -80px; border-color: rgba(201,169,110,.07); }
-
-/* ── RIGHT PANEL (light) ──────────────────────────────── */
-.panel-right {
-  background: var(--right-bg);
-  color: var(--right-fg);
-}
-
-.panel-right::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 70% 30%, rgba(59,91,219,.04) 0%, transparent 65%);
-  pointer-events: none;
-}
-
-.panel-right .geo {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(59,91,219,.08);
-  pointer-events: none;
-}
-.geo-r1 { width: 380px; height: 380px; bottom: -100px; left: -100px; }
-.geo-r2 { width: 200px; height: 200px; top: 30px; right: -60px; border-color: rgba(59,91,219,.05); }
-
-/* ── HOVER EXPAND ─────────────────────────────────────── */
-.panel:hover { flex: 1.22; }
-.panel:hover .panel-arrow { transform: translateX(6px); opacity: 1; }
-.panel:hover .tag-line { opacity: 1; transform: translateY(0); }
-.panel:hover .sub-items { opacity: 1; transform: translateY(0); }
-
-/* ── PANEL CONTENT ────────────────────────────────────── */
-.panel-inner {
-  position: relative;
-  z-index: 2;
-  max-width: 340px;
-  width: 100%;
-}
-
-.panel-eyebrow {
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.panel-left .panel-eyebrow { color: var(--accent-l); }
-.panel-right .panel-eyebrow { color: var(--accent-r); }
-
-.eyebrow-line {
-  display: inline-block;
-  height: 1px;
-  width: 32px;
-}
-.panel-left .eyebrow-line { background: var(--accent-l); }
-.panel-right .eyebrow-line { background: var(--accent-r); }
-
-.panel-title {
-  font-family: var(--serif);
-  font-size: clamp(32px, 3.2vw, 48px);
-  font-weight: 400;
-  line-height: 1.18;
-  margin-bottom: 10px;
-  letter-spacing: -.3px;
-}
-.panel-left .panel-title { color: var(--left-fg); }
-.panel-right .panel-title { color: var(--right-fg); }
-
-.panel-title em {
-  font-style: italic;
-  display: block;
-}
-.panel-left .panel-title em { color: var(--accent-l); }
-.panel-right .panel-title em { color: var(--accent-r); }
-
-.tag-line {
-  font-family: var(--sans);
-  font-size: 14px;
-  font-weight: 300;
-  line-height: 1.7;
-  margin-bottom: 32px;
-  opacity: .72;
-  transition: opacity .4s .1s, transform .4s .1s;
-}
-.panel-left .tag-line { color: rgba(247,243,238,.72); }
-.panel-right .tag-line { color: var(--ink2); }
-
-/* sub items — the feature list */
-.sub-items {
-  display: flex;
-  flex-direction: column;
-  gap: 11px;
-  margin-bottom: 36px;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity .4s .15s, transform .4s .15s;
-}
-.sub-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 400;
-}
-.panel-left .sub-item { color: rgba(247,243,238,.82); }
-.panel-right .sub-item { color: var(--ink2); }
-
-.sub-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.panel-left .sub-dot { background: var(--accent-l); }
-.panel-right .sub-dot { background: var(--accent-r); }
-
-/* CTA */
-.panel-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: .04em;
-  padding: 12px 24px;
-  border-radius: 40px;
-  transition: gap .2s, transform .2s;
-}
-.panel-left .panel-cta {
-  background: var(--accent-l);
-  color: var(--left-bg);
-}
-.panel-right .panel-cta {
-  background: var(--accent-r);
-  color: #fff;
-}
-.panel:hover .panel-cta { gap: 14px; transform: translateY(-1px); }
-
-.panel-arrow {
-  transition: transform .25s, opacity .25s;
-  opacity: .7;
-}
-
-/* ── CENTER BADGE ─────────────────────────────────────── */
-.center-badge {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 20;
-  background: var(--cream);
-  border: 1px solid var(--rule);
-  border-radius: 50%;
-  width: 64px;
-  height: 64px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 24px rgba(0,0,0,.12);
-  transition: transform .3s, box-shadow .3s;
-  pointer-events: none;
-}
-.split:hover .center-badge {
-  transform: translate(-50%,-50%) scale(.88);
-  box-shadow: 0 2px 12px rgba(0,0,0,.08);
-}
-.center-badge-j {
-  font-family: var(--serif);
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--ink);
-  line-height: 1;
-}
-.center-badge-c {
-  font-family: var(--sans);
-  font-size: 8px;
-  font-weight: 500;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--mid);
-  margin-top: 2px;
-}
-
-/* ── BOTTOM TAGLINE ───────────────────────────────────── */
-.bottom-line {
-  position: absolute;
-  bottom: 28px;
+/* Mountain silhouette */
+.mountain {
+  position: fixed;
+  bottom: 32%;
   left: 50%;
   transform: translateX(-50%);
+  width: 120%;
+  height: 300px;
+  z-index: 1;
+  pointer-events: none;
+}
+.mountain svg { width: 100%; height: 100%; }
+
+/* Flower field overlay */
+.flowers {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  height: 38%;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle 4px at 8% 85%, #FF9EC4 0%, transparent 4px),
+    radial-gradient(circle 3px at 12% 70%, #FFE066 0%, transparent 3px),
+    radial-gradient(circle 5px at 18% 90%, #FF9EC4 0%, transparent 5px),
+    radial-gradient(circle 3px at 22% 80%, #FFFFFF 0%, transparent 3px),
+    radial-gradient(circle 4px at 28% 95%, #FFD6E8 0%, transparent 4px),
+    radial-gradient(circle 6px at 35% 88%, #FF9EC4 0%, transparent 6px),
+    radial-gradient(circle 3px at 42% 75%, #FFE066 0%, transparent 3px),
+    radial-gradient(circle 5px at 50% 92%, #FFFFFF 0%, transparent 5px),
+    radial-gradient(circle 4px at 58% 82%, #FF9EC4 0%, transparent 4px),
+    radial-gradient(circle 3px at 65% 70%, #FFD6E8 0%, transparent 3px),
+    radial-gradient(circle 5px at 72% 88%, #FFE066 0%, transparent 5px),
+    radial-gradient(circle 4px at 80% 78%, #FF9EC4 0%, transparent 4px),
+    radial-gradient(circle 6px at 88% 92%, #FFFFFF 0%, transparent 6px),
+    radial-gradient(circle 3px at 94% 82%, #FFD6E8 0%, transparent 3px);
+}
+
+/* Blossom branch top-right */
+.blossom {
+  position: fixed;
+  top: -20px;
+  right: -20px;
+  width: 280px;
+  height: 220px;
+  z-index: 3;
+  pointer-events: none;
+  opacity: .85;
+}
+
+/* Birds */
+.birds {
+  position: fixed;
+  top: 8%;
+  left: 15%;
+  z-index: 3;
+  pointer-events: none;
+}
+.bird {
+  display: inline-block;
+  font-size: 14px;
+  opacity: .7;
+  animation: flutter 4s ease-in-out infinite;
+}
+.bird:nth-child(2) { margin-left: 12px; animation-delay: .5s; font-size: 10px; }
+.bird:nth-child(3) { margin-left: 8px; animation-delay: 1s; font-size: 12px; }
+@keyframes flutter {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-8px) rotate(5deg); }
+}
+
+/* ── CONTENT ───────────────────────────────────────── */
+.content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 520px;
+  padding: 52px 32px 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Top brand */
+.brand {
+  font-family: var(--script);
+  font-size: 22px;
+  color: rgba(255,255,255,.9);
+  letter-spacing: .04em;
+  margin-bottom: 36px;
+  text-shadow: 0 1px 8px rgba(0,0,0,.2);
+  align-self: flex-start;
+}
+
+/* Hero text */
+.hero-block {
+  text-align: center;
+  margin-bottom: 48px;
+  margin-top: 8px;
+}
+.hero-title {
+  font-family: var(--script);
+  font-size: clamp(36px, 9vw, 52px);
+  color: var(--white);
+  line-height: 1.2;
+  letter-spacing: .01em;
+  text-shadow:
+    0 2px 12px rgba(0,0,0,.25),
+    0 0 40px rgba(255,255,255,.3);
+  margin-bottom: 12px;
+}
+.hero-sub {
   font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255,255,255,.82);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 6px rgba(0,0,0,.2);
+}
+
+/* ── MAIN CARD ─────────────────────────────────────── */
+.main-card {
+  width: 100%;
+  background: rgba(255,255,255,.22);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,.45);
+  border-radius: 28px;
+  padding: 28px 28px 24px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  transition: transform .22s, background .22s, box-shadow .22s;
+  box-shadow: 0 8px 32px rgba(0,0,0,.08);
+}
+.main-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255,255,255,.30);
+  box-shadow: 0 16px 48px rgba(0,0,0,.12);
+}
+.main-card:active { transform: scale(.985); }
+
+.main-card-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.7);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.main-card-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 24px; height: 1px;
+  background: rgba(255,255,255,.6);
+}
+.main-card-title {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.2;
+  margin-bottom: 8px;
+  text-shadow: 0 1px 8px rgba(0,0,0,.15);
+}
+.main-card-desc {
+  font-size: 13px;
+  font-weight: 300;
+  color: rgba(255,255,255,.82);
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+.main-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 18px;
+}
+.tag {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.2);
+  color: rgba(255,255,255,.9);
+  border: 1px solid rgba(255,255,255,.3);
+}
+.main-card-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.arrow-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,.9);
+}
+.arrow-icon {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s, transform .2s;
+}
+.main-card:hover .arrow-icon {
+  background: rgba(255,255,255,.4);
+  transform: translateX(3px);
+}
+
+/* Featured card (larger) */
+.main-card.featured {
+  background: rgba(255,255,255,.28);
+  border: 1.5px solid rgba(255,255,255,.55);
+}
+
+/* ── BETTER CALL JOHN ──────────────────────────────── */
+.bcj-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--ink);
+  color: var(--cream);
+  border: none;
+  border-radius: 20px;
+  padding: 18px 22px;
+  cursor: pointer;
+  text-decoration: none;
+  margin-top: 8px;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 6px 24px rgba(42,30,8,.3);
+}
+.bcj-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(42,30,8,.35); }
+.bcj-btn:active { transform: scale(.985); }
+
+.bcj-left {}
+.bcj-title {
+  font-family: var(--script);
+  font-size: 24px;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.bcj-desc {
+  font-size: 12px;
+  font-weight: 300;
+  color: rgba(253,248,240,.65);
+  line-height: 1.5;
+}
+.bcj-icon {
+  width: 44px; height: 44px;
+  background: rgba(201,169,110,.15);
+  border: 1px solid rgba(201,169,110,.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  transition: background .2s;
+}
+.bcj-btn:hover .bcj-icon { background: rgba(201,169,110,.25); }
+
+/* ── FOOTER TAG ────────────────────────────────────── */
+.foot-tag {
+  margin-top: 32px;
   font-size: 11px;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--mid);
-  z-index: 20;
-  white-space: nowrap;
-  pointer-events: none;
+  color: rgba(255,255,255,.5);
+  text-shadow: 0 1px 4px rgba(0,0,0,.15);
 }
 
-/* ── MOBILE ───────────────────────────────────────────── */
-@media (max-width: 680px) {
-  html, body { overflow: auto; }
-  .split {
-    flex-direction: column;
-    height: auto;
-    min-height: 100vh;
-    overflow: visible;
-  }
-  .panel {
-    flex: none;
-    min-height: 50vh;
-    padding: 52px 36px;
-    transition: none;
-  }
-  .panel:hover { flex: none; }
-  .split::after { display: none; }
-  .center-badge {
-    top: 50vh;
-    transform: translate(-50%,-50%);
-    width: 52px;
-    height: 52px;
-  }
-  .center-badge-j { font-size: 18px; }
-  .center-badge-c { font-size: 7px; }
-  .split:hover .center-badge { transform: translate(-50%,-50%) scale(1); }
-  .sub-items { opacity: 1; transform: none; }
-  .tag-line { opacity: .72; transform: none; }
-  .bottom-line { display: none; }
-  .geo-1, .geo-2, .geo-r1, .geo-r2 { display: none; }
-}
-
-/* ── PAGE TRANSITIONS ─────────────────────────────────── */
+/* ── PAGE TRANSITION ───────────────────────────────── */
 .overlay {
   position: fixed;
   inset: 0;
-  background: var(--ink);
+  background: #FDF8F0;
   z-index: 999;
   opacity: 0;
   pointer-events: none;
-  transition: opacity .45s cubic-bezier(.4,0,.2,1);
+  transition: opacity .38s ease;
 }
 .overlay.show { opacity: 1; pointer-events: all; }
+
+/* ── MOBILE ────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .content { padding: 44px 22px 100px; }
+  .hero-title { font-size: 38px; }
+  .blossom { width: 200px; height: 160px; }
+}
+
+/* Entry animation */
+.content > * {
+  animation: rise .7s cubic-bezier(.22,1,.36,1) both;
+}
+.brand          { animation-delay: .05s; }
+.hero-block     { animation-delay: .15s; }
+.main-card      { animation-delay: .25s; }
+.main-card + .main-card { animation-delay: .32s; }
+.bcj-btn        { animation-delay: .4s; }
+.foot-tag       { animation-delay: .48s; }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: none; }
+}
 </style>
 </head>
 <body>
 
 <div class="overlay" id="overlay"></div>
 
-<main class="split" role="main">
+<!-- Sky / nature layers -->
+<div class="birds">
+  <span class="bird">🐦</span>
+  <span class="bird">🐦</span>
+  <span class="bird">🐦</span>
+</div>
 
-  <!-- ── LEFT: SELF-STUDY ──────────────────────────────── -->
-  <a class="panel panel-left" href="study.html" onclick="transition(event, 'study.html')" aria-label="自我提升 — 英语学习工具">
-    <div class="geo geo-1"></div>
-    <div class="geo geo-2"></div>
+<!-- Mountain -->
+<div class="mountain">
+  <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="mtn" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#DDEEF8"/>
+        <stop offset="40%" stop-color="#B8D4E8"/>
+        <stop offset="100%" stop-color="#8AB8D0"/>
+      </linearGradient>
+      <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#FFFFFF"/>
+        <stop offset="100%" stop-color="#EEF6FC"/>
+      </linearGradient>
+    </defs>
+    <!-- back mountains -->
+    <polygon points="300,300 550,60 800,300" fill="url(#mtn)" opacity=".6"/>
+    <polygon points="500,300 700,80 900,300" fill="url(#mtn)" opacity=".8"/>
+    <!-- main peak -->
+    <polygon points="400,300 650,20 900,300" fill="url(#mtn)"/>
+    <!-- snow cap -->
+    <polygon points="590,20 650,20 690,80 620,100 580,80" fill="url(#snow)" opacity=".9"/>
+    <!-- lake reflection -->
+    <ellipse cx="600" cy="290" rx="280" ry="18" fill="rgba(100,180,220,.25)"/>
+  </svg>
+</div>
 
-    <div class="panel-inner">
-      <div class="panel-eyebrow">
-        <span class="eyebrow-line"></span>
-        自我提升
-      </div>
+<!-- Cherry blossom branch -->
+<div class="blossom">
+  <svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg">
+    <!-- branches -->
+    <path d="M280,0 Q220,40 180,80 Q140,120 100,140 Q60,160 20,180" stroke="#8B5E3C" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M180,80 Q200,100 210,130" stroke="#8B5E3C" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <path d="M140,120 Q110,110 90,90" stroke="#8B5E3C" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M220,40 Q240,60 255,90" stroke="#8B5E3C" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- blossoms -->
+    <g opacity=".9">
+      <!-- blossom macro helper: 5-petal -->
+      <circle cx="165" cy="72" r="14" fill="#FFB7C5" opacity=".8"/>
+      <circle cx="165" cy="72" r="5" fill="#FF8FAB"/>
+      <circle cx="155" cy="62" r="10" fill="#FFC8D3" opacity=".7"/>
+      <circle cx="175" cy="62" r="10" fill="#FFB7C5" opacity=".7"/>
 
-      <h2 class="panel-title">
-        掌握英语，<em>从这里开始。</em>
-      </h2>
+      <circle cx="200" cy="55" r="12" fill="#FFB7C5" opacity=".85"/>
+      <circle cx="200" cy="55" r="4" fill="#FF8FAB"/>
 
-      <p class="tag-line">系统化学习工具，词汇、语法、阅读一站覆盖，按自己的节奏进步。</p>
+      <circle cx="135" cy="108" r="11" fill="#FFC8D3" opacity=".8"/>
+      <circle cx="148" cy="100" r="9" fill="#FFB7C5" opacity=".75"/>
 
-      <div class="sub-items" aria-hidden="true">
-        <div class="sub-item"><span class="sub-dot"></span>词汇精练 · 分级记忆系统</div>
-        <div class="sub-item"><span class="sub-dot"></span>语法手册 · 中考核心考点</div>
-        <div class="sub-item"><span class="sub-dot"></span>阅读训练 · 三步定位方法</div>
-        <div class="sub-item"><span class="sub-dot"></span>写作模板 · 高分句式积累</div>
-        <div class="sub-item"><span class="sub-dot"></span>期末备考 · 真题精讲资料</div>
-      </div>
+      <circle cx="218" cy="42" r="10" fill="#FFC8D3" opacity=".8"/>
+      <circle cx="230" cy="32" r="8" fill="#FFB7C5" opacity=".7"/>
 
-      <div class="panel-cta">
-        开始学习
-        <svg class="panel-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </div>
-    </div>
-  </a>
+      <circle cx="105" cy="132" r="9" fill="#FFC8D3" opacity=".75"/>
+      <circle cx="92" cy="125" r="7" fill="#FFB7C5" opacity=".7"/>
 
-  <!-- ── CENTER BADGE ──────────────────────────────────── -->
-  <div class="center-badge" aria-hidden="true">
-    <div class="center-badge-j">J</div>
-    <div class="center-badge-c">Class</div>
+      <circle cx="258" cy="85" r="8" fill="#FFC8D3" opacity=".7"/>
+      <circle cx="248" cy="75" r="6" fill="#FFB7C5" opacity=".65"/>
+
+      <!-- buds -->
+      <ellipse cx="178" cy="128" rx="4" ry="7" fill="#FF8FAB" opacity=".8" transform="rotate(-20,178,128)"/>
+      <ellipse cx="122" cy="150" rx="4" ry="7" fill="#FFB7C5" opacity=".7" transform="rotate(10,122,150)"/>
+      <ellipse cx="240" cy="50" rx="3" ry="6" fill="#FF8FAB" opacity=".7" transform="rotate(-35,240,50)"/>
+    </g>
+    <!-- falling petals -->
+    <ellipse cx="50" cy="100" rx="5" ry="3" fill="#FFB7C5" opacity=".5" transform="rotate(-30,50,100)"/>
+    <ellipse cx="240" cy="160" rx="4" ry="2.5" fill="#FFC8D3" opacity=".45" transform="rotate(20,240,160)"/>
+    <ellipse cx="120" cy="200" rx="4" ry="2.5" fill="#FFB7C5" opacity=".4" transform="rotate(-15,120,200)"/>
+  </svg>
+</div>
+
+<div class="flowers"></div>
+
+<!-- ── MAIN CONTENT ── -->
+<div class="content">
+
+  <div class="brand">John Class</div>
+
+  <div class="hero-block">
+    <div class="hero-title">Growing Skills<br>Shaping Futures</div>
+    <div class="hero-sub">长沙 · 初中英语 · 方法论驱动</div>
   </div>
 
-  <!-- ── RIGHT: TEACHER ────────────────────────────────── -->
-  <a class="panel panel-right" href="teacher.html" onclick="transition(event, 'teacher.html')" aria-label="需要一点帮助 — 了解John老师">
-    <div class="geo geo-r1"></div>
-    <div class="geo geo-r2"></div>
-
-    <div class="panel-inner">
-      <div class="panel-eyebrow">
-        <span class="eyebrow-line"></span>
-        需要一点帮助
-      </div>
-
-      <h2 class="panel-title">
-        让专业的人，<em>助你一程。</em>
-      </h2>
-
-      <p class="tag-line">量身定制的教学方案，从薄弱点出发，看得见的进步。</p>
-
-      <div class="sub-items" aria-hidden="true">
-        <div class="sub-item"><span class="sub-dot"></span>初中英语 · 系统专项提升</div>
-        <div class="sub-item"><span class="sub-dot"></span>期末备考 · 精准查漏补缺</div>
-        <div class="sub-item"><span class="sub-dot"></span>小班授课 · 8人以内精讲</div>
-        <div class="sub-item"><span class="sub-dot"></span>每课反馈 · 家长实时了解</div>
-        <div class="sub-item"><span class="sub-dot"></span>方法论先行 · 授人以渔</div>
-      </div>
-
-      <div class="panel-cta">
-        了解详情
-        <svg class="panel-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  <!-- 英语学习提升 -->
+  <a class="main-card featured" href="study.html" onclick="transit(event,'study.html')">
+    <div class="main-card-eyebrow">核心入口</div>
+    <div class="main-card-title">英语学习提升</div>
+    <div class="main-card-desc">从词汇到写作，从方法到备考。系统化工具与资料，按自己的节奏进步。</div>
+    <div class="main-card-tags">
+      <span class="tag">📚 学习工具</span>
+      <span class="tag">📖 武林秘籍</span>
+      <span class="tag">🎯 期末备考</span>
+    </div>
+    <div class="main-card-arrow">
+      <span class="arrow-text">进入学习 →</span>
+      <div class="arrow-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </div>
     </div>
   </a>
 
-  <div class="bottom-line" aria-hidden="true">John Class · 长沙</div>
-</main>
+  <!-- Better Call John -->
+  <a class="bcj-btn" href="teacher.html" onclick="transit(event,'teacher.html')">
+    <div class="bcj-left">
+      <div class="bcj-title">Better Call John</div>
+      <div class="bcj-desc">联系 John · 学习咨询 · 反馈意见 · 了解课程</div>
+    </div>
+    <div class="bcj-icon">📞</div>
+  </a>
+
+  <div class="foot-tag">John Class · Changsha · 2025</div>
+
+</div>
 
 <script>
-function transition(e, href) {
+function transit(e, href) {
   e.preventDefault();
   const ov = document.getElementById('overlay');
   ov.classList.add('show');
-  setTimeout(() => { window.location.href = href; }, 420);
+  setTimeout(() => { window.location.href = href; }, 360);
 }
 </script>
 </body>
