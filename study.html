@@ -13,287 +13,137 @@ html, body {
   background: #F5EDD8;
   color: #2A1E08;
 }
-
-/* ── 同款左右布局 ── */
-.layout {
-  display: flex;
-  min-height: 100vh;
-}
-
-/* 左侧图片 */
+.layout { display: flex; min-height: 100vh; }
 .left {
-  position: fixed;
-  top: 0; left: 0;
-  width: 52%;
-  height: 100vh;
-  overflow: hidden;
+  position: fixed; top: 0; left: 0;
+  width: 52%; height: 100vh; overflow: hidden;
 }
 .left img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center top;
-  display: block;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top; display: block;
 }
 .left::after {
-  content: '';
-  position: absolute;
-  top: 0; right: 0;
+  content: ''; position: absolute; top: 0; right: 0;
   width: 80px; height: 100%;
   background: linear-gradient(to right, transparent, #F5EDD8);
 }
-
-/* 右侧内容 */
 .right {
-  margin-left: 52%;
-  flex: 1;
-  background: #F5EDD8;
-  min-height: 100vh;
-  padding: 52px 44px 64px 28px;
-  position: relative;
+  margin-left: 52%; flex: 1; background: #F5EDD8;
+  min-height: 100vh; padding: 52px 44px 64px 28px; position: relative;
 }
 .right::before {
-  content: '';
-  position: absolute;
-  inset: 0;
+  content: ''; position: absolute; inset: 0;
   background:
     radial-gradient(circle at 80% 15%, rgba(201,169,110,.07) 0%, transparent 50%),
     radial-gradient(circle at 20% 85%, rgba(120,160,80,.05) 0%, transparent 40%);
   pointer-events: none;
 }
-
-/* 顶部 nav */
 .nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 44px;
-  position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 44px; position: relative; z-index: 1;
 }
 .nav-brand {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: #B8956A;
-  text-decoration: none;
+  font-size: 13px; font-weight: 600; letter-spacing: .18em;
+  text-transform: uppercase; color: #B8956A; text-decoration: none;
 }
 .nav-back {
-  font-size: 12px;
-  color: #9A8060;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  transition: color .2s;
+  font-size: 12px; color: #9A8060; text-decoration: none;
+  display: flex; align-items: center; gap: 5px; transition: color .2s;
 }
 .nav-back:hover { color: #2A1E08; }
-
-/* 页面标题 */
 .page-title {
-  font-size: clamp(24px, 3vw, 32px);
-  font-weight: 600;
-  color: #2A1E08;
-  letter-spacing: -.4px;
-  margin-bottom: 6px;
-  position: relative; z-index: 1;
+  font-size: clamp(24px, 3vw, 32px); font-weight: 600; color: #2A1E08;
+  letter-spacing: -.4px; margin-bottom: 6px; position: relative; z-index: 1;
 }
 .page-sub {
-  font-size: 13px;
-  color: #9A8060;
-  margin-bottom: 40px;
-  position: relative; z-index: 1;
+  font-size: 13px; color: #9A8060; margin-bottom: 40px; position: relative; z-index: 1;
 }
-
-/* ── 分区标题 ── */
 .sec-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: #B8956A;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(184,149,106,.2);
-  margin-bottom: 6px;
-  position: relative; z-index: 1;
+  font-size: 10px; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: #B8956A;
+  padding-bottom: 10px; border-bottom: 1px solid rgba(184,149,106,.2);
+  margin-bottom: 6px; position: relative; z-index: 1;
 }
-
-/* ── 工具列表（圆形图标 + 文字）── */
 .tool-list {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 36px;
-  position: relative; z-index: 1;
+  display: flex; flex-direction: column;
+  margin-bottom: 36px; position: relative; z-index: 1;
 }
-
 .tool-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid rgba(184,149,106,.12);
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
-  transition: transform .18s;
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 0; border-bottom: 1px solid rgba(184,149,106,.12);
+  text-decoration: none; color: inherit; cursor: pointer; transition: transform .18s;
 }
 .tool-item:last-child { border-bottom: none; }
 .tool-item:hover { transform: translateX(5px); }
 .tool-item:active { transform: scale(.98); }
 .tool-item.disabled {
-  opacity: .45;
-  cursor: default;
-  pointer-events: none;
+  opacity: .45; cursor: default; pointer-events: none;
 }
-
-/* 圆形图标 */
 .tool-circle {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  flex-shrink: 0;
-  transition: transform .18s;
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0; transition: transform .18s;
 }
 .tool-item:hover .tool-circle { transform: scale(1.08); }
-
 .c-gold   { background: rgba(201,169,110,.16); border: 1.5px solid rgba(201,169,110,.3); }
 .c-blue   { background: rgba(74,124,184,.12);  border: 1.5px solid rgba(74,124,184,.22); }
 .c-green  { background: rgba(74,124,63,.13);   border: 1.5px solid rgba(74,124,63,.25); }
 .c-orange { background: rgba(212,136,42,.12);  border: 1.5px solid rgba(212,136,42,.22); }
 .c-purple { background: rgba(122,76,184,.12);  border: 1.5px solid rgba(122,76,184,.22); }
-.c-dark   { background: rgba(184,149,106,.1); border: 1.5px solid rgba(184,149,106,.2); }
-
+.c-dark   { background: rgba(184,149,106,.1);  border: 1.5px solid rgba(184,149,106,.2); }
 .tool-text { flex: 1; }
-.tool-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2A1E08;
-  margin-bottom: 3px;
-  letter-spacing: -.1px;
-}
-.tool-desc {
-  font-size: 12px;
-  color: #9A8060;
-  line-height: 1.5;
-}
-
+.tool-name { font-size: 16px; font-weight: 600; color: #2A1E08; margin-bottom: 3px; letter-spacing: -.1px; }
+.tool-desc { font-size: 12px; color: #9A8060; line-height: 1.5; }
 .tool-badge {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: 20px;
-  flex-shrink: 0;
+  font-size: 10px; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; padding: 3px 8px; border-radius: 20px; flex-shrink: 0;
 }
 .badge-live { background: rgba(74,124,63,.12); color: #4A7C3F; border: 1px solid rgba(74,124,63,.2); }
 .badge-soon { background: rgba(184,149,106,.1); color: #B8956A; border: 1px solid rgba(184,149,106,.2); }
-
-/* 箭头 */
 .tool-arrow {
-  color: rgba(184,149,106,.4);
-  flex-shrink: 0;
-  transition: transform .18s, color .18s;
+  color: rgba(184,149,106,.4); flex-shrink: 0; transition: transform .18s, color .18s;
 }
 .tool-item:hover .tool-arrow { transform: translateX(4px); color: #B8956A; }
-
-/* ── 武林秘籍 ── */
 .wulin {
-  background: rgba(80, 60, 30, 0.72);
-  border-radius: 20px;
-  padding: 26px 26px 24px;
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
+  background: rgba(80,60,30,0.72); border-radius: 20px;
+  padding: 26px 26px 24px; position: relative; overflow: hidden; z-index: 1;
 }
 .wulin::before {
-  content: '';
-  position: absolute; inset: 0;
+  content: ''; position: absolute; inset: 0;
   background:
     radial-gradient(circle at 15% 50%, rgba(201,169,110,.1) 0%, transparent 55%),
     radial-gradient(circle at 85% 20%, rgba(201,169,110,.07) 0%, transparent 45%);
 }
-.wulin-top {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 16px;
-  position: relative; z-index: 1;
-}
+.wulin-top { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; position: relative; z-index: 1; }
 .wulin-icon {
-  width: 52px; height: 52px;
-  border-radius: 50%;
-  background: rgba(201,169,110,.12);
-  border: 1.5px solid rgba(201,169,110,.25);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px; flex-shrink: 0;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: rgba(201,169,110,.12); border: 1.5px solid rgba(201,169,110,.25);
+  display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
 }
-.wulin-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #C9A96E;
-  margin-bottom: 3px;
-}
-.wulin-sub {
-  font-size: 12px;
-  color: rgba(253,248,240,.45);
-}
+.wulin-title { font-size: 18px; font-weight: 600; color: #C9A96E; margin-bottom: 3px; }
+.wulin-sub { font-size: 12px; color: rgba(253,248,240,.45); }
 .wulin-items {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  position: relative; z-index: 1;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; position: relative; z-index: 1;
 }
 .wi {
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.07);
-  border-radius: 12px;
-  padding: 11px 13px;
-  display: flex;
-  align-items: center;
-  gap: 9px;
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px; padding: 11px 13px; display: flex; align-items: center; gap: 9px;
 }
-.wi-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: rgba(201,169,110,.4);
-  flex-shrink: 0;
-}
+.wi-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(201,169,110,.4); flex-shrink: 0; }
 .wi-text { font-size: 12px; color: rgba(253,248,240,.5); }
 .wulin-coming {
-  margin-top: 14px;
-  font-size: 11px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: rgba(201,169,110,.4);
-  text-align: center;
-  position: relative; z-index: 1;
+  margin-top: 14px; font-size: 11px; letter-spacing: .08em;
+  text-transform: uppercase; color: rgba(201,169,110,.4); text-align: center; position: relative; z-index: 1;
 }
-
-/* footer */
 .foot {
-  margin-top: 40px;
-  font-size: 10px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: rgba(184,149,106,.4);
-  position: relative; z-index: 1;
+  margin-top: 40px; font-size: 10px; letter-spacing: .12em;
+  text-transform: uppercase; color: rgba(184,149,106,.4); position: relative; z-index: 1;
 }
-
-/* 遮罩 */
 .overlay {
-  position: fixed; inset: 0;
-  background: #F5EDD8; z-index: 999;
-  opacity: 0; pointer-events: none;
-  transition: opacity .3s ease;
+  position: fixed; inset: 0; background: #F5EDD8; z-index: 999;
+  opacity: 0; pointer-events: none; transition: opacity .3s ease;
 }
 .overlay.show { opacity: 1; pointer-events: all; }
-
-/* 入场 */
 .right > * { animation: fadeIn .6s cubic-bezier(.22,1,.36,1) both; }
 .nav        { animation-delay: .05s; }
 .page-title { animation-delay: .1s; }
@@ -305,8 +155,6 @@ html, body {
   from { opacity: 0; transform: translateX(12px); }
   to   { opacity: 1; transform: none; }
 }
-
-/* 移动端 */
 @media (max-width: 680px) {
   .layout { flex-direction: column; }
   .left { position: relative; width: 100%; height: 56vw; min-height: 260px; max-height: 400px; }
@@ -324,14 +172,9 @@ html, body {
 <div class="overlay" id="ov"></div>
 
 <div class="layout">
-  <!-- 左：插画 -->
-  <div class="left">
-    <img src="bg.png" alt="John Class">
-  </div>
+  <div class="left"><img src="bg.png" alt="John Class"></div>
 
-  <!-- 右：内容 -->
   <div class="right">
-
     <div class="nav">
       <a class="nav-brand" href="index.html">John Class</a>
       <a class="nav-back" href="index.html" onclick="go(event,'index.html')">
@@ -343,11 +186,10 @@ html, body {
     <div class="page-title">英语学习提升</div>
     <div class="page-sub">选择你需要的方向，系统进步。</div>
 
-    <!-- 学习工具 -->
     <div class="sec-label">学习工具</div>
     <div class="tool-list">
 
-      <a class="tool-item" href="vocab.html">
+      <a class="tool-item" href="vocab.html" onclick="go(event,'vocab.html')">
         <div class="tool-circle c-gold">📚</div>
         <div class="tool-text">
           <div class="tool-name">英语训练之路</div>
@@ -357,11 +199,11 @@ html, body {
         <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
 
-      <a class="tool-item" href="grammar_adventure.html">
-        <div class="tool-circle c-gold">🏮</div>
+      <a class="tool-item" href="grammar_hub.html" onclick="go(event,'grammar_hub.html')">
+        <div class="tool-circle c-blue">📐</div>
         <div class="tool-text">
-          <div class="tool-name">语法闯关</div>
-          <div class="tool-desc">32关 · 迷雾森林 · 终极挑战</div>
+          <div class="tool-name">语法提升</div>
+          <div class="tool-desc">学习语法 · 语法应试 · 真题训练</div>
         </div>
         <span class="tool-badge badge-live">已上线</span>
         <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -387,7 +229,6 @@ html, body {
 
     </div>
 
-    <!-- 武林秘籍 -->
     <div class="sec-label">武林秘籍</div>
     <div class="wulin">
       <div class="wulin-top">
@@ -407,7 +248,6 @@ html, body {
     </div>
 
     <div class="foot">Growing Skills · Shaping Futures</div>
-
   </div>
 </div>
 
