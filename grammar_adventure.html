@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>语法学习 · John Class</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased;background:#F5EDD8;color:#2A1E08}
+
+/* ══════════════════════════════════════════ 入口页 ══════════════════════════════════════════ */
+.entry-page{position:fixed;inset:0;z-index:100;background:#F5EDD8;display:flex;align-items:center;justify-content:center;transition:opacity .4s,visibility .4s}
+.entry-page.hide{opacity:0;visibility:hidden;pointer-events:none}
+.entry-inner{text-align:center;padding:30px;max-width:700px}
+.entry-icon{font-size:56px;margin-bottom:8px}
+.entry-title{font-size:clamp(22px,3.5vw,34px);font-weight:700;color:#2A1E08;margin-bottom:4px;letter-spacing:-.4px}
+.entry-sub{font-size:13px;color:#9A8060;margin-bottom:28px}
+.mode-cards{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.mode-card{width:260px;background:rgba(255,255,255,.6);border:1.5px solid rgba(184,149,106,.25);border-radius:20px;padding:28px 20px 22px;cursor:pointer;transition:all .25s;text-align:center;backdrop-filter:blur(4px)}
+.mode-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(42,30,8,.1);border-color:#B8956A}
+.mode-card-icon{font-size:42px;margin-bottom:10px}
+.mode-card-title{font-size:17px;font-weight:700;color:#2A1E08;margin-bottom:4px}
+.mode-card-sub{font-size:11.5px;color:#9A8060;line-height:1.6}
+.mode-card-tag{display:inline-block;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:600;margin-top:10px;letter-spacing:.04em}
+.tag-forest{background:rgba(184,149,106,.15);color:#B8956A}
+.tag-normal{background:rgba(74,124,63,.1);color:#4A7C3F}
+
+/* ══════════════════════════════════════════ 普通模式 ══════════════════════════════════════════ */
+.normal-view{position:fixed;inset:0;z-index:90;background:#F5EDD8;display:none;flex-direction:row}
+.normal-view.active{display:flex}
+.normal-topbar{position:absolute;top:0;left:0;right:0;z-index:10;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}
+.normal-topbar>*{pointer-events:all}
+.n-back{font-size:12px;color:#9A8060;cursor:pointer;background:none;border:none;font-family:inherit;display:flex;align-items:center;gap:4px;transition:color .2s;padding:6px 0}
+.n-back:hover{color:#2A1E08}
+.n-brand{font-size:12px;font-weight:600;letter-spacing:.14em;color:#B8956A}
+.n-challenge-btn{font-size:11px;padding:6px 14px;border-radius:14px;background:#4A7C3F;color:#fff;border:none;cursor:pointer;font-weight:600;font-family:inherit;display:none;transition:all .2s}
+.n-challenge-btn:hover{background:#3A6A30}
+.n-challenge-btn.show{display:block}
+
+.n-left{width:44%;height:100%;overflow-y:auto;padding:60px 20px 30px 28px;border-right:1px solid rgba(184,149,106,.15);background:linear-gradient(170deg,#EDE3D0,#F5EDD8 40%,#E8DCC8)}
+.n-left::-webkit-scrollbar{width:3px}
+.n-left::-webkit-scrollbar-thumb{background:rgba(184,149,106,.25);border-radius:3px}
+.n-map-title{font-size:16px;font-weight:700;color:#2A1E08;margin-bottom:2px}
+.n-map-sub{font-size:11px;color:#9A8060;margin-bottom:18px}
+
+.n-chapter{margin-bottom:18px}
+.n-ch-title{font-size:12px;font-weight:700;color:#2A1E08;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.n-ch-count{font-size:10px;color:#B8956A;font-weight:500}
+.n-ch-nodes{display:flex;flex-wrap:wrap;gap:5px;padding-left:18px}
+.n-node{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;cursor:pointer;border:2px solid rgba(184,149,106,.2);background:rgba(255,255,255,.5);color:#B8956A;transition:all .2s;flex-shrink:0}
+.n-node:hover{transform:scale(1.1)}
+.n-node.done{background:#4A7C3F;border-color:#4A7C3F;color:#fff}
+.n-node.current{background:#B8956A;border-color:#B8956A;color:#fff;box-shadow:0 0 10px rgba(184,149,106,.4);animation:pulse 2s infinite}
+.n-node.locked{opacity:.35;cursor:not-allowed;filter:blur(1px)}
+.n-node.locked:hover{transform:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 6px rgba(184,149,106,.4)}50%{box-shadow:0 0 16px rgba(184,149,106,.7)}}
+
+.n-right{flex:1;height:100%;overflow-y:auto;padding:60px 28px 40px 24px}
+.n-right::-webkit-scrollbar{width:3px}
+.n-right::-webkit-scrollbar-thumb{background:rgba(184,149,106,.2);border-radius:3px}
+.n-welcome{text-align:center;padding-top:60px}
+.n-welcome-icon{font-size:48px;margin-bottom:10px}
+.n-welcome-title{font-size:20px;font-weight:700;color:#2A1E08;margin-bottom:6px}
+.n-welcome-sub{font-size:13px;color:#9A8060;line-height:1.7}
+
+.n-level-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:12px;background:rgba(184,149,106,.12);font-size:10px;font-weight:700;color:#B8956A;margin-bottom:8px}
+.n-level-title{font-size:clamp(18px,2.5vw,24px);font-weight:600;color:#2A1E08;margin-bottom:3px}
+.n-level-sub{font-size:12px;color:#9A8060;margin-bottom:18px}
+
+/* ══════════════════════════════════════════ 森林模式 ══════════════════════════════════════════ */
+.forest-view{position:fixed;inset:0;z-index:90;background:#F5EDD8;display:none}
+.forest-view.active{display:block}
+.forest-scene{position:fixed;inset:0;background:linear-gradient(180deg,#EDE3D0 0%,#F5EDD8 35%,#F0E6D4 65%,#E8DCC8 100%);overflow:hidden;cursor:default}
+
+.f-topbar{position:fixed;top:0;left:0;right:0;z-index:20;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}
+.f-topbar>*{pointer-events:all}
+.f-back{font-size:12px;color:#9A8060;cursor:pointer;background:none;border:none;font-family:inherit;display:flex;align-items:center;gap:4px;transition:color .2s;padding:6px 0}
+.f-back:hover{color:#2A1E08}
+.f-info{font-size:11px;color:#9A8060}
+
+/* 森林场景元素 */
+.f-ground{position:absolute;bottom:0;left:0;right:0;height:18%;background:linear-gradient(180deg,transparent 0%,rgba(180,160,130,.15) 30%,rgba(160,140,110,.25) 100%);pointer-events:none}
+.f-ground::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 10%,rgba(184,149,106,.3) 30%,rgba(184,149,106,.5) 50%,rgba(184,149,106,.3) 70%,transparent 90%)}
+.f-cabin{position:absolute;bottom:8%;left:8%;pointer-events:none;opacity:.7;z-index:2}
+.f-cabin-body{width:44px;height:32px;background:rgba(180,155,120,.5);border-radius:4px 4px 0 0;position:relative;border:1.5px solid rgba(160,130,100,.4)}
+.f-cabin-body::after{content:'';position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:12px;height:14px;background:rgba(140,110,80,.6);border-radius:3px 3px 0 0;border:1.5px solid rgba(160,130,100,.4);border-bottom:none}
+.f-cabin-roof{width:0;height:0;border-left:28px solid transparent;border-right:28px solid transparent;border-bottom:20px solid rgba(160,120,80,.5);position:absolute;top:-19px;left:-7px}
+.f-cabin-w{position:absolute;width:8px;height:8px;background:rgba(255,220,150,.7);border-radius:50%;top:6px;left:10px;box-shadow:0 0 6px rgba(255,200,100,.5)}
+.f-cabin-w2{position:absolute;width:8px;height:8px;background:rgba(255,220,150,.6);border-radius:50%;top:6px;right:10px;box-shadow:0 0 4px rgba(255,200,100,.4)}
+.f-cabin-ch{position:absolute;top:-24px;right:4px;width:10px;height:16px;background:rgba(160,130,100,.5);border-radius:2px 2px 0 0}
+.f-cabin-smoke{position:absolute;top:-32px;right:2px;width:10px;height:10px;background:rgba(220,210,195,.5);border-radius:50%;animation:fsmoke 3s ease-out infinite}
+.f-cabin-smoke2{top:-44px;right:-4px;width:14px;height:14px;animation-delay:.8s;animation-duration:3.5s}
+@keyframes fsmoke{0%{opacity:.6;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-28px) scale(2.5)}}
+.f-cabin2{left:auto;right:6%;bottom:10%;opacity:.55}
+.f-cabin2 .f-cabin-body{width:36px;height:26px}
+.f-cabin2 .f-cabin-roof{border-left-width:23px;border-right-width:23px;border-bottom-width:16px;top:-15px;left:-6px}
+.f-tree{position:absolute;pointer-events:none;z-index:1}
+.f-tree-trunk{width:4px;height:20px;background:rgba(160,130,100,.5);margin:0 auto;border-radius:1px}
+.f-tree-top{width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:28px solid rgba(140,170,100,.4);margin:0 auto -2px}
+.f-tree-top2{width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:24px solid rgba(150,175,110,.35);margin:-14px auto 0}
+
+.f-mist-top{position:absolute;top:0;left:0;right:0;height:55%;z-index:6;pointer-events:none;
+  background:linear-gradient(180deg,rgba(240,232,215,.95) 0%,rgba(242,235,220,.85) 30%,rgba(245,237,216,.5) 60%,transparent 100%);
+  transition:height .8s ease}
+.f-mist-wave{position:absolute;bottom:-20px;left:-10%;right:-10%;height:50px;background:rgba(245,237,216,.7);filter:blur(18px);border-radius:50%;animation:fmistWave 5s ease-in-out infinite}
+.f-mist-wave2{bottom:-35px;height:40px;animation-delay:-2.5s;animation-duration:6s;opacity:.6}
+@keyframes fmistWave{0%,100%{transform:translateX(-15px)}50%{transform:translateX(15px)}}
+.f-mist-particles{position:absolute;inset:0;z-index:7;pointer-events:none}
+.f-mp{position:absolute;border-radius:50%;background:rgba(245,238,220,.55);filter:blur(25px);animation:ffloat linear infinite}
+@keyframes ffloat{0%{transform:translateX(0) translateY(0)}25%{transform:translateX(30px) translateY(-15px)}50%{transform:translateX(10px) translateY(-30px)}75%{transform:translateX(-20px) translateY(-15px)}100%{transform:translateX(0) translateY(0)}}
+
+.f-path-container{position:absolute;inset:0;z-index:3;pointer-events:none}
+.f-path-svg{width:100%;height:100%}
+.f-path-line{fill:none;stroke:rgba(184,149,106,.2);stroke-width:2;stroke-dasharray:6 4}
+.f-path-line.done{stroke:rgba(184,149,106,.45);stroke-dasharray:none;stroke-width:2.5}
+
+.f-nodes-layer{position:absolute;inset:0;z-index:4}
+.f-node{position:absolute;display:flex;align-items:center;justify-content:center;transition:all .6s cubic-bezier(.25,.8,.25,1.2);cursor:default}
+.f-node-dot{width:22px;height:22px;border-radius:50%;background:rgba(200,180,150,.4);border:2px solid rgba(184,149,106,.3);transition:all .5s ease;position:relative}
+.f-node.done .f-node-dot{background:rgba(184,149,106,.5);border-color:rgba(184,149,106,.5);width:19px;height:19px;box-shadow:0 0 10px rgba(184,149,106,.35)}
+.f-node.current .f-node-dot{width:32px;height:32px;background:rgba(255,245,225,.9);border:2.5px solid #B8956A;box-shadow:0 0 20px rgba(184,149,106,.5),0 0 40px rgba(184,149,106,.25);animation:flanternPulse 2.2s ease-in-out infinite}
+.f-node.current{cursor:pointer;z-index:10}
+.f-node.current:hover .f-node-dot{transform:scale(1.15)}
+@keyframes flanternPulse{0%,100%{box-shadow:0 0 20px rgba(184,149,106,.5),0 0 40px rgba(184,149,106,.25)}50%{box-shadow:0 0 30px rgba(184,149,106,.7),0 0 55px rgba(184,149,106,.35)}}
+.f-node-label{position:absolute;top:50%;left:calc(100% + 13px);transform:translateY(-50%);white-space:nowrap;font-size:11px;font-weight:600;color:#B8956A;pointer-events:none}
+.f-node.current .f-node-label{font-size:13px;color:#2A1E08;left:calc(100% + 16px)}
+.f-node-num{position:absolute;font-size:9px;font-weight:700;color:#9A8060;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0}
+.f-node.done .f-node-num,.f-node.current .f-node-num{opacity:1}
+.f-node.current .f-node-num{font-size:12px;color:#2A1E08}
+
+.f-fireworks{position:fixed;inset:0;z-index:80;pointer-events:none}
+.f-spark{position:absolute;width:6px;height:6px;border-radius:50%;animation:fsparkBurst .8s ease-out forwards}
+@keyframes fsparkBurst{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0)}}
+
+/* ══════════════════════════════════════════ 关卡弹窗（共用） ══════════════════════════════════════════ */
+.lvl-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .35s ease}
+.lvl-overlay.show{opacity:1;pointer-events:all}
+.lvl-overlay-bg{position:absolute;inset:0;background:rgba(42,30,8,.3);backdrop-filter:blur(3px)}
+.lvl-card{position:relative;background:rgba(255,255,255,.92);border:1px solid rgba(184,149,106,.25);border-radius:22px;width:min(560px,92vw);max-height:80vh;overflow-y:auto;padding:26px 24px 22px;box-shadow:0 20px 50px rgba(42,30,8,.15);animation:cardIn .4s cubic-bezier(.22,1,.36,1)}
+.lvl-card::-webkit-scrollbar{width:3px}
+.lvl-card::-webkit-scrollbar-thumb{background:rgba(184,149,106,.25);border-radius:3px}
+@keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.lvl-close{position:absolute;top:14px;right:16px;width:30px;height:30px;border-radius:50%;border:1.5px solid rgba(184,149,106,.25);background:rgba(255,255,255,.8);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:#9A8060;transition:all .2s;z-index:2}
+.lvl-close:hover{background:#B8956A;color:#fff;border-color:#B8956A}
+
+.c-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:12px;background:rgba(184,149,106,.12);font-size:10px;font-weight:700;color:#B8956A;margin-bottom:8px}
+.c-title{font-size:clamp(18px,2.5vw,23px);font-weight:600;color:#2A1E08;margin-bottom:2px}
+.c-sub{font-size:12px;color:#9A8060;margin-bottom:16px}
+
+.kp-block{background:rgba(245,237,216,.5);border:1px solid rgba(184,149,106,.15);border-radius:14px;padding:14px;margin-bottom:9px}
+.kp-block h4{font-size:13px;font-weight:700;color:#2A1E08;margin-bottom:7px}
+.kp-block p{font-size:12.5px;color:#6A5030;line-height:1.8;margin-bottom:9px}
+.kp-eg{background:rgba(184,149,106,.08);border-left:3px solid #B8956A;padding:7px 11px;border-radius:0 8px 8px 0;margin-bottom:5px}
+.kp-eg .en{font-size:13px;color:#3A2010;font-style:italic;margin-bottom:1px}
+.kp-eg .zh{font-size:11.5px;color:#9A8060}
+
+.qz-area{margin-top:16px;border-top:1px solid rgba(184,149,106,.2);padding-top:16px}
+.qz-title{font-size:13px;font-weight:700;color:#2A1E08;margin-bottom:10px}
+.qz-item{background:rgba(245,237,216,.4);border:1px solid rgba(184,149,106,.12);border-radius:12px;padding:12px;margin-bottom:8px}
+.qz-num{font-size:10px;font-weight:700;color:#B8956A;margin-bottom:3px}
+.qz-q{font-size:13px;color:#2A1E08;margin-bottom:8px;line-height:1.5}
+.qz-opts{display:flex;flex-direction:column;gap:4px}
+.qo{padding:7px 11px;border-radius:10px;font-size:12.5px;cursor:pointer;border:1.5px solid rgba(184,149,106,.2);background:rgba(255,255,255,.6);color:#3A2E18;transition:all .15s;text-align:left;font-family:inherit}
+.qo:hover{border-color:#B8956A;background:rgba(184,149,106,.08)}
+.qo.picked{border-color:#B8956A;background:rgba(184,149,106,.15);font-weight:600}
+.qo.correct{border-color:#4A7C3F!important;background:rgba(74,124,63,.1)!important;color:#2A5A1E!important}
+.qo.wrong{border-color:#C0392B!important;background:rgba(192,57,43,.06)!important;color:#8B1A10!important}
+.qz-input{width:100%;padding:8px 11px;border-radius:10px;font-size:13px;border:1.5px solid rgba(184,149,106,.3);background:rgba(255,255,255,.6);color:#2A1E08;outline:none;font-family:inherit;transition:border .2s}
+.qz-input:focus{border-color:#B8956A}
+.qz-explain{font-size:11.5px;color:#6A5030;margin-top:6px;padding:6px 9px;background:rgba(184,149,106,.06);border-radius:8px;display:none;line-height:1.5}
+.qz-explain.show{display:block}
+.qz-item.graded .qo,.qz-item.graded .qz-input{pointer-events:none}
+
+.act-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.btn{padding:8px 16px;border-radius:18px;font-size:12.5px;font-weight:600;cursor:pointer;border:none;transition:all .18s;font-family:inherit;letter-spacing:.02em}
+.btn-p{background:#B8956A;color:#fff}.btn-p:hover{background:#9A7A52}
+.btn-o{background:transparent;color:#9A8060;border:1.5px solid rgba(184,149,106,.35)}.btn-o:hover{border-color:#B8956A;color:#B8956A}
+.btn-g{background:#4A7C3F;color:#fff}.btn-g:hover{background:#3A6A30}
+.btn-r{color:#C0392B;border:1.5px solid rgba(192,57,43,.22);background:transparent}.btn-r:hover{border-color:#C0392B;background:rgba(192,57,43,.06)}
+
+.r-block{background:rgba(245,237,216,.5);border:1px solid rgba(184,149,106,.2);border-radius:14px;padding:16px;margin-top:12px;display:none}
+.r-block.show{display:block}
+.r-stars{font-size:26px;margin-bottom:2px}
+.r-score{font-size:28px;font-weight:700;color:#2A1E08}.r-score span{color:#B8956A}
+.r-msg{font-size:12.5px;color:#5A4020;margin-top:6px;line-height:1.6}
+
+/* ══════════════════════════════════════════ 终极挑战 ══════════════════════════════════════════ */
+.challenge-view{position:fixed;inset:0;z-index:95;background:#F5EDD8;overflow-y:auto;display:none}
+.challenge-view.active{display:block}
+.ch-inner{max-width:700px;margin:0 auto;padding:40px 24px 60px}
+.ch-header{text-align:center;margin-bottom:28px}
+.ch-icon{font-size:48px;margin-bottom:8px}
+.ch-title{font-size:clamp(20px,3vw,28px);font-weight:700;color:#2A1E08;margin-bottom:4px}
+.ch-sub{font-size:12.5px;color:#9A8060;line-height:1.6}
+.ch-back{font-size:12px;color:#9A8060;cursor:pointer;background:none;border:none;font-family:inherit;display:inline-flex;align-items:center;gap:4px;margin-bottom:20px;transition:color .2s}
+.ch-back:hover{color:#2A1E08}
+.ch-card{background:rgba(255,255,255,.55);border:1px solid rgba(184,149,106,.2);border-radius:16px;padding:18px;margin-bottom:12px;backdrop-filter:blur(4px)}
+.ch-num{font-size:11px;font-weight:700;color:#B8956A;margin-bottom:4px}
+.ch-sentence{font-size:15px;color:#2A1E08;font-weight:600;margin-bottom:12px;padding:10px 14px;background:rgba(184,149,106,.08);border-radius:10px;line-height:1.6;font-style:italic}
+.ch-ask{font-size:12.5px;color:#5A4020;margin-bottom:8px}
+
+@media(max-width:700px){
+  .normal-view{flex-direction:column}
+  .n-left{width:100%;height:auto;max-height:40vh;border-right:none;border-bottom:1px solid rgba(184,149,106,.15);padding:50px 14px 18px}
+  .n-right{padding:20px 14px 40px}
+  .mode-cards{gap:12px}.mode-card{width:calc(50% - 6px);padding:20px 14px}
+  .lvl-card{max-height:88vh;border-radius:18px;padding:20px 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ 入口页 ═══════════════════════════════════════ -->
+<div class="entry-page" id="entryPage">
+  <div class="entry-inner">
+    <div class="entry-icon">📖</div>
+    <div class="entry-title">英语语法学习</div>
+    <div class="entry-sub">选择一种方式，开始你的语法之旅</div>
+    <div class="mode-cards">
+      <div class="mode-card" onclick="startNormal()">
+        <div class="mode-card-icon">🗺️</div>
+        <div class="mode-card-title">普通模式</div>
+        <div class="mode-card-sub">语法地图一览无余<br>所有知识点清晰可见<br>适合系统学习与复习</div>
+        <span class="mode-card-tag tag-normal">系统学习</span>
+      </div>
+      <div class="mode-card" onclick="startForest()">
+        <div class="mode-card-icon">🏮</div>
+        <div class="mode-card-title">迷雾森林</div>
+        <div class="mode-card-sub">一盏灯笼，一个语法点<br>迷雾中步步探索<br>适合沉浸式闯关体验</div>
+        <span class="mode-card-tag tag-forest">闯关体验</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ 普通模式 ═══════════════════════════════════════ -->
+<div class="normal-view" id="normalView">
+  <div class="normal-topbar">
+    <button class="n-back" onclick="backToEntry()">← 返回首页</button>
+    <span class="n-brand">John Class</span>
+    <button class="n-challenge-btn" id="nChallengeBtn" onclick="startChallenge()">🏆 终极挑战</button>
+  </div>
+  <div class="n-left" id="nLeft"></div>
+  <div class="n-right" id="nRight">
+    <div class="n-welcome" id="nWelcome">
+      <div class="n-welcome-icon">🗺️</div>
+      <div class="n-welcome-title">普通模式</div>
+      <div class="n-welcome-sub">左侧是完整的语法地图。点击任意金色节点开始学习，或从头开始逐个攻克。</div>
+    </div>
+    <div id="nContent" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ 森林模式 ═══════════════════════════════════════ -->
+<div class="forest-view" id="forestView">
+  <div class="f-topbar">
+    <button class="f-back" onclick="backToEntry()">← 返回首页</button>
+    <span class="n-brand">John Class</span>
+    <span class="f-info" id="fInfo">🏮 开始探索</span>
+  </div>
+  <div class="forest-scene" id="forestScene">
+    <div class="f-ground"></div>
+    <!-- 小屋1 -->
+    <div class="f-cabin"><div class="f-cabin-roof"></div><div class="f-cabin-ch"></div><div class="f-cabin-smoke"></div><div class="f-cabin-smoke f-cabin-smoke2"></div><div class="f-cabin-body"><div class="f-cabin-w"></div><div class="f-cabin-w2"></div></div></div>
+    <!-- 小屋2 -->
+    <div class="f-cabin f-cabin2"><div class="f-cabin-roof"></div><div class="f-cabin-ch"></div><div class="f-cabin-smoke"></div><div class="f-cabin-body"><div class="f-cabin-w"></div><div class="f-cabin-w2"></div></div></div>
+    <!-- 树 -->
+    <div class="f-tree" style="bottom:12%;left:20%"><div class="f-tree-top"></div><div class="f-tree-top2"></div><div class="f-tree-trunk"></div></div>
+    <div class="f-tree" style="bottom:10%;left:35%"><div class="f-tree-top"></div><div class="f-tree-top2"></div><div class="f-tree-trunk"></div></div>
+    <div class="f-tree" style="bottom:13%;right:22%"><div class="f-tree-top"></div><div class="f-tree-top2"></div><div class="f-tree-trunk"></div></div>
+    <div class="f-tree" style="bottom:11%;right:38%"><div class="f-tree-top"></div><div class="f-tree-top2"></div><div class="f-tree-trunk"></div></div>
+    <!-- 迷雾 -->
+    <div class="f-mist-particles" id="fMistParticles"></div>
+    <div class="f-mist-top" id="fMistTop"><div class="f-mist-wave"></div><div class="f-mist-wave f-mist-wave2"></div></div>
+    <!-- 路径 -->
+    <div class="f-path-container" id="fPathContainer"><svg class="f-path-svg" id="fPathSvg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg></div>
+    <!-- 节点 -->
+    <div class="f-nodes-layer" id="fNodesLayer"></div>
+  </div>
+  <div class="f-fireworks" id="fFireworks"></div>
+</div>
+
+<!-- ═══════════════════════════════════════ 终极挑战 ═══════════════════════════════════════ -->
+<div class="challenge-view" id="challengeView">
+  <div class="ch-inner">
+    <button class="ch-back" onclick="closeChallenge()">← 返回</button>
+    <div class="ch-header">
+      <div class="ch-icon">🏆</div>
+      <div class="ch-title">终极挑战</div>
+      <div class="ch-sub">恭喜你完成了全部 32 关！现在来挑战综合题目——分析句子结构并翻译句子。</div>
+    </div>
+    <div id="chContent"></div>
+    <div class="act-row" style="justify-content:center;margin-top:20px">
+      <button class="btn btn-p" onclick="checkChallenge()">✓ 提交批改</button>
+      <button class="btn btn-r" onclick="resetChallenge()">↺ 重做</button>
+    </div>
+    <div class="r-block" id="chResult"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ 关卡弹窗（共用） ═══════════════════════════════════════ -->
+<div class="lvl-overlay" id="lvlOverlay">
+  <div class="lvl-overlay-bg" onclick="closeLvlOverlay()"></div>
+  <div class="lvl-card" id="lvlCard"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  32 关数据（与之前相同，为保证完整性全部保留）
+// ══════════════════════════════════════════════════════════
+const LEVELS=[
+{id:1,chapter:'句子成分',icon:'🧱',title:'主语与谓语',subtitle:'句子的骨架——谁做了什么事',
+content:[
+{subtitle:'主语（Subject）',text:'主语是句子的核心，表示"谁"或"什么"。通常由名词、代词、动名词或从句充当，是动作的发起者。',examples:[{en:'She cried.',zh:'她哭了。'},{en:'The little boy runs fast.',zh:'那个小男孩跑得快。'},{en:'Learning English takes time.',zh:'学英语需要时间。'}]},
+{subtitle:'谓语（Predicate）',text:'谓语是主语发出的动作或所处的状态，核心是动词。分为简单谓语和复合谓语。',examples:[{en:'Birds fly.',zh:'鸟会飞。（不及物动词）'},{en:'She is reading a book.',zh:'她正在读书。（复合谓语）'},{en:'He can speak English.',zh:'他会说英语。（情态动词+原形）'}]}],
+quiz:[{type:'choice',q:'在 "The old man smiled." 中，主语是什么？',opts:['The old man','smiled','old','man'],ans:0,explain:'The old man 是完整的主语，smiled 是谓语。'},{type:'choice',q:'下面哪个句子的谓语是及物动词？',opts:['She sleeps.','He bought a car.','They are happy.','It rains.'],ans:1,explain:'bought 是及物动词，a car 是宾语。'},{type:'fill',q:'在 "_____ makes me happy." 中填入表示"唱歌"的英文词作主语。',ans:'Singing',explain:'Singing（动名词）作主语。'}]},
+{id:2,chapter:'句子成分',icon:'🧱',title:'宾语与补语',subtitle:'动作的承担者与被补充说明的成分',
+content:[
+{subtitle:'宾语（Object）',text:'宾语是动作的承担者，跟在及物动词或介词后面。',examples:[{en:'I like you.',zh:'我喜欢你。'},{en:'She enjoys swimming.',zh:'她喜欢游泳。'},{en:'He wants to go home.',zh:'他想回家。'}]},
+{subtitle:'补语（Complement）',text:'补语补充说明主语或宾语的身份、特征或状态。检验宾补：在宾语和宾补之间加 be 动词，句子成立则是宾补。',examples:[{en:'I find you beautiful.',zh:'我发现你很美。→ You are beautiful. ✓'},{en:'We made him our leader.',zh:'我们选他当队长。→ He is our leader. ✓'}]}],
+quiz:[{type:'choice',q:'在 "She painted the wall white." 中 white 是什么成分？',opts:['主语','谓语','宾语','宾补'],ans:3,explain:'white 补充说明 wall。检验：The wall is white. ✓'},{type:'choice',q:'下面哪个不是宾语？',opts:['I like apples.中的apples','She runs fast.中的fast','He bought a pen.中的pen','We saw him.中的him'],ans:1,explain:'fast 是副词作状语。runs 是不及物动词。'},{type:'fill',q:'在 "They named the baby ___." 中填入一个名字作宾补。',ans:'John',explain:'John 是宾补。检验：The baby is John. ✓'}]},
+{id:3,chapter:'句子成分',icon:'🧱',title:'定语',subtitle:'修饰名词，让表达更精确',
+content:[
+{subtitle:'定语（Attributive）',text:'定语修饰和限定名词。前置定语包括形容词、冠词、所有格；后置定语包括形容词短语、介词短语、非谓语短语和定语从句。',examples:[{en:'A beautiful girl smiled.',zh:'一个漂亮女孩笑了。（前置）'},{en:'The man in white is my teacher.',zh:'穿白衣服的男人是我老师。'},{en:'I like the girl who wears a red dress.',zh:'我喜欢那个穿红裙子的女孩。（定语从句）'}]}],
+quiz:[{type:'choice',q:'在 "I bought a dress suitable for me." 中 suitable for me 是什么？',opts:['主语','谓语','定语','状语'],ans:2,explain:'形容词短语作后置定语，修饰 dress。'},{type:'choice',q:'下面哪个是前置定语？',opts:['in the park','who is tall','a beautiful','with money'],ans:2,explain:'a beautiful 放在名词前，是前置定语。'},{type:'fill',q:'"Bank ___ China" 中填入合适的介词。',ans:'of',explain:'Bank of China。of 介词短语作后置定语。'}]},
+{id:4,chapter:'句子成分',icon:'🧱',title:'状语',subtitle:'修饰动作和句子，提供背景信息',
+content:[
+{subtitle:'状语（Adverbial）',text:'状语修饰动词、形容词或整个句子，提供时间、地点、方式、原因、目的、结果、条件、让步、程度等信息。',examples:[{en:'She arrived yesterday.',zh:'她昨天到了。（时间）'},{en:'He spoke in a soft voice.',zh:'他用柔和的声音说话。（方式）'},{en:'I am very happy.',zh:'我非常开心。（程度）'}]}],
+quiz:[{type:'choice',q:'在 "She runs quickly." 中 quickly 是什么状语？',opts:['时间','地点','方式','原因'],ans:2,explain:'quickly 修饰 runs，表示方式。'},{type:'choice',q:'"Because he was ill" 是什么类型？',opts:['时间状语','原因状语','条件状语','让步状语'],ans:1,explain:'because 引导原因状语从句。'},{type:'fill',q:'"He goes to school ___ bus." 填入介词。',ans:'by',explain:'by bus = 乘公交，方式状语。'}]},
+{id:5,chapter:'基本句型',icon:'🏛️',title:'主谓结构 SV',subtitle:'主语 + 不及物动词',
+content:[
+{subtitle:'句型一：S + V（不及物动词）',text:'最基本的句型。谓语是不及物动词，后面不接宾语。',examples:[{en:'She cries.',zh:'她哭了。'},{en:'The sun rises.',zh:'太阳升起了。'},{en:'He runs every morning.',zh:'他每天早上跑步。'}]},
+{subtitle:'常见不及物动词',text:'go, come, arrive, sleep, die, laugh, cry, happen, appear, disappear, rise, fall 等。',examples:[{en:'The baby is sleeping.',zh:'宝宝在睡觉。'},{en:'Something happened.',zh:'有事发生了。'}]}],
+quiz:[{type:'choice',q:'下面哪个是主谓结构？',opts:['I like you.','She sleeps.','He is a teacher.','We play football.'],ans:1,explain:'She sleeps = 主语 + 不及物动词。'},{type:'choice',q:'"Birds fly." 属于哪种句型？',opts:['主谓宾','主系表','主谓','主谓宾宾'],ans:2,explain:'Birds + fly（不及物）= 主谓结构。'},{type:'fill',q:'"He ___（到达）yesterday." 用 arrive 填空。',ans:'arrived',explain:'arrive 不及物，yesterday → arrived。'}]},
+{id:6,chapter:'基本句型',icon:'🏛️',title:'主谓宾结构 SVO',subtitle:'主语 + 及物动词 + 宾语',
+content:[
+{subtitle:'句型二：S + V + O',text:'最常用的句型。谓语是及物动词，后面必须接宾语。',examples:[{en:'I like you.',zh:'我喜欢你。'},{en:'She plays basketball.',zh:'她打篮球。'},{en:'He wrote a letter.',zh:'他写了一封信。'}]}],
+quiz:[{type:'choice',q:'"I play basketball." 中 basketball 是什么？',opts:['主语','谓语','宾语','状语'],ans:2,explain:'basketball 是及物动词 play 的宾语。'},{type:'choice',q:'下面哪个动词在句中是不及物的？',opts:['She reads a book.','He arrived late.','I ate an apple.','We saw him.'],ans:1,explain:'arrived 后没有宾语。'},{type:'fill',q:'"She _____ (eat) an apple now." 填空。',ans:'is eating',explain:'now → 现在进行时。is eating。'}]},
+{id:7,chapter:'基本句型',icon:'🏛️',title:'主谓宾宾 SVOO',subtitle:'双宾语——给某人某物',
+content:[
+{subtitle:'句型三：S + V + O₁ + O₂',text:'动词带有"给予"含义，接两个宾语。换位时大多加 to（give/send/teach），少数加 for（buy/make/cook）。',examples:[{en:'I give you my gift.',zh:'我给你礼物。= I give my gift to you.'},{en:'She bought me a scarf.',zh:'她给我买了围巾。= She bought a scarf for me.'}]}],
+quiz:[{type:'choice',q:'"I gave her a book." 改写为？',opts:['I gave a book her.','I gave to her a book.','I gave a book to her.','I gave for her a book.'],ans:2,explain:'give 用 to：give sth to sb。'},{type:'choice',q:'"She bought her son a toy." 用 for 改写？',opts:['bought to her son','bought a toy for her son','bought a toy to her son','bought for her son a toy'],ans:1,explain:'buy 用 for：buy sth for sb。'},{type:'fill',q:'"He _____ (send) me a letter yesterday." 填空。',ans:'sent',explain:'send → sent（不规则过去式）。'}]},
+{id:8,chapter:'基本句型',icon:'🏛️',title:'主谓宾宾补 SVOC',subtitle:'宾语 + 补足语',
+content:[
+{subtitle:'句型四：S + V + O + C',text:'宾语后有成分补充说明。检验：O 和 C 间加 be 动词成立即为宾补。',examples:[{en:'I make you happy.',zh:'我让你开心。→ You are happy. ✓'},{en:'We elected him monitor.',zh:'我们选他当班长。→ He is monitor. ✓'}]}],
+quiz:[{type:'choice',q:'在 "I find the book interesting." 中 interesting 是什么？',opts:['定语','状语','宾语','宾补'],ans:3,explain:'The book is interesting. ✓ → 宾补。'},{type:'choice',q:'下面哪个不是宾补结构？',opts:['I made her happy.','She gave me a gift.','We find it easy.','They named the dog Lucky.'],ans:1,explain:'gave me a gift 是双宾语 SVOO。'},{type:'fill',q:'"They painted the door ___." 填入颜色词作宾补。',ans:'red',explain:'The door is red. ✓ → 宾补。'}]},
+{id:9,chapter:'基本句型',icon:'🏛️',title:'主系表结构 SVP',subtitle:'系动词 + 表语',
+content:[
+{subtitle:'句型五：S + V + P',text:'表语描述主语的身份、特征、状态。系动词包括 be 动词、感官动词（look/sound/smell/taste/feel）、变化动词（become/turn/get）和持续动词（keep/remain）。',examples:[{en:'I am a teacher.',zh:'我是老师。'},{en:'You sound ill.',zh:'你听起来病了。'},{en:'It tastes delicious.',zh:'这尝起来很美味。'}]}],
+quiz:[{type:'choice',q:'"It sounds great." 属于哪种句型？',opts:['主谓','主谓宾','主系表','主谓宾宾补'],ans:2,explain:'It + sounds（系动词）+ great（表语）。'},{type:'choice',q:'下面哪个不是系动词？',opts:['smell','become','play','remain'],ans:2,explain:'play 是实义动词。'},{type:'fill',q:'"The soup ___ delicious." 填入合适的感官动词。',ans:'tastes',explain:'taste = 尝起来。主语单数 → tastes。'}]},
+{id:10,chapter:'时态',icon:'⏰',title:'一般现在时',subtitle:'经常发生的、客观事实',
+content:[
+{subtitle:'一般现在时',text:'表示经常/习惯性动作、客观事实、现在的状态。第三人称单数动词加 -s/-es。',examples:[{en:'He plays basketball.',zh:'他打篮球。'},{en:'The earth goes around the sun.',zh:'地球绕太阳转。'}]}],
+quiz:[{type:'choice',q:'"She ___ to school every day." 应填入？',opts:['go','goes','going','went'],ans:1,explain:'She 三单 + every day → goes。'},{type:'choice',q:'下面哪句是一般现在时？',opts:['He is sleeping.','She went home.','Water boils at 100°C.','I will call you.'],ans:2,explain:'客观真理用一般现在时。'},{type:'fill',q:'"Your friend _____ (play) basketball every weekend." 填空。',ans:'plays',explain:'Your friend 三单 → plays。'}]},
+{id:11,chapter:'时态',icon:'⏰',title:'一般过去时',subtitle:'过去发生并已结束',
+content:[
+{subtitle:'一般过去时',text:'表示过去发生并结束的动作或状态。规则动词加 -ed，不规则需记忆。',examples:[{en:'He gave me a card yesterday.',zh:'他昨天给了我卡片。'},{en:'I ate two watermelons last summer.',zh:'去年夏天吃了两个西瓜。'}]}],
+quiz:[{type:'choice',q:'"He ___ homework last night." 应填入？',opts:['do','does','did','doing'],ans:2,explain:'last night → 过去时。do → did。'},{type:'choice',q:'过去时的否定用哪个助动词？',opts:['do','does','did','doing'],ans:2,explain:'did + 动词原形。'},{type:'fill',q:'"I _____ (see) him at the party yesterday." 填空。',ans:'saw',explain:'see → saw（不规则）。'}]},
+{id:12,chapter:'时态',icon:'⏰',title:'一般将来时',subtitle:'将要发生的动作',
+content:[
+{subtitle:'两种将来时',text:'will + 原形（意愿、预测）；be going to + 原形（计划、迹象推测）。',examples:[{en:'He will be a doctor.',zh:'他会成为医生。'},{en:'Look! It is going to rain.',zh:'看！要下雨了。'}]}],
+quiz:[{type:'choice',q:'"Look! The baby ___ cry." 应填入？',opts:['will','is going to','going to','goes to'],ans:1,explain:'看到迹象推测 → be going to。'},{type:'choice',q:'will 后接什么？',opts:['动词原形','to do','doing','过去分词'],ans:0,explain:'will 是情态动词，后接原形。'},{type:'fill',q:'"I _____ (visit) my grandparents next Sunday." 填空。',ans:'will visit',explain:'next Sunday → 将来时。will visit。'}]},
+{id:13,chapter:'时态',icon:'⏰',title:'现在进行时',subtitle:'此时此刻正在发生',
+content:[
+{subtitle:'结构：am/is/are + V-ing',text:'表示说话时正在进行的动作。标志词：now, Look!, Listen!。',examples:[{en:'I am eating vegetables to lose weight.',zh:'我正在吃蔬菜减肥。'},{en:'Look! He is watching a game.',zh:'看！他正在看比赛。'}]}],
+quiz:[{type:'choice',q:'"Listen! She ___ a song." 应填入？',opts:['sings','sang','is singing','will sing'],ans:2,explain:'Listen! → 现在进行时。'},{type:'choice',q:'"run" 的现在分词是？',opts:['runing','running','run','to run'],ans:1,explain:'重读闭音节双写 n → running。'},{type:'fill',q:'"Look! The boys _____ (swim) in the pool." 填空。',ans:'are swimming',explain:'Look! → 现在进行时。are swimming。'}]},
+{id:14,chapter:'时态',icon:'⏰',title:'现在完成时',subtitle:'过去发生，对现在有影响',
+content:[
+{subtitle:'结构：have/has + 过去分词',text:'过去发生且对现在有影响。标志词：already, yet, since, for。',examples:[{en:'I have eaten lunch.',zh:'我吃过午饭了。'},{en:'I have lived here since 2018.',zh:'从2018年起住在这里。'}]}],
+quiz:[{type:'choice',q:'现在完成时的结构是？',opts:['have/has + doing','have/has + done','have/has + to do','have/has + do'],ans:1,explain:'have/has + 过去分词。'},{type:'choice',q:'"I ___ in Beijing since 2015." 应填入？',opts:['live','lived','have lived','will live'],ans:2,explain:'since → 现在完成时。'},{type:'fill',q:'"He _____ (finish) his homework already." 填空。',ans:'has finished',explain:'already → 现在完成。has finished。'}]},
+{id:15,chapter:'时态',icon:'⏰',title:'过去进行时 & 过去完成时',subtitle:'过去的进行与过去的完成',
+content:[
+{subtitle:'过去进行时：was/were + V-ing',text:'表示过去某时刻正在进行的动作。',examples:[{en:'I was reading at 8pm yesterday.',zh:'昨晚八点我在读书。'}]},
+{subtitle:'过去完成时：had + 过去分词',text:'表示"过去的过去"。',examples:[{en:'I had finished homework before Mom came.',zh:'妈妈回来前我做完作业了。'}]}],
+quiz:[{type:'choice',q:'过去进行时的结构？',opts:['was/were + done','was/were + doing','had + done','have + done'],ans:1,explain:'was/were + V-ing。'},{type:'choice',q:'"By the time I arrived, the movie ___." 应填入？',opts:['started','was starting','had started','has started'],ans:2,explain:'过去的过去 → had started。'},{type:'fill',q:'"When I saw her, she _____ (cry)." 填空。',ans:'was crying',explain:'看到时正在哭 → 过去进行时。'}]},
+{id:16,chapter:'时态',icon:'⏰',title:'现在完成进行时',subtitle:'一直在做，持续到现在',
+content:[
+{subtitle:'结构：have/has been + V-ing',text:'强调从过去持续到现在、可能继续下去。',examples:[{en:'I have been waiting for two hours.',zh:'已经等了两个小时了。'},{en:'He has been complaining all day.',zh:'一整天都在抱怨。'}]}],
+quiz:[{type:'choice',q:'现在完成进行时的结构？',opts:['have/has done','have/has been doing','had been doing','be doing'],ans:1,explain:'have/has been + V-ing。'},{type:'choice',q:'"I ___ for you since 3pm." 强调一直在等，用？',opts:['wait','waited','have waited','have been waiting'],ans:3,explain:'have been waiting 强调持续。'},{type:'fill',q:'"She is tired because she _____ (work) all day." 填空。',ans:'has been working',explain:'all day → 现在完成进行时。'}]},
+{id:17,chapter:'语态',icon:'🔄',title:'主动语态',subtitle:'主语是动作的发出者',
+content:[
+{subtitle:'主动语态',text:'主语是动作的执行者。这是最自然、最常用的语态。',examples:[{en:'I eat meat.',zh:'我吃肉。'},{en:'She wrote a letter.',zh:'她写了一封信。'}]}],
+quiz:[{type:'choice',q:'主动和被动语态的区别？',opts:['时态不同','主语是执行者还是承受者','动词形式不同','句子长度不同'],ans:1,explain:'主动：主语是执行者。'},{type:'choice',q:'下面哪个是主动语态？',opts:['The book was read by her.','She read the book.','The cake was eaten.','The door was opened.'],ans:1,explain:'She read the book = 主动。'},{type:'fill',q:'翻译 "The cat chased the mouse."',ans:'猫追老鼠。',explain:'cat 是执行者，主动语态。'}]},
+{id:18,chapter:'语态',icon:'🔄',title:'被动语态',subtitle:'主语是动作的承受者',
+content:[
+{subtitle:'结构：be + 过去分词',text:'主语是动作的承受者。be 体现时态，done 体现被动。',examples:[{en:'Meat is eaten by me.',zh:'肉被我吃。'},{en:'The homework was finished yesterday.',zh:'作业昨天被完成了。'}]}],
+quiz:[{type:'choice',q:'"The cake was eaten by the boy." 中 was eaten 是？',opts:['主动语态','被动语态','系表结构','进行时'],ans:1,explain:'be + 过去分词 = 被动。'},{type:'choice',q:'被动语态中 be 动词的作用？',opts:['表示被动','体现时态','没有作用','连接宾语'],ans:1,explain:'be 体现时态，done 体现被动。'},{type:'fill',q:'"English _____ (speak) all over the world." 填空。',ans:'is spoken',explain:'被动，一般现在时 → is spoken。'}]},
+{id:19,chapter:'非谓语',icon:'🎯',title:'动词 -ing',subtitle:'主动 / 进行',
+content:[
+{subtitle:'-ing 的两重身份',text:'动名词（作主/宾语）和现在分词（作定/状语），都带"主动""进行"含义。',examples:[{en:'I like playing basketball.',zh:'我喜欢打篮球。'},{en:'There is a man smoking in the room.',zh:'有男人在房间抽烟。'}]}],
+quiz:[{type:'choice',q:'-ing 作非谓语表示什么？',opts:['被动/完成','主动/进行','目的/将来','过去/完成'],ans:1,explain:'-ing = 主动/进行。'},{type:'choice',q:'"I enjoy ___ books." 应填入？',opts:['read','to read','reading','reads'],ans:2,explain:'enjoy + doing。'},{type:'fill',q:'"The woman _____ (wear) a red hat is my aunt." 填空。',ans:'wearing',explain:'主动关系 → wearing。'}]},
+{id:20,chapter:'非谓语',icon:'🎯',title:'动词 -ed',subtitle:'被动 / 完成',
+content:[
+{subtitle:'过去分词的含义',text:'作定语/状语时带"被动"或"完成"含义。',examples:[{en:'I want the flower bought by that boy.',zh:'我想要那朵被那男孩买的花。'},{en:'The excited children ran out.',zh:'兴奋的孩子们跑了出去。'}]}],
+quiz:[{type:'choice',q:'过去分词作非谓语表示？',opts:['主动/进行','被动/完成','目的/将来','原因/结果'],ans:1,explain:'-ed/done = 被动/完成。'},{type:'choice',q:'"The boy ___ Tom is my friend." 应填入？',opts:['name','naming','named','to name'],ans:2,explain:'被叫做 → named。'},{type:'fill',q:'"I found the window ___ (break)." 填空。',ans:'broken',explain:'窗户被打破 → broken。'}]},
+{id:21,chapter:'非谓语',icon:'🎯',title:'不定式 to do',subtitle:'目的 / 将来',
+content:[
+{subtitle:'不定式的含义',text:'to + 原形，表示"目的"或"将来"。',examples:[{en:'I bought the house to give you a home.',zh:'我买房为了给你一个家。'},{en:'He wants to become a doctor.',zh:'他想当医生。'}]}],
+quiz:[{type:'choice',q:'不定式 to do 表示什么？',opts:['主动/进行','被动/完成','目的/将来','过去/现在'],ans:2,explain:'to do = 目的/将来。'},{type:'choice',q:'"She studies hard ___ good grades." 应填入？',opts:['get','getting','to get','got'],ans:2,explain:'to get = 目的状语。'},{type:'fill',q:'"He decided _____ (join) the club." 填空。',ans:'to join',explain:'decide + to do。'}]},
+{id:22,chapter:'定语系统',icon:'🔍',title:'前置定语',subtitle:'冠词、形容词、所有格',
+content:[
+{subtitle:'前置定语种类',text:'形容词、冠词、所有格、数词。顺序：限定词→数词→评价→大小→形状→年龄→颜色→来源→材料→用途+名词。',examples:[{en:'A beautiful young girl',zh:'一个漂亮年轻女孩'},{en:'A lovely little white dog',zh:'可爱的小白狗'}]}],
+quiz:[{type:'choice',q:'下面哪个是前置定语？',opts:['in the park','a beautiful','with money','who is tall'],ans:1,explain:'a beautiful 放在名词前。'},{type:'choice',q:'"My old blue jeans" 定语顺序？',opts:['所有格→颜色→新旧','所有格→新旧→颜色','颜色→所有格→新旧','新旧→颜色→所有格'],ans:1,explain:'所有格→新旧→颜色。'},{type:'fill',q:'"I have _____ interesting book." 填入冠词。',ans:'an',explain:'interesting 元音音素开头 → an。'}]},
+{id:23,chapter:'定语系统',icon:'🔍',title:'后置定语（短语）',subtitle:'形容词短语、介词短语、分词短语',
+content:[
+{subtitle:'三种短语后置',text:'形容词短语、介词短语和非谓语短语都可以放在名词后面作后置定语。',examples:[{en:'A dress suitable for the party',zh:'适合派对的裙子'},{en:'The man in white',zh:'穿白衣的男人'},{en:'The girl standing in the corner',zh:'站在角落的女孩'}]}],
+quiz:[{type:'choice',q:'"The man with a hat" 中 with a hat 是什么？',opts:['前置定语','后置定语','状语','宾语'],ans:1,explain:'介词短语放在名词后 → 后置定语。'},{type:'choice',q:'"A book suitable for children" 中 suitable... 是什么？',opts:['前置定语','形容词短语后置定语','状语从句','宾补'],ans:1,explain:'形容词短语整体后置修饰 book。'},{type:'fill',q:'"I hate the man ___ white." 填入介词。',ans:'in',explain:'in white = 穿着白衣。'}]},
+{id:24,chapter:'定语系统',icon:'🔍',title:'定语从句',subtitle:'who / which / that',
+content:[
+{subtitle:'定语从句',text:'用完整句子修饰名词。who（人）、which（物）、that（人/物）。引导词在从句中充当成分。',examples:[{en:'A girl who has long hair',zh:'留长发的女孩'},{en:'I like books which can broaden my horizons.',zh:'我喜欢能拓宽视野的书。'}]},
+{subtitle:'定从 vs 同位从',text:'定语从句：引导词在从句中作成分，从句不完整。同位语从句：that 不作成分，从句完整。',examples:[{en:'The news that shocked me（定从）',zh:'that 作主语'},{en:'The news that he won（同位从）',zh:'he won 完整'}]}],
+quiz:[{type:'choice',q:'指人的定语从句引导词？',opts:['which','who','where','when'],ans:1,explain:'who 指人。'},{type:'choice',q:'"The book ___ I read is great." 应填入？',opts:['who','where','which','when'],ans:2,explain:'book 是物 → which/that。'},{type:'fill',q:'"I met a girl ___ speaks three languages." 填空。',ans:'who',explain:'girl 是人，作主语 → who。'}]},
+{id:25,chapter:'状语系统',icon:'🧭',title:'时间 / 地点 / 方式状语',subtitle:'何时、何地、以何种方式',
+content:[
+{subtitle:'时间、地点、方式状语',text:'时间：now, then, yesterday, tomorrow, last week, in 2023。地点：here, there, in the park, at school。方式：quickly, by bus, with care, in a soft voice。',examples:[{en:'She will arrive tomorrow.',zh:'她明天到。'},{en:'He left his bag on the bus.',zh:'他把包落在公交上了。'},{en:'She spoke in a soft voice.',zh:'她用柔和的声音说话。'}]}],
+quiz:[{type:'choice',q:'"She arrived yesterday." 中 yesterday 是什么？',opts:['地点','时间','方式','原因'],ans:1,explain:'yesterday → 时间状语。'},{type:'choice',q:'"He goes to work by bus." 中 by bus？',opts:['时间','地点','方式','目的'],ans:2,explain:'by bus → 方式状语。'},{type:'fill',q:'"She sang the song ___ a beautiful voice." 填空。',ans:'in',explain:'in a ... voice 固定搭配。'}]},
+{id:26,chapter:'状语系统',icon:'🧭',title:'原因 / 目的 / 结果状语',subtitle:'为什么、为了什么、结果如何',
+content:[
+{subtitle:'原因 & 目的 & 结果',text:'原因：because/since/as + 从句。目的：to do, in order to。结果：so...that, such...that。',examples:[{en:'He failed because he didn\'t study.',zh:'他没学习所以失败了。'},{en:'She saved money to buy a car.',zh:'她存钱买车。'},{en:'He ran so fast that he broke the record.',zh:'他跑太快破了纪录。'}]}],
+quiz:[{type:'choice',q:'"He was late because he missed the bus." because 引导？',opts:['目的','结果','原因','条件'],ans:2,explain:'because → 原因状语从句。'},{type:'choice',q:'"He ran so fast ___ I couldn\'t catch him." 应填入？',opts:['because','that','to','for'],ans:1,explain:'so...that → 结果状语从句。'},{type:'fill',q:'"She went to Beijing ___ visit her grandmother." 填空。',ans:'to',explain:'to visit = 为了看望 → 目的状语。'}]},
+{id:27,chapter:'状语系统',icon:'🧭',title:'条件 / 让步 / 程度 / 比较',subtitle:'如果、尽管、程度、比较',
+content:[
+{subtitle:'条件 & 让步 & 程度 & 比较',text:'条件：if/unless（if从句用现在时代替将来）。让步：although/though（不能和but同用）。程度：very/quite/too/enough。比较：than/as...as。',examples:[{en:'If it rains, we will stay home.',zh:'如果下雨，我们待在家。'},{en:'Although it rained, they went out.',zh:'尽管下雨，他们还是出去了。'},{en:'She sings better than I do.',zh:'她唱得比我好。'}]}],
+quiz:[{type:'choice',q:'"If it ___ tomorrow, we will stay home." 应填入？',opts:['will rain','rains','rained','raining'],ans:1,explain:'if 从句用现在时代替将来。'},{type:'choice',q:'哪句正确？',opts:['Although he is tired, but he works.','Although he is tired, he works.','Although but he is tired, he works.','He is tired, although but works.'],ans:1,explain:'although 和 but 不能同时用。'},{type:'fill',q:'"She is ___ young to drive." 填空。',ans:'too',explain:'too...to → 太……而不能。'}]},
+{id:28,chapter:'名词性从句',icon:'💬',title:'主语从句',subtitle:'用完整句子作主语',
+content:[
+{subtitle:'主语从句',text:'用完整句子作主语。that 只起连接作用不作成分；what 在从句中充当成分。尾重原则：用 it 作形式主语。',examples:[{en:'That you like me makes me sad.',zh:'你喜欢我让我难过。'},{en:'What he said is true.',zh:'他说的是真的。'},{en:'It makes me sad that you like me.',zh:'（尾重原则）'}]}],
+quiz:[{type:'choice',q:'主语从句中 that 的作用？',opts:['作主语','作宾语','只连接不作成分','表示疑问'],ans:2,explain:'that 只连接，从句本身完整。'},{type:'choice',q:'"It makes me happy that you came." 中 it 是？',opts:['真正主语','形式主语','宾语','表语'],ans:1,explain:'it 是形式主语，真正主语是 that 从句。'},{type:'fill',q:'"_____ doesn\'t kill you makes you stronger." 填空。',ans:'What',explain:'What 引导主语从句，在从句中作主语。'}]},
+{id:29,chapter:'名词性从句',icon:'💬',title:'宾语从句',subtitle:'用完整句子作宾语',
+content:[
+{subtitle:'宾语从句',text:'作及物动词或介词的宾语。that 可省略，注意用陈述语序。',examples:[{en:'I think (that) you are beautiful.',zh:'我觉得你很美。'},{en:'Can you tell me where the station is?',zh:'车站在哪？（陈述语序）'}]}],
+quiz:[{type:'choice',q:'"I think ___ you are right." 中 that 可省吗？',opts:['不可以','可以','必须省','看情况'],ans:1,explain:'宾语从句中 that 通常可省略。'},{type:'choice',q:'正确的宾语从句语序？',opts:['I don\'t know where is he.','I don\'t know where he is.','I don\'t know he is where.','I don\'t know is he where.'],ans:1,explain:'陈述语序：where he is。'},{type:'fill',q:'"She asked me _____ I could help her." 填入"是否"。',ans:'if',explain:'if/whether = 是否。'}]},
+{id:30,chapter:'名词性从句',icon:'💬',title:'表语从句',subtitle:'系动词后接句子',
+content:[
+{subtitle:'表语从句',text:'放在系动词后。常用：The fact/truth/reason is that...。that 不可省略！reason 后用 that 不用 because。',examples:[{en:'The truth is that you are beautiful.',zh:'真相就是你很美。'},{en:'The reason is that he missed the bus.',zh:'原因是他错过了公交。'}]}],
+quiz:[{type:'choice',q:'表语从句放在什么词后？',opts:['实义动词','系动词','介词','名词'],ans:1,explain:'系动词（be/look/seem）后。'},{type:'choice',q:'"The reason is ___ he was ill." 应填入？',opts:['because','that','why','for'],ans:1,explain:'reason 作主语 → that。'},{type:'fill',q:'"The truth is _____ we are all equal." 填空。',ans:'that',explain:'the truth is that... 固定句型。'}]},
+{id:31,chapter:'名词性从句',icon:'💬',title:'同位语从句',subtitle:'解释抽象名词的内容',
+content:[
+{subtitle:'同位语从句',text:'跟在抽象名词（fact, truth, news, idea, hope）后，用 that 解释其内容。that 不作成分，从句完整。',examples:[{en:'I tell you the truth that you are beautiful.',zh:'告诉你真相，即你很美。'},{en:'The news that he won made us excited.',zh:'他赢了的消息让我们激动。'}]},
+{subtitle:'同位从 vs 定从',text:'同位从：that 不作成分，从句完整。定从：that 作主语/宾语，从句不完整。',examples:[{en:'The truth that shocked me（定从）',zh:'缺主语'},{en:'The truth that I am not your friend（同位从）',zh:'句子完整'}]}],
+quiz:[{type:'choice',q:'同位语从句中 that 的作用？',opts:['作主语','作宾语','只连接','表示疑问'],ans:2,explain:'that 只连接不作成分。'},{type:'choice',q:'"The fact that surprised us" 中 that 从句？',opts:['同位从','定从','宾从','状从'],ans:1,explain:'surprised 缺主语 → 定从。'},{type:'fill',q:'"I have a dream _____ one day we will be free." 填空。',ans:'that',explain:'that 引导同位从，解释 dream。'}]},
+{id:32,chapter:'综合挑战',icon:'🏆',title:'终极综合挑战',subtitle:'所有语法点融会贯通',
+content:[
+{subtitle:'最后一关！',text:'综合考察所有学过的语法知识——时态、语态、非谓语、从句。',examples:[{en:'What was said at the meeting is exactly the advice that we need.',zh:'会上所说的正是我们需要的建议。（主从+定从）'},{en:'Only after you have faced your weaknesses can you start to build real strength.',zh:'只有直面弱点，才能开始建立真正的力量。（倒装+定从）'}]}],
+quiz:[{type:'choice',q:'"What makes the book interesting is the truth that you can find happiness in hard times." 中 that 引导什么？',opts:['定从','宾从','同位从','状从'],ans:2,explain:'that 后完整句子 → 同位从。'},{type:'choice',q:'"The book, seen by many as great, talks about ideas that were not talked about before." 中 seen 的用法？',opts:['谓语动词','现在分词定语','过去分词定语','不定式状语'],ans:2,explain:'seen... 过去分词短语后置定语。'},{type:'fill',q:'"Only after you accept your weak points ___ you start to grow." 填空。',ans:'can',explain:'Only after... 句首 → 部分倒装。'}]}
+];
+
+// ══════════════════════════════════════════════════════════
+//  终极挑战数据
+// ══════════════════════════════════════════════════════════
+const CHALLENGE = [
+  {sentence:'The boy who is wearing a red coat often helps others after school.',
+   structAns:1, structs:['主谓宾 + 定语从句','主系表 + 状语从句','主谓宾宾 + 定语从句','主谓 + 宾补'],
+   transAns:'那个穿着红色外套的男孩放学后经常帮助别人。',
+   explain:'主句：The boy...often helps others（主谓宾）。who is wearing a red coat 是定语从句修饰 boy。after school 是时间状语。'},
+  {sentence:'To learn a new language well, you need to practice it every day.',
+   structAns:0, structs:['不定式作目的状语 + 主谓宾','现在分词作主语 + 主谓宾','主谓宾 + 定语从句','主系表 + 不定式'],
+   transAns:'要学好一门新语言，你需要每天练习。',
+   explain:'To learn a new language well 是不定式短语作目的状语。主句为 you need to practice it（主谓宾），every day 是时间状语。'},
+  {sentence:'What she said made everyone in the room laugh happily.',
+   structAns:1, structs:['主谓宾 + 定语从句','主语从句 + 谓语 + 宾语 + 宾补','主语从句 + 主系表','主谓宾宾 + 状语'],
+   transAns:'她说的话让房间里的每个人都开心地笑了。',
+   explain:'What she said 是主语从句（what 在从句中作 said 的宾语）。made 是谓语，everyone 是宾语，laugh happily 是宾补。in the room 是定语修饰 everyone。'},
+  {sentence:'The old man, tired of living alone, decided to move to a nursing home.',
+   structAns:2, structs:['主谓宾 + 定语从句','主系表 + 状语','主谓宾 + 过去分词短语作定语','主谓 + 不定式'],
+   transAns:'那位厌倦了独居的老人决定搬到养老院。',
+   explain:'tired of living alone 是过去分词短语作后置定语修饰 the old man。decided to move 是主谓宾结构（不定式作宾语）。to a nursing home 是地点状语。'},
+  {sentence:'Having finished her homework, the girl was allowed to watch TV for an hour.',
+   structAns:0, structs:['现在分词作状语 + 被动语态主句','过去分词作状语 + 主动语态','主谓宾 + 定语从句','主语从句 + 被动语态'],
+   transAns:'做完作业后，女孩被允许看一个小时电视。',
+   explain:'Having finished her homework 是现在分词完成式作时间状语（先于主句动作发生）。主句为被动语态 was allowed。to watch TV 是主语补足语。'},
+  {sentence:'Whether we will go on the trip depends largely on how the weather turns out tomorrow.',
+   structAns:1, structs:['主谓宾 + 定语从句','主语从句 + 谓语 + 宾语从句','主系表 + 主语从句','主谓宾宾 + 状语从句'],
+   transAns:'我们是否去旅行很大程度上取决于明天的天气如何。',
+   explain:'Whether we will go on the trip 是主语从句。depends largely on... 是谓语。how the weather turns out 是宾语从句（作介词 on 的宾语）。'},
+  {sentence:'The young man, who used to be shy, has become a confident speaker after years of practice.',
+   structAns:0, structs:['主系表 + 非限制性定语从句 + 时间状语','主谓宾 + 定语从句','主语从句 + 主系表','主谓 + 状语从句'],
+   transAns:'那个曾经害羞的年轻人经过多年练习后已成为一名自信的演讲者。',
+   explain:'主句：The young man has become a confident speaker（主系表）。who used to be shy 是非限制性定语从句。after years of practice 是时间状语。'},
+  {sentence:'The book written by the famous author is so difficult that I can hardly understand it without a dictionary.',
+   structAns:3, structs:['主谓宾 + 定语从句','主语从句 + 主系表','主谓 + 状语','主系表 + 过去分词定语 + 结果状语从句'],
+   transAns:'那位著名作家写的书太难了，我几乎不用词典就看不懂。',
+   explain:'written by the famous author 是过去分词短语作后置定语。主句 The book is so difficult（主系表）。that 引导结果状语从句。without a dictionary 是条件状语。'},
+  {sentence:'Although she has realized that cooking at home saves money, she still eats out sometimes.',
+   structAns:1, structs:['主谓宾 + 定语从句','让步状语从句 + 宾语从句 + 主句','主语从句 + 主谓宾','主系表 + 状语从句'],
+   transAns:'虽然她已经意识到在家做饭省钱，但她有时仍然在外面吃。',
+   explain:'Although 引导让步状语从句，其中 that cooking at home saves money 是宾语从句（cooking at home 是动名词作主语）。主句 she still eats out sometimes。'},
+  {sentence:'What he said at the meeting is exactly the advice that we need.',
+   structAns:2, structs:['主谓宾 + 状语','主谓宾宾 + 定语从句','主语从句 + 主系表 + 定语从句','主系表 + 宾语从句'],
+   transAns:'他在会议上所说的正是我们需要的建议。',
+   explain:'What he said at the meeting 是主语从句（what 作 said 的宾语）。is exactly the advice 是主系表。that we need 是定语从句修饰 advice。'},
+  {sentence:'The reason why he was late was that he missed the first bus when he got up late.',
+   structAns:0, structs:['定语从句 + 主系表 + 表语从句 + 时间状语从句','主语从句 + 主谓宾','主谓宾 + 宾语从句','主系表 + 定语从句'],
+   transAns:'他迟到的原因是他起晚了，错过了第一班公交车。',
+   explain:'why he was late 是定语从句修饰 reason。was that... 是表语从句。that he missed the first bus 是表语从句的内容。when he got up late 是时间状语从句。'},
+  {sentence:'When we visited the coastal village last summer, we noticed many local fishermen using solar-powered boats to catch fish.',
+   structAns:1, structs:['主谓宾 + 定语从句','时间状语从句 + 主谓宾 + 宾补（现在分词）+ 目的状语','主语从句 + 主系表','主谓宾宾 + 状语'],
+   transAns:'去年夏天我们参观那个沿海村庄时，注意到许多当地渔民使用太阳能驱动的船捕鱼。',
+   explain:'When 引导时间状语从句。主句 we noticed many local fishermen...（主谓宾）。using solar-powered boats 是现在分词短语作宾补。to catch fish 是不定式作目的状语。'}
+];
+
+// ══════════════════════════════════════════════════════════
+//  全局状态
+// ══════════════════════════════════════════════════════════
+const SK = 'grammar_dual_mode';
+let progress = { completed: [], quizResults: {} };
+let quizAnswers = {};
+let currentMode = null; // 'normal' | 'forest'
+let normalOpenLevelId = null;
+let forestCurrentId = 1;
+
+function loadProg() {
+  try { const r = localStorage.getItem(SK); if (r) { const p = JSON.parse(r); progress = { ...progress, ...p }; } } catch(e) {}
+  // 确保 completed 只包含已完成的
+  if (!progress.completed) progress.completed = [];
+  forestCurrentId = 1;
+  while (progress.completed.includes(forestCurrentId) && forestCurrentId < LEVELS.length) forestCurrentId++;
+}
+function saveProg() { localStorage.setItem(SK, JSON.stringify(progress)); }
+function isDone(id) { return progress.completed.includes(id); }
+function allDone() { return LEVELS.every(l => isDone(l.id)); }
+
+// ══════════════════════════════════════════════════════════
+//  入口
+// ══════════════════════════════════════════════════════════
+function startNormal() {
+  currentMode = 'normal';
+  document.getElementById('entryPage').classList.add('hide');
+  document.getElementById('normalView').classList.add('active');
+  renderNormalMap();
+  document.getElementById('nWelcome').style.display = 'block';
+  document.getElementById('nContent').style.display = 'none';
+  if (allDone()) document.getElementById('nChallengeBtn').classList.add('show');
+}
+function startForest() {
+  currentMode = 'forest';
+  document.getElementById('entryPage').classList.add('hide');
+  document.getElementById('forestView').classList.add('active');
+  buildForestScene();
+}
+function backToEntry() {
+  currentMode = null;
+  document.getElementById('entryPage').classList.remove('hide');
+  document.getElementById('normalView').classList.remove('active');
+  document.getElementById('forestView').classList.remove('active');
+  document.getElementById('challengeView').classList.remove('active');
+  closeLvlOverlay();
+}
+
+// ══════════════════════════════════════════════════════════
+//  普通模式
+// ══════════════════════════════════════════════════════════
+function renderNormalMap() {
+  const chapters = [];
+  LEVELS.forEach(l => {
+    let ch = chapters.find(c => c.name === l.chapter);
+    if (!ch) { ch = { name: l.chapter, icon: l.icon, levels: [] }; chapters.push(ch); }
+    ch.levels.push(l);
+  });
+  document.getElementById('nLeft').innerHTML = `
+    <div class="n-map-title">🗺️ 语法地图</div>
+    <div class="n-map-sub">点击节点开始学习 · 金色=当前可学 · 绿色=已掌握</div>
+    ${chapters.map(ch => {
+      const d = ch.levels.filter(l => isDone(l.id)).length;
+      return `<div class="n-chapter">
+        <div class="n-ch-title">${ch.icon} ${ch.name} <span class="n-ch-count">${d}/${ch.levels.length}</span></div>
+        <div class="n-ch-nodes">${ch.levels.map(l => {
+          let cls = 'locked';
+          if (isDone(l.id)) cls = 'done';
+          else if (l.id === 1 || isDone(l.id - 1)) cls = 'current';
+          return `<div class="n-node ${cls}" onclick="normalOpen(${l.id})" title="${l.title}">${l.id}</div>`;
+        }).join('')}</div>
+      </div>`;
+    }).join('')}`;
+}
+
+function normalOpen(id) {
+  if (id > 1 && !isDone(id - 1) && !isDone(id)) return;
+  normalOpenLevelId = id;
+  const lvl = LEVELS.find(l => l.id === id);
+  quizAnswers = {};
+  document.getElementById('nWelcome').style.display = 'none';
+  const c = document.getElementById('nContent');
+  c.style.display = 'block';
+  c.innerHTML = buildLvlContent(lvl, id);
+  // 如果之前通过，恢复
+  if (isDone(id) && progress.quizResults[id]) restoreDoneState(lvl);
+  c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function buildLvlContent(lvl, id) {
+  const need = Math.ceil(lvl.quiz.length * 0.6);
+  return `
+    <span class="n-level-badge">${lvl.icon} ${lvl.chapter} · 第 ${lvl.id} 关</span>
+    <div class="n-level-title">${lvl.title}</div>
+    <div class="n-level-sub">${lvl.subtitle}</div>
+    ${lvl.content.map(c => `
+      <div class="kp-block">
+        <h4>${c.subtitle}</h4>
+        <p>${c.text}</p>
+        ${c.examples.map(e => `<div class="kp-eg"><div class="en">📝 ${e.en}</div>${e.zh ? `<div class="zh">${e.zh}</div>` : ''}</div>`).join('')}
+      </div>`).join('')}
+    ${!isDone(id) ? `
+      <div class="qz-area">
+        <div class="qz-title">⚔️ 闯关测验（答对 ${need}/${lvl.quiz.length} 题通关）</div>
+        ${lvl.quiz.map((q, qi) => buildQuizItem(q, qi)).join('')}
+      </div>` : `<p style="font-size:12px;color:#4A7C3F;margin-top:12px">✅ 此关已通关</p>`}
+    <div class="act-row">
+      ${!isDone(id) ? `<button class="btn btn-p" onclick="submitNormalQuiz(${id})">✓ 提交批改</button>` : ''}
+      <button class="btn btn-o" onclick="normalUndo()">← 返回列表</button>
+    </div>
+    <div class="r-block" id="normalResult"></div>`;
+}
+
+function buildQuizItem(q, qi) {
+  return `<div class="qz-item" id="nqItem${qi}">
+    <div class="qz-num">第 ${qi+1} 题 · ${q.type==='choice'?'选择':'填空'}</div>
+    <div class="qz-q">${q.q}</div>
+    ${q.type==='choice' ? `
+      <div class="qz-opts">${q.opts.map((o, oi) => `<button class="qo" id="nopt${qi}_${oi}" onclick="pickNormal(${qi},${oi},${q.ans})">${String.fromCharCode(65+oi)}. ${o}</button>`).join('')}</div>
+    ` : `<input class="qz-input" id="nfill${qi}" placeholder="输入答案..." onkeydown="if(event.key==='Enter')submitNormalQuiz(${normalOpenLevelId})">`}
+    <div class="qz-explain" id="nexplain${qi}">💡 ${q.explain}</div>
+  </div>`;
+}
+
+function buildLvlContentPopup(lvl, id) {
+  const need = Math.ceil(lvl.quiz.length * 0.6);
+  return `
+    <button class="lvl-close" onclick="closeLvlOverlay()">✕</button>
+    <span class="c-badge">${lvl.icon} ${lvl.chapter} · 第 ${lvl.id} 关</span>
+    <div class="c-title">${lvl.title}</div>
+    <div class="c-sub">${lvl.subtitle}</div>
+    ${lvl.content.map(c => `
+      <div class="kp-block">
+        <h4>${c.subtitle}</h4>
+        <p>${c.text}</p>
+        ${c.examples.map(e => `<div class="kp-eg"><div class="en">📝 ${e.en}</div>${e.zh ? `<div class="zh">${e.zh}</div>` : ''}</div>`).join('')}
+      </div>`).join('')}
+    ${!isDone(id) ? `
+      <div class="qz-area">
+        <div class="qz-title">⚔️ 闯关测验（答对 ${need}/${lvl.quiz.length} 题通关）</div>
+        ${lvl.quiz.map((q, qi) => buildQuizItem(q, qi)).join('')}
+      </div>` : `<p style="font-size:12px;color:#4A7C3F;margin-top:12px">✅ 此关已通关</p>`}
+    <div class="act-row">
+      ${!isDone(id) ? `<button class="btn btn-p" onclick="submitForestQuiz(${id})">✓ 提交批改</button>` : ''}
+      <button class="btn btn-o" onclick="closeLvlOverlay()">← 返回森林</button>
+    </div>
+    <div class="r-block" id="forestResult"></div>`;
+}
+
+function normalUndo() {
+  document.getElementById('nWelcome').style.display = 'block';
+  document.getElementById('nContent').style.display = 'none';
+  normalOpenLevelId = null;
+}
+
+function pickNormal(qi, oi, correctAns) {
+  if (document.getElementById('nqItem'+qi).classList.contains('graded')) return;
+  document.querySelectorAll('#nqItem'+qi+' .qo').forEach(o => o.classList.remove('picked'));
+  document.getElementById('nopt'+qi+'_'+oi).classList.add('picked');
+  quizAnswers[qi] = oi;
+}
+
+function submitNormalQuiz(levelId) {
+  const lvl = LEVELS.find(l => l.id === levelId);
+  if (!lvl || isDone(levelId)) return;
+  const result = gradeQuiz(lvl, 'n');
+  if (result.passed) onLevelPassed(levelId, 'normal');
+}
+
+function submitForestQuiz(levelId) {
+  const lvl = LEVELS.find(l => l.id === levelId);
+  if (!lvl || isDone(levelId)) return;
+  const result = gradeQuiz(lvl, 'n');
+  if (result.passed) {
+    onLevelPassed(levelId, 'forest');
+    closeLvlOverlay();
+    setTimeout(() => {
+      forestCelebrate();
+      setTimeout(() => buildForestScene(), 600);
+    }, 300);
+  }
+}
+
+function gradeQuiz(lvl, prefix) {
+  let correct = 0;
+  lvl.quiz.forEach((q, qi) => {
+    const item = document.getElementById((prefix==='n'?'nqItem':'nqItem')+qi);
+    const explain = document.getElementById((prefix==='n'?'nexplain':'nexplain')+qi);
+    if (q.type === 'choice') {
+      const chosen = quizAnswers[qi];
+      document.querySelectorAll('#'+(prefix==='n'?'nqItem':'nqItem')+qi+' .qo').forEach((o, oi) => {
+        o.disabled = true;
+        if (oi === q.ans) o.classList.add('correct');
+        if (oi === chosen && oi !== q.ans) o.classList.add('wrong');
+      });
+      if (chosen === q.ans) correct++;
+    } else {
+      const inp = document.getElementById((prefix==='n'?'nfill':'nfill')+qi);
+      const val = (inp.value || '').trim().toLowerCase();
+      inp.disabled = true;
+      if (val === q.ans.toLowerCase()) { inp.style.borderColor = '#4A7C3F'; inp.style.background = 'rgba(74,124,63,.1)'; correct++; }
+      else { inp.style.borderColor = '#C0392B'; inp.style.background = 'rgba(192,57,43,.06)'; }
+    }
+    item.classList.add('graded');
+    explain.classList.add('show');
+  });
+  const total = lvl.quiz.length;
+  const pct = Math.round(correct / total * 100);
+  const passed = pct >= 60;
+  progress.quizResults[levelId] = { correct, total, passed };
+  if (passed && !progress.completed.includes(levelId)) progress.completed.push(levelId);
+  saveProg();
+  quizAnswers = {};
+  // 显示结果
+  const block = document.getElementById(prefix==='n'?'normalResult':'forestResult');
+  if (block) {
+    block.innerHTML = `<div class="r-stars">${pct===100?'🌟🌟🌟':pct>=80?'🌟🌟':pct>=60?'🌟':'💪'}</div>
+      <div class="r-score">${correct}<span>/${total}</span></div>
+      <div style="font-size:11px;color:#9A8060">得分率 ${pct}% · ${passed?'✅ 通关':'❌ 未通过（需≥60%）'}</div>
+      <div class="r-msg">${passed?(pct===100?'满分通关！✨':'恭喜通关！🏮'):'再试一次吧📚'}</div>`;
+    block.classList.add('show');
+  }
+  return { correct, total, pct, passed };
+}
+
+function onLevelPassed(levelId, mode) {
+  if (allDone()) {
+    document.getElementById('nChallengeBtn').classList.add('show');
+    document.getElementById('fInfo').textContent = '🏆 全部通关！点击首页终极挑战';
+  }
+  if (mode === 'normal') renderNormalMap();
+}
+
+function restoreDoneState(lvl) {
+  const r = progress.quizResults[lvl.id];
+  if (!r || !r.passed) return;
+  lvl.quiz.forEach((q, qi) => {
+    const item = document.getElementById('nqItem'+qi);
+    if (!item) return;
+    const explain = document.getElementById('nexplain'+qi);
+    if (q.type === 'choice') {
+      document.querySelectorAll('#nqItem'+qi+' .qo').forEach((o, oi) => {
+        o.disabled = true;
+        if (oi === q.ans) o.classList.add('correct');
+      });
+    } else {
+      const inp = document.getElementById('nfill'+qi);
+      if (inp) { inp.value = q.ans; inp.disabled = true; inp.style.borderColor = '#4A7C3F'; inp.style.background = 'rgba(74,124,63,.1)'; }
+    }
+    item.classList.add('graded');
+    if (explain) explain.classList.add('show');
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+//  森林模式
+// ══════════════════════════════════════════════════════════
+function buildForestScene() {
+  // 迷雾颗粒
+  const mc = document.getElementById('fMistParticles');
+  if (!mc.children.length) {
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div');
+      p.className = 'f-mp';
+      p.style.cssText = `width:${60+Math.random()*140}px;height:${60+Math.random()*140}px;left:${Math.random()*100}%;top:${10+Math.random()*80}%;animation-duration:${8+Math.random()*12}s;animation-delay:${-Math.random()*12}s;opacity:${0.15+Math.random()*0.3}`;
+      mc.appendChild(p);
+    }
+  }
+
+  const positions = calcForestPositions();
+  renderForestPath(positions);
+  renderForestNodes(positions);
+  updateForestMist(positions);
+  updateForestInfo();
+}
+
+function calcForestPositions() {
+  const ps = [];
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const total = progress.completed.length + 1;
+  LEVELS.forEach(l => {
+    const id = l.id;
+    if (!isDone(id) && id !== forestCurrentId) { ps.push(null); return; }
+    let vi;
+    if (id === forestCurrentId) vi = total - 1;
+    else vi = progress.completed.indexOf(id);
+    const fromBottom = total - 1 - vi;
+    const col = (vi % 2 === 0) ? vw * 0.28 : vw * 0.72;
+    const y = vh - 120 - fromBottom * 95;
+    ps.push({ id, x: col, y, done: isDone(id), current: id === forestCurrentId });
+  });
+  return ps;
+}
+
+function renderForestPath(positions) {
+  const svg = document.getElementById('fPathSvg');
+  const vis = positions.filter(Boolean);
+  if (vis.length < 2) { svg.innerHTML = ''; return; }
+  let d = '';
+  vis.forEach((p, i) => {
+    const px = (p.x / window.innerWidth) * 100, py = (p.y / window.innerHeight) * 100;
+    d += (i === 0 ? 'M ' : ' L ') + px + ' ' + py;
+  });
+  svg.innerHTML = `<path class="f-path-line done" d="${d}" />`;
+}
+
+function renderForestNodes(positions) {
+  let h = '';
+  positions.forEach(p => {
+    if (!p) return;
+    const lvl = LEVELS.find(l => l.id === p.id);
+    let cls = p.done ? 'done' : 'current';
+    h += `<div class="f-node ${cls}" style="left:${p.x}px;top:${p.y}px;transform:translate(-50%,-50%)" onclick="${cls==='current'?'forestOpen('+p.id+')':''}">
+      ${p.done ? '<span style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:12px;opacity:.7">🏮</span>' : ''}
+      <div class="f-node-dot"><span class="f-node-num">${p.id}</span></div>
+      <span class="f-node-label">${p.current ? '✨ '+lvl.title : lvl.title}</span>
+    </div>`;
+  });
+  document.getElementById('fNodesLayer').innerHTML = h;
+}
+
+function updateForestMist(positions) {
+  const vis = positions.filter(Boolean);
+  const cur = vis.find(p => p.current);
+  if (!cur) return;
+  const mt = Math.max(0, cur.y - 80);
+  document.getElementById('fMistTop').style.height = Math.max(15, (mt / window.innerHeight) * 100) + '%';
+}
+
+function updateForestInfo() {
+  const d = progress.completed.length;
+  document.getElementById('fInfo').textContent = d === 0 ? '🏮 开始探索' : d >= LEVELS.length ? '🏆 全部通关！' : `🏮 ${d}/${LEVELS.length} 盏灯笼`;
+}
+
+function forestOpen(id) {
+  const lvl = LEVELS.find(l => l.id === id);
+  if (!lvl) return;
+  quizAnswers = {};
+  document.getElementById('lvlCard').innerHTML = buildLvlContentPopup(lvl, id);
+  document.getElementById('lvlOverlay').classList.add('show');
+  if (isDone(id) && progress.quizResults[id]) {
+    // Restore for popup version
+    const r = progress.quizResults[id];
+    if (r && r.passed) {
+      lvl.quiz.forEach((q, qi) => {
+        const item = document.getElementById('nqItem'+qi);
+        if (!item) return;
+        const explain = document.getElementById('nexplain'+qi);
+        if (q.type === 'choice') {
+          document.querySelectorAll('#nqItem'+qi+' .qo').forEach((o, oi) => {
+            o.disabled = true;
+            if (oi === q.ans) o.classList.add('correct');
+          });
+        } else {
+          const inp = document.getElementById('nfill'+qi);
+          if (inp) { inp.value = q.ans; inp.disabled = true; inp.style.borderColor = '#4A7C3F'; inp.style.background = 'rgba(74,124,63,.1)'; }
+        }
+        item.classList.add('graded');
+        if (explain) explain.classList.add('show');
+      });
+    }
+  }
+}
+
+function forestCelebrate() {
+  const c = document.getElementById('fFireworks');
+  const cx = window.innerWidth / 2, cy = window.innerHeight * 0.4;
+  const colors = ['#B8956A', '#D4A76A', '#E8C97A', '#FFD700', '#F5EDD8', '#4A7C3F'];
+  for (let i = 0; i < 35; i++) {
+    const s = document.createElement('div');
+    s.className = 'f-spark';
+    const a = Math.random() * Math.PI * 2, dist = 40 + Math.random() * 120;
+    s.style.cssText = `left:${cx}px;top:${cy}px;width:${4+Math.random()*8}px;height:${4+Math.random()*8}px;background:${colors[Math.floor(Math.random()*colors.length)]};--dx:${Math.cos(a)*dist}px;--dy:${Math.sin(a)*dist-30}px;animation-delay:${Math.random()*0.3}s;animation-duration:${0.6+Math.random()*0.6}s`;
+    c.appendChild(s);
+    setTimeout(() => s.remove(), 1000);
+  }
+}
+
+function closeLvlOverlay() {
+  document.getElementById('lvlOverlay').classList.remove('show');
+}
+
+// ══════════════════════════════════════════════════════════
+//  终极挑战
+// ══════════════════════════════════════════════════════════
+let chAnswers = {};
+
+function startChallenge() {
+  document.getElementById('entryPage').classList.add('hide');
+  document.getElementById('normalView').classList.remove('active');
+  document.getElementById('forestView').classList.remove('active');
+  document.getElementById('challengeView').classList.add('active');
+  chAnswers = {};
+  renderChallenge();
+}
+
+function closeChallenge() {
+  document.getElementById('challengeView').classList.remove('active');
+  if (currentMode === 'normal') {
+    document.getElementById('normalView').classList.add('active');
+  } else if (currentMode === 'forest') {
+    document.getElementById('forestView').classList.add('active');
+  } else {
+    document.getElementById('entryPage').classList.remove('hide');
+  }
+}
+
+function renderChallenge() {
+  document.getElementById('chContent').innerHTML = CHALLENGE.map((c, ci) => `
+    <div class="ch-card" id="chItem${ci}">
+      <div class="ch-num">第 ${ci+1} 题 / ${CHALLENGE.length}</div>
+      <div class="ch-sentence">${c.sentence}</div>
+      <div class="ch-ask"><b>① 句子结构：</b></div>
+      <div class="qz-opts">${c.structs.map((s, si) => `
+        <button class="qo" id="cho${ci}_${si}" onclick="pickCh(${ci},${si})">${String.fromCharCode(65+si)}. ${s}</button>
+      `).join('')}</div>
+      <div class="ch-ask" style="margin-top:10px"><b>② 翻译成中文：</b></div>
+      <input class="qz-input" id="chtrans${ci}" placeholder="输入你的翻译...">
+      <div class="qz-explain" id="chexplain${ci}">💡 ${c.explain}</div>
+    </div>
+  `).join('');
+}
+
+function pickCh(ci, si) {
+  if (document.getElementById('chItem'+ci).classList.contains('graded')) return;
+  document.querySelectorAll('#chItem'+ci+' .qo').forEach(o => o.classList.remove('picked'));
+  document.getElementById('cho'+ci+'_'+si).classList.add('picked');
+  chAnswers[ci] = si;
+}
+
+function checkChallenge() {
+  let structCorrect = 0, transCorrect = 0;
+  CHALLENGE.forEach((c, ci) => {
+    const item = document.getElementById('chItem'+ci);
+    const explain = document.getElementById('chexplain'+ci);
+    // Check structure choice
+    const chosen = chAnswers[ci];
+    document.querySelectorAll('#chItem'+ci+' .qo').forEach((o, si) => {
+      o.disabled = true;
+      if (si === c.structAns) o.classList.add('correct');
+      if (si === chosen && si !== c.structAns) o.classList.add('wrong');
+    });
+    if (chosen === c.structAns) structCorrect++;
+    // Check translation (fuzzy match)
+    const trans = (document.getElementById('chtrans'+ci).value || '').trim();
+    if (trans && trans.length > 2) {
+      // Simple check: contains key characters
+      const keyChars = c.transAns.replace(/[的了吗呢过是]/g, '').slice(0, 6);
+      let matchCount = 0;
+      for (const ch of keyChars) { if (trans.includes(ch)) matchCount++; }
+      const score = matchCount / Math.max(1, keyChars.length);
+      if (score >= 0.4 || trans === c.transAns) {
+        transCorrect++;
+        document.getElementById('chtrans'+ci).style.borderColor = '#4A7C3F';
+        document.getElementById('chtrans'+ci).style.background = 'rgba(74,124,63,.1)';
+      } else {
+        document.getElementById('chtrans'+ci).style.borderColor = '#C0392B';
+        document.getElementById('chtrans'+ci).style.background = 'rgba(192,57,43,.06)';
+      }
+    }
+    item.classList.add('graded');
+    explain.classList.add('show');
+  });
+
+  const total = CHALLENGE.length;
+  const structPct = Math.round(structCorrect / total * 100);
+  const transPct = Math.round(transCorrect / total * 100);
+  const overallPct = Math.round((structCorrect + transCorrect) / (total * 2) * 100);
+
+  const block = document.getElementById('chResult');
+  block.innerHTML = `
+    <div class="r-stars">${overallPct>=90?'🌟🌟🌟':overallPct>=70?'🌟🌟':overallPct>=50?'🌟':'💪'}</div>
+    <div class="r-score">${structCorrect+transCorrect}<span>/${total*2}</span></div>
+    <div style="font-size:12px;color:#9A8060;margin-top:2px">结构分析 ${structPct}% · 翻译 ${transPct}% · 综合 ${overallPct}%</div>
+    <div class="r-msg">${overallPct>=80?'🏆 太厉害了！你已经完全掌握了英语语法体系！':overallPct>=50?'👍 不错！继续努力，分析错误的题目仔细看解析。':'📚 加油！认真看每道题的解析，再重做一遍。'}</div>
+    <div style="margin-top:12px;font-size:12px;color:#6A5030;background:rgba(184,149,106,.08);padding:10px 14px;border-radius:10px;line-height:1.7">
+      <b>参考答案（翻译）：</b><br>
+      ${CHALLENGE.map(c => `• ${c.transAns}`).join('<br>')}
+    </div>`;
+  block.classList.add('show');
+  block.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function resetChallenge() {
+  chAnswers = {};
+  document.getElementById('chResult').classList.remove('show');
+  renderChallenge();
+}
+
+// ══════════════════════════════════════════════════════════
+//  重置 & 窗口
+// ══════════════════════════════════════════════════════════
+function resetAll() {
+  if (confirm('确定要重置所有学习进度吗？')) {
+    localStorage.removeItem(SK);
+    progress = { completed: [], quizResults: {} };
+    forestCurrentId = 1;
+    quizAnswers = {};
+    document.getElementById('nChallengeBtn').classList.remove('show');
+    backToEntry();
+  }
+}
+
+window.addEventListener('resize', () => {
+  if (currentMode === 'forest') buildForestScene();
+});
+
+// ══════════════════════════════════════════════════════════
+//  初始化
+// ══════════════════════════════════════════════════════════
+loadProg();
+if (allDone()) document.getElementById('nChallengeBtn').classList.add('show');
+</script>
+</body>
+</html>
