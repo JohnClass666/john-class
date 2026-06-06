@@ -373,7 +373,24 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 .brag-card .bs{font-size:15px;color:var(--soft);margin-top:12px}
 .brag-card .bn{font-size:46px;font-weight:200;color:var(--accent);margin-top:18px;letter-spacing:-.03em}
 .brag-tip{text-align:center;font-size:13px;color:var(--soft);margin-top:22px;line-height:1.6}
-.brag-tip b{color:var(--ink);font-weight:600}
+/* 排行榜 */
+.lb-wrap{padding-top:10px}
+.lb-title{font-size:22px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin:18px 0 6px;text-align:center}
+.lb-sub{font-size:13px;color:var(--soft);text-align:center;margin-bottom:20px;line-height:1.6}
+.lb-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.lb-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--hair);border-radius:16px;background:var(--bg3)}
+.lb-row.lb-me{background:var(--accent-soft);border-color:var(--accent)}
+.lb-rank{width:32px;height:32px;border-radius:50%;background:var(--hair);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--soft);flex:0 0 auto}
+.lb-rank.r1{background:#FFD700;color:#7A5800}
+.lb-rank.r2{background:#C0C0C0;color:#555}
+.lb-rank.r3{background:#CD7F32;color:#fff}
+.lb-info{flex:1;min-width:0}
+.lb-name{font-size:16px;font-weight:600;color:var(--ink);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-grade{font-size:12px;color:var(--soft);margin-top:1px}
+.lb-score{font-size:20px;font-weight:700;color:var(--accent);text-align:right}
+.lb-me-tag{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent);padding:2px 8px;border-radius:99px;margin-top:3px;display:inline-block}
+.lb-empty{text-align:center;padding:40px 20px;color:var(--faint);font-size:15px}
+.lb-note{font-size:12px;color:var(--faint);text-align:center;margin-top:16px;line-height:1.7}
 </style>
 </head>
 <body>
@@ -1690,6 +1707,20 @@ const BRAG_COMBO=8;           // 单次连续答对达到该数可炫耀
 
 /* ============ STATE ============ */
 const KEY="john_eng_v3";
+const LB_KEY="john_eng_lb_v1";
+function lbLoad(){try{const r=localStorage.getItem(LB_KEY);return r?JSON.parse(r):{};}catch(e){return {};}}
+function lbSave(data){try{localStorage.setItem(LB_KEY,JSON.stringify(data));}catch(e){}}
+function lbUpdate(){
+ if(!S||!S.name)return;
+ const data=lbLoad();
+ const myScore=points();
+ const myGrade=S.grade?((gradeById(S.grade)||{}).label||S.grade):"";
+ const existing=data[S.name];
+ if(!existing||existing.score<myScore||existing.grade!==myGrade){
+  data[S.name]={score:myScore,grade:myGrade,time:Date.now()};
+  lbSave(data);
+ }
+}
 /* S：全局信息 + 各年级独立存档
    S.grade = 当前年级 id；S.gd[gradeId] = {points, prog} */
 let S={name:"",muted:false,grade:"",gd:{}};
@@ -1717,48 +1748,87 @@ const sfx={
  tap(){beep(480,.04,"sine",.06);}
 };
 
-/* ============ TTS 语音（美式优先） ============ */
+/* ============ TTS 语音（自然音色优先） ============ */
 const TTS={ok:false,voice:null};
-const MALE_NAMES=['Arthur','Evan','Aaron','Damon','Tom','Alex','Google US English','Microsoft Mark','Microsoft David'];
-const FEMALE_NAMES=['Samantha','Karen','Tessa','Moira','Fiona','Victoria','Nora','Simone','Google UK English Female','Microsoft Zira'];
-function applyVoicePref(vs){
- const pref=S.voicePref||'male';
- const names=pref==='male'?MALE_NAMES:FEMALE_NAMES;
- let picked=null;
- for(const name of names){
-   picked=vs.find(v=>v.name.toLowerCase().includes(name.toLowerCase()));
-   if(picked)break;
+// 优先级最高的高质量声音（按优先级排序）
+const PREFERRED_VOICES=[
+ // iOS/macOS 高质量
+ 'Samantha','Alex','Fred','Victoria','Daniel','Karen','Moira','Tessa',
+ // Google 高质量
+ 'Google US English','Google UK English Female','Google UK English Male',
+ // Windows 10/11 高质量
+ 'Microsoft Aria Online','Microsoft Guy Online','Microsoft Jenny Online',
+ 'Microsoft Zira','Microsoft David','Microsoft Mark',
+ // Android
+ 'en-us-x-sfg','en-us-x-tpd','en-us-x-tpf',
+];
+// 绝对避免的机械声音（关键词黑名单）
+const BAD_VOICE_KEYWORDS=['espeak','festival','mbrola','pico','flite'];
+
+function pickBestVoice(vs){
+ // 过滤掉明确机械的声音
+ const filtered=vs.filter(v=>{
+  const n=v.name.toLowerCase();
+  return !BAD_VOICE_KEYWORDS.some(bad=>n.includes(bad));
+ });
+ if(!filtered.length)return vs[0];
+ 
+ // 按优先级列表找
+ for(const name of PREFERRED_VOICES){
+  const found=filtered.find(v=>v.name.toLowerCase().includes(name.toLowerCase()));
+  if(found)return found;
  }
- if(!picked)picked=vs.find(v=>/en[-_]US/i.test(v.lang))||vs[0];
- TTS.voice=picked;TTS.ok=true;
+ 
+ // 次选：localService=true 的声音（本地高质量）
+ const local=filtered.filter(v=>v.localService);
+ if(local.length){
+  // 优先美式英语
+  const usLocal=local.find(v=>/en[-_]US/i.test(v.lang));
+  if(usLocal)return usLocal;
+  return local[0];
+ }
+ 
+ // 最后：任何英语声音
+ const usVoice=filtered.find(v=>/en[-_]US/i.test(v.lang));
+ return usVoice||filtered[0];
 }
+
 function initTTS(){
  if(!("speechSynthesis"in window))return;
  const pick=()=>{
-   const vs=speechSynthesis.getVoices().filter(v=>/^en(-|_|$)/i.test(v.lang));
-   if(!vs.length)return;
-   applyVoicePref(vs);
+  const vs=speechSynthesis.getVoices().filter(v=>/^en(-|_|$)/i.test(v.lang));
+  if(!vs.length)return;
+  TTS.voice=pickBestVoice(vs);
+  TTS.ok=true;
  };
  pick();
  if(!TTS.ok)speechSynthesis.onvoiceschanged=pick;
+ // 部分浏览器需要延迟
+ setTimeout(()=>{if(!TTS.ok){const vs=speechSynthesis.getVoices().filter(v=>/^en(-|_|$)/i.test(v.lang));if(vs.length){TTS.voice=pickBestVoice(vs);TTS.ok=true;}}},500);
 }
 function toggleVoice(){
- S.voicePref=(S.voicePref==='female')?'male':'female';
- save();
+ // 在可用声音中循环切换
  const vs=speechSynthesis.getVoices().filter(v=>/^en(-|_|$)/i.test(v.lang));
- applyVoicePref(vs);
- setTimeout(()=>speak('hello'),100);
+ if(!vs.length)return;
+ const cur=TTS.voice;
+ const idx=vs.findIndex(v=>v===cur);
+ TTS.voice=vs[(idx+1)%vs.length];
+ save();
+ setTimeout(()=>speak('hello, this is a test'),100);
  const btn=document.getElementById('voicetgl');
- if(btn)btn.textContent=S.voicePref==='male'?'♂ 男声':'♀ 女声';
+ if(btn)btn.textContent='🔊 '+(TTS.voice?TTS.voice.name.split(' ').slice(0,2).join(' '):'切换声音');
 }
 function speak(text){
  if(!TTS.ok||S.muted||!text)return;
  try{
-   speechSynthesis.cancel();
-   const u=new SpeechSynthesisUtterance(text);
-   if(TTS.voice)u.voice=TTS.voice;
-   u.lang=(TTS.voice&&TTS.voice.lang)||"en-US";u.rate=.88;u.pitch=1.08;
-   speechSynthesis.speak(u);
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  if(TTS.voice)u.voice=TTS.voice;
+  u.lang=(TTS.voice&&TTS.voice.lang)||"en-US";
+  u.rate=0.85;   // 稍慢，更清晰
+  u.pitch=1.0;   // 自然音调（不调高，避免机械感）
+  u.volume=1.0;
+  speechSynthesis.speak(u);
  }catch(e){}
 }
 // 朗读按钮 HTML（仅在有语音引擎时插入）
@@ -1778,10 +1848,12 @@ function writePool(u){return u.words.filter(w=>w.type==="word");}
 function unitStats(u){const pool=quizPool(u);let seen=0,known=0,rev=0;const P=gd().prog;
  pool.forEach(w=>{const r=P[w.id];if(r&&(r.seenR||r.seenW)){seen++;if(r.last==="bad")rev++;else if(r.last==="good")known++;}});
  return{total:pool.length,seen,known,rev};}
-function dueWords(){const P=gd().prog;return Object.keys(P).filter(id=>{const r=P[id];return r.box>=0&&r.box<INTERVALS.length&&r.due<=now();})
+function dueWords(){const P=gd().prog;return Object.keys(P).filter(id=>{const r=P[id];return r.box>=0&&r.box<INTERVALS.length;})
+ .map(id=>WORDS.find(w=>w.id==id)).filter(Boolean);}
+function dueWordsToday(){const P=gd().prog;return Object.keys(P).filter(id=>{const r=P[id];return r.box>=0&&r.box<INTERVALS.length&&r.due<=now();})
  .map(id=>WORDS.find(w=>w.id==id)).filter(Boolean);}
 function points(){return gd().points;}
-function addPoints(n){gd().points+=n;save();}
+function addPoints(n){gd().points+=n;save();lbUpdate();}
 function clear(){app.innerHTML="";}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function greetWord(){const h=new Date().getHours();return h<6?"凌晨好":h<11?"早上好":h<13?"中午好":h<18?"下午好":"晚上好";}
@@ -1942,6 +2014,7 @@ SCREENS.home=function(){clear();checkStreak();
  const pct=god?100:(nx?Math.round((points()-lv.min)/(nx.min-lv.min)*100):100);
  const dispLv=god?GOD_LEVEL:lv;
  const due=dueWords().length;
+ const dueT=dueWordsToday().length;
  let rows="";
  UNITS.forEach(u=>{if(u.ready){const sc=stageCount(u);const tot=stageTotal();const done=sc>=tot;const p=Math.round(sc/tot*100);
    rows+=`<div class="row ${done?'done':''}" data-u="${u.n}"><div class="rt"><b>Unit ${u.n} · ${u.title}</b><span>${quizPool(u).length} 个词 · 闯过 ${sc}/${tot} 关</span></div><div class="meta">${done?'🏆 通关':p+'%'}</div><div class="chev">›</div></div>`;}
@@ -1965,8 +2038,8 @@ SCREENS.home=function(){clear();checkStreak();
   <div class="list" id="units">${rows}</div>
   <div class="ebook ${due?'':'empty'}" id="ebook">
     ${allUnitsClearedForRevenge()&&due?
-      `<div class="rt"><b style="color:var(--warn)">⚔️ 错词复仇</b><span>所有单元已通关，现在可以开始复仇了！点击错词本参加复仇</span></div><div class="dot">${due}</div>` :
-      `<div class="rt"><b>错词本</b><span>${due?"按记忆曲线，今天该复习":"暂无待复习，保持得很好"}</span></div>${due?`<div class="dot">${due}</div>`:'<div class="chev" style="font-size:16px;color:var(--faint)">›</div>'}`
+      `<div class="rt"><b style="color:var(--warn)">⚔️ 错词复仇</b><span>所有单元已通关！错词本 ${due} 个，今天到期 ${dueT} 个</span></div><div class="dot">${due}</div>` :
+      `<div class="rt"><b>错词本</b><span>${due?`共 ${due} 个错词${dueT>0?'，今天应复习 '+dueT+' 个':'，今天暂无需复习'}` :"暂无错词，保持得很好"}</span></div>${due?`<div class="dot">${due}</div>`:'<div class="chev" style="font-size:16px;color:var(--faint)">›</div>'}`
     }
   </div>
   <div class="ebook ${dailyDone()?'empty':''}" id="daily" style="border-color:${dailyDone()?'var(--hair)':monsterUnlocked()?'var(--warn)':'#C89030'};background:${dailyDone()?'var(--bg)':monsterUnlocked()?'var(--warn-soft)':'var(--accent-soft)'}">
@@ -1979,6 +2052,9 @@ SCREENS.home=function(){clear();checkStreak();
     <button class="btn line" id="ms" style="flex:1">🎯 我的目标</button>
     <button class="btn line" id="card" style="flex:1">📊 我的成绩卡</button>
   </div>
+  <div class="homebtn-row" style="margin-top:8px">
+    <button class="btn line" id="lb" style="flex:1;border-color:var(--accent);color:var(--accent)">🏆 班级排行榜</button>
+  </div>
   <div class="foot">ENGLISH ADVENTURE · 进度已存本设备</div>`;
  app.appendChild(d);
  d.querySelectorAll("#units .row[data-u]").forEach(r=>r.onclick=()=>{sfx.tap();go({name:"unit",arg:+r.dataset.u});});
@@ -1990,6 +2066,7 @@ SCREENS.home=function(){clear();checkStreak();
  d.querySelector("#daily").onclick=()=>{if(!dailyDone()){sfx.tap();monsterUnlocked()?go("monster"):go("daily");}};
  d.querySelector("#ms").onclick=()=>{sfx.tap();go("milestones");};
  d.querySelector("#card").onclick=()=>{sfx.tap();go("card");};
+ d.querySelector("#lb").onclick=()=>{sfx.tap();go("leaderboard");};
 };
 
 SCREENS.unit=function(n){clear();const u=UNITS.find(x=>x.n===n);const st=unitStage(n);
@@ -2027,13 +2104,28 @@ function shakeEl(el){el.style.animation="none";void el.offsetWidth;el.style.anim
 
 /* 通用：6 个中文意思选项（阅读、听力共用） */
 function cnText(w){return w.s.map(x=>`${x[0]?x[0]+" ":""}${x[1]}`).join("；");}
+/* 用于选项显示的中文：去除括号中的英文缩写/拼写提示，避免泄露答案 */
+function cnTextClean(w){
+ return w.s.map(x=>{
+  let pos=x[0]?x[0]+" ":"";
+  // 去除类似 (= programme)、(pl. manners)、(AmE gray)、(= ad /æd/) 等括号内英文
+  let meaning=x[1].replace(/\([^）]*[a-zA-Z][^）]*\)/g,'').replace(/（[^）]*[a-zA-Z][^）]*）/g,'').trim();
+  // 去除末尾多余分号或空格
+  meaning=meaning.replace(/[；;]\s*$/,'').trim();
+  return pos+meaning;
+ }).join("；").trim();
+}
+/* 检查中文意思是否包含英文单词（可能泄露答案） */
+function cnHasEnglish(w){
+ return w.s.some(x=>/[a-zA-Z]/.test(x[1]));
+}
 function build6cn(u,t){
  const pool=u.words.filter(w=>w.type!=="name"&&w.id!==t.id);
  const pos=t.s[0][0];
  const same=shuffle(pool.filter(w=>w.s[0][0]===pos));
  const rest=shuffle(pool.filter(w=>w.s[0][0]!==pos));
- const dis=same.concat(rest).slice(0,5).map(w=>({cn:cnText(w),correct:false}));
- dis.push({cn:cnText(t),correct:true});return shuffle(dis);
+ const dis=same.concat(rest).slice(0,5).map(w=>({cn:cnTextClean(w),correct:false}));
+ dis.push({cn:cnTextClean(t),correct:true});return shuffle(dis);
 }
 /* 6 个英文选项（写作用），优先同词性干扰 */
 function buildOptions(u,t){const pool=writePool(u).filter(w=>w.id!==t.id);const pos=t.s[0][0];
@@ -2213,8 +2305,8 @@ function build8cn(w){
  const pos=w.s[0][0];
  const same=shuffle(pool.filter(x=>x.s[0][0]===pos));
  const rest=shuffle(pool.filter(x=>x.s[0][0]!==pos));
- const dis=same.concat(rest).slice(0,7).map(x=>({cn:cnText(x),correct:false}));
- dis.push({cn:cnText(w),correct:true});return shuffle(dis);
+ const dis=same.concat(rest).slice(0,7).map(x=>({cn:cnTextClean(x),correct:false}));
+ dis.push({cn:cnTextClean(w),correct:true});return shuffle(dis);
 }
 function build8en(w){
  const pool=WORDS.filter(x=>x.type==="word"&&x.id!==w.id);
@@ -2233,7 +2325,10 @@ SCREENS.ultimate=function(){go("monster");}; // 兼容旧存档跳转
 
 /* ---------- REVIEW (错词复习 / 复仇模式) ---------- */
 SCREENS.review=function(){
- const pool=shuffle(dueWords());if(!pool.length)return go("home");
+ const all=dueWords();if(!all.length)return go("home");
+ // 优先今天到期的，没有则全部展示
+ const today=dueWordsToday();
+ const pool=shuffle((today.length>0?today:all).slice());
  const isRevenge=allUnitsClearedForRevenge();
  runReview(pool,0,{got:0,gain:0,combo:0},isRevenge);
 };
@@ -2500,7 +2595,7 @@ SCREENS.milestones=function(){clear();
  d.querySelector("#bk").onclick=()=>{sfx.tap();go("home");};
 };
 
-SCREENS.card=function(){clear();const lv=levelOf(points());const due=dueWords().length;
+SCREENS.card=function(){clear();const lv=levelOf(points());const due=dueWords().length;const dueT=dueWordsToday().length;
  const dt=new Date();const ds=`${dt.getFullYear()}.${dt.getMonth()+1}.${dt.getDate()}`;
  let rows="";UNITS.filter(u=>u.ready).forEach(u=>{const sc=stageCount(u);const tot=stageTotal();rows+=`<div class="sc-row"><b>Unit ${u.n} · ${u.title}</b><span class="v">${sc===tot?'🏆 通关':sc+'/'+tot+' 关'}</span></div>`;});
  const d=document.createElement("div");d.className="screen active";
@@ -2510,7 +2605,7 @@ SCREENS.card=function(){clear();const lv=levelOf(points());const due=dueWords().
     <div class="sc-head"><div class="ava"></div><div><div class="nm">${S.name}</div><div class="dt">English Adventure · ${ds}</div></div></div>
     <div class="sc-score"><div class="huge n">${points()}</div><div class="t">${lv.name}</div></div>
     ${rows}
-    <div class="sc-row"><b>错词本待复习</b><span class="vr">${due} 个</span></div>
+    <div class="sc-row"><b>错词本</b><span class="vr">${due} 个（今天应复习 ${dueT} 个）</span></div>
   </div>
   <button class="btn" id="dl">保存成绩卡图片</button>
   ${REPORT_URL?`<button class="btn line" id="report">上报成绩给老师</button>`:""}
@@ -2615,6 +2710,50 @@ function confirmGodReset(){const m=document.getElementById("modal");const gl=gra
    m.classList.remove("show");sfx.levelup();go("home");
  };
 }
+/* ============ 班级排行榜界面 ============ */
+function lbGetRanking(){
+ const data=lbLoad();
+ return Object.entries(data)
+  .map(([name,v])=>({name,score:v.score,grade:v.grade,time:v.time}))
+  .sort((a,b)=>b.score-a.score||a.time-b.time)
+  .slice(0,50);
+}
+SCREENS.leaderboard=function(){clear();
+ lbUpdate(); // 确保自己的最新成绩已上榜
+ const ranking=lbGetRanking();
+ const myName=S.name;
+ const myRank=ranking.findIndex(r=>r.name===myName);
+ let rows="";
+ if(!ranking.length){
+  rows=`<div class="lb-empty">暂无数据<br><small>完成练习后自动上榜</small></div>`;
+ }else{
+  ranking.forEach((r,i)=>{
+   const isMe=r.name===myName;
+   const rankClass=i===0?'r1':i===1?'r2':i===2?'r3':'';
+   const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1;
+   rows+=`<div class="lb-row ${isMe?'lb-me':''}">
+    <div class="lb-rank ${rankClass}">${medal}</div>
+    <div class="lb-info">
+     <span class="lb-name">${r.name}</span>
+     <span class="lb-grade">${r.grade||""}</span>
+     ${isMe?'<span class="lb-me-tag">我</span>':''}
+    </div>
+    <div class="lb-score">${r.score}<small style="font-size:12px;font-weight:400;color:var(--soft)">分</small></div>
+   </div>`;
+  });
+ }
+ const myInfo=myRank>=0?`你目前排名第 ${myRank+1} 名，共 ${ranking.length} 人`:'你还未上榜，快去练习吧！';
+ const d=document.createElement("div");d.className="screen active";
+ d.innerHTML=`
+  <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">🏆 班级排行榜</div></div>
+  <div class="lb-wrap">
+   <div class="lb-sub">${myInfo}</div>
+   <div class="lb-list">${rows}</div>
+   <div class="lb-note">排行榜存储在本设备上<br>同设备所有同学的成绩会自动汇总显示<br>（同一台手机/电脑上的学生）</div>
+  </div>`;
+ app.appendChild(d);
+ d.querySelector("#bk").onclick=()=>{sfx.tap();go("home");};
+};
 load();initTTS();
 // 恢复年级
 if(S.grade&&gradeById(S.grade)&&gradeById(S.grade).ready){applyGrade(S.grade);}
