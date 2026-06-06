@@ -320,7 +320,7 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,"PingFang SC","H
 <!-- ═══════════════════════════════════════ 普通模式 ═══════════════════════════════════════ -->
 <div class="normal-view" id="normalView">
   <div class="normal-topbar">
-    <button class="n-back" onclick="backToEntry()">← 返回首页</button>
+    <button class="n-back" onclick="window.location.href='index.html'">← 返回首页</button>
     <span class="n-brand">John Class</span>
     <button class="n-challenge-btn" id="nChallengeBtn" onclick="startChallenge()">🏆 终极挑战</button>
   </div>
@@ -338,7 +338,7 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,"PingFang SC","H
 <!-- ═══════════════════════════════════════ 森林模式 ═══════════════════════════════════════ -->
 <div class="forest-view" id="forestView">
   <div class="f-topbar">
-    <button class="f-back" onclick="backToEntry()">← 返回首页</button>
+    <button class="f-back" onclick="window.location.href='index.html'">← 返回首页</button>
     <span class="n-brand">John Class</span>
     <span class="f-info" id="fInfo">🏮 开始探索</span>
   </div>
@@ -880,8 +880,8 @@ function gradeQuiz(lvl, prefix) {
   const total = lvl.quiz.length;
   const pct = Math.round(correct / total * 100);
   const passed = pct >= 60;
-  progress.quizResults[levelId] = { correct, total, passed };
-  if (passed && !progress.completed.includes(levelId)) progress.completed.push(levelId);
+  progress.quizResults[lvl.id] = { correct, total, passed };
+  if (passed && !progress.completed.includes(lvl.id)) progress.completed.push(lvl.id);
   saveProg();
   quizAnswers = {};
   // 显示结果 —— 同时尝试两个 result block ID，确保无论哪种模式都能找到
@@ -904,7 +904,13 @@ function onLevelPassed(levelId, mode) {
     document.getElementById('nChallengeBtn').classList.add('show');
     document.getElementById('fInfo').textContent = '🏆 全部通关！点击首页终极挑战';
   }
-  if (mode === 'normal') renderNormalMap();
+  if (mode === 'normal') {
+    renderNormalMap();
+    // 自动打开下一关
+    const nextId = levelId + 1;
+    const nextLvl = LEVELS.find(l => l.id === nextId);
+    if (nextLvl) setTimeout(() => normalOpen(nextId), 600);
+  }
 }
 
 function restoreDoneState(lvl) {
