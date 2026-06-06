@@ -282,13 +282,54 @@ function init() {
   }
 }
 
+// 学生名单（全名 + 名字 + 英文名）
+const STUDENTS = [
+  // 小四
+  {full:'David', name:'David', en:'David'},
+  {full:'Mandy', name:'Mandy', en:'Mandy'},
+  {full:'Lisa',  name:'Lisa',  en:'Lisa'},
+  {full:'Simon', name:'Simon', en:'Simon'},
+  {full:'Leo',   name:'Leo',   en:'Leo'},
+  {full:'Ethan', name:'Ethan', en:'Ethan'},
+  {full:'Daniel',name:'Daniel',en:'Daniel'},
+  // 初二
+  {full:'夏嘉琦', name:'嘉琦'},
+  {full:'谢政勋', name:'政勋'},
+  {full:'毛子骁', name:'子骁'},
+  {full:'何芷昕', name:'芷昕'},
+  {full:'黄颖',   name:'黄颖'},
+  {full:'易敬桡', name:'敬桡'},
+  {full:'雅琪',   name:'雅琪'},
+  {full:'陈星阁', name:'星阁'},
+  // 初一
+  {full:'诸葛名丰', name:'名丰'},
+  {full:'曹琳茜', name:'琳茜'},
+  {full:'张晨露', name:'晨露'},
+  {full:'段沐晨', name:'沐晨'},
+  {full:'周千皓', name:'千皓'},
+  {full:'张艺轩', name:'艺轩'},
+  {full:'智皓',   name:'智皓'},
+  {full:'周宇博', name:'宇博'},
+  {full:'高嘉泽', name:'嘉泽'},
+  {full:'蒋泽楠', name:'泽楠'},
+  {full:'赵昱铭', name:'昱铭'},
+  {full:'俊铮',   name:'俊铮'},
+  {full:'梓熙',   name:'梓熙'},
+];
+
+function isStudent(input) {
+  const s = input.trim();
+  return STUDENTS.find(st =>
+    s === st.full || s === st.name || (st.en && s.toLowerCase() === st.en.toLowerCase())
+  );
+}
+
 function submitName() {
   const input = document.getElementById('nameInput');
   const name = input.value.trim();
   if (!name) {
-    // 名字为空，抖动提示
     input.classList.remove('shake');
-    void input.offsetWidth; // 重置动画
+    void input.offsetWidth;
     input.classList.add('shake');
     setTimeout(() => input.classList.remove('shake'), 400);
     input.focus();
@@ -299,8 +340,11 @@ function submitName() {
 }
 
 function showMain(name, animate) {
-  // 设置问候语
-  document.getElementById('greeting').textContent = '你好，' + name + ' 👋';
+  const matched = isStudent(name);
+  const greetingText = matched
+    ? `哇塞，是我的亲学生 ${name}，欢迎！🎉`
+    : `没关系，同样欢迎你来学习和分享 👋`;
+  document.getElementById('greeting').textContent = greetingText;
 
   const welcome = document.getElementById('welcome');
   const main = document.getElementById('mainPage');
@@ -325,6 +369,5 @@ function go(e, href) {
 
 init();
 </script>
-  <script src="audio.js"></script>
 </body>
 </html>
