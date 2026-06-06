@@ -3,742 +3,183 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>John 李家豪 · John Class</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>和 John 说说 · John Class</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg:    #1A1814;
-  --ink:   #F7F3EE;
-  --ink2:  #C8C4BC;
-  --mid:   #7A7670;
-  --rule:  #2E2B27;
-  --card:  #211F1B;
-  --card2: #252320;
-  --gold:  #C9A96E;
-  --green: #4CAF85;
-  --serif: 'Playfair Display', Georgia, serif;
-  --sans:  'DM Sans', -apple-system, sans-serif;
-}
-html { scroll-behavior: smooth; }
-body {
-  font-family: var(--sans);
-  background: var(--bg);
-  color: var(--ink);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased;background:#F5EDD8;color:#2A1E08}
+.layout{display:flex;min-height:100vh}
+.left{position:fixed;top:0;left:0;width:52%;height:100vh;overflow:hidden}
+.left img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.left::after{content:'';position:absolute;top:0;right:0;width:80px;height:100%;background:linear-gradient(to right,transparent,#F5EDD8)}
+.right{margin-left:52%;flex:1;background:#F5EDD8;min-height:100vh;padding:52px 44px 64px 28px;position:relative;display:flex;flex-direction:column;justify-content:center}
+.right::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 15%,rgba(201,169,110,.07) 0%,transparent 50%),radial-gradient(circle at 20% 85%,rgba(120,160,80,.05) 0%,transparent 40%);pointer-events:none}
 
-/* ── NAV ─────────────────────────────── */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 56px;
-  background: rgba(26,24,20,.94);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--rule);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 40px;
-  z-index: 100;
-}
-.nav-logo {
-  font-family: var(--serif);
-  font-size: 18px;
-  color: var(--ink);
-  text-decoration: none;
-}
-.nav-logo span { color: var(--gold); }
-.nav-tag {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--gold);
-  background: rgba(201,169,110,.1);
-  border: 1px solid rgba(201,169,110,.2);
-  padding: 4px 12px;
-  border-radius: 20px;
-}
-.nav-back {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--mid);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: color .2s;
-}
-.nav-back:hover { color: var(--ink); }
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:48px;position:relative;z-index:1}
+.nav-brand{font-size:13px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8956A;text-decoration:none;font-family:'Noto Serif SC',Georgia,serif}
+.nav-back{font-size:12px;color:#9A8060;text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .2s}
+.nav-back:hover{color:#2A1E08}
 
-/* ── HERO ─────────────────────────────── */
-.hero {
-  padding: 120px 48px 80px;
-  max-width: 1100px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 72px;
-  align-items: center;
-}
-@media (max-width: 860px) {
-  .hero { grid-template-columns: 1fr; gap: 48px; }
-  .profile-wrap { order: -1; }
-}
-.hero-eyebrow {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--gold);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.hero-eyebrow::before {
-  content: '';
-  display: inline-block;
-  width: 32px; height: 1px;
-  background: var(--gold);
-}
-.hero-title {
-  font-family: var(--serif);
-  font-size: clamp(34px, 4vw, 54px);
-  font-weight: 400;
-  line-height: 1.15;
-  letter-spacing: -.4px;
-  margin-bottom: 18px;
-}
-.hero-title em { font-style: italic; color: var(--gold); }
-.hero-sub {
-  font-size: 15px;
-  font-weight: 300;
-  color: var(--ink2);
-  line-height: 1.85;
-  max-width: 480px;
-  margin-bottom: 36px;
-}
-.hero-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  padding: 13px 28px;
-  background: var(--gold);
-  color: var(--bg);
-  border-radius: 40px;
-  text-decoration: none;
-  cursor: pointer;
-  border: none;
-  transition: gap .2s, transform .2s, box-shadow .2s;
-}
-.hero-cta:hover { gap: 14px; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,169,110,.25); }
+/* 主体内容区 */
+.main{position:relative;z-index:1;max-width:380px}
 
-/* ── PROFILE CARD ─────────────────────── */
-.profile-card {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: 20px;
-  padding: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-.profile-top {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.profile-avatar {
-  width: 64px; height: 64px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #C9A96E 0%, #8B6A3E 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--serif);
-  font-size: 24px;
-  color: var(--bg);
-  font-weight: 700;
-  flex-shrink: 0;
-}
-.profile-name {
-  font-family: var(--serif);
-  font-size: 20px;
-  font-weight: 400;
-  color: var(--ink);
-  margin-bottom: 3px;
-}
-.profile-sub { font-size: 12px; color: var(--mid); }
-.divider { height: 1px; background: var(--rule); }
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-.stat {
-  background: var(--card2);
-  border-radius: 10px;
-  padding: 12px 14px;
-}
-.stat-num {
-  font-family: var(--serif);
-  font-size: 24px;
-  font-weight: 400;
-  color: var(--gold);
-  line-height: 1;
-  margin-bottom: 3px;
-}
-.stat-label { font-size: 11px; color: var(--mid); }
-.profile-quote {
-  font-size: 13px;
-  font-style: italic;
-  color: var(--ink2);
-  line-height: 1.7;
-  border-left: 2px solid var(--gold);
-  padding-left: 14px;
-}
-.cred-list {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-.cred-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--ink2);
-  line-height: 1.5;
-}
-.cred-dot {
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: var(--gold);
-  flex-shrink: 0;
-  margin-top: 5px;
-}
+.page-title{font-family:'Noto Serif SC',Georgia,serif;font-size:clamp(26px,3vw,34px);font-weight:700;color:#2A1E08;letter-spacing:-.2px;margin-bottom:8px}
+.page-sub{font-size:13px;color:#9A8060;margin-bottom:32px;line-height:1.6}
 
-/* ── SECTIONS ─────────────────────────── */
-.section {
-  padding: 0 48px 80px;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-.sec-eyebrow {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 8px;
-}
-.sec-title {
-  font-family: var(--serif);
-  font-size: 32px;
-  font-weight: 400;
-  color: var(--ink);
-  margin-bottom: 36px;
-  line-height: 1.2;
-}
-.sec-title em { font-style: italic; color: var(--gold); }
+/* 对话框区域 */
+.chat-card{background:rgba(255,255,255,.6);border:1px solid rgba(184,149,106,.2);border-radius:20px;padding:20px;margin-bottom:16px;backdrop-filter:blur(4px)}
 
-/* ── CREDENTIALS ──────────────────────── */
-.cred-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 12px;
-}
-.cred-card {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: 14px;
-  padding: 20px 22px;
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-  transition: border-color .2s, transform .2s;
-}
-.cred-card:hover { border-color: rgba(201,169,110,.3); transform: translateY(-2px); }
-.cred-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
-.cred-card-title {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--ink);
-  margin-bottom: 4px;
-  line-height: 1.4;
-}
-.cred-card-sub { font-size: 12px; color: var(--mid); line-height: 1.5; }
+/* John的头像+气泡 */
+.j-bubble-row{display:flex;align-items:flex-end;gap:10px;margin-bottom:16px}
+.j-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2A1E08 0%,#5A3E18 100%);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#F5EDD8;flex-shrink:0;font-family:'Noto Serif SC',Georgia,serif}
+.j-bubble{background:#2A1E08;color:#F5EDD8;border-radius:16px 16px 16px 4px;padding:11px 15px;font-size:13.5px;line-height:1.65;max-width:240px}
+.j-bubble b{color:#C9A96E}
 
-/* ── WHAT I OFFER ─────────────────────── */
-.offer-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 14px;
-}
-.offer-card {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: 16px;
-  padding: 26px 24px;
-  transition: border-color .2s, transform .2s;
-}
-.offer-card:hover { border-color: rgba(201,169,110,.3); transform: translateY(-2px); }
-.offer-icon { font-size: 24px; margin-bottom: 14px; display: block; }
-.offer-title {
-  font-family: var(--serif);
-  font-size: 17px;
-  font-weight: 400;
-  color: var(--ink);
-  margin-bottom: 10px;
-}
-.offer-desc { font-size: 13px; font-weight: 300; color: var(--mid); line-height: 1.75; }
+/* 学生输入 */
+.s-input-area{display:flex;flex-direction:column;gap:10px}
+.msg-input{width:100%;padding:13px 16px;font-family:inherit;font-size:14px;color:#2A1E08;background:rgba(255,255,255,.8);border:1.5px solid rgba(184,149,106,.25);border-radius:14px;outline:none;resize:none;min-height:90px;line-height:1.6;transition:border-color .2s,box-shadow .2s}
+.msg-input::placeholder{color:rgba(160,120,70,.45)}
+.msg-input:focus{border-color:#B8956A;box-shadow:0 0 0 3px rgba(184,149,106,.1)}
 
-/* ── METHODOLOGY ──────────────────────── */
-.method-list { display: flex; flex-direction: column; }
-.method-item {
-  display: grid;
-  grid-template-columns: 48px 1fr;
-  gap: 20px;
-  padding: 24px 0;
-  border-bottom: 1px solid var(--rule);
-  align-items: start;
-}
-.method-item:last-child { border-bottom: none; }
-.method-num {
-  font-family: var(--serif);
-  font-size: 30px;
-  font-weight: 400;
-  color: var(--rule);
-  line-height: 1;
-  padding-top: 4px;
-}
-.method-title { font-size: 15px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
-.method-desc { font-size: 13px; font-weight: 300; color: var(--mid); line-height: 1.75; }
-.method-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.method-tag {
-  font-size: 11px; font-weight: 500;
-  padding: 3px 9px; border-radius: 20px;
-  background: var(--card2); color: var(--mid);
-  border: 1px solid var(--rule);
-}
+/* 回复气泡（发送后出现） */
+.reply-row{display:none;align-items:flex-end;gap:10px;margin-top:12px}
+.reply-row.show{display:flex}
+.reply-bubble{background:rgba(184,149,106,.12);border:1px solid rgba(184,149,106,.2);color:#5A3E18;border-radius:16px 16px 4px 16px;padding:11px 15px;font-size:13px;line-height:1.6;max-width:240px;margin-left:auto}
 
-/* ── RESULTS ──────────────────────────── */
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 16px;
-}
-@media (max-width: 680px) { .results-grid { grid-template-columns: 1fr 1fr; } }
-.result-card {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: 14px;
-  padding: 22px 20px;
-}
-.result-num {
-  font-family: var(--serif);
-  font-size: 36px;
-  font-weight: 400;
-  color: var(--gold);
-  line-height: 1;
-  margin-bottom: 6px;
-}
-.result-label { font-size: 13px; color: var(--ink); font-weight: 500; margin-bottom: 4px; }
-.result-desc { font-size: 11px; color: var(--mid); line-height: 1.5; }
+/* 两个等大按钮 */
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;position:relative;z-index:1}
+.btn{padding:14px 12px;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;transition:all .18s;letter-spacing:.02em;font-family:inherit;border:none;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-send{background:#2A1E08;color:#F5EDD8}
+.btn-send:hover{background:#3D2E14;transform:translateY(-1px);box-shadow:0 6px 20px rgba(42,30,8,.18)}
+.btn-send:active{transform:scale(.97)}
+.btn-send.sent{background:#4A7C3F;pointer-events:none}
+.btn-about{background:rgba(255,255,255,.6);color:#2A1E08;border:1.5px solid rgba(184,149,106,.3)}
+.btn-about:hover{background:rgba(255,255,255,.85);border-color:#B8956A;transform:translateY(-1px);box-shadow:0 6px 20px rgba(42,30,8,.08)}
+.btn-about:active{transform:scale(.97)}
 
-/* ── CLIENTS ──────────────────────────── */
-.client-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 10px;
-}
-.client-tag {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: 10px;
-  padding: 12px 16px;
-  font-size: 13px;
-  color: var(--ink2);
-  text-align: center;
-  transition: border-color .2s;
-}
-.client-tag:hover { border-color: rgba(201,169,110,.3); color: var(--gold); }
+.foot{margin-top:40px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(184,149,106,.4);position:relative;z-index:1}
 
-/* ── CONTACT ──────────────────────────── */
-.contact-card {
-  background: var(--card);
-  border: 1px solid rgba(201,169,110,.2);
-  border-radius: 20px;
-  padding: 40px 44px;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 32px;
-  align-items: center;
-}
-@media (max-width: 680px) { .contact-card { grid-template-columns: 1fr; } }
-.contact-title {
-  font-family: var(--serif);
-  font-size: 26px;
-  font-weight: 400;
-  color: var(--ink);
-  margin-bottom: 10px;
-}
-.contact-desc { font-size: 14px; font-weight: 300; color: var(--ink2); line-height: 1.7; }
-.wechat-id {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--card2);
-  border: 1px solid var(--rule);
-  border-radius: 10px;
-  padding: 10px 16px;
-  margin-top: 14px;
-  font-size: 13px;
-  color: var(--gold);
-  font-weight: 500;
-  letter-spacing: .04em;
-  cursor: pointer;
-  transition: border-color .2s;
-}
-.wechat-id:hover { border-color: rgba(201,169,110,.4); }
-.copy-hint { font-size: 11px; color: var(--mid); margin-top: 6px; }
+.overlay{position:fixed;inset:0;background:#F5EDD8;z-index:999;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.overlay.show{opacity:1;pointer-events:all}
 
-/* ── FOOTER ───────────────────────────── */
-footer {
-  border-top: 1px solid var(--rule);
-  padding: 24px 48px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-.footer-logo { font-family: var(--serif); font-size: 14px; color: var(--ink); }
-.footer-logo span { color: var(--gold); }
-.footer-text { font-size: 12px; color: var(--mid); }
+/* 入场 */
+.right>*{animation:fi .6s cubic-bezier(.22,1,.36,1) both}
+.nav{animation-delay:.04s}.main{animation-delay:.12s}.btn-row{animation-delay:.22s}
+@keyframes fi{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
 
-@media (max-width: 680px) {
-  nav { padding: 0 20px; }
-  .hero { padding: 88px 24px 60px; }
-  .section { padding: 0 24px 60px; }
-  footer { padding: 20px 24px; flex-direction: column; gap: 8px; text-align: center; }
+@media(max-width:680px){
+  .layout{flex-direction:column}
+  .left{position:relative;width:100%;height:56vw;min-height:200px;max-height:340px}
+  .left::after{top:auto;bottom:0;left:0;right:0;width:100%;height:60px;background:linear-gradient(to bottom,transparent,#F5EDD8)}
+  .right{margin-left:0;padding:28px 20px 56px;justify-content:flex-start}
+  .main{max-width:100%}
 }
 </style>
 </head>
 <body>
+<div class="overlay" id="ov"></div>
+<div class="layout">
+  <div class="left"><img src="bg.png" alt="John Class"></div>
+  <div class="right">
 
-<nav>
-  <a class="nav-logo" href="index.html">John <span>Class</span></a>
-  <span class="nav-tag">教师主页</span>
-  <a class="nav-back" href="index.html">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-    返回首页
-  </a>
-</nav>
+    <div class="nav">
+      <a class="nav-brand" href="index.html">John Class</a>
+      <a class="nav-back" href="index.html" onclick="pg(event,'index.html')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>返回
+      </a>
+    </div>
 
-<!-- ── HERO ── -->
-<section class="hero">
-  <div>
-    <div class="hero-eyebrow">John 李家豪</div>
-    <h1 class="hero-title">12年沉淀，<em>方法论先行。</em></h1>
-    <p class="hero-sub">
-      湖南大学教育学硕士，新东方演讲师与师训主管，英语专业八级。
-      从大学讲台到中学课堂，从口语演讲到应试备考——
-      March winds and April showers bring May flowers.
+    <div class="main">
+      <div class="page-title">和 John 说说</div>
+      <div class="page-sub">提问、炫耀、反馈都可以，John 会看到的。</div>
 
-一起努力找对方法，终将通过英语看到另一个世界。
-    </p>
-    <button class="hero-cta" onclick="copyWechat()">
-      John 微信
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    </button>
+      <div class="chat-card">
+        <!-- John 的提示气泡 -->
+        <div class="j-bubble-row">
+          <div class="j-avatar">J</div>
+          <div class="j-bubble">有什么想说的？<br>提问、炫耀成绩、说说反馈——<br>都欢迎。<b>我会看的。</b></div>
+        </div>
+
+        <!-- 输入区 -->
+        <div class="s-input-area">
+          <textarea class="msg-input" id="msgInput" placeholder="说点什么…" maxlength="300"></textarea>
+        </div>
+
+        <!-- John 的回复气泡（发送后显示） -->
+        <div class="reply-row" id="replyRow">
+          <div class="reply-bubble" id="replyBubble"></div>
+          <div class="j-avatar" style="margin-left:0">J</div>
+        </div>
+      </div>
+
+      <!-- 两个等大按钮 -->
+      <div class="btn-row">
+        <button class="btn btn-send" id="sendBtn" onclick="sendMsg()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+          发送
+        </button>
+        <a class="btn btn-about" href="about.html" onclick="pg(event,'about.html')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          了解 John
+        </a>
+      </div>
+    </div>
+
+    <div class="foot">Growing Skills · Shaping Futures</div>
   </div>
-
-  <div class="profile-wrap">
-    <div class="profile-card">
-      <div class="profile-top">
-        <div class="profile-avatar">J</div>
-        <div>
-          <div class="profile-name">John 李家豪</div>
-          <div class="profile-sub">湖南大学教育学硕士 · 长沙</div>
-        </div>
-      </div>
-      <div class="divider"></div>
-      <div class="stats-grid">
-        <div class="stat">
-          <div class="stat-num">12</div>
-          <div class="stat-label">年英语教龄</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num">9000+</div>
-          <div class="stat-label">授课课时</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num">10000+</div>
-          <div class="stat-label">累计学员</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num">4次</div>
-          <div class="stat-label">新东方年度优秀教师</div>
-        </div>
-      </div>
-      <div class="divider"></div>
-      <div class="profile-quote">
-        "大部分学生遇到的问题，不是不够努力，而是没有找到正确的方法。"
-      </div>
-      <div class="cred-list">
-        <div class="cred-item"><span class="cred-dot"></span>英语专业八级 · 高级口译 · TKT证书</div>
-        <div class="cred-item"><span class="cred-dot"></span>湖南省大学生英语演讲赛英语专业组一等奖第一名</div>
-        <div class="cred-item"><span class="cred-dot"></span>新东方集团2016、2018、2019、2023年度优秀教师</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── 资质认证 ── -->
-<section class="section">
-  <div class="sec-eyebrow">专业背景</div>
-  <div class="sec-title">资质与<em>荣誉。</em></div>
-  <div class="cred-grid">
-    <div class="cred-card">
-      <span class="cred-icon">🎓</span>
-      <div>
-        <div class="cred-card-title">湖南大学教育学硕士</div>
-        <div class="cred-card-sub">系统教育学理论背景，深刻理解学习规律与认知发展</div>
-      </div>
-    </div>
-    <div class="cred-card">
-      <span class="cred-icon">🏆</span>
-      <div>
-        <div class="cred-card-title">英语专业八级</div>
-        <div class="cred-card-sub">国内英语专业最高级别测试，词汇、语法、翻译全面过关</div>
-      </div>
-    </div>
-    <div class="cred-card">
-      <span class="cred-icon">🎤</span>
-      <div>
-        <div class="cred-card-title">湖南省演讲赛专业组一等奖第一名</div>
-        <div class="cred-card-sub">英语演讲与表达能力经过最高级别赛事验证</div>
-      </div>
-    </div>
-    <div class="cred-card">
-      <span class="cred-icon">📜</span>
-      <div>
-        <div class="cred-card-title">高级口译 · TKT证书</div>
-        <div class="cred-card-sub">国际认可的英语教学知识证书，专业教学能力认证</div>
-      </div>
-    </div>
-    <div class="cred-card">
-      <span class="cred-icon">⭐</span>
-      <div>
-        <div class="cred-card-title">新东方四届年度优秀教师</div>
-        <div class="cred-card-sub">2016、2018、2019、2023年度获评，长期保持教学高水准</div>
-      </div>
-    </div>
-    <div class="cred-card">
-      <span class="cred-icon">⚖️</span>
-      <div>
-        <div class="cred-card-title">演讲赛培训师评委</div>
-        <div class="cred-card-sub">21世纪杯湖南赛区、"希望之星"湘潭赛区培训师评委</div>
-      </div>
-    </div>
-    <div class="cred-card">
-      <span class="cred-icon">🏫</span>
-      <div>
-        <div class="cred-card-title">长沙新东方演讲师 · 师训主管</div>
-        <div class="cred-card-sub">负责教师培训与教学质量管理，深谙教学方法论体系</div>
-      </div>
-    </div>
-    <div class="cred-card">
-      <span class="cred-icon">🎙️</span>
-      <div>
-        <div class="cred-card-title">长沙新东方口语教师</div>
-        <div class="cred-card-sub">口语教学经验丰富，从发音到表达系统训练</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── 服务内容 ── -->
-<section class="section">
-  <div class="sec-eyebrow">我能提供什么</div>
-  <div class="sec-title">专项帮助，<em>精准发力。</em></div>
-  <div class="offer-grid">
-    <div class="offer-card">
-      <span class="offer-icon">📖</span>
-      <div class="offer-title">阅读理解专项</div>
-      <div class="offer-desc">三步定位排除法 + 六大题型拆解，细节题、推断题、主旨题各有策略，从靠感觉到有方法。</div>
-    </div>
-    <div class="offer-card">
-      <span class="offer-icon">🧩</span>
-      <div class="offer-title">语法填空 & 完形</div>
-      <div class="offer-desc">十大考点秒杀口诀，词性转换、非谓语、时态判断每一空都有逻辑依据，不再靠蒙。</div>
-    </div>
-    <div class="offer-card">
-      <span class="offer-icon">✍️</span>
-      <div class="offer-title">书面表达提分</div>
-      <div class="offer-desc">三段式框架 + 四维度评分理解，高分句型积累与运用，从能写完到写得好。</div>
-    </div>
-    <div class="offer-card">
-      <span class="offer-icon">🎯</span>
-      <div class="offer-title">期末备考冲刺</div>
-      <div class="offer-desc">汇总丢分点精准强化，真题精讲 + 方法论对标，长沙各名校期末真题全面覆盖。</div>
-    </div>
-    <div class="offer-card">
-      <span class="offer-icon">📊</span>
-      <div class="offer-title">词汇系统建立</div>
-      <div class="offer-desc">不只是背单词，而是建立词汇系统。单元分组记忆 + 默写追踪，形成长效记忆。</div>
-    </div>
-    <div class="offer-card">
-      <span class="offer-icon">💬</span>
-      <div class="offer-title">每课家长反馈</div>
-      <div class="offer-desc">每节课后专属反馈报告，单词默写、作业打卡、课堂表现一目了然，家长实时掌握。</div>
-    </div>
-  </div>
-</section>
-
-<!-- ── 教学理念 ── -->
-<section class="section">
-  <div class="sec-eyebrow">教学方法论</div>
-  <div class="sec-title">为什么<em>有效？</em></div>
-  <div class="method-list">
-    <div class="method-item">
-      <div class="method-num">01</div>
-      <div>
-        <div class="method-title">方法先于内容</div>
-        <div class="method-desc">每个题型都有对应的解题框架，先教方法再带入内容练习。学生不只知道"这题选C"，更清楚"为什么选C、排除了什么"。12年教学沉淀出的方法论，经过数千名学员验证。</div>
-        <div class="method-tags">
-          <span class="method-tag">三步定位法</span>
-          <span class="method-tag">六大题型</span>
-          <span class="method-tag">干扰项识别</span>
-          <span class="method-tag">秒杀口诀</span>
-        </div>
-      </div>
-    </div>
-    <div class="method-item">
-      <div class="method-num">02</div>
-      <div>
-        <div class="method-title">小班精讲，每人都被看见</div>
-        <div class="method-desc">上限12人的小班规模，确保每位学生的薄弱点都能被关注到。个人任务制度让每个人的练习有针对性，不是一刀切的大班教学。</div>
-        <div class="method-tags">
-          <span class="method-tag">≤12人小班</span>
-          <span class="method-tag">个人任务</span>
-          <span class="method-tag">差异化辅导</span>
-        </div>
-      </div>
-    </div>
-    <div class="method-item">
-      <div class="method-num">03</div>
-      <div>
-        <div class="method-title">数据驱动，持续追踪</div>
-        <div class="method-desc">每节课记录单词、作业、课堂、任务四个维度数据，追踪学习轨迹，发现规律，及时调整。不靠感觉，靠数据说话。</div>
-        <div class="method-tags">
-          <span class="method-tag">周报反馈</span>
-          <span class="method-tag">数据追踪</span>
-          <span class="method-tag">学期报告</span>
-        </div>
-      </div>
-    </div>
-    <div class="method-item">
-      <div class="method-num">04</div>
-      <div>
-        <div class="method-title">家校同频，形成合力</div>
-        <div class="method-desc">每节课后发送专属家长周报，让家长真正了解孩子在课堂上的状态，而不是等到考试出成绩才知道。沟通及时，问题早发现早解决。</div>
-        <div class="method-tags">
-          <span class="method-tag">家长周报</span>
-          <span class="method-tag">及时沟通</span>
-          <span class="method-tag">阶段总结</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── 数据成果 ── -->
-<section class="section">
-  <div class="sec-eyebrow">教学成果</div>
-  <div class="sec-title">数字背后的<em>积累。</em></div>
-  <div class="results-grid">
-    <div class="result-card">
-      <div class="result-num">12</div>
-      <div class="result-label">年教龄</div>
-      <div class="result-desc">从大学讲台到中学课堂，持续深耕英语教学</div>
-    </div>
-    <div class="result-card">
-      <div class="result-num">9000+</div>
-      <div class="result-label">授课课时</div>
-      <div class="result-desc">平均每年超过750课时，教学经验极为丰富</div>
-    </div>
-    <div class="result-card">
-      <div class="result-num">10000+</div>
-      <div class="result-label">累计学员</div>
-      <div class="result-desc">覆盖中学生、大学生、企业员工各类群体</div>
-    </div>
-    <div class="result-card">
-      <div class="result-num">4次</div>
-      <div class="result-label">新东方年度优秀</div>
-      <div class="result-desc">2016、2018、2019、2023年获评，持续高水准</div>
-    </div>
-  </div>
-</section>
-
-<!-- ── 服务机构 ── -->
-<section class="section">
-  <div class="sec-eyebrow">服务机构</div>
-  <div class="sec-title">曾服务过的<em>学校与单位。</em></div>
-  <div class="client-grid">
-    <div class="client-tag">国防科技大学</div>
-    <div class="client-tag">湖南大学</div>
-    <div class="client-tag">中南大学</div>
-    <div class="client-tag">湖南工业大学</div>
-    <div class="client-tag">湖南第一师范</div>
-    <div class="client-tag">长沙市一中</div>
-    <div class="client-tag">雅礼中学</div>
-    <div class="client-tag">中国中车</div>
-    <div class="client-tag">博赛软件</div>
-    <div class="client-tag">三一重工</div>
-    <div class="client-tag">航院</div>
-    <div class="client-tag">长沙新东方</div>
-  </div>
-</section>
-
-<!-- ── 联系 ── -->
-<section class="section" id="contact">
-  <div style="display:flex;flex-direction:column;align-items:center;padding:48px 0 32px;gap:16px">
-    <div style="font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--mid)">联系 John</div>
-    <div onclick="copyWechat()" title="点击复制" style="display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid rgba(201,169,110,.25);border-radius:14px;padding:14px 24px;cursor:pointer;transition:border-color .2s" onmouseover="this.style.borderColor='rgba(201,169,110,.5)'" onmouseout="this.style.borderColor='rgba(201,169,110,.25)'">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A96E" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      <span style="font-size:15px;font-weight:500;color:var(--gold);letter-spacing:.04em">JiahaoLee6666</span>
-    </div>
-    <div style="font-size:12px;color:var(--mid)" id="copy-hint">点击复制微信号</div>
-  </div>
-</section>
-
-<footer>
-  <div class="footer-logo">John <span>Class</span></div>
-  <div class="footer-text">长沙 · 初中英语专项 · 方法论驱动 · John 李家豪</div>
-</footer>
+</div>
 
 <script>
-function copyWechat() {
-  navigator.clipboard.writeText('JiahaoLee6666').then(() => {
-    const hint = document.getElementById('copy-hint');
-    hint.textContent = '✓ 微信号已复制，打开微信添加好友即可';
-    hint.style.color = '#4CAF85';
-    setTimeout(() => {
-      hint.textContent = '点击微信号即可复制';
-      hint.style.color = '';
-    }, 3000);
-  });
+const REPLIES = [
+  '收到了！谢谢你说这些，我会认真看的。🙏',
+  '嗯，看到了。有什么需要随时来找我。',
+  '好的，我记下来了！继续加油 💪',
+  '谢谢你告诉我这些，很有意义。',
+  '哈哈，看到了！你很棒 ⭐',
+  '收到！有问题随时加我微信：JiahaoLee6666',
+];
+
+function sendMsg() {
+  const input = document.getElementById('msgInput');
+  const msg = input.value.trim();
+  if (!msg) {
+    input.style.borderColor = '#C0392B';
+    input.focus();
+    setTimeout(() => { input.style.borderColor = ''; }, 1200);
+    return;
+  }
+
+  const btn = document.getElementById('sendBtn');
+  btn.classList.add('sent');
+  btn.innerHTML = '✓ 已发送';
+
+  // 存到 localStorage（模拟留言）
+  const msgs = JSON.parse(localStorage.getItem('jc_messages') || '[]');
+  msgs.push({ text: msg, time: new Date().toISOString() });
+  localStorage.setItem('jc_messages', JSON.stringify(msgs));
+
+  // 随机回复
+  const reply = REPLIES[Math.floor(Math.random() * REPLIES.length)];
+  setTimeout(() => {
+    const row = document.getElementById('replyRow');
+    document.getElementById('replyBubble').textContent = reply;
+    row.classList.add('show');
+    input.value = '';
+    input.disabled = true;
+  }, 600);
+}
+
+function pg(e, href) {
+  if (e) e.preventDefault();
+  document.getElementById('ov').classList.add('show');
+  setTimeout(() => { window.location.href = href; }, 280);
+}
+
+// 读取学生名字问候
+const name = localStorage.getItem('jc_student_name');
+if (name) {
+  document.querySelector('.j-bubble').innerHTML =
+    `${name}，有什么想说的？<br>提问、炫耀成绩、说说反馈——<br>都欢迎。<b>我会看的。</b>`;
 }
 </script>
 </body>
