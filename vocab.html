@@ -1707,19 +1707,76 @@ const BRAG_COMBO=8;           // 单次连续答对达到该数可炫耀
 
 /* ============ STATE ============ */
 const KEY="john_eng_v3";
+
+/* ============ 联网排行榜 · Supabase ============
+   ★ 配置说明（只需填这两行）：
+   1. 去 https://supabase.com 免费注册，创建项目
+   2. 在 Supabase 控制台 → SQL Editor 执行下面建表 SQL：
+
+   create table leaderboard (
+     name text primary key,
+     score integer not null default 0,
+     grade text default '',
+     updated_at timestamptz default now()
+   );
+   alter table leaderboard enable row level security;
+   create policy "anyone can read" on leaderboard for select using (true);
+   create policy "anyone can upsert" on leaderboard for insert with check (true);
+   create policy "anyone can update" on leaderboard for update using (true);
+
+   3. 把 Project URL 和 anon key 填到下面两个变量里
+   ============================================ */
+const SUPABASE_URL = "https://ghunrrtrdgicbmixsqrc.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs";
+
+// 检测是否已配置
+const LB_ONLINE = SUPABASE_URL !== "https://YOUR_PROJECT.supabase.co";
+
+/* ---- Supabase 轻量封装（不引入 SDK，直接用 fetch） ---- */
+const _sb = {
+ async upsert(name, score, grade){
+  if(!LB_ONLINE) return;
+  try{
+   await fetch(`${SUPABASE_URL}/rest/v1/leaderboard`, {
+    method:'POST',
+    headers:{
+     'apikey': SUPABASE_KEY,
+     'Authorization': `Bearer ${SUPABASE_KEY}`,
+     'Content-Type': 'application/json',
+     'Prefer': 'resolution=merge-duplicates'  // upsert
+    },
+    body: JSON.stringify({name, score, grade, updated_at: new Date().toISOString()})
+   });
+  }catch(e){}
+ },
+ async getTop(limit=100){
+  if(!LB_ONLINE) return null;
+  try{
+   const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/leaderboard?select=name,score,grade,updated_at&order=score.desc,updated_at.asc&limit=${limit}`,
+    { headers:{ 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
+   );
+   if(!res.ok) return null;
+   return await res.json();
+  }catch(e){ return null; }
+ }
+};
+
+/* ---- 本地缓存（离线备用） ---- */
 const LB_KEY="john_eng_lb_v1";
-function lbLoad(){try{const r=localStorage.getItem(LB_KEY);return r?JSON.parse(r):{};}catch(e){return {};}}
-function lbSave(data){try{localStorage.setItem(LB_KEY,JSON.stringify(data));}catch(e){}}
+function lbCacheSave(rows){try{localStorage.setItem(LB_KEY,JSON.stringify({rows,ts:Date.now()}));}catch(e){}}
+function lbCacheLoad(){try{const r=JSON.parse(localStorage.getItem(LB_KEY)||"{}");return r.rows||[];}catch(e){return [];}}
+
+/* ---- 上传当前分数（每次得分时调用，带防抖） ---- */
+let _lbTimer=null;
 function lbUpdate(){
  if(!S||!S.name)return;
- const data=lbLoad();
- const myScore=points();
- const myGrade=S.grade?((gradeById(S.grade)||{}).label||S.grade):"";
- const existing=data[S.name];
- if(!existing||existing.score<myScore||existing.grade!==myGrade){
-  data[S.name]={score:myScore,grade:myGrade,time:Date.now()};
-  lbSave(data);
- }
+ clearTimeout(_lbTimer);
+ _lbTimer=setTimeout(async()=>{
+  const myScore=points();
+  const myGrade=S.grade?((gradeById(S.grade)||{}).label||S.grade):"";
+  await _sb.upsert(S.name, myScore, myGrade);
+ }, 3000); // 3秒内不再得分才上传
 }
 /* S：全局信息 + 各年级独立存档
    S.grade = 当前年级 id；S.gd[gradeId] = {points, prog} */
@@ -1950,7 +2007,7 @@ SCREENS.welcome=function(){clear();const d=document.createElement("div");d.class
  </div>`;
  app.appendChild(d);
  const inp=d.querySelector("#nameInp");
- const start=()=>{const v=inp.value.trim();if(!v){inp.focus();inp.style.borderColor="var(--warn)";return;}S.name=v;save();sfx.tap();go("grade");};
+ const start=()=>{const v=inp.value.trim();if(!v){inp.focus();inp.style.borderColor="var(--warn)";return;}S.name=v;save();sfx.tap();lbUpdate();go("grade");};
  d.querySelector("#go").onclick=start;
  inp.addEventListener("keydown",e=>{if(e.key==="Enter")start();});
 };
@@ -2712,25 +2769,79 @@ function confirmGodReset(){const m=document.getElementById("modal");const gl=gra
 }
 /* ============ 班级排行榜界面 ============ */
 function lbGetRanking(){
- const data=lbLoad();
- return Object.entries(data)
-  .map(([name,v])=>({name,score:v.score,grade:v.grade,time:v.time}))
-  .sort((a,b)=>b.score-a.score||a.time-b.time)
-  .slice(0,50);
+ // 离线回退：读本地缓存
+ return lbCacheLoad();
 }
-SCREENS.leaderboard=function(){clear();
- lbUpdate(); // 确保自己的最新成绩已上榜
- const ranking=lbGetRanking();
+
+SCREENS.leaderboard=function(){
+ clear();
  const myName=S.name;
- const myRank=ranking.findIndex(r=>r.name===myName);
- let rows="";
- if(!ranking.length){
-  rows=`<div class="lb-empty">暂无数据<br><small>完成练习后自动上榜</small></div>`;
- }else{
+
+ // 先渲染 loading 骨架
+ const d=document.createElement("div");d.className="screen active";
+ d.innerHTML=`
+  <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">🏆 班级排行榜</div>
+   <div class="sp"></div>
+   <button class="iconbtn" id="refresh" title="刷新">↻</button>
+  </div>
+  <div class="lb-wrap">
+   <div class="lb-sub" id="lb-sub">加载中…</div>
+   <div class="lb-list" id="lb-list">
+    ${[1,2,3,4,5].map(()=>`
+     <div class="lb-row" style="opacity:.3">
+      <div class="lb-rank" style="background:var(--hair);width:32px;height:32px;border-radius:50%"></div>
+      <div class="lb-info"><span class="lb-name" style="background:var(--hair);color:transparent;border-radius:4px">加载中加载中加</span></div>
+      <div class="lb-score" style="background:var(--hair);color:transparent;border-radius:4px">999</div>
+     </div>`).join("")}
+   </div>
+   ${!LB_ONLINE?`<div class="lb-note" style="color:var(--warn)">⚠️ 排行榜未配置 Supabase<br>当前显示本地数据</div>`:''}
+  </div>`;
+ app.appendChild(d);
+ d.querySelector("#bk").onclick=()=>{sfx.tap();go("home");};
+
+ // 异步加载排行榜
+ const render = async ()=>{
+  const list=d.querySelector("#lb-list");
+  const sub=d.querySelector("#lb-sub");
+  sub.textContent="加载中…";
+  list.innerHTML=[1,2,3,4,5].map(()=>`
+   <div class="lb-row" style="opacity:.3">
+    <div class="lb-rank" style="background:var(--hair);width:32px;height:32px;border-radius:50%"></div>
+    <div class="lb-info"><span class="lb-name" style="background:var(--hair);color:transparent;border-radius:4px">加载中加载中加</span></div>
+    <div class="lb-score" style="background:var(--hair);color:transparent;border-radius:4px">999</div>
+   </div>`).join("");
+
+  // 先把自己上传（确保榜单有自己）
+  if(S.name){
+   const myScore=points();
+   const myGrade=S.grade?((gradeById(S.grade)||{}).label||S.grade):"";
+   await _sb.upsert(S.name, myScore, myGrade);
+  }
+
+  // 拉取榜单
+  let ranking=null;
+  if(LB_ONLINE) ranking=await _sb.getTop(100);
+
+  // 联网失败 → 用本地缓存
+  if(!ranking){
+   ranking=lbGetRanking();
+   if(ranking.length) sub.textContent="⚠️ 网络不可用，显示缓存数据";
+   else { sub.textContent="暂无数据，完成练习后自动上榜"; list.innerHTML=`<div class="lb-empty">暂无数据<br><small>完成练习后自动上榜</small></div>`; return; }
+  } else {
+   // 存到本地缓存备用
+   lbCacheSave(ranking);
+  }
+
+  const myRank=ranking.findIndex(r=>r.name===myName);
+  sub.textContent=myRank>=0
+   ?`你排名第 ${myRank+1} 名，共 ${ranking.length} 人参与`
+   :`共 ${ranking.length} 人参与，快去练习上榜！`;
+
+  let rows="";
   ranking.forEach((r,i)=>{
    const isMe=r.name===myName;
    const rankClass=i===0?'r1':i===1?'r2':i===2?'r3':'';
-   const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1;
+   const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':`<span style="font-size:13px">${i+1}</span>`;
    rows+=`<div class="lb-row ${isMe?'lb-me':''}">
     <div class="lb-rank ${rankClass}">${medal}</div>
     <div class="lb-info">
@@ -2741,18 +2852,11 @@ SCREENS.leaderboard=function(){clear();
     <div class="lb-score">${r.score}<small style="font-size:12px;font-weight:400;color:var(--soft)">分</small></div>
    </div>`;
   });
- }
- const myInfo=myRank>=0?`你目前排名第 ${myRank+1} 名，共 ${ranking.length} 人`:'你还未上榜，快去练习吧！';
- const d=document.createElement("div");d.className="screen active";
- d.innerHTML=`
-  <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">🏆 班级排行榜</div></div>
-  <div class="lb-wrap">
-   <div class="lb-sub">${myInfo}</div>
-   <div class="lb-list">${rows}</div>
-   <div class="lb-note">排行榜存储在本设备上<br>同设备所有同学的成绩会自动汇总显示<br>（同一台手机/电脑上的学生）</div>
-  </div>`;
- app.appendChild(d);
- d.querySelector("#bk").onclick=()=>{sfx.tap();go("home");};
+  list.innerHTML=rows||`<div class="lb-empty">暂无数据</div>`;
+ };
+
+ render();
+ d.querySelector("#refresh").onclick=()=>{ sfx.tap(); render(); };
 };
 load();initTTS();
 // 恢复年级
