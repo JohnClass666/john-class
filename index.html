@@ -438,21 +438,6 @@ function showSplash(name, isKnown, then) {
   }, 1800);
 }
 
-  const welcome = document.getElementById('welcome');
-  const main = document.getElementById('mainPage');
-
-  if (animate) {
-    welcome.classList.add('hide');
-    setTimeout(() => {
-      welcome.style.display = 'none';
-      main.classList.add('show');
-    }, 500);
-  } else {
-    welcome.style.display = 'none';
-    main.classList.add('show');
-  }
-}
-
 function go(e, href) {
   e.preventDefault();
   document.getElementById('ov').classList.add('show');
