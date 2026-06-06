@@ -20,49 +20,63 @@ html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Helvetica Neu
 .nav-back{font-size:12px;color:#9A8060;text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .2s}
 .nav-back:hover{color:#2A1E08}
 
-/* 主体内容区 */
 .main{position:relative;z-index:1;max-width:380px}
-
 .page-title{font-family:'Noto Serif SC',Georgia,serif;font-size:clamp(26px,3vw,34px);font-weight:700;color:#2A1E08;letter-spacing:-.2px;margin-bottom:8px}
 .page-sub{font-size:13px;color:#9A8060;margin-bottom:32px;line-height:1.6}
 
 /* 对话框区域 */
 .chat-card{background:rgba(255,255,255,.6);border:1px solid rgba(184,149,106,.2);border-radius:20px;padding:20px;margin-bottom:16px;backdrop-filter:blur(4px)}
 
-/* John的头像+气泡 */
 .j-bubble-row{display:flex;align-items:flex-end;gap:10px;margin-bottom:16px}
 .j-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2A1E08 0%,#5A3E18 100%);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#F5EDD8;flex-shrink:0;font-family:'Noto Serif SC',Georgia,serif}
 .j-bubble{background:#2A1E08;color:#F5EDD8;border-radius:16px 16px 16px 4px;padding:11px 15px;font-size:13.5px;line-height:1.65;max-width:240px}
 .j-bubble b{color:#C9A96E}
 
-/* 学生输入 */
 .s-input-area{display:flex;flex-direction:column;gap:10px}
+.name-row{display:flex;gap:8px}
+.name-input{flex:1;padding:10px 14px;font-family:inherit;font-size:14px;color:#2A1E08;background:rgba(255,255,255,.8);border:1.5px solid rgba(184,149,106,.25);border-radius:12px;outline:none;transition:border-color .2s}
+.name-input::placeholder{color:rgba(160,120,70,.45)}
+.name-input:focus{border-color:#B8956A;box-shadow:0 0 0 3px rgba(184,149,106,.1)}
 .msg-input{width:100%;padding:13px 16px;font-family:inherit;font-size:14px;color:#2A1E08;background:rgba(255,255,255,.8);border:1.5px solid rgba(184,149,106,.25);border-radius:14px;outline:none;resize:none;min-height:90px;line-height:1.6;transition:border-color .2s,box-shadow .2s}
 .msg-input::placeholder{color:rgba(160,120,70,.45)}
 .msg-input:focus{border-color:#B8956A;box-shadow:0 0 0 3px rgba(184,149,106,.1)}
+.char-count{font-size:11px;color:rgba(160,120,70,.6);text-align:right}
 
-/* 回复气泡（发送后出现） */
 .reply-row{display:none;align-items:flex-end;gap:10px;margin-top:12px}
 .reply-row.show{display:flex}
 .reply-bubble{background:rgba(184,149,106,.12);border:1px solid rgba(184,149,106,.2);color:#5A3E18;border-radius:16px 16px 4px 16px;padding:11px 15px;font-size:13px;line-height:1.6;max-width:240px;margin-left:auto}
 
-/* 两个等大按钮 */
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;position:relative;z-index:1}
 .btn{padding:14px 12px;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;transition:all .18s;letter-spacing:.02em;font-family:inherit;border:none;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px}
 .btn-send{background:#2A1E08;color:#F5EDD8}
 .btn-send:hover{background:#3D2E14;transform:translateY(-1px);box-shadow:0 6px 20px rgba(42,30,8,.18)}
 .btn-send:active{transform:scale(.97)}
+.btn-send.sending{opacity:.6;pointer-events:none}
 .btn-send.sent{background:#4A7C3F;pointer-events:none}
 .btn-about{background:rgba(255,255,255,.6);color:#2A1E08;border:1.5px solid rgba(184,149,106,.3)}
 .btn-about:hover{background:rgba(255,255,255,.85);border-color:#B8956A;transform:translateY(-1px);box-shadow:0 6px 20px rgba(42,30,8,.08)}
 .btn-about:active{transform:scale(.97)}
 
-.foot{margin-top:40px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(184,149,106,.4);position:relative;z-index:1}
+/* 留言列表 */
+.msg-list-section{position:relative;z-index:1;max-width:380px;margin-top:32px}
+.msg-list-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.msg-list-title{font-size:13px;font-weight:600;color:#9A8060;letter-spacing:.06em}
+.refresh-btn{font-size:11px;color:#B8956A;background:none;border:1px solid rgba(184,149,106,.3);border-radius:99px;padding:4px 12px;cursor:pointer;font-family:inherit;transition:all .15s}
+.refresh-btn:hover{background:rgba(184,149,106,.1)}
+.msg-item{background:rgba(255,255,255,.55);border:1px solid rgba(184,149,106,.18);border-radius:16px;padding:14px 16px;margin-bottom:10px;backdrop-filter:blur(4px)}
+.msg-item-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.msg-item-name{font-size:13px;font-weight:600;color:#2A1E08}
+.msg-item-grade{font-size:11px;color:#B8956A;margin-left:6px}
+.msg-item-time{font-size:11px;color:rgba(154,128,96,.6)}
+.msg-item-text{font-size:13.5px;color:#3A2A10;line-height:1.7}
+.msg-empty{text-align:center;padding:32px;font-size:13px;color:rgba(154,128,96,.6)}
+.msg-loading{opacity:.4}
+.skel{background:rgba(184,149,106,.15);border-radius:8px;height:14px;margin-bottom:8px}
 
+.foot{margin-top:40px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(184,149,106,.4);position:relative;z-index:1}
 .overlay{position:fixed;inset:0;background:#F5EDD8;z-index:999;opacity:0;pointer-events:none;transition:opacity .3s ease}
 .overlay.show{opacity:1;pointer-events:all}
 
-/* 入场 */
 .right>*{animation:fi .6s cubic-bezier(.22,1,.36,1) both}
 .nav{animation-delay:.04s}.main{animation-delay:.12s}.btn-row{animation-delay:.22s}
 @keyframes fi{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
@@ -72,7 +86,7 @@ html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Helvetica Neu
   .left{position:relative;width:100%;height:56vw;min-height:200px;max-height:340px}
   .left::after{top:auto;bottom:0;left:0;right:0;width:100%;height:60px;background:linear-gradient(to bottom,transparent,#F5EDD8)}
   .right{margin-left:0;padding:28px 20px 56px;justify-content:flex-start}
-  .main{max-width:100%}
+  .main,.msg-list-section{max-width:100%}
 }
 </style>
 </head>
@@ -91,28 +105,29 @@ html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Helvetica Neu
 
     <div class="main">
       <div class="page-title">和 John 说说</div>
-      <div class="page-sub">提问、炫耀、反馈都可以，John 会看到的。</div>
+      <div class="page-sub">提问、炫耀成绩、说说反馈——都可以，John 会看到的。</div>
 
       <div class="chat-card">
-        <!-- John 的提示气泡 -->
         <div class="j-bubble-row">
           <div class="j-avatar">J</div>
-          <div class="j-bubble">有什么想说的？<br>提问、炫耀成绩、说说反馈——<br>都欢迎。<b>我会看的。</b></div>
+          <div class="j-bubble" id="jBubble">有什么想说的？<br>提问、炫耀成绩、说说反馈——<br>都欢迎。<b>我会看的。</b></div>
         </div>
 
-        <!-- 输入区 -->
         <div class="s-input-area">
+          <div class="name-row">
+            <input class="name-input" id="msgName" placeholder="你的名字" maxlength="20">
+            <input class="name-input" id="msgGrade" placeholder="年级（选填）" maxlength="10" style="flex:.8">
+          </div>
           <textarea class="msg-input" id="msgInput" placeholder="说点什么…" maxlength="300"></textarea>
+          <div class="char-count" id="charCount">0 / 300</div>
         </div>
 
-        <!-- John 的回复气泡（发送后显示） -->
         <div class="reply-row" id="replyRow">
           <div class="reply-bubble" id="replyBubble"></div>
           <div class="j-avatar" style="margin-left:0">J</div>
         </div>
       </div>
 
-      <!-- 两个等大按钮 -->
       <div class="btn-row">
         <button class="btn btn-send" id="sendBtn" onclick="sendMsg()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
@@ -125,11 +140,35 @@ html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Helvetica Neu
       </div>
     </div>
 
+    <!-- 留言列表 -->
+    <div class="msg-list-section">
+      <div class="msg-list-header">
+        <span class="msg-list-title">大家都说了什么</span>
+        <button class="refresh-btn" onclick="loadMsgs()">↻ 刷新</button>
+      </div>
+      <div id="msgList">
+        <!-- 骨架屏 -->
+        <div class="msg-item msg-loading">
+          <div class="skel" style="width:40%"></div>
+          <div class="skel" style="width:90%"></div>
+          <div class="skel" style="width:70%"></div>
+        </div>
+        <div class="msg-item msg-loading">
+          <div class="skel" style="width:35%"></div>
+          <div class="skel" style="width:80%"></div>
+        </div>
+      </div>
+    </div>
+
     <div class="foot">Growing Skills · Shaping Futures</div>
   </div>
 </div>
 
 <script>
+/* ── Supabase 配置 ── */
+const SB_URL = "https://ghunrrtrdgicbmixsqrc.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs";
+
 const REPLIES = [
   '收到了！谢谢你说这些，我会认真看的。🙏',
   '嗯，看到了。有什么需要随时来找我。',
@@ -139,48 +178,123 @@ const REPLIES = [
   '收到！有问题随时加我微信：JiahaoLee6666',
 ];
 
-function sendMsg() {
-  const input = document.getElementById('msgInput');
-  const msg = input.value.trim();
-  if (!msg) {
-    input.style.borderColor = '#C0392B';
-    input.focus();
-    setTimeout(() => { input.style.borderColor = ''; }, 1200);
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* 字数统计 */
+document.getElementById('msgInput').addEventListener('input',function(){
+  document.getElementById('charCount').textContent=this.value.length+' / 300';
+});
+
+/* 读取学生名字预填 */
+const savedName=localStorage.getItem('jc_student_name');
+if(savedName){
+  document.getElementById('msgName').value=savedName;
+  document.getElementById('jBubble').innerHTML=`${esc(savedName)}，有什么想说的？<br>提问、炫耀成绩、说说反馈——<br>都欢迎。<b>我会看的。</b>`;
+}
+
+/* 发送留言 */
+async function sendMsg(){
+  const name=document.getElementById('msgName').value.trim();
+  const grade=document.getElementById('msgGrade').value.trim();
+  const content=document.getElementById('msgInput').value.trim();
+  const btn=document.getElementById('sendBtn');
+
+  if(!name){
+    document.getElementById('msgName').style.borderColor='#C0392B';
+    document.getElementById('msgName').focus();
+    setTimeout(()=>{document.getElementById('msgName').style.borderColor='';},1200);
+    return;
+  }
+  if(!content){
+    document.getElementById('msgInput').style.borderColor='#C0392B';
+    document.getElementById('msgInput').focus();
+    setTimeout(()=>{document.getElementById('msgInput').style.borderColor='';},1200);
     return;
   }
 
-  const btn = document.getElementById('sendBtn');
-  btn.classList.add('sent');
-  btn.innerHTML = '✓ 已发送';
+  btn.classList.add('sending');
+  btn.innerHTML='发送中…';
 
-  // 存到 localStorage（模拟留言）
-  const msgs = JSON.parse(localStorage.getItem('jc_messages') || '[]');
-  msgs.push({ text: msg, time: new Date().toISOString() });
-  localStorage.setItem('jc_messages', JSON.stringify(msgs));
+  try{
+    const res=await fetch(`${SB_URL}/rest/v1/messages`,{
+      method:'POST',
+      headers:{
+        'apikey':SB_KEY,
+        'Authorization':`Bearer ${SB_KEY}`,
+        'Content-Type':'application/json',
+        'Prefer':'return=minimal'
+      },
+      body:JSON.stringify({name,grade,content})
+    });
+    if(!res.ok)throw new Error(res.status);
 
-  // 随机回复
-  const reply = REPLIES[Math.floor(Math.random() * REPLIES.length)];
-  setTimeout(() => {
-    const row = document.getElementById('replyRow');
-    document.getElementById('replyBubble').textContent = reply;
-    row.classList.add('show');
-    input.value = '';
-    input.disabled = true;
-  }, 600);
+    // 保存名字供下次使用
+    localStorage.setItem('jc_student_name',name);
+
+    btn.classList.remove('sending');
+    btn.classList.add('sent');
+    btn.innerHTML='✓ 已发送';
+
+    // 显示随机回复气泡
+    const reply=REPLIES[Math.floor(Math.random()*REPLIES.length)];
+    setTimeout(()=>{
+      document.getElementById('replyBubble').textContent=reply;
+      document.getElementById('replyRow').classList.add('show');
+      document.getElementById('msgInput').value='';
+      document.getElementById('charCount').textContent='0 / 300';
+      document.getElementById('msgInput').disabled=true;
+      loadMsgs();
+    },600);
+
+  }catch(e){
+    btn.classList.remove('sending');
+    btn.innerHTML='发送失败，重试';
+    btn.style.background='#C0392B';
+    setTimeout(()=>{btn.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>发送';btn.style.background='';btn.classList.remove('sending');},2000);
+  }
 }
 
-function pg(e, href) {
-  if (e) e.preventDefault();
+/* 加载留言列表 */
+async function loadMsgs(){
+  const list=document.getElementById('msgList');
+  try{
+    const res=await fetch(
+      `${SB_URL}/rest/v1/messages?select=name,grade,content,created_at&order=created_at.desc&limit=50`,
+      {headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`}}
+    );
+    if(!res.ok)throw new Error(res.status);
+    const data=await res.json();
+
+    if(!data.length){
+      list.innerHTML='<div class="msg-empty">还没有留言，来第一个说说吧 ✨</div>';
+      return;
+    }
+
+    list.innerHTML=data.map(m=>{
+      const dt=new Date(m.created_at);
+      const t=`${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
+      return `<div class="msg-item">
+        <div class="msg-item-head">
+          <span><span class="msg-item-name">${esc(m.name)}</span>${m.grade?`<span class="msg-item-grade">${esc(m.grade)}</span>`:''}</span>
+          <span class="msg-item-time">${t}</span>
+        </div>
+        <div class="msg-item-text">${esc(m.content)}</div>
+      </div>`;
+    }).join('');
+
+  }catch(e){
+    list.innerHTML='<div class="msg-empty" style="color:#C0392B">加载失败，点刷新重试</div>';
+  }
+}
+
+function pg(e,href){
+  if(e)e.preventDefault();
   document.getElementById('ov').classList.add('show');
-  setTimeout(() => { window.location.href = href; }, 280);
+  setTimeout(()=>{window.location.href=href;},280);
 }
 
-// 读取学生名字问候
-const name = localStorage.getItem('jc_student_name');
-if (name) {
-  document.querySelector('.j-bubble').innerHTML =
-    `${name}，有什么想说的？<br>提问、炫耀成绩、说说反馈——<br>都欢迎。<b>我会看的。</b>`;
-}
+/* 页面加载时拉取留言 */
+loadMsgs();
 </script>
   <script src="audio.js"></script>
 </body>
