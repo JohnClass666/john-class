@@ -374,23 +374,51 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 .brag-card .bn{font-size:46px;font-weight:200;color:var(--accent);margin-top:18px;letter-spacing:-.03em}
 .brag-tip{text-align:center;font-size:13px;color:var(--soft);margin-top:22px;line-height:1.6}
 /* 排行榜 */
-.lb-wrap{padding-top:10px}
-.lb-title{font-size:22px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin:18px 0 6px;text-align:center}
-.lb-sub{font-size:13px;color:var(--soft);text-align:center;margin-bottom:20px;line-height:1.6}
-.lb-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-.lb-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--hair);border-radius:16px;background:var(--bg3)}
+.lb-wrap{padding-top:6px}
+.lb-tabs{display:flex;gap:8px;margin-bottom:18px;padding:0 2px}
+.lb-tab{flex:1;padding:10px 6px;border-radius:14px;border:1.5px solid var(--hair);background:var(--bg3);font-size:14px;font-weight:600;color:var(--soft);cursor:pointer;text-align:center;transition:all .18s}
+.lb-tab.active{background:var(--accent);border-color:var(--accent);color:#FDF8F0}
+.lb-sub{font-size:13px;color:var(--soft);text-align:center;margin-bottom:14px;line-height:1.6;min-height:20px}
+.lb-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+
+/* 年级分区标题 */
+.lb-grade-section{margin-top:18px}
+.lb-grade-title{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--accent);text-transform:uppercase;margin-bottom:8px;padding:0 4px;border-left:3px solid var(--accent);padding-left:10px}
+
+/* 普通行 */
+.lb-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--hair);border-radius:16px;background:var(--bg3);transition:transform .15s}
 .lb-row.lb-me{background:var(--accent-soft);border-color:var(--accent)}
 .lb-rank{width:32px;height:32px;border-radius:50%;background:var(--hair);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--soft);flex:0 0 auto}
-.lb-rank.r1{background:#FFD700;color:#7A5800}
-.lb-rank.r2{background:#C0C0C0;color:#555}
+.lb-rank.r2{background:#C0C0C0;color:#444}
 .lb-rank.r3{background:#CD7F32;color:#fff}
 .lb-info{flex:1;min-width:0}
 .lb-name{font-size:16px;font-weight:600;color:var(--ink);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lb-grade{font-size:12px;color:var(--soft);margin-top:1px}
-.lb-score{font-size:20px;font-weight:700;color:var(--accent);text-align:right}
+.lb-score{font-size:20px;font-weight:700;color:var(--accent);text-align:right;white-space:nowrap}
 .lb-me-tag{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent);padding:2px 8px;border-radius:99px;margin-top:3px;display:inline-block}
 .lb-empty{text-align:center;padding:40px 20px;color:var(--faint);font-size:15px}
 .lb-note{font-size:12px;color:var(--faint);text-align:center;margin-top:16px;line-height:1.7}
+
+/* 前三名特效卡片 */
+.lb-top{border-radius:20px;padding:18px 18px 16px;margin-bottom:4px;position:relative;overflow:hidden;display:flex;align-items:center;gap:14px}
+.lb-top::before{content:'';position:absolute;inset:0;opacity:.08;pointer-events:none}
+.lb-top-1{background:linear-gradient(135deg,#FFF8DC,#FFF0A0);border:2px solid #FFD700;box-shadow:0 4px 20px rgba(255,215,0,.3)}
+.lb-top-1::before{background:radial-gradient(circle at 80% 20%,#FFD700,transparent)}
+.lb-top-2{background:linear-gradient(135deg,#F8F8F8,#E8E8E8);border:2px solid #C0C0C0;box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.lb-top-3{background:linear-gradient(135deg,#FFF4EC,#FFE4CC);border:2px solid #CD7F32;box-shadow:0 4px 14px rgba(205,127,50,.2)}
+.lb-crown{font-size:28px;line-height:1;flex:0 0 auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
+.lb-top-info{flex:1;min-width:0}
+.lb-top-name{font-size:18px;font-weight:700;color:var(--ink);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-top-grade{font-size:12px;color:var(--soft);margin-top:2px}
+.lb-top-score{font-size:26px;font-weight:800;text-align:right;white-space:nowrap;line-height:1}
+.lb-top-score small{font-size:13px;font-weight:400;color:var(--soft)}
+.lb-top-1 .lb-top-score{color:#9A7000}
+.lb-top-2 .lb-top-score{color:#555}
+.lb-top-3 .lb-top-score{color:#7A3F10}
+.lb-sparkle{position:absolute;top:8px;right:12px;font-size:16px;animation:sparkle 2s infinite;opacity:.7}
+@keyframes sparkle{0%,100%{opacity:.4;transform:scale(.9)}50%{opacity:1;transform:scale(1.15)}}
+.lb-no1-glow{animation:glow1 3s ease-in-out infinite}
+@keyframes glow1{0%,100%{box-shadow:0 4px 20px rgba(255,215,0,.3)}50%{box-shadow:0 6px 32px rgba(255,215,0,.6),0 0 0 3px rgba(255,215,0,.15)}}
 </style>
 </head>
 <body>
@@ -1773,10 +1801,10 @@ function lbUpdate(){
  if(!S||!S.name)return;
  clearTimeout(_lbTimer);
  _lbTimer=setTimeout(async()=>{
-  const myScore=points();
+  const myScore=totalPoints(); // 跨年级累计总分
   const myGrade=S.grade?((gradeById(S.grade)||{}).label||S.grade):"";
   await _sb.upsert(S.name, myScore, myGrade);
- }, 3000); // 3秒内不再得分才上传
+ }, 3000);
 }
 /* S：全局信息 + 各年级独立存档
    S.grade = 当前年级 id；S.gd[gradeId] = {points, prog} */
@@ -1910,6 +1938,8 @@ function dueWords(){const P=gd().prog;return Object.keys(P).filter(id=>{const r=
 function dueWordsToday(){const P=gd().prog;return Object.keys(P).filter(id=>{const r=P[id];return r.box>=0&&r.box<INTERVALS.length&&r.due<=now();})
  .map(id=>WORDS.find(w=>w.id==id)).filter(Boolean);}
 function points(){return gd().points;}
+// 总榜用跨年级累计积分
+function totalPoints(){return Object.values(S.gd||{}).reduce((s,g)=>s+(g.points||0),0);}
 function addPoints(n){gd().points+=n;save();lbUpdate();}
 function clear(){app.innerHTML="";}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -2768,16 +2798,145 @@ function confirmGodReset(){const m=document.getElementById("modal");const gl=gra
  };
 }
 /* ============ 班级排行榜界面 ============ */
-function lbGetRanking(){
- // 离线回退：读本地缓存
- return lbCacheLoad();
+function lbGetRanking(){ return lbCacheLoad(); }
+
+// 年级分组配置
+const LB_GRADES=[
+ {key:"初一", labels:["初一","七年级","Grade 7","7年级"]},
+ {key:"初二", labels:["初二","八年级","Grade 8","8年级"]},
+ {key:"初三", labels:["初三","九年级","Grade 9","9年级"]},
+ {key:"小四", labels:["小四","四年级","Grade 4","4年级"]},
+ {key:"小五", labels:["小五","五年级","Grade 5","5年级"]},
+ {key:"小六", labels:["小六","六年级","Grade 6","6年级"]},
+];
+function gradeGroup(grade){
+ if(!grade)return "其他";
+ const g=grade.trim();
+ for(const lg of LB_GRADES){if(lg.labels.some(l=>g.includes(l)||l.includes(g)))return lg.key;}
+ return g||"其他";
+}
+
+// 骨架屏 HTML
+function lbSkeleton(){
+ return [1,2,3,4,5].map(()=>`
+  <div class="lb-row" style="opacity:.25">
+   <div class="lb-rank" style="background:var(--hair)"></div>
+   <div class="lb-info"><span class="lb-name" style="background:var(--hair);color:transparent;border-radius:4px;display:block">加载中加载中加</span></div>
+   <div class="lb-score" style="background:var(--hair);color:transparent;border-radius:4px">999</div>
+  </div>`).join("");
+}
+
+// 渲染总榜（前三特效 + 其余普通行）
+function renderTotal(ranking, myName){
+ if(!ranking.length) return `<div class="lb-empty">暂无数据<br><small>完成练习后自动上榜</small></div>`;
+ let html="";
+ ranking.forEach((r,i)=>{
+  const isMe=r.name===myName;
+  const meTag=isMe?`<span class="lb-me-tag">我</span>`:"";
+  const gradeStr=r.grade?`<span class="${i<3?'lb-top-grade':'lb-grade'}">${r.grade}</span>`:"";
+  if(i===0){
+   html+=`<div class="lb-top lb-top-1 lb-no1-glow ${isMe?'lb-me':''}">
+    <span class="lb-sparkle">✨</span>
+    <div class="lb-crown">👑</div>
+    <div class="lb-top-info">
+     <span class="lb-top-name">${r.name}</span>
+     ${gradeStr}${meTag}
+    </div>
+    <div class="lb-top-score">${r.score}<br><small>分</small></div>
+   </div>`;
+  } else if(i===1){
+   html+=`<div class="lb-top lb-top-2 ${isMe?'lb-me':''}">
+    <div class="lb-crown">🥈</div>
+    <div class="lb-top-info">
+     <span class="lb-top-name">${r.name}</span>
+     ${gradeStr}${meTag}
+    </div>
+    <div class="lb-top-score">${r.score}<br><small>分</small></div>
+   </div>`;
+  } else if(i===2){
+   html+=`<div class="lb-top lb-top-3 ${isMe?'lb-me':''}">
+    <div class="lb-crown">🥉</div>
+    <div class="lb-top-info">
+     <span class="lb-top-name">${r.name}</span>
+     ${gradeStr}${meTag}
+    </div>
+    <div class="lb-top-score">${r.score}<br><small>分</small></div>
+   </div>`;
+  } else {
+   html+=`<div class="lb-row ${isMe?'lb-me':''}">
+    <div class="lb-rank"><span style="font-size:13px">${i+1}</span></div>
+    <div class="lb-info">
+     <span class="lb-name">${r.name}</span>
+     ${gradeStr}${meTag}
+    </div>
+    <div class="lb-score">${r.score}<small style="font-size:12px;font-weight:400;color:var(--soft)">分</small></div>
+   </div>`;
+  }
+ });
+ return html;
+}
+
+// 渲染年级榜（各年级分区，每个分区自己的前三特效）
+function renderGrade(ranking, myName){
+ if(!ranking.length) return `<div class="lb-empty">暂无数据<br><small>完成练习后自动上榜</small></div>`;
+ // 按年级分组
+ const groups={};
+ ranking.forEach(r=>{
+  const g=gradeGroup(r.grade);
+  if(!groups[g])groups[g]=[];
+  groups[g].push(r);
+ });
+ // 按配置顺序排列，其他放最后
+ const order=[...LB_GRADES.map(g=>g.key),"其他"];
+ let html="";
+ order.forEach(key=>{
+  const list=groups[key];
+  if(!list||!list.length)return;
+  html+=`<div class="lb-grade-section">
+   <div class="lb-grade-title">📚 ${key} · ${list.length}人</div>`;
+  list.forEach((r,i)=>{
+   const isMe=r.name===myName;
+   const meTag=isMe?`<span class="lb-me-tag">我</span>`:"";
+   if(i===0){
+    html+=`<div class="lb-top lb-top-1 lb-no1-glow ${isMe?'lb-me':''}" style="margin-bottom:6px">
+     <span class="lb-sparkle">✨</span>
+     <div class="lb-crown" style="font-size:22px">👑</div>
+     <div class="lb-top-info">
+      <span class="lb-top-name" style="font-size:16px">${r.name}</span>
+      ${meTag}
+     </div>
+     <div class="lb-top-score" style="font-size:22px">${r.score}<br><small>分</small></div>
+    </div>`;
+   } else if(i===1){
+    html+=`<div class="lb-top lb-top-2 ${isMe?'lb-me':''}" style="margin-bottom:6px">
+     <div class="lb-crown" style="font-size:20px">🥈</div>
+     <div class="lb-top-info"><span class="lb-top-name" style="font-size:15px">${r.name}</span>${meTag}</div>
+     <div class="lb-top-score" style="font-size:20px">${r.score}<br><small>分</small></div>
+    </div>`;
+   } else if(i===2){
+    html+=`<div class="lb-top lb-top-3 ${isMe?'lb-me':''}" style="margin-bottom:6px">
+     <div class="lb-crown" style="font-size:20px">🥉</div>
+     <div class="lb-top-info"><span class="lb-top-name" style="font-size:15px">${r.name}</span>${meTag}</div>
+     <div class="lb-top-score" style="font-size:20px">${r.score}<br><small>分</small></div>
+    </div>`;
+   } else {
+    html+=`<div class="lb-row ${isMe?'lb-me':''}">
+     <div class="lb-rank"><span style="font-size:13px">${i+1}</span></div>
+     <div class="lb-info"><span class="lb-name">${r.name}</span>${meTag}</div>
+     <div class="lb-score">${r.score}<small style="font-size:12px;font-weight:400;color:var(--soft)">分</small></div>
+    </div>`;
+   }
+  });
+  html+=`</div>`;
+ });
+ return html;
 }
 
 SCREENS.leaderboard=function(){
  clear();
  const myName=S.name;
+ let curTab="total"; // total | grade
 
- // 先渲染 loading 骨架
  const d=document.createElement("div");d.className="screen active";
  d.innerHTML=`
   <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">🏆 班级排行榜</div>
@@ -2785,78 +2944,79 @@ SCREENS.leaderboard=function(){
    <button class="iconbtn" id="refresh" title="刷新">↻</button>
   </div>
   <div class="lb-wrap">
-   <div class="lb-sub" id="lb-sub">加载中…</div>
-   <div class="lb-list" id="lb-list">
-    ${[1,2,3,4,5].map(()=>`
-     <div class="lb-row" style="opacity:.3">
-      <div class="lb-rank" style="background:var(--hair);width:32px;height:32px;border-radius:50%"></div>
-      <div class="lb-info"><span class="lb-name" style="background:var(--hair);color:transparent;border-radius:4px">加载中加载中加</span></div>
-      <div class="lb-score" style="background:var(--hair);color:transparent;border-radius:4px">999</div>
-     </div>`).join("")}
+   <div class="lb-tabs">
+    <div class="lb-tab active" id="tab-total">🌍 总榜</div>
+    <div class="lb-tab" id="tab-grade">📚 年级榜</div>
    </div>
-   ${!LB_ONLINE?`<div class="lb-note" style="color:var(--warn)">⚠️ 排行榜未配置 Supabase<br>当前显示本地数据</div>`:''}
+   <div class="lb-sub" id="lb-sub">加载中…</div>
+   <div class="lb-list" id="lb-list">${lbSkeleton()}</div>
+   ${!LB_ONLINE?`<div class="lb-note" style="color:var(--warn)">⚠️ 排行榜未配置联网</div>`:''}
   </div>`;
  app.appendChild(d);
  d.querySelector("#bk").onclick=()=>{sfx.tap();go("home");};
 
- // 异步加载排行榜
- const render = async ()=>{
+ let _ranking=null;
+
+ const renderView=()=>{
+  if(!_ranking)return;
+  const list=d.querySelector("#lb-list");
+  const sub=d.querySelector("#lb-sub");
+  if(curTab==="total"){
+   const myRank=_ranking.findIndex(r=>r.name===myName);
+   sub.textContent=myRank>=0
+    ?`你排名第 ${myRank+1} 名，共 ${_ranking.length} 人参与`
+    :`共 ${_ranking.length} 人参与，快去练习上榜！`;
+   list.innerHTML=renderTotal(_ranking,myName);
+  } else {
+   const myRank=_ranking.findIndex(r=>r.name===myName);
+   const myGrp=myRank>=0?gradeGroup(_ranking[myRank].grade):"";
+   sub.textContent=myGrp&&myGrp!=="其他"?`你在「${myGrp}」的排名，往下滑看其他年级`:"往下滑查看各年级榜单";
+   list.innerHTML=renderGrade(_ranking,myName);
+  }
+ };
+
+ const render=async()=>{
   const list=d.querySelector("#lb-list");
   const sub=d.querySelector("#lb-sub");
   sub.textContent="加载中…";
-  list.innerHTML=[1,2,3,4,5].map(()=>`
-   <div class="lb-row" style="opacity:.3">
-    <div class="lb-rank" style="background:var(--hair);width:32px;height:32px;border-radius:50%"></div>
-    <div class="lb-info"><span class="lb-name" style="background:var(--hair);color:transparent;border-radius:4px">加载中加载中加</span></div>
-    <div class="lb-score" style="background:var(--hair);color:transparent;border-radius:4px">999</div>
-   </div>`).join("");
+  list.innerHTML=lbSkeleton();
 
-  // 先把自己上传（确保榜单有自己）
+  // 上传自己（用跨年级累计总分）
   if(S.name){
-   const myScore=points();
+   const myScore=totalPoints();
    const myGrade=S.grade?((gradeById(S.grade)||{}).label||S.grade):"";
-   await _sb.upsert(S.name, myScore, myGrade);
+   await _sb.upsert(S.name,myScore,myGrade);
   }
 
-  // 拉取榜单
   let ranking=null;
-  if(LB_ONLINE) ranking=await _sb.getTop(100);
-
-  // 联网失败 → 用本地缓存
+  if(LB_ONLINE)ranking=await _sb.getTop(200);
   if(!ranking){
    ranking=lbGetRanking();
-   if(ranking.length) sub.textContent="⚠️ 网络不可用，显示缓存数据";
-   else { sub.textContent="暂无数据，完成练习后自动上榜"; list.innerHTML=`<div class="lb-empty">暂无数据<br><small>完成练习后自动上榜</small></div>`; return; }
+   if(!ranking.length){sub.textContent="暂无数据，完成练习后自动上榜";list.innerHTML=`<div class="lb-empty">暂无数据<br><small>完成练习后自动上榜</small></div>`;return;}
+   sub.textContent="⚠️ 网络不可用，显示缓存数据";
   } else {
-   // 存到本地缓存备用
    lbCacheSave(ranking);
   }
+  _ranking=ranking;
+  renderView();
+ };
 
-  const myRank=ranking.findIndex(r=>r.name===myName);
-  sub.textContent=myRank>=0
-   ?`你排名第 ${myRank+1} 名，共 ${ranking.length} 人参与`
-   :`共 ${ranking.length} 人参与，快去练习上榜！`;
-
-  let rows="";
-  ranking.forEach((r,i)=>{
-   const isMe=r.name===myName;
-   const rankClass=i===0?'r1':i===1?'r2':i===2?'r3':'';
-   const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':`<span style="font-size:13px">${i+1}</span>`;
-   rows+=`<div class="lb-row ${isMe?'lb-me':''}">
-    <div class="lb-rank ${rankClass}">${medal}</div>
-    <div class="lb-info">
-     <span class="lb-name">${r.name}</span>
-     <span class="lb-grade">${r.grade||""}</span>
-     ${isMe?'<span class="lb-me-tag">我</span>':''}
-    </div>
-    <div class="lb-score">${r.score}<small style="font-size:12px;font-weight:400;color:var(--soft)">分</small></div>
-   </div>`;
-  });
-  list.innerHTML=rows||`<div class="lb-empty">暂无数据</div>`;
+ // tab 切换
+ d.querySelector("#tab-total").onclick=()=>{
+  sfx.tap();curTab="total";
+  d.querySelector("#tab-total").classList.add("active");
+  d.querySelector("#tab-grade").classList.remove("active");
+  renderView();
+ };
+ d.querySelector("#tab-grade").onclick=()=>{
+  sfx.tap();curTab="grade";
+  d.querySelector("#tab-grade").classList.add("active");
+  d.querySelector("#tab-total").classList.remove("active");
+  renderView();
  };
 
  render();
- d.querySelector("#refresh").onclick=()=>{ sfx.tap(); render(); };
+ d.querySelector("#refresh").onclick=()=>{sfx.tap();render();};
 };
 load();initTTS();
 // 恢复年级
