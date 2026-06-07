@@ -169,6 +169,8 @@ const DEEPSEEK_API_KEY='sk-911d49088c9f411bb73d78f1a2f1861d';
 const QWEN_API_KEY='sk-00e87fef757048d79c5ffbf3e664faa5';
 const PASSWORD='JiahaoLee6666';
 const WEEKLY_LIMIT=3;
+const SUPABASE_URL="https://ghunrrtrdgicbmixsqrc.supabase.co";
+const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs";
 let currentMode='photo';
 let uploadedImage=null;
 let recognizedContent='';
@@ -181,18 +183,6 @@ function getOrCreateDeviceId(){
   return id;
 }
 
-function getQuotaInfo(){
-  const weekStart=getWeekMonday();
-  const lastWeekStr=localStorage.getItem(`writing_week_${deviceId}`);
-  const lastCount=parseInt(localStorage.getItem(`writing_count_${deviceId}`)||'0');
-  if(lastWeekStr!==weekStart.toISOString()){
-    localStorage.setItem(`writing_count_${deviceId}`,'0');
-    localStorage.setItem(`writing_week_${deviceId}`,weekStart.toISOString());
-    return 0;
-  }
-  return lastCount;
-}
-
 function getWeekMonday(){
   const d=new Date();
   const day=d.getDay();
@@ -202,16 +192,53 @@ function getWeekMonday(){
   return monday;
 }
 
-function updateQuota(){
-  const count=getQuotaInfo();
+function weekKey(){
+  const m=getWeekMonday();
+  return m.toISOString().slice(0,10);
+}
+
+// 云端配额查询
+async function getCloudQuota(){
+  try{
+    const res=await fetch(
+      `${SUPABASE_URL}/rest/v1/writing_usage?device_id=eq.${encodeURIComponent(deviceId)}&week=eq.${weekKey()}&select=count&limit=1`,
+      {headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}}
+    );
+    if(!res.ok) return 0;
+    const rows=await res.json();
+    return rows[0]?rows[0].count:0;
+  }catch(e){return 0;}
+}
+
+// 云端配额消耗（先读再+1写入，防止低并发误差可接受）
+async function consumeCloudQuota(){
+  try{
+    const current=await getCloudQuota();
+    await fetch(`${SUPABASE_URL}/rest/v1/writing_usage`,{
+      method:'POST',
+      headers:{
+        'apikey':SUPABASE_KEY,
+        'Authorization':`Bearer ${SUPABASE_KEY}`,
+        'Content-Type':'application/json',
+        'Prefer':'resolution=merge-duplicates'
+      },
+      body:JSON.stringify({device_id:deviceId, week:weekKey(), count:current+1})
+    });
+  }catch(e){}
+}
+
+async function updateQuota(){
+  const count=await getCloudQuota();
   document.getElementById('quotaText').textContent=`📋 本周已用 ${count} / ${WEEKLY_LIMIT} 次额度`;
 }
 
-function canUseQuota(){ return getQuotaInfo()<WEEKLY_LIMIT; }
+async function canUseQuota(){
+  const count=await getCloudQuota();
+  return count<WEEKLY_LIMIT;
+}
 
-function consumeQuota(){
-  const count=getQuotaInfo()+1;
-  localStorage.setItem(`writing_count_${deviceId}`,count.toString());
+async function consumeQuota(){
+  await consumeCloudQuota();
   updateQuota();
 }
 
@@ -308,8 +335,8 @@ function resetPhoto(){
   recognizedContent='';
 }
 
-function startReview(){
-  if(!canUseQuota()){ alert('本周额度已用完！每周最多3次，请下周再来。'); return; }
+async function startReview(){
+  if(!(await canUseQuota())){ alert('本周额度已用完！每周最多3次，请下周再来。'); return; }
   // 有图片识别结果优先用，否则用文本框
   const editedEl=document.getElementById('editedText');
   if(editedEl && editedEl.value.trim()){
@@ -318,7 +345,7 @@ function startReview(){
     essayToReview=document.getElementById('essayInput').value.trim();
   }
   if(!essayToReview.trim()){ alert('请输入或上传文本'); return; }
-  consumeQuota();
+  await consumeQuota();
   showPage('resultPage');
   reviewEssay();
 }
@@ -417,10 +444,10 @@ document.getElementById('essayInput')?.addEventListener('input',function(){
   document.getElementById('charCount').textContent=this.value.length;
 });
 
-window.addEventListener('load',function(){
+window.addEventListener('load',async function(){
   if(localStorage.getItem('writing_unlocked')==='1'){
     showPage('mainPage');
-    updateQuota();
+    await updateQuota();
   }
 });
 </script>
