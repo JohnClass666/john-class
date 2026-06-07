@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>英文写作反馈 · John Class</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased;background:#F5EDD8;color:#2A1E08}
@@ -179,6 +180,7 @@ textarea{resize:vertical;min-height:120px;line-height:1.6}
 
 <script>
 const DEEPSEEK_API_KEY='sk-911d49088c9f411bb73d78f1a2f1861d';
+const QWEN_API_KEY='sk-9bfbd89f93e0475e950443c07b3a8adb';
 const PASSWORD='JiahaoLee6666';
 const WEEKLY_LIMIT=3;
 let currentMode='photo';
@@ -272,34 +274,49 @@ function handleFileSelected(input){
 async function recognizePhoto(){
   const preview=document.getElementById('photoPreview');
   preview.style.display='block';
-  preview.innerHTML='<div><div class="spinner"></div>识别中...</div>';
+  preview.innerHTML=`
+    <img src="${uploadedImage}" style="max-width:100%;border-radius:10px;margin-bottom:12px;border:1px solid rgba(184,149,106,.2)">
+    <div style="display:flex;align-items:center;gap:8px;color:#9A8060;font-size:13px">
+      <div class="spinner"></div>AI 正在识别手写文字...
+    </div>`;
   try{
-    const response=await fetch('https://api.deepseek.com/chat/completions',{
+    const response=await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',{
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${DEEPSEEK_API_KEY}`},
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${QWEN_API_KEY}`},
       body:JSON.stringify({
-        model:'deepseek-vision',
+        model:'qwen-vl-ocr',
         messages:[{role:'user',content:[
-          {type:'text',text:'请识别这张图片中的英文文本，只返回识别出的文本内容，不要加任何其他说明。'},
-          {type:'image_url',image_url:{url:uploadedImage}}
+          {type:'image_url',image_url:{url:uploadedImage}},
+          {type:'text',text:'请识别这张图片中的英文手写文字，只返回识别出的英文文本内容，保持原有换行，不要加任何说明或翻译。'}
         ]}],
         max_tokens:1000
       })
     });
-    if(!response.ok) throw new Error(`API error: ${response.status}`);
+    if(!response.ok){
+      const err=await response.json();
+      throw new Error(err.error?.message||`HTTP ${response.status}`);
+    }
     const data=await response.json();
-    recognizedContent=data.choices[0].message.content;
+    recognizedContent=data.choices[0].message.content.trim();
+    if(!recognizedContent) throw new Error('未能识别到文字，请确保图片清晰');
     preview.innerHTML=`
-      <div class="label">识别的文本</div>
-      <div class="text-preview">${escapeHtml(recognizedContent)}</div>
-      <textarea id="editedText" style="margin-top:12px" placeholder="可以编辑识别出的文本">${recognizedContent}</textarea>
+      <img src="${uploadedImage}" style="max-width:100%;border-radius:10px;margin-bottom:12px;border:1px solid rgba(184,149,106,.2)">
+      <div class="label">识别结果 <span style="font-weight:400;color:#9A8060">（可直接编辑修正）</span></div>
+      <textarea id="editedText" style="margin-top:8px" placeholder="可以编辑识别出的文本">${recognizedContent}</textarea>
       <div style="margin-top:12px;display:flex;gap:12px">
         <button class="btn btn-primary" onclick="startReview()">开始反馈</button>
         <button class="btn btn-secondary" onclick="resetPhoto()">重新上传</button>
       </div>`;
   }catch(e){
-    preview.innerHTML=`<div style="color:#C0392B">识别失败：${e.message}</div>
-      <button class="btn btn-secondary" onclick="resetPhoto()" style="margin-top:12px">重新上传</button>`;
+    preview.innerHTML=`
+      <img src="${uploadedImage}" style="max-width:100%;border-radius:10px;margin-bottom:12px;border:1px solid rgba(184,149,106,.2)">
+      <div style="color:#C0392B;margin-bottom:12px;font-size:13px">识别失败：${e.message}</div>
+      <div class="label">请手动输入文本</div>
+      <textarea id="editedText" placeholder="请手动输入作文内容"></textarea>
+      <div style="margin-top:12px;display:flex;gap:12px">
+        <button class="btn btn-primary" onclick="startReview()">开始反馈</button>
+        <button class="btn btn-secondary" onclick="resetPhoto()">重新上传</button>
+      </div>`;
   }
 }
 
