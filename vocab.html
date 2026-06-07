@@ -1781,12 +1781,13 @@ const _sb = {
   if(!LB_ONLINE) return null;
   try{
    const res=await fetch(
-    `${SUPABASE_URL}/rest/v1/leaderboard?name=eq.${encodeURIComponent(name)}&select=data&limit=1`,
+    `${SUPABASE_URL}/rest/v1/leaderboard?name=eq.${encodeURIComponent(name)}&select=score,grade,data&limit=1`,
     {headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}}
    );
    if(!res.ok) return null;
    const rows=await res.json();
-   return (rows[0]&&rows[0].data)?rows[0].data:null;
+   if(!rows[0]) return null;
+   return {data:rows[0].data||null, score:rows[0].score||0, grade:rows[0].grade||''};
   }catch(e){return null;}
  },
  async getTop(limit=100){
@@ -2059,33 +2060,58 @@ SCREENS.welcome=function(){clear();const d=document.createElement("div");d.class
  </div>`;
  app.appendChild(d);
  const inp=d.querySelector("#nameInp");
+ const btn=d.querySelector("#go");
  const start=async()=>{
   const v=inp.value.trim();if(!v){inp.focus();inp.style.borderColor="var(--warn)";return;}
   S.name=v;save();sfx.tap();
-  // 从云端恢复数据
   btn.disabled=true;btn.textContent="连接云端...";
-  const cloudData=await _sb.fetchMine(v);
-  let isReturning=false;
-  if(cloudData){
-    for(const gid in cloudData){
-      if(!S.gd[gid]||((cloudData[gid].points||0)>(S.gd[gid].points||0))){
-        S.gd[gid]=cloudData[gid];
-        isReturning=true;
+  try{
+    const cloud=await _sb.fetchMine(v);
+    let isReturning=false;
+    let totalPts=0;
+    if(cloud){
+      if(cloud.data){
+        for(const gid in cloud.data){
+          if(!S.gd[gid]||((cloud.data[gid].points||0)>(S.gd[gid].points||0))){
+            S.gd[gid]=cloud.data[gid];
+            isReturning=true;
+          }
+        }
+        totalPts=Object.values(S.gd||{}).reduce((s,g)=>s+(g.points||0),0);
+      } else if(cloud.score>0){
+        const localTotal=Object.values(S.gd||{}).reduce((s,g)=>s+(g.points||0),0);
+        if(cloud.score>localTotal){S._cloudScore=cloud.score;isReturning=true;}
+        totalPts=cloud.score;
       }
+      if(isReturning) save();
     }
-    save();
-  }
-  if(isReturning){
-    btn.textContent="✓ 数据已恢复";
-    const totalPts=Object.values(S.gd||{}).reduce((s,g)=>s+(g.points||0),0);
-    const tip=d.querySelector(".foot");
-    if(tip)tip.innerHTML=`☁️ 欢迎回来！累计 <b>${totalPts}</b> 分已从云端恢复`;
-    await new Promise(r=>setTimeout(r,900));
-  }
+    if(isReturning){
+      // 显示欢迎回来 + "不是我" 按钮
+      btn.disabled=false;btn.textContent="继续 →";
+      const tip=d.querySelector(".foot");
+      if(tip)tip.innerHTML=`
+        ☁️ 欢迎回来！累计 <b>${totalPts}</b> 分已从云端恢复<br>
+        <button id="notme" style="margin-top:10px;background:none;border:1px solid rgba(184,149,106,.4);
+          border-radius:8px;padding:6px 14px;font-size:12px;color:#9A8060;cursor:pointer">
+          不是我，换个名字
+        </button>`;
+      d.querySelector("#notme").onclick=()=>{
+        // 清空本地数据，重新输入名字
+        S={name:"",muted:S.muted,grade:"",gd:{}};save();
+        go("name");
+      };
+      return; // 等学生自己点"继续"
+    }
+  } catch(e){ console.error("login error",e); }
+  btn.disabled=false;btn.textContent="开始";
   lbUpdate();go("grade");
 };
- d.querySelector("#go").onclick=start;
- inp.addEventListener("keydown",e=>{if(e.key==="Enter")start();});
+ btn.onclick=()=>{
+  // 如果是"继续"状态（欢迎回来后），直接进年级选择
+  if(btn.textContent==="继续 →"){lbUpdate();go("grade");return;}
+  start();
+ };
+ inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&btn.textContent!=="继续 →")start();});
 };
 
 /* ---------- GRADE SELECT (选年级) ---------- */
@@ -2108,8 +2134,9 @@ SCREENS.grade=function(){clear();const d=document.createElement("div");d.classNa
  app.appendChild(d);
  const gradeBackBtn=d.querySelector("#grade-back");if(gradeBackBtn)gradeBackBtn.onclick=()=>{sfx.tap();go("home");};
  d.querySelectorAll(".grow").forEach(r=>r.onclick=()=>{const id=r.dataset.g;const g=gradeById(id);sfx.tap();
-   if(g.ready){S.grade=id;applyGrade(id);save();_prevLv=levelOf(points()).name;
-     // 第一次进这个年级 → 放激励语；已有进度 → 直接进首页
+   if(g.ready){S.grade=id;applyGrade(id);
+     if(S._cloudScore&&points()===0){if(!S.gd[id])S.gd[id]={points:0,prog:{},stages:{}};S.gd[id].points=S._cloudScore;delete S._cloudScore;}
+     save();_prevLv=levelOf(points()).name;
      const fresh=!S.gd[id]||points()===0;showHype(fresh);}
    else{go({name:"noperm",arg:id});}
  });
