@@ -83,52 +83,38 @@ textarea{resize:vertical;min-height:120px;line-height:1.6}
   <!-- 主页 -->
   <div class="page" id="mainPage">
     <div class="page-title">英文写作反馈</div>
-    <div class="page-sub">拍照上传手写作业，或直接输入英文文本。获得专业反馈，改进你的写作。</div>
+    <div class="page-sub">拍照上传手写作业，或直接在下方输入文本。获得专业反馈，改进你的写作。</div>
     <div class="quota-info">
       <span id="quotaText">📋 本周已用 0 / 3 次额度</span>
     </div>
-    <div class="tabs">
-      <button class="tab active" onclick="switchTab('photo', this)">📷 拍照上传</button>
-      <button class="tab" onclick="switchTab('text', this)">✏️ 直接输入</button>
-    </div>
 
-    <!-- 拍照模式 -->
-    <div id="photoTab" class="tab-content">
-      <div class="card">
-        <div class="label">选择上传方式</div>
-
-        <!-- 两个隐藏的 file input，逻辑完全分开 -->
-        <!-- 拍照：capture="environment" 直接调用后置相机 -->
-        <input type="file" id="cameraInput" accept="image/*" capture="environment"
-          onchange="handleFileSelected(this)">
-        <!-- 选文件：无 capture，进相册 / 文件管理器 -->
-        <input type="file" id="galleryInput" accept="image/*"
-          onchange="handleFileSelected(this)">
-
-        <div class="upload-btns">
-          <button class="btn btn-primary" onclick="document.getElementById('cameraInput').click()">
-            📷 拍照上传
-          </button>
-          <button class="btn btn-secondary" onclick="document.getElementById('galleryInput').click()">
-            🖼️ 选取文件
-          </button>
-        </div>
-
-        <div id="photoPreview" style="margin-top:16px;display:none"></div>
+    <!-- 拍照 / 选图 -->
+    <div class="card">
+      <div class="label">上传作业照片</div>
+      <input type="file" id="cameraInput" accept="image/*" capture="environment"
+        onchange="handleFileSelected(this)">
+      <input type="file" id="galleryInput" accept="image/*"
+        onchange="handleFileSelected(this)">
+      <div class="upload-btns">
+        <button class="btn btn-primary" onclick="document.getElementById('cameraInput').click()">
+          📷 拍照上传
+        </button>
+        <button class="btn btn-secondary" onclick="document.getElementById('galleryInput').click()">
+          🖼️ 选取文件
+        </button>
       </div>
+      <div id="photoPreview" style="margin-top:16px;display:none"></div>
     </div>
 
-    <!-- 文本模式 -->
-    <div id="textTab" class="tab-content" style="display:none">
-      <div class="card">
-        <div class="label">输入英文短文（50-300 字）</div>
-        <textarea id="essayInput" placeholder="粘贴或输入你的英文作文..."></textarea>
-        <div style="margin-top:12px;text-align:right;font-size:12px;color:#9A8060">
-          <span id="charCount">0</span> / 300
-        </div>
-        <div style="margin-top:16px;display:flex;gap:12px;justify-content:flex-end">
-          <button class="btn btn-primary" onclick="startReview()">开始反馈</button>
-        </div>
+    <!-- 直接输入 -->
+    <div class="card">
+      <div class="label">或直接输入英文文本</div>
+      <textarea id="essayInput" placeholder="粘贴或输入你的英文作文..."></textarea>
+      <div style="margin-top:12px;text-align:right;font-size:12px;color:#9A8060">
+        <span id="charCount">0</span> / 300
+      </div>
+      <div style="margin-top:16px;display:flex;gap:12px;justify-content:flex-end">
+        <button class="btn btn-primary" onclick="startReview()">开始反馈</button>
       </div>
     </div>
   </div>
@@ -180,7 +166,7 @@ textarea{resize:vertical;min-height:120px;line-height:1.6}
 
 <script>
 const DEEPSEEK_API_KEY='sk-911d49088c9f411bb73d78f1a2f1861d';
-const QWEN_API_KEY='sk-9bfbd89f93e0475e950443c07b3a8adb';
+const QWEN_API_KEY='sk-00e87fef757048d79c5ffbf3e664faa5';
 const PASSWORD='JiahaoLee6666';
 const WEEKLY_LIMIT=3;
 let currentMode='photo';
@@ -246,15 +232,7 @@ function showPage(pageName){
   document.getElementById(pageName).classList.add('active');
 }
 
-function switchTab(tab, btn){
-  currentMode=tab;
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(c=>c.style.display='none');
-  btn.classList.add('active');
-  document.getElementById(tab+'Tab').style.display='block';
-  // 切换时重置上传状态
-  if(tab==='photo') resetPhoto();
-}
+// switchTab removed - layout is now single-page
 
 // 统一处理两个 input 的 change 事件
 function handleFileSelected(input){
@@ -332,10 +310,12 @@ function resetPhoto(){
 
 function startReview(){
   if(!canUseQuota()){ alert('本周额度已用完！每周最多3次，请下周再来。'); return; }
-  if(currentMode==='photo'){
-    essayToReview=document.getElementById('editedText')?.value || recognizedContent;
+  // 有图片识别结果优先用，否则用文本框
+  const editedEl=document.getElementById('editedText');
+  if(editedEl && editedEl.value.trim()){
+    essayToReview=editedEl.value.trim();
   }else{
-    essayToReview=document.getElementById('essayInput').value;
+    essayToReview=document.getElementById('essayInput').value.trim();
   }
   if(!essayToReview.trim()){ alert('请输入或上传文本'); return; }
   consumeQuota();
