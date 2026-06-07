@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>英文写作批改 · John Class</title>
+<title>英文写作反馈 · John Class</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -21,6 +21,8 @@ html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Helvetica Neu
 .page-sub{font-size:13px;color:#9A8060;margin-bottom:24px;line-height:1.6}
 
 .card{background:rgba(255,255,255,.6);border:1px solid rgba(184,149,106,.2);border-radius:16px;padding:24px;margin-bottom:16px;backdrop-filter:blur(4px)}
+
+.badge{display:inline-block;background:rgba(184,149,106,.12);color:#5A3E18;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:600;margin-bottom:12px}
 
 .input-group{margin-bottom:16px}
 .label{display:block;font-size:13px;font-weight:600;color:#2A1E08;margin-bottom:8px}
@@ -42,7 +44,6 @@ textarea{resize:vertical;min-height:120px;line-height:1.6}
 .quota-info{background:rgba(184,149,106,.08);border:1px solid rgba(184,149,106,.2);border-radius:12px;padding:14px;margin-bottom:16px;font-size:13px;color:#5A3E18}
 .quota-info b{color:#2A1E08}
 
-.loading{text-align:center;padding:20px;color:#9A8060;font-size:14px}
 .spinner{display:inline-block;width:20px;height:20px;border:3px solid rgba(184,149,106,.2);border-top-color:#B8956A;border-radius:50%;animation:spin .8s linear infinite;margin-right:8px;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -76,7 +77,7 @@ textarea{resize:vertical;min-height:120px;line-height:1.6}
   <!-- 密码页 -->
   <div class="page active" id="loginPage">
     <div class="card" style="max-width:400px;margin:80px auto">
-      <div class="page-title">写作批改</div>
+      <div class="page-title">英文写作反馈</div>
       <div class="page-sub">输入班级密码进入</div>
       <div class="input-group">
         <input type="password" id="pwdInput" placeholder="班级密码" autocomplete="off">
@@ -87,11 +88,12 @@ textarea{resize:vertical;min-height:120px;line-height:1.6}
 
   <!-- 主页 -->
   <div class="page" id="mainPage">
-    <div class="page-title">英文短文批改</div>
-    <div class="page-sub">拍照上传手写作业，或直接输入英文文本。AI 会帮你检查语法、流畅度和表达，三栏批改一目了然。</div>
+    <div class="page-title">英文写作反馈</div>
+    <div class="page-sub">拍照上传手写作业，或直接输入英文文本。获得专业反馈，改进你的写作。</div>
+
 
     <div class="quota-info">
-      <span id="quotaText">📋 本周已用 0 / 2 次额度</span>
+      <span id="quotaText">📋 本周已用 0 / 3 次额度</span>
     </div>
 
     <div class="tabs">
@@ -103,13 +105,13 @@ textarea{resize:vertical;min-height:120px;line-height:1.6}
     <div id="photoTab" class="tab-content">
       <div class="card">
         <div class="label">上传作业照片</div>
-        <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload()">
+        <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="handlePhotoUpload()">
         <div id="photoPreview" style="margin-top:12px;display:none">
           <div class="label" style="margin-top:12px">识别的文本</div>
           <div class="text-preview" id="recognizedText"></div>
           <textarea id="editedText" style="margin-top:12px" placeholder="可以在这里编辑识别出的文本"></textarea>
           <div style="margin-top:12px;display:flex;gap:12px">
-            <button class="btn btn-primary" onclick="startReview()">开始批改</button>
+            <button class="btn btn-primary" onclick="startReview()">开始反馈</button>
             <button class="btn btn-secondary" onclick="resetPhoto()">重新上传</button>
           </div>
         </div>
@@ -125,7 +127,7 @@ textarea{resize:vertical;min-height:120px;line-height:1.6}
           <span id="charCount">0</span> / 300
         </div>
         <div style="margin-top:16px;display:flex;gap:12px;justify-content:flex-end">
-          <button class="btn btn-primary" onclick="startReview()">开始批改</button>
+          <button class="btn btn-primary" onclick="startReview()">开始反馈</button>
         </div>
       </div>
     </div>
@@ -138,25 +140,25 @@ textarea{resize:vertical;min-height:120px;line-height:1.6}
     </div>
     <div class="page-title">识别文本</div>
     <div class="card">
-      <div class="label" style="margin-bottom:12px">AI 识别到的文字：</div>
+      <div class="label" style="margin-bottom:12px">识别到的文字：</div>
       <div class="text-preview" id="recogDisplay"></div>
       <textarea id="recogEdit" style="margin-top:12px" placeholder="可以编辑识别结果"></textarea>
       <div class="actions">
         <button class="btn btn-secondary" onclick="goBack()">返回修改</button>
-        <button class="btn btn-primary" onclick="confirmRecognized()">确认并批改</button>
+        <button class="btn btn-primary" onclick="confirmRecognized()">确认并反馈</button>
       </div>
     </div>
   </div>
 
-  <!-- 批改页 -->
+  <!-- 反馈页 -->
   <div class="page" id="resultPage">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px">
       <button class="nav-back" onclick="goHome()" style="margin:0">← 返回</button>
     </div>
-    <div class="page-title">批改结果</div>
+    <div class="page-title">专业反馈</div>
 
     <div id="loadingDiv" class="loading">
-      <div class="spinner"></div>正在批改中...
+      <div class="spinner"></div>正在处理中...
     </div>
 
     <div id="resultDiv" style="display:none">
@@ -176,7 +178,8 @@ textarea{resize:vertical;min-height:120px;line-height:1.6}
       </div>
 
       <div class="card">
-        <button class="btn btn-primary" onclick="goHome()" style="width:100%">新建批改</button>
+        <button class="btn btn-primary" onclick="goHome()" style="width:100%">新建反馈</button>
+      <div class="card" style="background:rgba(184,149,106,.08);border:1px solid rgba(184,149,106,.2);margin-top:24px"><div style="font-size:13px;font-weight:600;color:#2A1E08;margin-bottom:12px">💬 和 John 讨论</div><div style="font-size:13px;color:#5A3E18;line-height:1.7">对反馈有疑问？想深入讨论写作技巧？<br><div style="margin-top:8px;font-weight:600;color:#2A1E08">微信号：<span style="font-family:monospace;background:rgba(255,255,255,.5);padding:4px 8px;border-radius:6px">JiahaoLee6666</span></div><div style="margin-top:8px;font-size:12px;color:#9A8060">截图本页批改结果发给 John，他会给你详细解答 📸</div></div></div>
       </div>
     </div>
 
@@ -192,7 +195,7 @@ textarea{resize:vertical;min-height:120px;line-height:1.6}
 <script>
 const DEEPSEEK_API_KEY='sk-911d49088c9f411bb73d78f1a2f1861d';
 const PASSWORD='JiahaoLee6666';
-const WEEKLY_LIMIT=2;
+const WEEKLY_LIMIT=3;
 
 let currentMode='photo';
 let uploadedImage=null;
@@ -317,7 +320,7 @@ async function recognizePhoto(){
       <div class="text-preview">${escapeHtml(recognizedContent)}</div>
       <textarea id="editedText" style="margin-top:12px" placeholder="可以编辑识别出的文本">${recognizedContent}</textarea>
       <div style="margin-top:12px;display:flex;gap:12px">
-        <button class="btn btn-primary" onclick="startReview()">开始批改</button>
+        <button class="btn btn-primary" onclick="startReview()">开始反馈</button>
         <button class="btn btn-secondary" onclick="resetPhoto()">重新上传</button>
       </div>
     `;
@@ -360,7 +363,7 @@ async function reviewEssay(){
   document.getElementById('errorDiv').style.display='none';
 
   try{
-    const prompt=`请对以下英文短文进行批改，返回 JSON 格式的结果：
+    const prompt=`请对以下英文短文进行专业反馈，返回 JSON 格式的结果：
 {
   "accuracy": {
     "errors": [{"type": "语法/拼写/标点", "wrong": "原句子或短语", "correct": "改正后"}],
@@ -400,14 +403,14 @@ ${essayToReview}
     let result=data.choices[0].message.content;
     
     const jsonMatch=result.match(/\{[\s\S]*\}/);
-    if(!jsonMatch)throw new Error('无效的 JSON 返回');
+    if(!jsonMatch)throw new Error('无效的返回格式');
     result=JSON.parse(jsonMatch[0]);
 
     displayResult(result);
   }catch(e){
     document.getElementById('loadingDiv').style.display='none';
     document.getElementById('errorDiv').style.display='block';
-    document.getElementById('errorMsg').textContent=`批改失败：${e.message}`;
+    document.getElementById('errorMsg').textContent=`反馈失败：${e.message}`;
   }
 }
 
