@@ -1771,11 +1771,23 @@ const _sb = {
      'apikey': SUPABASE_KEY,
      'Authorization': `Bearer ${SUPABASE_KEY}`,
      'Content-Type': 'application/json',
-     'Prefer': 'resolution=merge-duplicates'  // upsert
+     'Prefer': 'resolution=merge-duplicates'
     },
-    body: JSON.stringify({name, score, grade, updated_at: new Date().toISOString()})
+    body: JSON.stringify({name, score, grade, data: S.gd, updated_at: new Date().toISOString()})
    });
   }catch(e){}
+ },
+ async fetchMine(name){
+  if(!LB_ONLINE) return null;
+  try{
+   const res=await fetch(
+    `${SUPABASE_URL}/rest/v1/leaderboard?name=eq.${encodeURIComponent(name)}&select=data&limit=1`,
+    {headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}}
+   );
+   if(!res.ok) return null;
+   const rows=await res.json();
+   return (rows[0]&&rows[0].data)?rows[0].data:null;
+  }catch(e){return null;}
  },
  async getTop(limit=100){
   if(!LB_ONLINE) return null;
@@ -1949,8 +1961,17 @@ function greetWord(){const h=new Date().getHours();return h<6?"凌晨好":h<11?"
 /* ===== 关卡完成状态 ===== gd().stages[unitN] = {R,W,L} 各关是否通关 */
 function stages(){const g=gd();if(!g.stages)g.stages={};return g.stages;}
 function unitStage(n){const s=stages();if(!s[n])s[n]={R:false,W:false,L:false};return s[n];}
-function clearStage(n,key){const st=unitStage(n);if(!st[key]){st[key]=true;save();}}
-function unitCleared(u){const st=unitStage(u.n);return st.R&&st.W&&(TTS.ok?st.L:true);} // 无语音时听力关不计
+function clearStage(n,key){const st=unitStage(n);if(!st[key])st[key]=true;const ck=key+"n";st[ck]=(st[ck]||0)+1;save();}
+function unitCleared(u){const st=unitStage(u.n);return st.R&&st.W&&(TTS.ok?st.L:true);}
+// 重刷积分衰减：第1次满分，第2次30%，第3次起10%（最少1分）
+function repeatMult(unitN,key){
+  const st=unitStage(unitN);
+  const countKey=key+"n"; // Rn / Wn / Ln
+  const n=st[countKey]||0;
+  if(n===0)return 1;
+  if(n===1)return 0.3;
+  return 0.1;
+} // 无语音时听力关不计
 function stageCount(u){const st=unitStage(u.n);let c=0;if(st.R)c++;if(st.W)c++;if(st.L)c++;return c;}
 function stageTotal(){return TTS.ok?3:2;} // 无语音引擎时只有 2 关
 
@@ -2034,11 +2055,35 @@ SCREENS.welcome=function(){clear();const d=document.createElement("div");d.class
    <div class="q">你的名字是？</div>
    <input class="inp" id="nameInp" placeholder="输入名字" maxlength="12" value="${S.name||""}">
    <button class="btn" id="go">开始</button>
-   <div class="foot">进度自动保存在你的设备上<br>建议用浏览器打开，添加到主屏幕</div>
+   <div class="foot">☁️ 数据已云端保存，清缓存换设备都不丢<br>建议用浏览器打开，添加到主屏幕</div>
  </div>`;
  app.appendChild(d);
  const inp=d.querySelector("#nameInp");
- const start=()=>{const v=inp.value.trim();if(!v){inp.focus();inp.style.borderColor="var(--warn)";return;}S.name=v;save();sfx.tap();lbUpdate();go("grade");};
+ const start=async()=>{
+  const v=inp.value.trim();if(!v){inp.focus();inp.style.borderColor="var(--warn)";return;}
+  S.name=v;save();sfx.tap();
+  // 从云端恢复数据
+  btn.disabled=true;btn.textContent="连接云端...";
+  const cloudData=await _sb.fetchMine(v);
+  let isReturning=false;
+  if(cloudData){
+    for(const gid in cloudData){
+      if(!S.gd[gid]||((cloudData[gid].points||0)>(S.gd[gid].points||0))){
+        S.gd[gid]=cloudData[gid];
+        isReturning=true;
+      }
+    }
+    save();
+  }
+  if(isReturning){
+    btn.textContent="✓ 数据已恢复";
+    const totalPts=Object.values(S.gd||{}).reduce((s,g)=>s+(g.points||0),0);
+    const tip=d.querySelector(".foot");
+    if(tip)tip.innerHTML=`☁️ 欢迎回来！累计 <b>${totalPts}</b> 分已从云端恢复`;
+    await new Promise(r=>setTimeout(r,900));
+  }
+  lbUpdate();go("grade");
+};
  d.querySelector("#go").onclick=start;
  inp.addEventListener("keydown",e=>{if(e.key==="Enter")start();});
 };
@@ -2254,7 +2299,7 @@ function runReading(u,pool,i,acc){
  wrap.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>{if(answered)return;answered=true;const o=opts[+btn.dataset.k];
   wrap.querySelectorAll(".opt").forEach(b=>{const oo=opts[+b.dataset.k];if(oo.correct)b.classList.add("right");else if(b===btn)b.classList.add("wrong");else b.classList.add("dim");});
   speak(w.en);
-  if(o.correct){markResult(w,true,"R");acc.got++;acc.combo++;acc.maxCombo=Math.max(acc.maxCombo||0,acc.combo);const add=PT.read+(acc.combo>=PT.comboFrom?PT.comboStep:0);acc.gain+=add;addPoints(add);
+  if(o.correct){markResult(w,true,"R");acc.got++;acc.combo++;acc.maxCombo=Math.max(acc.maxCombo||0,acc.combo);const add=Math.max(1,Math.round((PT.read+(acc.combo>=PT.comboFrom?PT.comboStep:0))*repeatMult(u.n,"R")));acc.gain+=add;addPoints(add);
     saveQP(u.n,'R',{pool:pool.map(x=>x.id),i:i+1,got:acc.got,gain:acc.gain,combo:acc.combo,maxCombo:acc.maxCombo,wrong:acc.wrong});
     if(acc.combo>=PT.comboFrom){showCombo(acc.combo);sfx.combo(acc.combo);}else sfx.correct();afterPoint(()=>setTimeout(()=>runReading(u,pool,i+1,acc),600));}
   else{markResult(w,false,"R");acc.combo=0;acc.wrong++;sfx.wrong();
@@ -2292,7 +2337,7 @@ function runWriting(u,pool,i,acc){
  wrap.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>{if(answered)return;answered=true;const o=opts[+btn.dataset.k];
   wrap.querySelectorAll(".opt").forEach(b=>{const oo=opts[+b.dataset.k];if(oo.correct)b.classList.add("right");else if(b===btn)b.classList.add("wrong");else b.classList.add("dim");});
   speak(w.en);
-  if(o.correct){markResult(w,true,"W");acc.got++;acc.combo++;acc.maxCombo=Math.max(acc.maxCombo||0,acc.combo);const add=PT.write+(acc.combo>=PT.comboFrom?PT.comboStep:0);acc.gain+=add;addPoints(add);
+  if(o.correct){markResult(w,true,"W");acc.got++;acc.combo++;acc.maxCombo=Math.max(acc.maxCombo||0,acc.combo);const add=Math.max(1,Math.round((PT.write+(acc.combo>=PT.comboFrom?PT.comboStep:0))*repeatMult(u.n,"W")));acc.gain+=add;addPoints(add);
     saveQP(u.n,'W',{pool:pool.map(x=>x.id),i:i+1,got:acc.got,gain:acc.gain,combo:acc.combo,maxCombo:acc.maxCombo,wrong:acc.wrong});
     if(acc.combo>=PT.comboFrom){showCombo(acc.combo);sfx.combo(acc.combo);}else sfx.correct();afterPoint(()=>setTimeout(()=>runWriting(u,pool,i+1,acc),600));}
   else{markResult(w,false,"W");acc.combo=0;acc.wrong++;sfx.wrong();
@@ -2330,7 +2375,7 @@ function runListening(u,pool,i,acc){
  const wrap=d.querySelector("#opts");let answered=false;
  wrap.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>{if(answered)return;answered=true;const o=opts[+btn.dataset.k];
   wrap.querySelectorAll(".opt").forEach(b=>{const oo=opts[+b.dataset.k];if(oo.correct)b.classList.add("right");else if(b===btn)b.classList.add("wrong");else b.classList.add("dim");});
-  if(o.correct){markResult(w,true,"W");acc.got++;acc.combo++;acc.maxCombo=Math.max(acc.maxCombo||0,acc.combo);const add=PT.listen+(acc.combo>=PT.comboFrom?PT.comboStep:0);acc.gain+=add;addPoints(add);
+  if(o.correct){markResult(w,true,"W");acc.got++;acc.combo++;acc.maxCombo=Math.max(acc.maxCombo||0,acc.combo);const add=Math.max(1,Math.round((PT.listen+(acc.combo>=PT.comboFrom?PT.comboStep:0))*repeatMult(u.n,"L")));acc.gain+=add;addPoints(add);
     saveQP(u.n,'L',{pool:pool.map(x=>x.id),i:i+1,got:acc.got,gain:acc.gain,combo:acc.combo,maxCombo:acc.maxCombo,wrong:acc.wrong});
     if(acc.combo>=PT.comboFrom){showCombo(acc.combo);sfx.combo(acc.combo);}else sfx.correct();afterPoint(()=>setTimeout(()=>runListening(u,pool,i+1,acc),650));}
   else{markResult(w,false,"W");acc.combo=0;acc.wrong++;sfx.wrong();
@@ -2344,7 +2389,8 @@ function stageResult(u,key,title,acc){
  clearQP(u.n,key); // 关卡做完，清掉进度存档
  const passed=acc.wrong===0?true:(acc.got/(acc.got+acc.wrong)>=0.6); // 正确率≥60%即通关
  const firstClear=passed&&!unitStage(u.n)[key];
- if(passed)clearStage(u.n,key);
+ const repeatN=unitStage(u.n)[key+"n"]||0; // 通关前的次数（clearStage后会+1）
+ if(passed){clearStage(u.n,key);lbUpdate();} // 通关立即同步云端
  clear();const lv=levelOf(points());
  const d=document.createElement("div");d.className="screen active res";
  d.innerHTML=`
@@ -2352,7 +2398,7 @@ function stageResult(u,key,title,acc){
   <div class="stagebadge ${passed?'pass':'fail'}">${passed?"✓":"✗"}</div>
   <div class="huge big">+${acc.gain}</div><div class="rl">本关获得积分</div>
   <div class="stats"><div class="st"><b>${acc.got}</b><span>答对</span></div><div class="st"><b>${acc.wrong}</b><span>答错</span></div><div class="st"><b>${Math.round(acc.got/Math.max(1,acc.got+acc.wrong)*100)}%</b><span>正确率</span></div></div>
-  ${passed?(firstClear?'<div class="passmsg">🎉 新关卡点亮！</div>':'<div class="passmsg">已通关，继续保持</div>'):'<div class="passmsg warn">正确率达 60% 才能通关，再来一次吧</div>'}
+  ${passed?(firstClear?'<div class="passmsg">🎉 新关卡点亮！</div>':(repeatN>=2?'<div class="passmsg warn">🔁 重刷模式：积分已降至 10%</div>':'<div class="passmsg warn">🔁 重刷模式：积分已降至 30%</div>')):'<div class="passmsg warn">正确率达 60% 才能通关，再来一次吧</div>'}
   <button class="btn accent" id="cont">${passed?"返回单元":"再试一次"}</button>
   <button class="btn ghost" id="home">回到首页</button>`;
  app.appendChild(d);
