@@ -1913,6 +1913,7 @@ function speak(text){
   u.rate=0.85;   // 稍慢，更清晰
   u.pitch=1.0;   // 自然音调（不调高，避免机械感）
   u.volume=1.0;
+  u.onerror=()=>{};
   speechSynthesis.speak(u);
  }catch(e){}
 }
@@ -2056,9 +2057,11 @@ SCREENS.grade=function(){clear();const d=document.createElement("div");d.classNa
     <div class="kicker" style="margin:18px 0 8px">Choose Your Level</div>
     <div class="q2">John 问你：<br>你读几年级？</div>
     <div class="glist">${rows}</div>
+    ${S.name&&S.grade?`<button class="btn ghost" id="grade-back" style="margin-top:18px">← 返回首页</button>`:''}
     <div class="foot">选错了也没关系，进去后还能换年级</div>
   </div>`;
  app.appendChild(d);
+ const gradeBackBtn=d.querySelector("#grade-back");if(gradeBackBtn)gradeBackBtn.onclick=()=>{sfx.tap();go("home");};
  d.querySelectorAll(".grow").forEach(r=>r.onclick=()=>{const id=r.dataset.g;const g=gradeById(id);sfx.tap();
    if(g.ready){S.grade=id;applyGrade(id);save();_prevLv=levelOf(points()).name;
      // 第一次进这个年级 → 放激励语；已有进度 → 直接进首页
@@ -2104,7 +2107,8 @@ SCREENS.home=function(){clear();checkStreak();
  const dueT=dueWordsToday().length;
  let rows="";
  UNITS.forEach(u=>{if(u.ready){const sc=stageCount(u);const tot=stageTotal();const done=sc>=tot;const p=Math.round(sc/tot*100);
-   rows+=`<div class="row ${done?'done':''}" data-u="${u.n}"><div class="rt"><b>Unit ${u.n} · ${u.title}</b><span>${quizPool(u).length} 个词 · 闯过 ${sc}/${tot} 关</span></div><div class="meta">${done?'🏆 通关':p+'%'}</div><div class="chev">›</div></div>`;}
+   const unitHeader=u.title&&!u.title.startsWith("Unit")?`Unit ${u.n} · ${u.title}`:`Unit ${u.n}`;
+   rows+=`<div class="row ${done?'done':''}" data-u="${u.n}"><div class="rt"><b>${unitHeader}</b><span>${quizPool(u).length} 个词 · 闯过 ${sc}/${tot} 关</span></div><div class="meta">${done?'🏆 通关':p+'%'}</div><div class="chev">›</div></div>`;}
   else rows+=`<div class="row lock"><div class="rt"><b>Unit ${u.n} · ${u.title}</b><span>敬请期待</span></div><div class="chev">›</div></div>`;});
  const d=document.createElement("div");d.className="screen active";
  d.innerHTML=`
@@ -2424,27 +2428,43 @@ function runReview(pool,i,acc,revenge){
  clear();const w=pool[i];const d=document.createElement("div");d.className="screen active";
  const senses=w.s.map(x=>`<div class="sense">${x[0]?`<span class="pos">${x[0]}</span>`:""}${x[1]}</div>`).join("");
  const title=revenge?"⚔️ 错词复仇":"错词复习";
+ // 艾宾浩斯复习计划提示
+ const r=rec(w.id);
+ const boxLabel=["第1天","第2天","第4天","第7天","第15天"];
+ let ebHint="";
+ if(r.box>=0&&r.box<INTERVALS.length){
+  const daysLeft=r.due>0?Math.ceil((r.due-now())/86400000):0;
+  const stageText=boxLabel[r.box]||"";
+  if(daysLeft<=0)ebHint=`<div style="font-size:11px;color:var(--warn);text-align:center;margin-top:6px">⏰ 今天应复习 · 艾宾浩斯第${r.box+1}次 (${stageText})</div>`;
+  else ebHint=`<div style="font-size:11px;color:var(--soft);text-align:center;margin-top:6px">📅 ${daysLeft} 天后复习 · 艾宾浩斯第${r.box+1}次 (${stageText})</div>`;
+ }
  d.innerHTML=`
   <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">${title}</div></div>
   <div class="qhud"><div class="tk"><i style="width:${i/pool.length*100}%"></i></div><div class="ct">${i+1} / ${pool.length}</div></div>
   <div class="flip-wrap"><div class="flip" id="flip">
     <div class="face"><div class="ftag">${w.type==="phrase"?"短语":"单词"}</div><div class="en">${w.en}</div>${w.ph?`<div class="ph">${w.ph}</div>`:""}</div>
     <div class="face back"><div class="ftag">中文意思</div>${senses}</div>
-  </div></div><div id="after"></div><div class="hint" id="hint">还记得吗？点卡片看答案</div>`;
+  </div></div>${ebHint}<div id="after"></div><div class="hint" id="hint">还记得吗？点卡片看答案</div>`;
  app.appendChild(d);
  d.querySelector("#bk").onclick=()=>{sfx.tap();go("home");};
  const flip=d.querySelector("#flip");let f=false;
- flip.onclick=()=>{if(f)return;f=true;flip.classList.add("flipped");sfx.flip();d.querySelector("#hint").style.display="none";
-  d.querySelector("#after").innerHTML=`<div class="knrow"><button class="btn line" id="no">还不记得</button><button class="btn accent" id="yes">${revenge?"⚔️ 复仇成功！":"记住了"}</button></div>`;
-  d.querySelector("#yes").onclick=()=>{
-   if(revenge){
-     // 复仇成功：显示短暂提示
-     const tip=document.createElement("div");tip.className="revenge-tip";tip.textContent="⚔️ 复仇成功！";document.body.appendChild(tip);
-     setTimeout(()=>tip.remove(),1200);
-   }
-   const grad=(rec(w.id).box===INTERVALS.length-1);markResult(w,true,"R");acc.got++;if(grad)acc.gain+=PT.graduate;sfx.correct();runReview(pool,i+1,acc,revenge);
-  };
-  d.querySelector("#no").onclick=()=>{markResult(w,false,"R");sfx.wrong();runReview(pool,i+1,acc,revenge);};
+ flip.onclick=()=>{
+  if(!f){
+   // 翻到背面：显示中文答案
+   f=true;flip.classList.add("flipped");sfx.flip();d.querySelector("#hint").style.display="none";
+   d.querySelector("#after").innerHTML=`<div class="knrow"><button class="btn line" id="no">还不记得</button><button class="btn accent" id="yes">${revenge?"⚔️ 复仇成功！":"记住了"}</button></div>`;
+   d.querySelector("#yes").onclick=()=>{
+    if(revenge){
+      const tip=document.createElement("div");tip.className="revenge-tip";tip.textContent="⚔️ 复仇成功！";document.body.appendChild(tip);
+      setTimeout(()=>tip.remove(),1200);
+    }
+    const grad=(rec(w.id).box===INTERVALS.length-1);markResult(w,true,"R");acc.got++;if(grad)acc.gain+=PT.graduate;sfx.correct();runReview(pool,i+1,acc,revenge);
+   };
+   d.querySelector("#no").onclick=()=>{markResult(w,false,"R");sfx.wrong();runReview(pool,i+1,acc,revenge);};
+  } else {
+   // 再点翻回正面
+   f=false;flip.classList.remove("flipped");d.querySelector("#hint").style.display="";d.querySelector("#after").innerHTML="";
+  }
  };
 }
 
