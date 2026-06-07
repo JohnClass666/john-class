@@ -2098,7 +2098,7 @@ SCREENS.welcome=function(){clear();const d=document.createElement("div");d.class
       d.querySelector("#notme").onclick=()=>{
         // 清空本地数据，重新输入名字
         S.name="";S.grade="";save(); // 只清名字，进度保留
-        go("name");
+        go("welcome");
       };
       return; // 等学生自己点"继续"
     }
@@ -2236,7 +2236,7 @@ SCREENS.home=function(){clear();checkStreak();
  d.querySelector("#switchaccount").onclick=()=>{
    sfx.tap();
    S.name="";S.grade="";save(); // 只清名字，进度保留
-   go("name");
+   go("welcome");
  };
 };
 
