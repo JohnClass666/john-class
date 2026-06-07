@@ -2097,7 +2097,7 @@ SCREENS.welcome=function(){clear();const d=document.createElement("div");d.class
         </button>`;
       d.querySelector("#notme").onclick=()=>{
         // 清空本地数据，重新输入名字
-        S={name:"",muted:S.muted,grade:"",gd:{}};save();
+        S.name="";S.grade="";save(); // 只清名字，进度保留
         go("name");
       };
       return; // 等学生自己点"继续"
@@ -2135,7 +2135,7 @@ SCREENS.grade=function(){clear();const d=document.createElement("div");d.classNa
  const gradeBackBtn=d.querySelector("#grade-back");if(gradeBackBtn)gradeBackBtn.onclick=()=>{sfx.tap();go("home");};
  d.querySelectorAll(".grow").forEach(r=>r.onclick=()=>{const id=r.dataset.g;const g=gradeById(id);sfx.tap();
    if(g.ready){S.grade=id;applyGrade(id);
-     if(S._cloudScore&&points()===0){if(!S.gd[id])S.gd[id]={points:0,prog:{},stages:{}};S.gd[id].points=S._cloudScore;delete S._cloudScore;}
+     if(S._cloudScore&&S._cloudScore>points()){if(!S.gd[id])S.gd[id]={points:0,prog:{},stages:{}};S.gd[id].points=S._cloudScore;delete S._cloudScore;}
      save();_prevLv=levelOf(points()).name;
      const fresh=!S.gd[id]||points()===0;showHype(fresh);}
    else{go({name:"noperm",arg:id});}
@@ -2218,6 +2218,9 @@ SCREENS.home=function(){clear();checkStreak();
   <div class="homebtn-row" style="margin-top:8px">
     <button class="btn line" id="lb" style="flex:1;border-color:var(--accent);color:var(--accent)">🏆 班级排行榜</button>
   </div>
+  <div style="text-align:center;margin-top:14px">
+    <button id="switchaccount" style="background:none;border:none;font-size:12px;color:var(--soft);cursor:pointer;padding:4px 8px;text-decoration:underline">👤 不是我？切换账号</button>
+  </div>
   <div class="foot">ENGLISH ADVENTURE · 进度已存本设备</div>`;
  app.appendChild(d);
  d.querySelectorAll("#units .row[data-u]").forEach(r=>r.onclick=()=>{sfx.tap();go({name:"unit",arg:+r.dataset.u});});
@@ -2230,6 +2233,11 @@ SCREENS.home=function(){clear();checkStreak();
  d.querySelector("#ms").onclick=()=>{sfx.tap();go("milestones");};
  d.querySelector("#card").onclick=()=>{sfx.tap();go("card");};
  d.querySelector("#lb").onclick=()=>{sfx.tap();go("leaderboard");};
+ d.querySelector("#switchaccount").onclick=()=>{
+   sfx.tap();
+   S.name="";S.grade="";save(); // 只清名字，进度保留
+   go("name");
+ };
 };
 
 SCREENS.unit=function(n){clear();const u=UNITS.find(x=>x.n===n);const st=unitStage(n);
