@@ -293,15 +293,12 @@ html, body {
       <div class="divider"></div>
       <a class="entry" href="study.html" onclick="go(event,'study.html')">
         <div class="entry-title">英语学习提升</div>
-        <div class="entry-sub">词汇 · 语法 · 阅读 · 武林秘籍</div>
+        <div class="entry-sub">单词训练 · 语法冒险</div>
       </a>
       <a class="entry" href="teacher.html" onclick="go(event,'teacher.html')">
+      <a class="entry" href="writing.html" onclick="go(event,'writing.html')"><div class="entry-title">英文写作反馈</div><div class="entry-sub">拍照识别 · 专业批改 · 三维反馈 · 隐私保护</div></a>
         <div class="entry-title">和 John 说说</div>
         <div class="entry-sub">提问 · 炫耀 · 反馈 · 了解</div>
-      </a>
-      <a class="entry" href="writing.html" onclick="go(event,'writing.html')">
-        <div class="entry-title">英文写作批改</div>
-        <div class="entry-sub">拍照识别 · AI 批改 · 三栏反馈</div>
       </a>
     </div>
     <div class="foot">Changsha · 2026</div>
@@ -314,17 +311,13 @@ const NAME_KEY = 'jc_student_name';
 function init() {
   const saved = localStorage.getItem(NAME_KEY);
   if (saved) {
-    // 已有名字，直接显示主页
     showMain(saved, false);
   } else {
-    // 没有名字，显示欢迎屏，聚焦输入框
     setTimeout(() => document.getElementById('nameInput').focus(), 400);
   }
 }
 
-// 学生名单（全名 + 名字 + 英文名）
 const STUDENTS = [
-  // 小四
   {full:'David', name:'David', en:'David'},
   {full:'Mandy', name:'Mandy', en:'Mandy'},
   {full:'Lisa',  name:'Lisa',  en:'Lisa'},
@@ -332,7 +325,6 @@ const STUDENTS = [
   {full:'Leo',   name:'Leo',   en:'Leo'},
   {full:'Ethan', name:'Ethan', en:'Ethan'},
   {full:'Daniel',name:'Daniel',en:'Daniel'},
-  // 初二
   {full:'夏嘉琦', name:'嘉琦'},
   {full:'谢政勋', name:'政勋'},
   {full:'毛子骁', name:'子骁'},
@@ -341,7 +333,6 @@ const STUDENTS = [
   {full:'易敬桡', name:'敬桡'},
   {full:'雅琪',   name:'雅琪'},
   {full:'陈星阁', name:'星阁'},
-  // 初一
   {full:'诸葛名丰', name:'名丰'},
   {full:'曹琳茜', name:'琳茜'},
   {full:'张晨露', name:'晨露'},
@@ -381,11 +372,9 @@ function submitName() {
 
 function showMain(name, animate) {
   const matched = isStudent(name);
-  // 右上角只显示简单欢迎
   document.getElementById('greeting').textContent = name + ' 欢迎 👋';
 
   if (animate) {
-    // 全屏欢迎动画
     showSplash(name, matched, () => {
       document.getElementById('welcome').classList.add('hide');
       setTimeout(() => {
@@ -404,7 +393,6 @@ function showSplash(name, isKnown, then) {
   splash.className = 'welcome-splash';
 
   if (isKnown) {
-    // 亲学生版：有星星粒子
     const starsHtml = Array.from({length: 18}, (_, i) => {
       const angle = (i / 18) * 360;
       const dist = 120 + Math.random() * 100;
@@ -430,7 +418,6 @@ function showSplash(name, isKnown, then) {
 
   document.body.appendChild(splash);
 
-  // 展示1.8秒后淡出，然后显示主页
   setTimeout(() => {
     splash.classList.add('out');
     document.getElementById('welcome').classList.add('hide');
