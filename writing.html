@@ -342,23 +342,44 @@ function resetPhoto(){
 }
 
 let _reviewing=false;
-async function startReview(){
-  if(_reviewing)return;
+
+function _lockReview(){
   _reviewing=true;
-  // 禁用所有开始反馈按钮
-  document.querySelectorAll('button').forEach(b=>{if(b.textContent.includes('开始反馈')){b.disabled=true;b.textContent='处理中...';}});
-  if(!(await canUseQuota())){ alert('本周额度已用完！每周最多3次，请下周再来。'); _reviewing=false; document.querySelectorAll('button').forEach(b=>{if(b.textContent.includes('处理中')){b.disabled=false;b.textContent='开始反馈';}}); return; }
-  // 有图片识别结果优先用，否则用文本框
-  const editedEl=document.getElementById('editedText');
-  if(editedEl && editedEl.value.trim()){
-    essayToReview=editedEl.value.trim();
-  }else{
-    essayToReview=document.getElementById('essayInput').value.trim();
+  document.querySelectorAll('button').forEach(b=>{
+    if(b.textContent.trim()==='开始反馈'){b.disabled=true;b.dataset.wasEnabled='1';b.textContent='处理中...';}
+  });
+}
+
+function _unlockReview(){
+  _reviewing=false;
+  document.querySelectorAll('button').forEach(b=>{
+    if(b.textContent.trim()==='处理中...'&&b.dataset.wasEnabled){
+      b.disabled=false;b.textContent='开始反馈';delete b.dataset.wasEnabled;
+    }
+  });
+}
+
+async function startReview(){
+  if(_reviewing)return; // 绝对防止重复调用
+  _lockReview();
+  try{
+    if(!(await canUseQuota())){
+      alert('本周额度已用完！每周最多3次，请下周再来。');
+      return;
+    }
+    const editedEl=document.getElementById('editedText');
+    essayToReview=(editedEl&&editedEl.value.trim())?editedEl.value.trim()
+      :document.getElementById('essayInput').value.trim();
+    if(!essayToReview){
+      alert('请输入或上传文本');
+      return;
+    }
+    await consumeQuota();  // 扣配额
+    showPage('resultPage');
+    await reviewEssay();   // 等批改完成，出错也走finally
+  }finally{
+    _unlockReview(); // 无论成功失败，一定解锁
   }
-  if(!essayToReview.trim()){ alert('请输入或上传文本'); return; }
-  await consumeQuota();
-  showPage('resultPage');
-  reviewEssay().finally(()=>{_reviewing=false;});
 }
 
 async function reviewEssay(){
@@ -440,10 +461,12 @@ function displayResult(result){
 }
 
 function goHome(){
+  _reviewing=false; // 返回时强制解锁，防止卡死
   resetPhoto();
   document.getElementById('essayInput').value='';
   document.getElementById('charCount').textContent='0';
   showPage('mainPage');
+  updateQuota();
 }
 
 function escapeHtml(text){
