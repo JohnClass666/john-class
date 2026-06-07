@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英语精听训练 · John Class</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;background:#F5EDD8;color:#2A1E08;-webkit-font-smoothing:antialiased;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif}
+
+.layout{display:flex;min-height:100vh}
+.left{position:fixed;top:0;left:0;width:52%;height:100vh;overflow:hidden}
+.left img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.left::after{content:'';position:absolute;top:0;right:0;width:80px;height:100%;background:linear-gradient(to right,transparent,#F5EDD8)}
+.right{margin-left:52%;flex:1;background:#F5EDD8;min-height:100vh;padding:52px 44px 80px 28px;position:relative}
+
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:44px}
+.nav-brand{font-size:13px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8956A;text-decoration:none;font-family:'Noto Serif SC',Georgia,serif}
+.nav-back{font-size:12px;color:#9A8060;text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .2s}
+.nav-back:hover{color:#2A1E08}
+
+.page-title{font-family:'Noto Serif SC',Georgia,serif;font-size:clamp(24px,3vw,32px);font-weight:700;color:#2A1E08;letter-spacing:-.2px;margin-bottom:6px}
+.page-sub{font-size:13px;color:#9A8060;margin-bottom:36px;line-height:1.6}
+
+/* 说明卡片 */
+.intro-card{background:rgba(42,30,8,.04);border:1px solid rgba(184,149,106,.2);border-radius:16px;padding:20px 22px;margin-bottom:32px}
+.intro-card p{font-size:13px;color:#5A3E18;line-height:1.8}
+.intro-card strong{color:#2A1E08}
+
+/* 五步骤 */
+.steps-title{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#B8956A;padding-bottom:10px;border-bottom:1px solid rgba(184,149,106,.2);margin-bottom:4px}
+.steps{display:flex;flex-direction:column;gap:0;margin-bottom:36px}
+.step{display:flex;align-items:flex-start;gap:16px;padding:18px 0;border-bottom:1px solid rgba(184,149,106,.1);cursor:pointer;transition:transform .18s}
+.step:last-child{border-bottom:none}
+.step:hover{transform:translateX(4px)}
+.step-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Noto Serif SC',Georgia,serif;font-size:14px;font-weight:700;flex-shrink:0;margin-top:2px}
+.s1 .step-num{background:rgba(201,169,110,.15);border:1.5px solid rgba(201,169,110,.3);color:#8A6030}
+.s2 .step-num{background:rgba(74,124,184,.12);border:1.5px solid rgba(74,124,184,.22);color:#3A6494}
+.s3 .step-num{background:rgba(74,124,63,.13);border:1.5px solid rgba(74,124,63,.25);color:#3A6430}
+.s4 .step-num{background:rgba(184,74,74,.1);border:1.5px solid rgba(184,74,74,.2);color:#943A3A}
+.s5 .step-num{background:rgba(122,76,184,.12);border:1.5px solid rgba(122,76,184,.22);color:#5A3A94}
+.step-body{flex:1}
+.step-name{font-size:16px;font-weight:600;color:#2A1E08;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.step-emoji{font-size:18px}
+.step-desc{font-size:12px;color:#9A8060;line-height:1.6;margin-bottom:0}
+.step-tip{display:none;margin-top:10px;background:rgba(255,255,255,.5);border:1px solid rgba(184,149,106,.15);border-radius:10px;padding:12px 14px;font-size:12px;color:#5A3E18;line-height:1.8}
+.step-tip.open{display:block}
+.step-tip ul{padding-left:16px}
+.step-tip li{margin-bottom:4px}
+.step-arrow{color:rgba(184,149,106,.4);flex-shrink:0;transition:transform .2s;margin-top:6px}
+.step.expanded .step-arrow{transform:rotate(90deg)}
+
+/* 推荐网站 */
+.site-title{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#B8956A;padding-bottom:10px;border-bottom:1px solid rgba(184,149,106,.2);margin-bottom:4px}
+.sites{display:flex;flex-direction:column;gap:0;margin-bottom:36px}
+.site-item{display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid rgba(184,149,106,.1);text-decoration:none;color:inherit;transition:transform .18s}
+.site-item:last-child{border-bottom:none}
+.site-item:hover{transform:translateX(4px)}
+.site-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;transition:transform .18s}
+.site-item:hover .site-circle{transform:scale(1.08)}
+.site-text{flex:1}
+.site-name{font-size:15px;font-weight:600;color:#2A1E08;margin-bottom:3px}
+.site-desc{font-size:12px;color:#9A8060;line-height:1.5}
+.site-tag{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:20px;flex-shrink:0;background:rgba(74,124,63,.12);color:#4A7C3F;border:1px solid rgba(74,124,63,.2)}
+.site-arrow{color:rgba(184,149,106,.4);flex-shrink:0;transition:transform .18s,color .18s}
+.site-item:hover .site-arrow{transform:translateX(4px);color:#B8956A}
+
+/* 温馨提示 */
+.tips-box{background:rgba(201,169,110,.08);border:1px solid rgba(201,169,110,.2);border-radius:14px;padding:18px 20px;margin-bottom:32px}
+.tips-box-title{font-size:12px;font-weight:600;color:#8A6030;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.tips-box ul{padding-left:16px;font-size:12px;color:#5A3E18;line-height:1.9}
+
+.foot{margin-top:40px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(184,149,106,.4)}
+
+.overlay{position:fixed;inset:0;background:#F5EDD8;z-index:999;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.overlay.show{opacity:1;pointer-events:all}
+
+.right > *{animation:fadeIn .6s cubic-bezier(.22,1,.36,1) both}
+.nav{animation-delay:.05s}.page-title{animation-delay:.08s}.page-sub{animation-delay:.1s}
+.intro-card{animation-delay:.12s}.steps-title{animation-delay:.14s}.steps{animation-delay:.16s}
+.site-title{animation-delay:.2s}.sites{animation-delay:.22s}.tips-box{animation-delay:.26s}
+@keyframes fadeIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+
+@media(max-width:680px){
+  .layout{flex-direction:column}
+  .left{position:relative;width:100%;height:56vw;min-height:220px;max-height:360px}
+  .left::after{top:auto;bottom:0;left:0;right:0;width:100%;height:60px;background:linear-gradient(to bottom,transparent,#F5EDD8)}
+  .right{margin-left:0;padding:28px 20px 60px}
+}
+</style>
+</head>
+<body>
+<div class="overlay" id="ov"></div>
+<div class="layout">
+  <div class="left"><img src="bg.png" alt="John Class"></div>
+  <div class="right">
+
+    <div class="nav">
+      <a class="nav-brand" href="index.html">John Class</a>
+      <a class="nav-back" href="study.html" onclick="go(event,'study.html')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        返回
+      </a>
+    </div>
+
+    <div class="page-title">英语精听训练</div>
+    <div class="page-sub">五步精听法 · 从听懂到听精</div>
+
+    <div class="intro-card">
+      <p>精听是提升英语听力最有效的方法。不是把材料听一遍就算，而是<strong>一句一句地精确处理</strong>。按照下面五个步骤练习，坚持两个月，你会发现听力发生质变。</p>
+    </div>
+
+    <div class="steps-title">五步精听法</div>
+    <div class="steps">
+
+      <div class="step s1" onclick="toggleStep(this)">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-name"><span class="step-emoji">👂</span>总听</div>
+          <div class="step-desc">不看原文，整段听一遍，感受整体意思</div>
+          <div class="step-tip">
+            <ul>
+              <li>听之前不要看文字，保持空白状态</li>
+              <li>不要暂停，完整听完一遍</li>
+              <li>只需要大概听懂 <strong>50%</strong> 即可，不要焦虑</li>
+              <li>听完之后在脑中复述一下大意</li>
+            </ul>
+          </div>
+        </div>
+        <svg class="step-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+
+      <div class="step s2" onclick="toggleStep(this)">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-name"><span class="step-emoji">✍️</span>听写</div>
+          <div class="step-desc">一句一句听，把听到的内容写下来</div>
+          <div class="step-tip">
+            <ul>
+              <li>用每日英语听力的「<strong>听写模式</strong>」，一句一句来</li>
+              <li>每句可以重复听 <strong>3 次</strong>，3 次还没听清就先空着</li>
+              <li>不确定的地方用「？」标记，不要猜</li>
+              <li>这一步最费时间，也是进步最快的一步</li>
+              <li>不要着急翻看答案</li>
+            </ul>
+          </div>
+        </div>
+        <svg class="step-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+
+      <div class="step s3" onclick="toggleStep(this)">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-name"><span class="step-emoji">🔍</span>查误</div>
+          <div class="step-desc">对照原文，找出听写时的错误和漏听原因</div>
+          <div class="step-tip">
+            <ul>
+              <li>把你的听写和原文<strong>逐字对比</strong></li>
+              <li>每个错误都要搞清楚为什么没听出来</li>
+              <li>常见原因：连读、弱读、不认识的单词、语速太快</li>
+              <li>把错误的句子<strong>抄下来</strong>，旁边写上原因</li>
+              <li>生词立刻查字典，记在错词本里</li>
+            </ul>
+          </div>
+        </div>
+        <svg class="step-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+
+      <div class="step s4" onclick="toggleStep(this)">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-name"><span class="step-emoji">🔁</span>跟读</div>
+          <div class="step-desc">跟着音频逐句模仿，重点练发音和语调</div>
+          <div class="step-tip">
+            <ul>
+              <li>打开原文，<strong>边看边跟读</strong></li>
+              <li>模仿语速、语调、连读和弱读</li>
+              <li>难的句子单独拿出来重复跟读 <strong>5 遍</strong></li>
+              <li>录下自己的声音，和原音对比</li>
+              <li>重点不是速度，是<strong>模仿得像</strong></li>
+            </ul>
+          </div>
+        </div>
+        <svg class="step-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+
+      <div class="step s5" onclick="toggleStep(this)">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-name"><span class="step-emoji">🎯</span>裸听</div>
+          <div class="step-desc">不看原文再听一遍，检验掌握程度</div>
+          <div class="step-tip">
+            <ul>
+              <li>关掉原文，<strong>完整听一遍</strong></li>
+              <li>这次应该能听懂 <strong>90% 以上</strong></li>
+              <li>如果还有不清楚的地方，回到第 2 步重做</li>
+              <li>全部听懂了？恭喜你，这篇材料已经掌握</li>
+              <li>建议第二天再<strong>裸听一遍</strong>，巩固记忆</li>
+            </ul>
+          </div>
+        </div>
+        <svg class="step-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+
+    </div>
+
+    <div class="site-title">推荐练习 App</div>
+    <div class="sites">
+
+      <!-- 每日英语听力 主推 -->
+      <div class="site-item" onclick="openApp()" style="cursor:pointer">
+        <div class="site-circle" style="background:rgba(201,169,110,.15);border:1.5px solid rgba(201,169,110,.3)">🎧</div>
+        <div class="site-text">
+          <div class="site-name">每日英语听力</div>
+          <div class="site-desc">听写模式 · 跟读打分 · 逐句精听 · 海量题库 · 强烈推荐</div>
+        </div>
+        <span class="site-tag">首选</span>
+        <svg class="site-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+
+      <a class="site-item" href="https://www.bbc.co.uk/learningenglish" target="_blank" rel="noopener">
+        <div class="site-circle" style="background:rgba(184,74,74,.1);border:1.5px solid rgba(184,74,74,.2)">📻</div>
+        <div class="site-text">
+          <div class="site-name">BBC Learning English</div>
+          <div class="site-desc">真实英音 · 新闻 · 日常对话 · 适合提高阶段</div>
+        </div>
+        <svg class="site-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+
+    </div>
+
+    <!-- 下载弹窗 -->
+    <div id="appModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(42,30,8,.5);backdrop-filter:blur(4px)" onclick="closeAppModal(event)">
+      <div style="position:absolute;bottom:0;left:0;right:0;background:#F5EDD8;border-radius:24px 24px 0 0;padding:32px 24px 48px;max-width:600px;margin:0 auto">
+        <div style="width:40px;height:4px;background:rgba(184,149,106,.3);border-radius:2px;margin:0 auto 28px"></div>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:8px">
+          <div style="width:56px;height:56px;border-radius:14px;background:rgba(201,169,110,.15);border:1.5px solid rgba(201,169,110,.3);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">🎧</div>
+          <div>
+            <div style="font-family:'Noto Serif SC',Georgia,serif;font-size:18px;font-weight:700;color:#2A1E08;margin-bottom:3px">每日英语听力</div>
+            <div style="font-size:12px;color:#9A8060">App Store 4.9分 · 支持单句精听、听写、跟读</div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:#5A3E18;line-height:1.8;margin:16px 0 24px;padding:14px;background:rgba(255,255,255,.5);border-radius:12px;border:1px solid rgba(184,149,106,.15)">
+          选择你的手机系统下载，安装后在 App 内搜索<br>
+          <strong>VOA慢速、新概念</strong> 等材料开始练习
+        </div>
+        <div style="display:flex;gap:12px">
+          <a href="https://apps.apple.com/sr/app/id570118289" target="_blank" rel="noopener"
+            style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:#2A1E08;color:#F5EDD8;border-radius:14px;text-decoration:none;font-size:14px;font-weight:600">
+            <span style="font-size:18px"></span> App Store
+          </a>
+          <a href="https://app.mi.com/details?id=com.eusoft.ting.en" target="_blank" rel="noopener"
+            style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:#2A1E08;color:#F5EDD8;border-radius:14px;text-decoration:none;font-size:14px;font-weight:600">
+            <span style="font-size:18px">🤖</span> 安卓下载
+          </a>
+        </div>
+        <div style="text-align:center;margin-top:14px;font-size:12px;color:#9A8060">
+          安卓也可在华为 / 应用宝 / OPPO 商店搜索「每日英语听力」
+        </div>
+      </div>
+    </div>
+
+    <div class="tips-box">
+      <div class="tips-box-title">💡 John 老师的建议</div>
+      <ul>
+        <li>每天只需练 <strong>一篇</strong>，时间控制在 20-30 分钟，贵在坚持</li>
+        <li>从「每日英语听力」选 <strong>初级或中级</strong> 材料开始，不要贪难</li>
+        <li>每周至少练 <strong>5 天</strong>，周末可以只做裸听复习</li>
+        <li>遇到不懂的单词，先查再继续，不要跳过</li>
+        <li>有问题随时截图发给 John，微信：<strong>JiahaoLee6666</strong></li>
+      </ul>
+    </div>
+
+    <div class="foot">Listen · Write · Shadow · Check · Master</div>
+  </div>
+</div>
+
+<script>
+function toggleStep(el){
+  const tip=el.querySelector('.step-tip');
+  const isOpen=tip.classList.contains('open');
+  // 关闭所有
+  document.querySelectorAll('.step-tip').forEach(t=>t.classList.remove('open'));
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('expanded'));
+  // 如果原来是关闭的就打开
+  if(!isOpen){tip.classList.add('open');el.classList.add('expanded');}
+}
+function openApp(){
+  document.getElementById('appModal').style.display='block';
+  document.body.style.overflow='hidden';
+}
+function closeAppModal(e){
+  if(e.target===document.getElementById('appModal')){
+    document.getElementById('appModal').style.display='none';
+    document.body.style.overflow='';
+  }
+}
+function go(e,href){
+  e.preventDefault();
+  const ov=document.getElementById('ov');
+  ov.classList.add('show');
+  setTimeout(()=>{window.location.href=href;},280);
+}
+</script>
+</body>
+</html>
