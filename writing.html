@@ -114,7 +114,7 @@ textarea{resize:vertical;min-height:120px;line-height:1.6}
         <span id="charCount">0</span> / 300
       </div>
       <div style="margin-top:16px;display:flex;gap:12px;justify-content:flex-end">
-        <button class="btn btn-primary" onclick="startReview()">开始反馈</button>
+        <button class="btn btn-primary" id="textReviewBtn" onclick="startReview()">开始反馈</button>
       </div>
     </div>
   </div>
@@ -263,6 +263,9 @@ function showPage(pageName){
 
 // 统一处理两个 input 的 change 事件
 function handleFileSelected(input){
+  // 隐藏文本框的开始反馈按钮，避免两个按钮同时可见
+  const textBtn=document.getElementById('textReviewBtn');
+  if(textBtn){textBtn.style.display='none';}
   const file=input.files[0];
   if(!file) return;
   const reader=new FileReader();
@@ -328,6 +331,9 @@ async function recognizePhoto(){
 function resetPhoto(){
   document.getElementById('cameraInput').value='';
   document.getElementById('galleryInput').value='';
+  // 恢复文本框按钮
+  const textBtn=document.getElementById('textReviewBtn');
+  if(textBtn){textBtn.style.display='';textBtn.disabled=false;textBtn.textContent='开始反馈';}
   const preview=document.getElementById('photoPreview');
   preview.style.display='none';
   preview.innerHTML='';
@@ -335,8 +341,13 @@ function resetPhoto(){
   recognizedContent='';
 }
 
+let _reviewing=false;
 async function startReview(){
-  if(!(await canUseQuota())){ alert('本周额度已用完！每周最多3次，请下周再来。'); return; }
+  if(_reviewing)return;
+  _reviewing=true;
+  // 禁用所有开始反馈按钮
+  document.querySelectorAll('button').forEach(b=>{if(b.textContent.includes('开始反馈')){b.disabled=true;b.textContent='处理中...';}});
+  if(!(await canUseQuota())){ alert('本周额度已用完！每周最多3次，请下周再来。'); _reviewing=false; document.querySelectorAll('button').forEach(b=>{if(b.textContent.includes('处理中')){b.disabled=false;b.textContent='开始反馈';}}); return; }
   // 有图片识别结果优先用，否则用文本框
   const editedEl=document.getElementById('editedText');
   if(editedEl && editedEl.value.trim()){
@@ -347,7 +358,7 @@ async function startReview(){
   if(!essayToReview.trim()){ alert('请输入或上传文本'); return; }
   await consumeQuota();
   showPage('resultPage');
-  reviewEssay();
+  reviewEssay().finally(()=>{_reviewing=false;});
 }
 
 async function reviewEssay(){
