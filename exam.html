@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2025 长沙中考英语真题 · John Class</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased;background:#F5EDD8;color:#2A1E08;scroll-behavior:smooth}
+body{padding-bottom:100px}
+
+/* ── 顶部导航 ── */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(245,237,216,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(184,149,106,.15);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:52px}
+.topbar a{text-decoration:none;font-size:12px;color:#9A8060;display:flex;align-items:center;gap:5px;transition:color .2s}
+.topbar a:hover{color:#2A1E08}
+.topbar-title{font-size:13px;font-weight:600;color:#B8956A;letter-spacing:.06em}
+
+/* ── 主容器 ── */
+.main{max-width:760px;margin:0 auto;padding:32px 24px 20px}
+
+/* ── 试卷头 ── */
+.exam-head{text-align:center;margin-bottom:32px}
+.exam-head h1{font-size:clamp(20px,3vw,26px);font-weight:700;color:#2A1E08;letter-spacing:.02em;margin-bottom:6px}
+.exam-head .meta{font-size:13px;color:#9A8060;display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.exam-head .meta span{background:rgba(184,149,106,.1);padding:3px 10px;border-radius:10px;font-size:11px}
+.exam-note{text-align:center;font-size:12px;color:#B8956A;margin-bottom:28px;padding:10px 16px;background:rgba(184,149,106,.06);border-radius:10px;line-height:1.6}
+
+/* ── 区块 ── */
+.part{margin-bottom:36px}
+.part-head{border-left:3px solid #B8956A;padding-left:14px;margin-bottom:18px}
+.part-head h2{font-size:17px;font-weight:700;color:#2A1E08;margin-bottom:3px}
+.part-head .part-sub{font-size:12px;color:#9A8060}
+
+.sec{margin-bottom:24px}
+.sec-title{font-size:14px;font-weight:600;color:#B8956A;margin-bottom:10px;letter-spacing:.04em;padding-bottom:8px;border-bottom:1px solid rgba(184,149,106,.12)}
+
+/* ── 文章/材料卡 ── */
+.passage{background:rgba(255,255,255,.5);border:1px solid rgba(184,149,106,.15);border-radius:14px;padding:20px 22px;margin-bottom:20px;font-size:15px;line-height:2;color:#3A2E18}
+.passage p{margin-bottom:10px}
+.passage p:last-child{margin-bottom:0}
+.passage img{max-width:100%;height:auto;border-radius:8px;display:block}
+.passage.plain{background:transparent;border:none;padding:8px 0}
+
+/* ── 题目 ── */
+.q-block{margin-bottom:16px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.35);border:1px solid transparent;transition:border-color .25s,background .25s}
+.q-block.q-done{border-color:rgba(184,149,106,.2)}
+
+/* 序号 + 题干 */
+.q-stem{font-size:14px;color:#2A1E08;line-height:1.7;margin-bottom:10px;font-weight:500}
+.q-num{display:inline-block;min-width:28px;font-weight:700;color:#B8956A}
+
+/* 选项 - 单选 */
+.q-opts{display:flex;flex-direction:column;gap:6px}
+.q-opt{padding:10px 14px;border-radius:10px;border:1.5px solid rgba(184,149,106,.2);cursor:pointer;font-size:14px;color:#3A2E18;transition:all .18s;background:rgba(255,255,255,.4);user-select:none;display:flex;align-items:center;gap:8px}
+.q-opt:hover{border-color:#B8956A;background:rgba(255,255,255,.7)}
+.q-opt:active{transform:scale(.99)}
+.q-opt .opt-letter{width:28px;height:28px;border-radius:50%;background:rgba(184,149,106,.1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#B8956A;flex-shrink:0;transition:all .2s}
+.q-opt.chosen{border-color:#B8956A;background:rgba(184,149,106,.08)}
+.q-opt.chosen .opt-letter{background:#B8956A;color:#fff}
+
+/* 选项 - 阅读填空（A-E） */
+.q-opts-inline{display:flex;gap:6px;flex-wrap:wrap}
+.q-opt-sm{padding:8px 16px;border-radius:20px;border:1.5px solid rgba(184,149,106,.25);cursor:pointer;font-size:13px;color:#3A2E18;background:rgba(255,255,255,.4);transition:all .18s;user-select:none;font-weight:600}
+.q-opt-sm:hover{border-color:#B8956A;background:rgba(255,255,255,.7)}
+.q-opt-sm.chosen{background:#2A1E08;border-color:#2A1E08;color:#F5EDD8}
+
+/* 填空输入 */
+.q-fill{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.q-fill input{border:none;border-bottom:2px solid #B8956A;background:transparent;padding:6px 8px;font-size:15px;color:#2A1E08;outline:none;min-width:120px;text-align:center;font-family:inherit;transition:border-color .2s,background .2s;border-radius:4px 4px 0 0}
+.q-fill input:focus{background:rgba(184,149,106,.06);border-color:#7A5C2A}
+.q-fill .clue{font-size:13px;color:#9A8060;font-style:italic}
+.q-fill input.filled{border-color:#7A5C2A}
+
+/* 简答 */
+.q-answer textarea{width:100%;border:1.5px solid rgba(184,149,106,.25);border-radius:10px;padding:10px 14px;font-size:14px;color:#2A1E08;background:rgba(255,255,255,.5);resize:vertical;min-height:48px;font-family:inherit;outline:none;transition:border-color .2s}
+.q-answer textarea:focus{border-color:#B8956A}
+.q-answer textarea.filled{border-color:#7A5C2A}
+
+/* ── 批改后的状态 ── */
+.q-opt.correct{border-color:#4A7C3F!important;background:rgba(74,124,63,.1)!important}
+.q-opt.correct .opt-letter{background:#4A7C3F!important;color:#fff!important}
+.q-opt.wrong{border-color:#C0392B!important;background:rgba(192,57,43,.07)!important}
+.q-opt.wrong .opt-letter{background:#C0392B!important;color:#fff!important}
+.q-opt.actual-answer{border-color:#4A7C3F!important;background:rgba(74,124,63,.06)!important}
+
+.q-fill input.correct{border-color:#4A7C3F!important;color:#2A5A1E!important;background:rgba(74,124,63,.06)!important}
+.q-fill input.wrong{border-color:#C0392B!important;color:#8B1A10!important;background:rgba(192,57,43,.05)!important}
+
+.q-block.correct-block{border-color:rgba(74,124,63,.25);background:rgba(74,124,63,.04)}
+.q-block.wrong-block{border-color:rgba(192,57,43,.2);background:rgba(192,57,43,.03)}
+
+/* ── 解析 ── */
+.explanation{display:none;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:13px;line-height:1.7;color:#6A5030;background:rgba(184,149,106,.08);border-left:3px solid #B8956A}
+.explanation.show{display:block}
+.explanation .ans-label{font-weight:700;color:#2A1E08;margin-bottom:4px}
+.explanation .ans-text{color:#4A7C3F}
+
+/* ── 底部提交栏 ── */
+.submit-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(245,237,216,.94);backdrop-filter:blur(12px);border-top:1px solid rgba(184,149,106,.2);padding:12px 24px;display:flex;align-items:center;justify-content:center;gap:16px}
+.submit-bar .prog{font-size:12px;color:#9A8060}
+.submit-bar .prog span{font-weight:700;color:#B8956A}
+.btn-submit{padding:10px 36px;border-radius:24px;font-size:15px;font-weight:700;cursor:pointer;border:none;letter-spacing:.04em;transition:all .2s;background:#2A1E08;color:#F5EDD8}
+.btn-submit:hover{background:#3D2E14;transform:translateY(-1px)}
+.btn-submit:active{transform:scale(.97)}
+.btn-submit:disabled{opacity:.4;cursor:default;transform:none}
+.btn-submit.done{background:#4A7C3F}
+.btn-reset{padding:10px 24px;border-radius:24px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid rgba(184,149,106,.3);background:transparent;color:#9A8060;transition:all .18s;letter-spacing:.02em}
+.btn-reset:hover{border-color:#B8956A;color:#B8956A}
+
+/* ── 成绩卡片 ── */
+.score-card{display:none;text-align:center;padding:24px;margin-bottom:28px;background:rgba(255,255,255,.6);border:1.5px solid rgba(184,149,106,.25);border-radius:18px}
+.score-card.show{display:block}
+.score-card .big-score{font-size:48px;font-weight:700;color:#2A1E08}
+.score-card .big-score span{font-size:20px;color:#B8956A}
+.score-card .stars{font-size:28px;margin-bottom:6px}
+.score-card .msg{font-size:14px;color:#6A5030;margin-top:6px;line-height:1.6}
+
+/* ── 听力提示 ── */
+.audio-note{background:rgba(212,136,42,.08);border:1px solid rgba(212,136,42,.2);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#8A6A30;display:flex;align-items:center;gap:8px}
+.audio-note .icon{font-size:20px}
+
+/* ── 写作区 ── */
+.writing-area textarea{width:100%;border:1.5px solid rgba(184,149,106,.25);border-radius:12px;padding:14px 16px;font-size:14px;color:#2A1E08;background:rgba(255,255,255,.5);resize:vertical;min-height:200px;font-family:inherit;outline:none;line-height:1.8;transition:border-color .2s}
+.writing-area textarea:focus{border-color:#B8956A}
+.writing-hint{font-size:12px;color:#9A8060;margin-top:8px}
+.writing-ref{display:none;margin-top:12px;padding:14px 16px;border-radius:10px;background:rgba(74,124,63,.06);border:1px solid rgba(74,124,63,.2);font-size:13px;line-height:1.8;color:#3A2E18}
+.writing-ref.show{display:block}
+.writing-ref .ref-label{font-weight:700;color:#4A7C3F;margin-bottom:6px}
+
+/* ── 滚动到顶部 ── */
+.scroll-top{position:fixed;bottom:80px;right:24px;z-index:40;width:40px;height:40px;border-radius:50%;background:rgba(184,149,106,.15);border:1px solid rgba(184,149,106,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s;opacity:0;pointer-events:none}
+.scroll-top.visible{opacity:1;pointer-events:all}
+.scroll-top:hover{background:rgba(184,149,106,.25)}
+
+/* ── 入场动画 ── */
+.main>*{animation:fi .5s cubic-bezier(.22,1,.36,1) both}
+.exam-head{animation-delay:.04s}.exam-note{animation-delay:.07s}.part:nth-child(2){animation-delay:.1s}
+.part:nth-child(3){animation-delay:.14s}.part:nth-child(4){animation-delay:.18s}.part:nth-child(5){animation-delay:.22s}
+@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+@media(max-width:640px){
+  .main{padding:24px 16px 20px}
+  .topbar{padding:0 14px}
+  .passage{padding:14px 16px;font-size:14px}
+  .q-opt{font-size:13px;padding:8px 12px}
+  .btn-submit{padding:10px 28px;font-size:14px}
+}
+</style>
+</head>
+<body>
+
+<!-- ── 顶部导航 ── -->
+<div class="topbar">
+  <a href="study.html">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>返回
+  </a>
+  <span class="topbar-title">真题专区</span>
+  <span style="width:40px"></span>
+</div>
+
+<!-- ═══════════════════════ 主内容 ═══════════════════════ -->
+<div class="main">
+
+  <!-- 试卷头 -->
+  <div class="exam-head">
+    <h1>2025 年长沙市初中学业水平考试</h1>
+    <div class="meta">
+      <span>英语</span><span>满分 100 分</span><span>时量 100 分钟</span><span>61 小题</span>
+    </div>
+  </div>
+  <div class="exam-note">
+    ⚠️ 本试卷听力部分需配合音频使用，其余部分均可在线作答。<br>完成所有题目后点击底部「提交批改」查看得分与解析。
+  </div>
+
+  <!-- 成绩卡片（提交后显示） -->
+  <div class="score-card" id="scoreCard">
+    <div class="stars" id="starsEl"></div>
+    <div class="big-score" id="bigScoreEl"></div>
+    <div class="msg" id="msgEl"></div>
+  </div>
+
+  <!-- ═══════════ 第一部分：听力 ═══════════ -->
+  <div class="part">
+    <div class="part-head">
+      <h2>第一部分 听力（共两节，满分 20 分）</h2>
+      <div class="part-sub">第一节 5 小题 × 1 分 | 第二节 15 小题 × 1 分</div>
+    </div>
+    <div class="audio-note">
+      <span class="icon">🎧</span> 听力部分需配合音频使用，此处仅展示题目供参考，不纳入批改计分。
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">第一节（共 5 小题；每小题 1 分，满分 5 分）</div>
+      <div class="passage" style="font-size:13px;color:#9A8060">
+        听下面5段对话。每段对话后有一个小题，从题中所给的 A、B、C 三个选项中选出最佳选项。听完每段对话后，你都有 10 秒钟的时间来回答有关小题和阅读下一小题。每段对话读两遍。
+      </div>
+      <div id="listen1"></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">第二节（共 15 小题；每小题 1 分，满分 15 分）</div>
+      <div class="passage" style="font-size:13px;color:#9A8060">
+        听下面6段对话或独白。每段对话或独白后有几个小题，从题中所给的 A、B、C 三个选项中选出最佳选项。听每段对话或独白前，你将有时间阅读各个小题，每小题 5 秒钟；听完后，各小题将给出 5 秒钟的作答时间。每段对话或独白读两遍。
+      </div>
+      <div id="listen2"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 第二部分：阅读 ═══════════ -->
+  <div class="part">
+    <div class="part-head">
+      <h2>第二部分 阅读（共两节，满分 30 分）</h2>
+      <div class="part-sub">第一节 10 小题 × 2 分 | 第二节 5 小题 × 2 分</div>
+    </div>
+
+    <!-- 阅读 A -->
+    <div class="sec">
+      <div class="sec-title">第一节 A 篇</div>
+      <div class="passage" style="padding:12px;text-align:center;background:rgba(255,255,255,.7)">
+        <img src="image9.jpeg" alt="Reading A - Email and To-Do List" style="max-width:100%;height:auto;border-radius:8px;display:block;margin:0 auto">
+      </div>
+      <div id="readA"></div>
+    </div>
+
+    <!-- 阅读 B -->
+    <div class="sec">
+      <div class="sec-title">第一节 B 篇</div>
+      <div class="passage">
+        <p>One morning, I stopped at my favorite restaurant to get something to eat and got comfortable at a small table. Shortly after, I noticed four young people sitting at a table near me. After simply greeting each other and ordering, they all looked at their phones and continued to do so until their orders arrived. After photographing their food, they ate, continuing to look at their phones. I was wondering why they came here to eat together. They were <strong>phubbing</strong>, or phone snubbing (冷落), a very common problem these days.</p>
+        <p>You may not know the word "phubbing", but this kind of act is not strange to you. In fact, 32% of people report that they are phubbed two or three times a day.</p>
+        <p>Do you have a conversation on your phone while talking to another person face to face? Do you scroll (上下滑动) through your phone while eating with someone for fear of missing out? If your answer is yes to either of them, you might be a "phubber".</p>
+        <p>The writer of <em>The Psychology of Phubbing</em> did a survey and found that the influence of phubbing on relationships can be very harmful or <strong>destructive</strong>. For example, children felt that parents who phubbed them didn't care about them. This led to a feeling of being left out. Also, partners who were phubbed might be less satisfied with the relationship because of jealousy (嫉妒) and worries.</p>
+        <p>Phubbing is a learned act, so unlearning it is possible. Start by accepting the problem. Set a time limit (限制) for not using your phone. Create areas where phones are off-limits.</p>
+        <p>Don't let the modern technology which is designed (设计) to bring people together separate you from others.</p>
+      </div>
+      <div id="readB"></div>
+    </div>
+
+    <!-- 阅读 C -->
+    <div class="sec">
+      <div class="sec-title">第一节 C 篇</div>
+      <div class="passage">
+        <p>I used to teach English as a volunteer in Africa. Some of my friends asked me, "Don't you miss your home, Emily?" I told them I was the only child in my family and I truly had an easy life at home. However, I got bored of having a "good" time at home and needed a change.</p>
+        <p>The kids from Africa were eager (渴望的) to learn and easy to teach. I was surprised at how smart they were. Talking with them made me think a lot. When you come from a poor area, you must grow up fast and deal with all kinds of difficult situations.</p>
+        <p>Volunteering has always been easy for me because I don't like to do the same things every day. My job also gives me the freedom to choose when and where I work. Although I don't get paid for volunteering, I'm old enough to know that money is not the only way to get rewarded (回报). The experience itself is priceless. I make lots of connections with good people. Also, when I volunteer, I often work with people who are worse off than I am. That has taught me to practice thankfulness for what I have. Believe me, this life lesson is worth a million dollars.</p>
+        <p>I am not a perfect person. In a sense, I think I'm selfish (自私的). But you don't have to be a perfect, selfless person to volunteer. In fact, I have benefited (受益) a lot from volunteering. Volunteering helps others, and it can also help yourself, too. The biggest benefit of volunteering is that it helps you develop your character (品质), and that's the passport to a rich and meaningful life.</p>
+      </div>
+      <div id="readC"></div>
+    </div>
+
+    <!-- 阅读第二节：填空 -->
+    <div class="sec">
+      <div class="sec-title">第二节 阅读填空（共 5 小题；每小题 2 分，满分 10 分）</div>
+      <div class="passage" style="font-size:13px;color:#9A8060;margin-bottom:14px">
+        阅读下面短文，从短文后的选项中选出可以填入空白处的最佳选项。每个选项仅使用一次。
+      </div>
+      <div class="passage">
+        <p>Can you play basketball? Some people may think it is too competitive. However, it offers many benefits for both mind and body. Whether you are playing with friends or joining a team, basketball helps you stay positive (积极的), build skills, and develop good habits. <strong>____11____</strong></p>
+        <p><strong>It's a good way to stay fit.</strong><br><strong>____12____</strong> Running, jumping, and dribbling (运球) during a game help you to keep healthy. As a player, you must also move quickly while controlling the ball and avoiding competitors.</p>
+        <p><strong>It's a team sport.</strong><br>Teamwork is the key. <strong>____13____</strong> You have to trust and support each other during matches. Pass the ball when someone is in a better position (位置). Each member has to do their part to help the team win. Remember, no one can win alone.</p>
+        <p><strong>____14____</strong><br>The speedy nature of the game requires focus (专注) and quick decision-making. New difficulties always appear during a game. You have to think on your feet and keep cool in all situations. So you need to think of ways to face and overcome difficulties. And that helps you solve problems in your daily life.</p>
+        <p><strong>It improves communication.</strong><br>Stay connected with your teammates during matches. If you have a winning idea, tell your teammates! <strong>____15____</strong> Communication is an important part of basketball. The winning team is the one that works together and communicates well.</p>
+        <p>Basketball isn't all about athletic (运动的) ability. The game is also about using your brains and good teamwork. So call your friends and give it a try!</p>
+      </div>
+      <div id="readFill"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 第三部分：语言运用 ═══════════ -->
+  <div class="part">
+    <div class="part-head">
+      <h2>第三部分 语言运用（共两节，满分 25 分）</h2>
+      <div class="part-sub">第一节 完形填空 10 小题 × 1.5 分 | 第二节 语法填空 10 小题 × 1 分</div>
+    </div>
+
+    <!-- 完形填空 -->
+    <div class="sec">
+      <div class="sec-title">第一节 完形填空（共 10 小题；每小题 1.5 分，满分 15 分）</div>
+      <div class="passage" style="font-size:13px;color:#9A8060;margin-bottom:14px">
+        阅读下面短文，从每题所给的 A、B、C 三个选项中选出可以填入空白处的最佳选项。
+      </div>
+      <div class="passage">
+        <p>When Liivand was little, she was often sick. To get stronger, she <strong>____16____</strong> swimming. Soon after, she was taking part in open-water swimming competitions, sometimes even in icy water.</p>
+        <p>Several years ago, Liivand moved to Florida, but she continued to <strong>____17____</strong> in the sea. One day during her training, she almost swallowed (吞) some plastic (塑料) waste in the sea.</p>
+        <p>That experience made Liivand think of all the sea animals. These animals face <strong>____18____</strong> problems every day like her. So she decided to do something to raise people's awareness (意识) of <strong>____19____</strong> pollution. Thinking about sea animals gave Liivand the idea of swimming like a sea animal. Instead of using her arms, she <strong>____20____</strong> swimming with a rubbery fin (橡胶脚蹼) on her feet and swam forward by kicking her legs together. She believed that swimming with a rubbery fin would send "a bigger message".</p>
+        <p>Liivand first set the world record for swimming with a rubbery fin in 2019. She swam 10 kilometers off the coast of California. In 2021, she broke the <strong>____21____</strong> by swimming 30 kilometers, this time in Miami, Florida. But Liivand believed she could go <strong>____22____</strong>. Every day, she got up at 4:00 a.m., put on her fin and went swimming. To improve her strength (力量), she sometimes even pulled other people in the water.</p>
+        <p>On May 7, 2022, Liivand managed to break her record again. <strong>____23____</strong>, she swam 42.2 kilometers. It took her nearly 12 hours. Along the way, the woman collected all the <strong>____24____</strong> she found and put it in the small boat that was following her. Finally, the small boat held three full bags of rubbish. "Breaking a record means a lot to me, but being <strong>____25____</strong> to help the community and the world means much more," Liivand said.</p>
+      </div>
+      <div id="cloze"></div>
+    </div>
+
+    <!-- 语法填空 -->
+    <div class="sec">
+      <div class="sec-title">第二节 语法填空（共 10 小题；每小题 1 分，满分 10 分）</div>
+      <div class="passage" style="font-size:13px;color:#9A8060;margin-bottom:14px">
+        阅读下面短文，在空白处填入 1 个适当的单词或括号内单词的正确形式。
+      </div>
+      <div class="passage">
+        <p>I have always loved reading books that were written hundreds or even thousands of years ago. These are the literature classics (文学经典), and they <strong>____26____</strong> (be) of lasting value. For example, <em>The Iliad</em>, written almost three thousand years ago, tells us about the good and bad qualities (品质) of human nature; that is to say, we can be heroic and silly at <strong>____27____</strong> same time.</p>
+        <p>China has <strong>____28____</strong> (it) own long history of classical literature that dates back to the "Four Books and Five Classics". These books <strong>____29____</strong> (write) before the Qin Dynasty. No one was considered educated unless they had read these classics. Even today, students are encouraged <strong>____30____</strong> (read) <em>The Analects of Confucius</em> (《论语》).</p>
+        <p>There are also <strong>____31____</strong> (new) classics than those above, such as <em>Journey to the West</em> and <em>A Dream of Red Mansions</em>. Still, many people don't want to read them <strong>____32____</strong> they are long and have complex plots (复杂的情节). But they are great <strong>____33____</strong> (story) which also show the goodness and weakness of human nature.</p>
+        <p>Are you interested <strong>____34____</strong> learning more about the classics? Just reading some of them will give you a better understanding of the basis (基础) of culture then. They will also help you better understand yourself and others. <strong>____35____</strong> (slow) but surely, you will fall in love with them.</p>
+      </div>
+      <div id="grammarFill"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ 第四部分：读写综合 ═══════════ -->
+  <div class="part">
+    <div class="part-head">
+      <h2>第四部分 读写综合（共两节，满分 25 分）</h2>
+      <div class="part-sub">第一节 简答 5 小题 × 2 分 | 第二节 写作 15 分</div>
+    </div>
+
+    <!-- 简答 -->
+    <div class="sec">
+      <div class="sec-title">第一节 任务型阅读（共 5 小题；每小题 2 分，满分 10 分）</div>
+      <div class="passage" style="font-size:13px;color:#9A8060;margin-bottom:14px">
+        阅读下面短文，根据短文内容回答问题。
+      </div>
+      <div class="passage">
+        <p>One recent weekend, I decided to learn how to make jiaozi with my grandmother. I thought it would be fun and easy at the very beginning, but soon it came to me that it wasn't as simple as it looked.</p>
+        <p>At first, I didn't pay attention to the sharp (锋利的) knife while cutting vegetables. My finger got cut because of my carelessness. Luckily, it wasn't serious. Grandma was nervous, and quickly helped me clean the cut. "My poor little girl! Be careful next time!" said Grandma softly. Through the painful lesson, I learned the hard way that safety should always come first.</p>
+        <p>After that accident (意外), I continued working with Grandma. We made the dough (面团), mixed the filling, and started shaping the dumplings. However, I kept making mistakes. Some of my dumplings were too thick, others were not properly sealed (封闭), and some even had too much filling, making them difficult to close. It was so discouraging, but Grandma kept encouraging me.</p>
+        <p>Until noon, we had a plate full of dumplings—some are perfect, and some are a bit messy. Dad ate my ugliest dumpling first. "Tastes better than it looks!" he laughed. Mom encouraged me, "They're the most delicious dumplings I have ever had. I am so proud of you!"</p>
+        <p>Now I understand that making jiaozi isn't just about the final product; it is about learning patience, having fun with my family, and improving through mistakes. Mistakes aren't signs of weakness. Instead, they should be viewed (看待) as stepping stones to achievements.</p>
+      </div>
+      <div id="shortAnswer"></div>
+    </div>
+
+    <!-- 写作 -->
+    <div class="sec">
+      <div class="sec-title">第二节 书面表达（满分 15 分）</div>
+      <div class="passage" style="font-size:13px;color:#9A8060;margin-bottom:14px">
+        学校英文报正在开展以"<strong>Mistakes—steps towards success</strong>"为题的讨论。请你根据以下提示，并结合自身感悟，写一篇英语短文投稿。<br>
+        要求：（1）短文必须包含所有提示信息，并适当发挥；（2）80 词左右（标题和开头都已给出，不计入总词数）；（3）文中不得出现真实人名和校名。
+      </div>
+      <div class="passage">
+        <p><strong>Mistakes—steps towards success</strong></p>
+        <p>Mistakes are a part of life. Instead of fearing them, we should see them as chances to grow.</p>
+        <p style="color:#9A8060">___________________________________________________________________</p>
+        <p style="color:#9A8060">___________________________________________________________________</p>
+        <p style="color:#9A8060">___________________________________________________________________</p>
+      </div>
+      <div class="writing-area" style="margin-top:12px">
+        <textarea id="writingArea" placeholder="在此输入你的作文……（写作题不纳入自动批改，提交后会显示参考范文）"></textarea>
+        <div class="writing-hint">💡 写作题不纳入自动批改计分，提交后可查看参考范文。</div>
+      </div>
+      <div class="writing-ref" id="writingRef">
+        <div class="ref-label">📝 参考范文</div>
+        <div id="writingRefContent"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── 底部提交栏 ── -->
+<div class="submit-bar" id="submitBar">
+  <div class="prog">已答 <span id="doneCount">0</span> / <span id="totalCount">40</span> 题</div>
+  <button class="btn-submit" id="submitBtn" onclick="submitExam()">提交批改</button>
+  <button class="btn-reset" id="resetBtn" onclick="resetExam()" style="display:none">↺ 重做</button>
+</div>
+
+<div class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  真题数据
+// ═══════════════════════════════════════════
+
+const listeningQ1 = [
+  {n:1, stem:'What is the girl\'s favorite food?', opts:['A. Salad.','B. Beef noodles.','C. Hamburgers.']},
+  {n:2, stem:'What subject is Sam crazy about?', opts:['A. Art.','B. Science.','C. Math.']},
+  {n:3, stem:'What is the matter with David?', opts:['A. He has a fever.','B. He has a toothache.','C. He has a headache.']},
+  {n:4, stem:'Where is Mr. Zhang now?', opts:['A. In the classroom.','B. In the meeting room.','C. In the computer room.']},
+  {n:5, stem:'How is the weather today?', opts:['A. Sunny.','B. Rainy.','C. Snowy.']},
+];
+
+const listeningQ2 = [
+  {n:6, stem:'What did Sophia do on Saturday evening?', opts:['A. She went to a concert.','B. She visited a friend.','C. She watched a movie.']},
+  {n:7, stem:'Who takes a great interest in music?', opts:['A. Sophia.','B. Sophia\'s husband.','C. Robert.']},
+  {n:8, stem:'How does Steve feel about his training?', opts:['A. Boring.','B. So-so.','C. Great.']},
+  {n:9, stem:'When does Steve start training every day?', opts:['A. At 7:00 a.m.','B. At 8:00 a.m.','C. At 9:00 a.m.']},
+  {n:10, stem:'Why does the man make the call?', opts:['A. To book a table.','B. To look for a job.','C. To ask for leave.']},
+  {n:11, stem:'What is the man\'s name?', opts:['A. Brown.','B. Anderson.','C. Howard.']},
+  {n:12, stem:'What is the new product?', opts:['A. A pocket translator.','B. A music player.','C. A medical dictionary.']},
+  {n:13, stem:'Who are the main customers of the product?', opts:['A. College students.','B. Language teachers.','C. Business people.']},
+  {n:14, stem:'How much is the new product?', opts:['A. $50.','B. $60.','C. $70.']},
+  {n:15, stem:'How does Jane like the Australian man\'s words?', opts:['A. Serious.','B. Funny.','C. Polite.']},
+  {n:16, stem:'What was the Australian man\'s job when he was in China?', opts:['A. A car salesman.','B. A tour guide.','C. An English teacher.']},
+  {n:17, stem:'What does the Australian man miss the most?', opts:['A. His friends.','B. Chinese food.','C. The supermarkets.']},
+  {n:18, stem:'Where is Roombot 2000 made?', opts:['A. In China.','B. In India.','C. In Russia.']},
+  {n:19, stem:'What can Roombot 2000 do according to the speaker?', opts:['A. Cook meals.','B. Make the bed.','C. Water flowers.']},
+  {n:20, stem:'What does the speaker think of Roombot 2000?', opts:['A. Time-wasting.','B. Money-saving.','C. User-friendly.']},
+];
+
+// 有答案的题目（排除听力）
+const gradedQuestions = [
+  // 阅读第一节 A: 1-2
+  {id:'r1', n:1, type:'choice', stem:'Who will decide on the food for the party in the to-do list?', opts:['A. Wendy.','B. Matt.','C. Jess.'], ans:'B', exp:'细节理解题。根据材料中"Food: Matt"可知 Matt 负责食物。'},
+  {id:'r2', n:2, type:'choice', stem:'Why does Adam email Kate?', opts:['A. To ask her to help plan the party.','B. To invite her to his birthday party.','C. To advise her to make more friends.'], ans:'A', exp:'细节理解题。Adam 发邮件给 Kate，介绍了他给 Betty 举办的惊喜派对，列出了清单，让她帮助自己计划这个派对。'},
+  // 阅读第一节 B: 3-6
+  {id:'r3', n:3, type:'choice', stem:'What did the four young people keep doing before their orders arrived?', opts:['A. Greeting each other.','B. Looking at their phones.','C. Photographing their food.'], ans:'B', exp:'细节理解题。根据"they all looked at their phones and continued to do so until their orders arrived"可知，几个人一直在盯着手机看。'},
+  {id:'r4', n:4, type:'choice', stem:'How does the writer introduce the word "phubber" in Paragraph 3?', opts:['A. By raising questions.','B. By listing numbers.','C. By giving reasons.'], ans:'A', exp:'细节理解题。第三段通过提出两个问题（"Do you have a conversation..."和"Do you scroll..."）来引入"phubber"这个词。'},
+  {id:'r5', n:5, type:'choice', stem:'What does the underlined word "destructive" in Paragraph 4 mean?', opts:['A. 微乎其微的','B. 积极正向的','C. 有破坏性的'], ans:'C', exp:'词句猜测题。destructive 与 harmful（有害的）语意相近，意为"有破坏性的"。'},
+  {id:'r6', n:6, type:'choice', stem:'What is the main purpose of the text?', opts:['A. To warn people against phubbing.','B. To show how phones bring people closer.','C. To present the advantages of modern technology.'], ans:'A', exp:'主旨大意题。本文介绍了低头族现象和"phubbing"这个词的来源，并倡导人们减少使用手机的时间。'},
+  // 阅读第一节 C: 7-10
+  {id:'r7', n:7, type:'choice', stem:'Why did Emily volunteer in Africa?', opts:['A. She lived a really difficult life at home.','B. She hoped to learn a new language there.','C. She wanted to experience something new.'], ans:'C', exp:'细节理解题。根据"I got bored of having a \'good\' time at home and needed a change"可知 Emily 想体验新事物。'},
+  {id:'r8', n:8, type:'choice', stem:'How were the African kids in Emily\'s eyes in Paragraph 2?', opts:['A. Quite teachable.','B. Hard to deal with.','C. Bored of learning.'], ans:'A', exp:'细节理解题。根据"The kids from Africa were eager to learn and easy to teach"可知孩子们渴望学习、容易教。'},
+  {id:'r9', n:9, type:'choice', stem:'What does Emily get from her volunteering experience?', opts:['A. The freedom to choose a well-paid job.','B. The chance to connect with good people a lot.','C. The ability to express thanks for what she has lost.'], ans:'B', exp:'细节理解题。根据"I make lots of connections with good people"可知她得到了很多与好人建立联系的机会。'},
+  {id:'r10', n:10, type:'choice', stem:'Which of the following would Emily most probably agree with?', opts:['A. Use it or lose it.','B. Old habits die hard.','C. Giving is receiving.'], ans:'C', exp:'推理判断题。根据"Volunteering helps others, and it can also help yourself"可知 Emily 认为付出就是收获（Giving is receiving）。'},
+  // 阅读第二节 填空: 11-15
+  {id:'r11', n:11, type:'choice', stem:'____11____（引出下文优点）', opts:['A. It teaches problem-solving.','B. Basketball is not a one-person game.','C. Basketball is a great way to improve physical health.','D. If you need someone to cover you, tell them that, too.','E. Here are some key advantages of playing this exciting game.'], ans:'E', exp:'此处引出对后文优点的介绍，选项 E"以下是一些参与这项精彩运动的主要优点"符合语境。'},
+  {id:'r12', n:12, type:'choice', stem:'____12____（保持健康）', opts:['A. It teaches problem-solving.','B. Basketball is not a one-person game.','C. Basketball is a great way to improve physical health.','D. If you need someone to cover you, tell them that, too.','E. Here are some key advantages of playing this exciting game.'], ans:'C', exp:'该段主题是"It\'s a good way to stay fit"，选项 C"篮球是增强身体健康的绝佳方式"符合语境。'},
+  {id:'r13', n:13, type:'choice', stem:'____13____（团队运动）', opts:['A. It teaches problem-solving.','B. Basketball is not a one-person game.','C. Basketball is a great way to improve physical health.','D. If you need someone to cover you, tell them that, too.','E. Here are some key advantages of playing this exciting game.'], ans:'B', exp:'该段主题是"It\'s a team sport"，选项 B"篮球并非单人运动"符合语境。'},
+  {id:'r14', n:14, type:'choice', stem:'____14____（解决问题）', opts:['A. It teaches problem-solving.','B. Basketball is not a one-person game.','C. Basketball is a great way to improve physical health.','D. If you need someone to cover you, tell them that, too.','E. Here are some key advantages of playing this exciting game.'], ans:'A', exp:'该段描述解决问题的能力和快速决策，选项 A"它能教会人们解决问题的方法"符合语境。'},
+  {id:'r15', n:15, type:'choice', stem:'____15____（沟通）', opts:['A. It teaches problem-solving.','B. Basketball is not a one-person game.','C. Basketball is a great way to improve physical health.','D. If you need someone to cover you, tell them that, too.','E. Here are some key advantages of playing this exciting game.'], ans:'D', exp:'该段主题是"It improves communication"，选项 D"如果你需要有人为你掩护，也告诉他们这一点吧"符合语境，与前句"If you have a winning idea, tell your teammates"并列。'},
+  // 完形填空: 16-25
+  {id:'c16', n:16, type:'choice', stem:'To get stronger, she ____ swimming.', opts:['A. took up','B. put off','C. gave up'], ans:'A', exp:'took up 开始从事；put off 推迟；gave up 放弃。为了让自己更强壮，她开始学习游泳。'},
+  {id:'c17', n:17, type:'choice', stem:'...she continued to ____ in the sea.', opts:['A. fish','B. swim','C. boat'], ans:'B', exp:'前文提到她学习游泳并参加比赛，搬到佛罗里达后继续在海里游泳。'},
+  {id:'c18', n:18, type:'choice', stem:'These animals face ____ problems every day like her.', opts:['A. similar','B. different','C. opposite'], ans:'A', exp:'她差点吞下塑料垃圾，海洋动物每天也面临相似（similar）的问题。'},
+  {id:'c19', n:19, type:'choice', stem:'...raise people\'s awareness of ____ pollution.', opts:['A. air','B. sound','C. plastic'], ans:'C', exp:'前文提到塑料垃圾，所以是塑料污染（plastic pollution）。'},
+  {id:'c20', n:20, type:'choice', stem:'Instead of using her arms, she ____ swimming with a rubbery fin...', opts:['A. stopped','B. started','C. regretted'], ans:'B', exp:'Instead of using her arms（不再用手臂），她开始（started）用橡胶脚蹼游泳。'},
+  {id:'c21', n:21, type:'choice', stem:'...she broke the ____ by swimming 30 kilometers...', opts:['A. leg','B. rule','C. record'], ans:'C', exp:'broke the record = 打破纪录。2021年，她以30公里的成绩打破了纪录。'},
+  {id:'c22', n:22, type:'choice', stem:'But Liivand believed she could go ____.', opts:['A. farther','B. slower','C. higher'], ans:'A', exp:'她认为自己还能游得更远（farther），后文证实她游了42.2公里。'},
+  {id:'c23', n:23, type:'choice', stem:'____, she swam 42.2 kilometers.', opts:['A. Unluckily','B. Unbelievably','C. Uncertainly'], ans:'B', exp:'游了42.2公里是令人难以置信的（Unbelievably）。'},
+  {id:'c24', n:24, type:'choice', stem:'...the woman collected all the ____ she found...', opts:['A. ice','B. oil','C. rubbish'], ans:'C', exp:'后文提到"three full bags of rubbish"，所以她收集的是垃圾（rubbish）。'},
+  {id:'c25', n:25, type:'choice', stem:'...being ____ to help the community and the world means much more.', opts:['A. warm-hearted','B. cold-blooded','C. weak-kneed'], ans:'A', exp:'热心（warm-hearted）帮助社区和世界意义更为深远。'},
+  // 语法填空: 26-35
+  {id:'g26', n:26, type:'fill', stem:'they ____ (be) of lasting value', hint:'be', ans:'are', exp:'主语 they 是复数，一般现在时，填 are。'},
+  {id:'g27', n:27, type:'fill', stem:'at ____ same time', hint:'（填1个词）', ans:'the', exp:'at the same time 是固定短语，填 the。'},
+  {id:'g28', n:28, type:'fill', stem:'China has ____ (it) own long history...', hint:'it', ans:'its', exp:'修饰名词短语 own long history，用形容词性物主代词 its。'},
+  {id:'g29', n:29, type:'fill', stem:'These books ____ (write) before the Qin Dynasty.', hint:'write', ans:'were written', exp:'主语 books 是动作承受者，被动语态。过去时 + 被动 = were written。'},
+  {id:'g30', n:30, type:'fill', stem:'students are encouraged ____ (read) The Analects...', hint:'read', ans:'to read', exp:'be encouraged to do sth = 被鼓励做某事，固定搭配，填 to read。'},
+  {id:'g31', n:31, type:'fill', stem:'There are also ____ (new) classics than those above...', hint:'new', ans:'newer', exp:'有 than 表示比较，用比较级 newer。'},
+  {id:'g32', n:32, type:'fill', stem:'...many people don\'t want to read them ____ they are long...', hint:'（填1个词）', ans:'because', exp:'前后是因果关系，用 because 引导原因状语从句。'},
+  {id:'g33', n:33, type:'fill', stem:'they are great ____ (story)...', hint:'story', ans:'stories', exp:'they are 说明主语是复数，story 变 stories。'},
+  {id:'g34', n:34, type:'fill', stem:'Are you interested ____ learning more...?', hint:'（填1个词）', ans:'in', exp:'be interested in = 对……感兴趣，固定短语，填 in。'},
+  {id:'g35', n:35, type:'fill', stem:'____ (slow) but surely...', hint:'slow', ans:'Slowly', exp:'与 surely 并列，用副词。句首大写，填 Slowly。'},
+  // 简答题: 36-40
+  {id:'s36', n:36, type:'short', stem:'What did the writer think of making jiaozi at the very beginning?', ans:'The writer thought it would be fun and easy at the very beginning.', ref:'Fun and easy.', exp:'根据"I thought it would be fun and easy at the very beginning"可知。'},
+  {id:'s37', n:37, type:'short', stem:'What happened to the writer\'s finger because of her carelessness?', ans:'It got cut.', ref:'Got cut.', exp:'根据"My finger got cut because of my carelessness"可知手指被割伤了。'},
+  {id:'s38', n:38, type:'short', stem:'Did the writer give up making jiaozi after the accident?', ans:'No, she didn\'t.', ref:'No.', exp:'根据"After that accident, I continued working with Grandma"可知她没有放弃。'},
+  {id:'s39', n:39, type:'short', stem:'How do Mom\'s words sound?', ans:'Mom\'s words sound encouraging.', ref:'Encouraging / Warm.', exp:'妈妈说的话是鼓励性的："They\'re the most delicious dumplings I have ever had. I am so proud of you!"'},
+  {id:'s40', n:40, type:'short', stem:'What does the writer view mistakes as?', ans:'The writer views mistakes as stepping stones to achievements.', ref:'Stepping stones to achievements.', exp:'根据"they should be viewed as stepping stones to achievements"可知作者把错误当作成功的垫脚石。'},
+];
+
+// 写作参考范文
+const writingRef = `When we make mistakes, we can learn a lot from them. They help us understand things better and make our skills stronger. For example, when I tried to learn a new sport, I kept falling. But each time I got up, I got better.
+
+Mistakes also build resilience. They teach us to stay positive and never give up. What's more, mistakes encourage creativity. They push us to find new ways to solve problems.
+
+In the end, mistakes are not something to be afraid of. They are steps that lead us to success.`;
+
+// ═══════════════════════════════════════════
+//  渲染
+// ═══════════════════════════════════════════
+let submitted = false;
+
+function renderChoiceQ(q, containerId) {
+  return `<div class="q-block" id="qb-${q.id}" data-id="${q.id}">
+    <div class="q-stem"><span class="q-num">${q.n}.</span> ${q.stem}</div>
+    <div class="q-opts">${q.opts.map((o,i) => {
+      const letter = o.charAt(0);
+      return `<div class="q-opt" data-q="${q.id}" data-val="${letter}" onclick="selectChoice(this,'${q.id}','${letter}')">
+        <span class="opt-letter">${letter}</span>${o.substring(2).trim() ? o.substring(2) : o}
+      </div>`;
+    }).join('')}</div>
+    <div class="explanation" id="exp-${q.id}">
+      <div class="ans-label">✅ 正确答案：${q.ans}</div>
+      <div class="ans-text">${q.exp}</div>
+    </div>
+  </div>`;
+}
+
+function renderFillQ(q) {
+  return `<div class="q-block" id="qb-${q.id}" data-id="${q.id}">
+    <div class="q-stem"><span class="q-num">${q.n}.</span> ${q.stem.replace('____','___')}</div>
+    <div class="q-fill">
+      <input type="text" id="inp-${q.id}" data-q="${q.id}" placeholder="输入答案" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="onFillInput(this,'${q.id}')">
+      <span class="clue">(${q.hint})</span>
+    </div>
+    <div class="explanation" id="exp-${q.id}">
+      <div class="ans-label">✅ 正确答案：${q.ans}</div>
+      <div class="ans-text">${q.exp}</div>
+    </div>
+  </div>`;
+}
+
+function renderShortQ(q) {
+  return `<div class="q-block" id="qb-${q.id}" data-id="${q.id}">
+    <div class="q-stem"><span class="q-num">${q.n}.</span> ${q.stem}</div>
+    <div class="q-answer">
+      <textarea id="inp-${q.id}" data-q="${q.id}" placeholder="输入你的答案……" oninput="onFillInput(this,'${q.id}')"></textarea>
+    </div>
+    <div class="explanation" id="exp-${q.id}">
+      <div class="ans-label">📝 参考答案：${q.ans}</div>
+      <div style="font-size:12px;color:#9A8060;margin-top:2px">（关键词：${q.ref}）</div>
+      <div class="ans-text" style="margin-top:4px">${q.exp}</div>
+    </div>
+  </div>`;
+}
+
+function renderAll() {
+  // 听力（不参与批改）
+  document.getElementById('listen1').innerHTML = listeningQ1.map(q => `
+    <div class="q-block" style="opacity:0.55">
+      <div class="q-stem"><span class="q-num">${q.n}.</span> ${q.stem}</div>
+      <div class="q-opts">${q.opts.map(o => `<div class="q-opt" style="cursor:default"><span class="opt-letter">${o.charAt(0)}</span>${o.substring(2).trim() ? o.substring(2) : o}</div>`).join('')}</div>
+    </div>`).join('');
+
+  document.getElementById('listen2').innerHTML = listeningQ2.map(q => `
+    <div class="q-block" style="opacity:0.55">
+      <div class="q-stem"><span class="q-num">${q.n}.</span> ${q.stem}</div>
+      <div class="q-opts">${q.opts.map(o => `<div class="q-opt" style="cursor:default"><span class="opt-letter">${o.charAt(0)}</span>${o.substring(2).trim() ? o.substring(2) : o}</div>`).join('')}</div>
+    </div>`).join('');
+
+  // 阅读 A
+  document.getElementById('readA').innerHTML = gradedQuestions.filter(q => ['r1','r2'].includes(q.id)).map(renderChoiceQ).join('');
+  // 阅读 B
+  document.getElementById('readB').innerHTML = gradedQuestions.filter(q => ['r3','r4','r5','r6'].includes(q.id)).map(renderChoiceQ).join('');
+  // 阅读 C
+  document.getElementById('readC').innerHTML = gradedQuestions.filter(q => ['r7','r8','r9','r10'].includes(q.id)).map(renderChoiceQ).join('');
+  // 阅读填空
+  document.getElementById('readFill').innerHTML = gradedQuestions.filter(q => ['r11','r12','r13','r14','r15'].includes(q.id)).map(renderChoiceQ).join('');
+  // 完形填空
+  document.getElementById('cloze').innerHTML = gradedQuestions.filter(q => q.id.startsWith('c')).map(renderChoiceQ).join('');
+  // 语法填空
+  document.getElementById('grammarFill').innerHTML = gradedQuestions.filter(q => q.id.startsWith('g')).map(renderFillQ).join('');
+  // 简答
+  document.getElementById('shortAnswer').innerHTML = gradedQuestions.filter(q => q.id.startsWith('s')).map(renderShortQ).join('');
+}
+
+// ═══════════════════════════════════════════
+//  交互
+// ═══════════════════════════════════════════
+function selectChoice(el, qid, val) {
+  if (submitted) return;
+  const block = el.parentElement.parentElement;
+  block.querySelectorAll('.q-opt').forEach(o => o.classList.remove('chosen'));
+  el.classList.add('chosen');
+  updateProgress();
+}
+
+function onFillInput(el, qid) {
+  if (submitted) return;
+  if (el.value.trim()) el.classList.add('filled');
+  else el.classList.remove('filled');
+  updateProgress();
+}
+
+function getChoiceAnswer(qid) {
+  const block = document.getElementById('qb-'+qid);
+  if (!block) return null;
+  const chosen = block.querySelector('.q-opt.chosen');
+  return chosen ? chosen.dataset.val : null;
+}
+
+function getFillAnswer(qid) {
+  const inp = document.getElementById('inp-'+qid);
+  return inp ? inp.value.trim() : null;
+}
+
+function updateProgress() {
+  let done = 0;
+  gradedQuestions.forEach(q => {
+    if (q.type === 'choice') {
+      if (getChoiceAnswer(q.id)) done++;
+    } else if (q.type === 'fill' || q.type === 'short') {
+      if (getFillAnswer(q.id)) done++;
+    }
+  });
+  document.getElementById('doneCount').textContent = done;
+}
+
+// ═══════════════════════════════════════════
+//  批改
+// ═══════════════════════════════════════════
+function submitExam() {
+  if (submitted) return;
+  submitted = true;
+
+  let correct = 0;
+  let total = 0;
+
+  gradedQuestions.forEach(q => {
+    total++;
+    const block = document.getElementById('qb-'+q.id);
+    if (!block) return;
+    let userAns = null, isCorrect = false;
+
+    if (q.type === 'choice') {
+      userAns = getChoiceAnswer(q.id);
+      isCorrect = (userAns === q.ans);
+      // 标记选项
+      block.querySelectorAll('.q-opt').forEach(o => {
+        o.style.pointerEvents = 'none';
+        if (o.dataset.val === q.ans) o.classList.add('actual-answer');
+        if (o.dataset.val === userAns && !isCorrect) o.classList.add('wrong');
+        if (o.dataset.val === userAns && isCorrect) o.classList.add('correct');
+      });
+    } else if (q.type === 'fill') {
+      userAns = getFillAnswer(q.id);
+      const inp = document.getElementById('inp-'+q.id);
+      // 对语法填空做宽松比较
+      const normalizedUser = userAns.toLowerCase().replace(/\s+/g,' ');
+      const normalizedAns = q.ans.toLowerCase().replace(/\s+/g,' ');
+      isCorrect = (normalizedUser === normalizedAns);
+      if (inp) {
+        inp.readOnly = true;
+        inp.classList.add(isCorrect ? 'correct' : 'wrong');
+        if (!isCorrect && !userAns) inp.placeholder = '（未作答）';
+      }
+    } else if (q.type === 'short') {
+      userAns = getFillAnswer(q.id);
+      const inp = document.getElementById('inp-'+q.id);
+      // 简答题不做严格匹配，但检查是否包含关键词
+      const keywords = q.ref.toLowerCase().split(/[,/、]/).map(k=>k.trim().replace(/\.$/,''));
+      const userLower = userAns.toLowerCase();
+      const matched = keywords.filter(k => userLower.includes(k)).length;
+      isCorrect = matched >= Math.ceil(keywords.length * 0.5); // 至少匹配一半关键词
+      if (inp) {
+        inp.readOnly = true;
+        inp.classList.add(isCorrect ? 'correct' : 'wrong');
+      }
+    }
+
+    if (isCorrect) { correct++; block.classList.add('correct-block'); }
+    else { block.classList.add('wrong-block'); }
+
+    // 显示解析
+    const expEl = document.getElementById('exp-'+q.id);
+    if (expEl) expEl.classList.add('show');
+  });
+
+  // 显示成绩
+  const pct = Math.round(correct / total * 100);
+  const stars = pct >= 90 ? '⭐⭐⭐' : pct >= 70 ? '⭐⭐' : '⭐';
+  const msg = pct >= 90 ? '太棒了！基础非常扎实，继续保持！💪'
+    : pct >= 70 ? '做得不错！仔细看错题的解析，找到薄弱点再加强。'
+    : '加油！错题要认真看解析，建议重做一遍巩固知识点。';
+
+  const scoreCard = document.getElementById('scoreCard');
+  document.getElementById('starsEl').textContent = stars;
+  document.getElementById('bigScoreEl').innerHTML = `${correct}<span>/${total}</span>`;
+  document.getElementById('msgEl').textContent = `答对 ${correct} 题 · 得分率 ${pct}% · ${msg}`;
+  scoreCard.classList.add('show');
+  scoreCard.scrollIntoView({behavior:'smooth',block:'center'});
+
+  // 显示写作范文
+  document.getElementById('writingRefContent').textContent = writingRef;
+  document.getElementById('writingRef').classList.add('show');
+
+  // 更新按钮
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.textContent = '✓ 已批改';
+  submitBtn.classList.add('done');
+  submitBtn.disabled = true;
+  document.getElementById('resetBtn').style.display = 'inline-block';
+  document.getElementById('doneCount').textContent = total + '（已提交）';
+}
+
+function resetExam() {
+  submitted = false;
+  gradedQuestions.forEach(q => {
+    const block = document.getElementById('qb-'+q.id);
+    if (!block) return;
+    block.classList.remove('correct-block','wrong-block');
+    const expEl = document.getElementById('exp-'+q.id);
+    if (expEl) expEl.classList.remove('show');
+
+    if (q.type === 'choice') {
+      block.querySelectorAll('.q-opt').forEach(o => {
+        o.style.pointerEvents = '';
+        o.classList.remove('chosen','correct','wrong','actual-answer');
+      });
+    } else {
+      const inp = document.getElementById('inp-'+q.id);
+      if (inp) { inp.value = ''; inp.readOnly = false; inp.classList.remove('correct','wrong','filled'); }
+    }
+  });
+
+  document.getElementById('scoreCard').classList.remove('show');
+  document.getElementById('writingRef').classList.remove('show');
+  document.getElementById('writingArea').value = '';
+
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.textContent = '提交批改';
+  submitBtn.classList.remove('done');
+  submitBtn.disabled = false;
+  document.getElementById('resetBtn').style.display = 'none';
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════
+//  滚动到顶部按钮
+// ═══════════════════════════════════════════
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 400);
+});
+
+// ═══════════════════════════════════════════
+//  进度监听
+// ═══════════════════════════════════════════
+document.addEventListener('click', function(e) {
+  if (e.target.closest('.q-opt') && !submitted) {
+    setTimeout(updateProgress, 50);
+  }
+});
+document.addEventListener('input', function(e) {
+  if (e.target.closest('input, textarea') && !submitted) {
+    setTimeout(updateProgress, 50);
+  }
+});
+
+// 初始化
+renderAll();
+updateProgress();
+document.getElementById('totalCount').textContent = gradedQuestions.length;
+</script>
+</body>
+</html>
