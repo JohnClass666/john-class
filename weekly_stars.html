@@ -31,6 +31,16 @@ html,body{background:#F5EDD8;color:#2A1E08;font-family:-apple-system,"PingFang S
 .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#8A7050}
 .dot-read{width:8px;height:8px;border-radius:50%;background:rgba(61,107,46,.6);flex-shrink:0}
 .dot-vocab{width:8px;height:8px;border-radius:50%;background:rgba(80,120,200,.6);flex-shrink:0}
+.edit-box{display:none;margin-top:24px;padding:16px;background:rgba(255,252,245,.8);border-radius:12px;border:1px solid rgba(184,149,106,.18)}
+.edit-box.on{display:block}
+.edit-inp{width:100%;padding:12px 14px;background:rgba(255,252,245,.9);border:1.5px solid rgba(42,30,8,.2);border-radius:10px;font-size:15px;font-family:inherit;color:#2A1E08;outline:none;text-align:center;margin-bottom:8px}
+.edit-inp:focus{border-color:#2A1E08}
+.edit-btn-row{display:flex;gap:8px}
+.edit-btn{flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;border:none}
+.edit-btn-save{background:#2A1E08;color:#F5EDD8}
+.edit-btn-cancel{background:transparent;color:#9A8060;border:1.5px solid rgba(184,149,106,.25)}
+.edit-trigger{font-size:12px;color:#B5A080;cursor:pointer;text-decoration:underline;margin-top:20px;display:inline-block}
+.edit-trigger:hover{color:#2A1E08}
 </style>
 </head>
 <body>
@@ -65,6 +75,15 @@ html,body{background:#F5EDD8;color:#2A1E08;font-family:-apple-system,"PingFang S
   <div class="legend">
     <div class="legend-item"><div class="dot-read"></div>阅读得分（上限 1000/周）</div>
     <div class="legend-item"><div class="dot-vocab"></div>词汇得分</div>
+  </div>
+
+  <span class="edit-trigger" id="editTrigger" style="display:none" onclick="showEdit()">&#9998; 修改我的胜利宣言</span>
+  <div class="edit-box" id="editBox">
+    <input class="edit-inp" id="editInp" placeholder="你想对手下败将说什么？" maxlength="40">
+    <div class="edit-btn-row">
+      <button class="edit-btn edit-btn-cancel" onclick="hideEdit()">取消</button>
+      <button class="edit-btn edit-btn-save" onclick="saveEdit()">保存宣言</button>
+    </div>
   </div>
 </div>
 
@@ -108,6 +127,46 @@ function renderBoard(el, rows, scoreKey, isTotal){
 }
 
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// 胜利宣言编辑
+var myName = localStorage.getItem('jc_username')||'';
+if(myName){
+  document.getElementById('editTrigger').style.display = 'inline-block';
+}
+function showEdit(){
+  document.getElementById('editBox').classList.add('on');
+  document.getElementById('editTrigger').style.display = 'none';
+  var cur = localStorage.getItem('jc_victory_msg')||'';
+  document.getElementById('editInp').value = cur;
+}
+function hideEdit(){
+  document.getElementById('editBox').classList.remove('on');
+  document.getElementById('editTrigger').style.display = 'inline-block';
+}
+async function saveEdit(){
+  var msg = document.getElementById('editInp').value.trim();
+  localStorage.setItem('jc_victory_msg', msg);
+  // 同步到 Supabase
+  if(myName){
+    var ws = getWeekStart();
+    try{
+      var ck = await fetch(SB_URL+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(myName)+'&week_start=eq.'+ws+'&select=id&limit=1',
+        {headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}});
+      if(ck.ok){
+        var rows = await ck.json();
+        var payload = {user_name:myName, week_start:ws, victory_msg:msg, updated_at:new Date().toISOString()};
+        if(rows&&rows.length>0) payload.id = rows[0].id;
+        await fetch(SB_URL+'/rest/v1/weekly_scores', {
+          method:'POST',
+          headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
+          body:JSON.stringify(payload)
+        });
+      }
+    }catch(e){}
+  }
+  hideEdit();
+  load();
+}
 
 async function load(){
   var ws = getWeekStart();
