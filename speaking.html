@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>口语训练 · John Class</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  min-height: 100%;
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: #F5EDD8;
+  color: #2A1E08;
+}
+.layout { display: flex; min-height: 100vh; }
+.left {
+  position: fixed; top: 0; left: 0;
+  width: 52%; height: 100vh; overflow: hidden;
+}
+.left img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top; display: block;
+}
+.left::after {
+  content: ''; position: absolute; top: 0; right: 0;
+  width: 80px; height: 100%;
+  background: linear-gradient(to right, transparent, #F5EDD8);
+}
+.right {
+  margin-left: 52%; flex: 1; background: #F5EDD8;
+  min-height: 100vh; padding: 52px 44px 64px 28px; position: relative;
+}
+.right::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 80% 15%, rgba(201,169,110,.07) 0%, transparent 50%),
+    radial-gradient(circle at 20% 85%, rgba(120,160,80,.05) 0%, transparent 40%);
+  pointer-events: none;
+}
+.nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 44px; position: relative; z-index: 1;
+}
+.nav-brand {
+  font-size: 13px; font-weight: 600; letter-spacing: .18em;
+  text-transform: uppercase; color: #B8956A; text-decoration: none;
+}
+.nav-back {
+  font-size: 12px; color: #9A8060; text-decoration: none;
+  display: flex; align-items: center; gap: 5px; transition: color .2s;
+}
+.nav-back:hover { color: #2A1E08; }
+.page-title {
+  font-size: clamp(24px, 3vw, 32px); font-weight: 600; color: #2A1E08;
+  letter-spacing: -.4px; margin-bottom: 6px; position: relative; z-index: 1;
+}
+.page-sub {
+  font-size: 13px; color: #9A8060; margin-bottom: 32px; position: relative; z-index: 1;
+}
+.sec-label {
+  font-size: 10px; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: #B8956A;
+  padding-bottom: 10px; border-bottom: 1px solid rgba(184,149,106,.2);
+  margin-bottom: 16px; position: relative; z-index: 1;
+}
+
+/* 话题筛选 */
+.topic-scroll {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 20px; position: relative; z-index: 1;
+}
+.topic-btn {
+  font-size: 11px; font-weight: 600; letter-spacing: .04em;
+  padding: 5px 12px; border-radius: 20px; border: 1.5px solid rgba(184,149,106,.25);
+  background: rgba(255,252,245,.5); color: #9A8060;
+  cursor: pointer; transition: all .18s; white-space: nowrap;
+}
+.topic-btn:hover { border-color: rgba(184,149,106,.5); color: #6A5030; }
+.topic-btn.active {
+  background: #2A1E08; color: #F5EDD8;
+  border-color: #2A1E08;
+}
+
+/* 问题卡片 */
+.question-card {
+  background: rgba(255,252,245,.65);
+  border: 1.5px solid rgba(184,149,106,.13);
+  border-radius: 20px; padding: 26px 22px 22px;
+  margin-bottom: 14px; position: relative; z-index: 1;
+  animation: fadeIn .5s cubic-bezier(.22,1,.36,1) both;
+}
+.q-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+}
+.q-part-badge {
+  font-size: 9px; font-weight: 700; letter-spacing: .08em;
+  padding: 3px 9px; border-radius: 10px;
+}
+.badge-p1 { background: rgba(201,169,110,.12); color: #8A6A30; border: 1px solid rgba(201,169,110,.25); }
+.badge-p2 { background: rgba(74,124,63,.10); color: #3A6A2A; border: 1px solid rgba(74,124,63,.2); }
+.badge-p3 { background: rgba(122,76,184,.10); color: #5A3A90; border: 1px solid rgba(122,76,184,.2); }
+.q-topic-tag {
+  font-size: 11px; color: #9A8060;
+}
+.q-text {
+  font-size: 15px; font-weight: 600; color: #2A1E08;
+  line-height: 1.6; margin-bottom: 18px; white-space: pre-line;
+}
+
+/* 录音区 */
+.rec-status {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: #B86A42; margin-bottom: 10px;
+  opacity: 0; transition: opacity .2s;
+}
+.rec-status.active { opacity: 1; }
+.rec-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #C94A3A; animation: pulse 1s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.25} }
+
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.btn {
+  font-size: 13px; font-weight: 600;
+  padding: 9px 18px; border-radius: 12px;
+  border: 1.5px solid rgba(184,149,106,.3);
+  background: rgba(255,252,245,.7); color: #2A1E08;
+  cursor: pointer; display: flex; align-items: center; gap: 6px;
+  transition: all .18s; font-family: inherit;
+}
+.btn:hover { border-color: rgba(184,149,106,.6); transform: translateY(-1px); }
+.btn:active { transform: scale(.96); }
+.btn-primary {
+  background: #2A1E08; color: #F5EDD8; border-color: #2A1E08;
+}
+.btn-primary:hover { background: #3D2D10; border-color: #3D2D10; }
+.btn-danger {
+  background: rgba(180,60,40,.08); color: #A03020;
+  border-color: rgba(180,60,40,.25);
+}
+.btn-danger:hover { background: rgba(180,60,40,.14); }
+.btn-copy {
+  background: rgba(74,124,63,.08); color: #3A6A2A;
+  border-color: rgba(74,124,63,.25);
+}
+.btn-copy:hover { background: rgba(74,124,63,.14); }
+.btn-sm { font-size: 11px; padding: 6px 12px; }
+
+/* 转录文字框 */
+.transcript-box {
+  background: rgba(42,30,8,.04); border: 1.5px solid rgba(184,149,106,.15);
+  border-radius: 12px; padding: 14px 16px;
+  font-size: 14px; line-height: 1.8; color: #2A1E08;
+  min-height: 72px; margin-bottom: 12px;
+  white-space: pre-wrap; transition: border-color .2s;
+}
+.transcript-box.listening { border-color: rgba(184,149,106,.4); }
+.transcript-box.empty { color: #C4A870; font-style: italic; font-size: 13px; }
+
+/* 微信提示 */
+.wechat-row {
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap; margin-top: 4px;
+}
+.wechat-hint {
+  font-size: 12px; color: #9A8060;
+  display: flex; align-items: center; gap: 5px;
+}
+.wechat-id {
+  font-weight: 700; color: #2A1E08; letter-spacing: .02em;
+}
+
+/* 参考答案 */
+.ref-toggle {
+  width: 100%; text-align: left;
+  font-size: 12px; color: #9A8060; font-family: inherit;
+  background: transparent; border: none; cursor: pointer;
+  padding: 10px 0 0; display: flex; align-items: center; gap: 5px;
+  transition: color .2s;
+}
+.ref-toggle:hover { color: #2A1E08; }
+.ref-box {
+  display: none; margin-top: 10px;
+  background: rgba(74,124,63,.05);
+  border-left: 3px solid rgba(74,124,63,.3);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 16px;
+}
+.ref-box.show { display: block; }
+.ref-en { font-size: 13px; line-height: 1.85; color: #2A1E08; }
+.ref-cn { font-size: 12px; line-height: 1.8; color: #7A6040; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(184,149,106,.15); }
+
+/* 导航翻页 */
+.nav-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 4px; position: relative; z-index: 1;
+}
+.nav-info { font-size: 12px; color: #9A8060; }
+
+/* 不支持提示 */
+.unsupported-bar {
+  display: none; background: rgba(201,169,110,.12);
+  border: 1.5px solid rgba(201,169,110,.3); border-radius: 12px;
+  padding: 10px 14px; font-size: 12px; color: #7A5A20;
+  margin-bottom: 14px; position: relative; z-index: 1;
+}
+
+.foot {
+  margin-top: 40px; font-size: 10px; letter-spacing: .12em;
+  text-transform: uppercase; color: rgba(184,149,106,.4); position: relative; z-index: 1;
+}
+.overlay {
+  position: fixed; inset: 0; background: #F5EDD8; z-index: 999;
+  opacity: 0; pointer-events: none; transition: opacity .3s ease;
+}
+.overlay.show { opacity: 1; pointer-events: all; }
+
+.right > * { animation: fadeIn .6s cubic-bezier(.22,1,.36,1) both; }
+.nav        { animation-delay: .05s; }
+.page-title { animation-delay: .10s; }
+.page-sub   { animation-delay: .12s; }
+.sec-label  { animation-delay: .15s; }
+.topic-scroll { animation-delay: .18s; }
+.question-card { animation-delay: .22s; }
+.nav-row    { animation-delay: .26s; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(12px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (max-width: 680px) {
+  .layout { flex-direction: column; }
+  .left { position: relative; width: 100%; height: 56vw; min-height: 260px; max-height: 400px; }
+  .left::after {
+    top: auto; bottom: 0; left: 0; right: 0;
+    width: 100%; height: 60px;
+    background: linear-gradient(to bottom, transparent, #F5EDD8);
+  }
+  .right { margin-left: 0; padding: 32px 24px 56px; }
+}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="ov"></div>
+
+<div class="layout">
+  <div class="left"><img src="bg.png" alt="John Class"></div>
+
+  <div class="right">
+    <div class="nav">
+      <a class="nav-brand" href="index.html" onclick="go(event,'index.html')">John Class</a>
+      <a class="nav-back" href="study.html" onclick="go(event,'study.html')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        返回
+      </a>
+    </div>
+
+    <div class="page-title">口语训练</div>
+    <div class="page-sub">录音 · 转文字 · 对比参考答案 · 发给 John 批改</div>
+
+    <div class="sec-label">话题筛选</div>
+    <div class="topic-scroll" id="topicRow"></div>
+
+    <div class="unsupported-bar" id="unsupBar">
+      ⚠️ 你的浏览器不支持录音识别，请用 <strong>Chrome</strong> 或 Safari 打开
+    </div>
+
+    <div id="qArea"></div>
+
+    <div class="nav-row">
+      <button class="btn" onclick="changeQ(-1)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        上一题
+      </button>
+      <span class="nav-info" id="navInfo"></span>
+      <button class="btn" onclick="changeQ(1)">
+        下一题
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <div class="foot">Speaking Skills · John Class · Changsha 2026</div>
+  </div>
+</div>
+
+<script>
+const Q = [
+  {part:"PART 1",topic:"Food",q:"Do you have a favourite food?",en:"Yes, I do. I'd say my favourite food is noodles, especially the kind you can find in local restaurants. What I like most about noodles is that they're very versatile. You can have them in soup, stir-fried, or with different toppings, so I never really get bored of them. Also, they remind me of home, so there's a bit of an emotional connection as well.",cn:"有的。我最喜欢的食物应该是面条，尤其是那种在本地小店里能吃到的。我最喜欢面条的一点是它非常百搭，可以做成汤面、炒面，或者加不同的配料，所以怎么吃都不太容易腻。而且它会让我想到家，所以在情感上也有一点联系。"},
+  {part:"PART 1",topic:"Food",q:"Is there any food you don't like?",en:"Yes, there is. I'm not a big fan of very spicy food. It's not that I can't eat it at all, but if a dish is too spicy, it kind of ruins the whole experience for me. I can't really taste the flavour of the food, and I end up focusing on how uncomfortable it feels instead of enjoying the meal.",cn:"有的。我不太喜欢特别辣的食物。倒不是说我完全不能吃辣，但如果一道菜太辣了，会影响我整个用餐体验。我基本尝不出食物本身的味道，只会一直注意到有多难受，而不是在享受这顿饭。"},
+  {part:"PART 1",topic:"Day off",q:"When was the last time you had a few days off?",en:"The last time I had a few days off was a couple of months ago, during a short holiday. I didn't travel very far. Most of the time, I just stayed at home and tried to slow down a bit. I caught up on sleep, watched some shows, and basically gave myself a break from my usual routine.",cn:"我上一次有连续几天假期大概是几个月前，在一个小假期的时候。我没有去太远的地方，大部分时间都待在家里，刻意让自己的节奏慢下来。我补了补觉，看了些剧，算是暂时从平时的生活节奏中抽离了一下。"},
+  {part:"PART 1",topic:"Day off",q:"Do you usually spend your days off with your parents or with your friends?",en:"It really depends on the situation. If it's a longer break, I tend to spend more time with my parents, because we don't get to see each other that often. But if it's just a single day off, I usually meet up with friends, maybe grab a meal together or just hang out and chat.",cn:"这其实要看情况。如果是假期比较长，我一般会多陪陪父母，因为平时见面的机会不算多。但如果只是一天的假期，我通常会和朋友见面，吃个饭，或者随便聊聊天。"},
+  {part:"PART 1",topic:"Day off",q:"What would you like to do if you had a day off tomorrow?",en:"If I had a day off tomorrow, I'd probably keep things simple. I'd like to sleep in, go out for a nice meal, and maybe take a walk to clear my head. I wouldn't plan anything too packed. For me, a good day off is more about relaxing and recharging than doing something special.",cn:"如果我明天能休息一天，我可能会把安排弄得简单一点。我想睡个懒觉，出去吃顿不错的饭，然后散散步，放空一下。我不会把行程安排得太满，对我来说，一个好的休息日更重要的是放松和充电，而不是做多特别的事情。"},
+  {part:"PART 1",topic:"Pets & Animals",q:"Do you like animals?",en:"Yes, I do. I wouldn't say I'm a huge animal lover, but I generally enjoy being around animals. They make people feel more relaxed, and sometimes just watching them can be quite comforting, especially after a long day.",cn:"是的，我挺喜欢动物的。我不算那种特别狂热的动物爱好者，但我整体上很享受和动物待在一起。它们会让人放松下来，有时候光是看着它们，就挺治愈的，尤其是在忙了一整天之后。"},
+  {part:"PART 1",topic:"Pets & Animals",q:"What's your favourite animal?",en:"My favourite animal is probably dogs. What I like most about dogs is that they're very loyal and easy to connect with. They seem to understand human emotions quite well, and being with a dog usually puts me in a better mood.",cn:"我最喜欢的动物应该是狗。我最欣赏狗的一点是它们很忠诚，也很容易和人建立情感连接。它们似乎挺懂人的情绪，和狗待在一起通常会让我心情变好。"},
+  {part:"PART 1",topic:"Pets & Animals",q:"Did you want to keep a pet when you were young?",en:"Yes, I did. When I was young, I really wanted to have a pet, especially a dog. However, my parents were quite busy, and they didn't think we had enough time or energy to take proper care of an animal, so it never really happened.",cn:"想过的。我小时候特别想养宠物，尤其是想养一只狗。但我父母那时候比较忙，他们觉得我们没有足够的时间和精力好好照顾宠物，所以这件事最后也就不了了之了。"},
+  {part:"PART 1",topic:"Pets & Animals",q:"Where do you prefer to keep your pet — indoors or outdoors?",en:"I personally prefer to keep pets indoors. For one thing, it's easier to take care of them and keep an eye on their health. Also, pets are more like family members nowadays, so I feel they should share the living space with us instead of being left outside.",cn:"我个人更倾向于把宠物养在室内。一方面，室内更方便照顾，也更容易关注它们的健康状况。而且现在很多人都把宠物当作家庭成员，我觉得它们更适合和人一起生活，而不是被单独放在外面。"},
+  {part:"PART 1",topic:"Pets & Animals",q:"What's the most popular animal in China?",en:"I'd say dogs are probably the most popular animals in China nowadays. More and more people are keeping dogs as pets, especially in cities. They're seen not only as companions but also as part of the family, which explains why pet-related services have become so common.",cn:"我觉得现在中国最受欢迎的动物应该是狗。越来越多的人开始养狗，尤其是在城市里。狗不仅被当作陪伴者，也被视为家庭的一部分，这也解释了为什么和宠物相关的服务变得越来越普遍。"},
+  {part:"PART 1",topic:"Fix things",q:"Can you fix things?",en:"To be honest, I'm not very good at fixing things. I can handle some simple problems, like tightening a screw or changing a light bulb, but when it comes to more complicated issues, I usually need some help.",cn:"说实话，我不太擅长修东西。一些简单的问题我还能应付，比如拧螺丝或者换灯泡，但要是情况复杂一点，我通常就得找别人帮忙了。"},
+  {part:"PART 1",topic:"Fix things",q:"Did anybody teach you how to fix things when you were a child?",en:"Not really. When I was a child, no one taught me how to fix things in a systematic way. Most of the time, my parents preferred to fix things themselves or ask a professional to do it, so I didn't get many chances to learn.",cn:"其实没有。我小时候没有人系统地教我怎么修东西。大多数时候，我父母要么自己修，要么直接找专业人士来处理，所以我也没什么机会学习。"},
+  {part:"PART 1",topic:"Fix things",q:"Do you think it is necessary for people to learn to fix things?",en:"Yes, I do think it's necessary to some extent. Learning to fix basic things can save time and money, and it also makes people more independent. Even if you're not an expert, knowing how to deal with small problems can be very practical in daily life.",cn:"我觉得在一定程度上是有必要的。学会修一些基础的小东西可以省时间、省钱，也能让人更独立。即使不是专业人士，能处理一些小问题，在日常生活中也非常实用。"},
+  {part:"PART 1",topic:"Fix things",q:"What do you do when a thing is broken and cannot be fixed?",en:"If something is broken and can't be fixed, I usually stop using it and consider replacing it. Before throwing it away, I try to see if it can be recycled or reused in some way. If not, I'll just get rid of it and move on.",cn:"如果一个东西坏了而且修不好，我一般就会停止使用，考虑换一个新的。在扔掉之前，我会先看看能不能回收，或者有没有再利用的可能。如果实在不行，我就直接处理掉，然后继续生活。"},
+  {part:"PART 1",topic:"Sports team",q:"Have you ever been part of a sports team?",en:"Yes, I have, but only at school. When I was a student, I was part of a basketball team for a short time. I wouldn't say I was very good at it, but I really enjoyed the team atmosphere. Training and playing together helped me learn how to cooperate with others.",cn:"有过，但只是在学校的时候。我上学时短暂加入过篮球队，虽然水平一般，但我很享受那种团队氛围。一起训练、一起比赛的过程，也让我学会了如何和别人配合。"},
+  {part:"PART 1",topic:"Sports team",q:"Do you have a team to support?",en:"Yes, I do. I support a sports team, but I wouldn't call myself a hardcore fan. I usually follow their major games and check the results from time to time. Supporting a team makes watching sports more interesting and gives me something to talk about with friends.",cn:"有的，我有支持的球队，但我不算铁杆球迷。我一般只会关注一些重要比赛，偶尔看看比赛结果。支持一支球队会让看比赛变得更有意思，也能让我和朋友多一些共同话题。"},
+  {part:"PART 1",topic:"Reading",q:"Have you read any books lately?",en:"Yes, I have. Recently, I've been reading a few non-fiction books in my spare time. I don't read for very long each day, but I try to read a little before going to bed, which helps me relax.",cn:"有的。最近我在空闲时间读了一些非虚构类的书。虽然每天读得不算多，但我通常会在睡前读一会儿，这样能让我放松下来。"},
+  {part:"PART 1",topic:"Reading",q:"Do you prefer speed reading or thoughtful reading?",en:"I personally prefer thoughtful reading. I like to take my time and really understand what the writer is trying to say. For me, reading is more about quality than speed.",cn:"我个人更喜欢精读。我更愿意慢一点，真正理解作者想表达的内容。对我来说，阅读重在质量，而不是速度。"},
+  {part:"PART 1",topic:"Reading",q:"Why do some people like speed reading?",en:"I think some people like speed reading because it saves time. They may have a lot of information to go through, especially for work or study, so speed reading helps them get the main ideas quickly.",cn:"我觉得有些人喜欢速读是因为它比较省时间。尤其是在工作或学习中，需要处理大量信息时，速读可以帮助他们快速抓住重点。"},
+  {part:"PART 1",topic:"Keys",q:"Do you always bring a lot of keys with you?",en:"No, not really. I try to keep my keychain simple. I usually only carry the keys that I actually need, like my house key, so it's easier to manage.",cn:"不会。我尽量让钥匙串保持简单，一般只带真正需要的钥匙，比如家里的钥匙，这样更方便。"},
+  {part:"PART 1",topic:"Keys",q:"Have you ever lost your keys?",en:"Yes, I have, and it was quite stressful. I spent a long time looking for them and felt really annoyed. Since then, I've been more careful about where I put my keys.",cn:"有过，而且那次挺让人焦虑的。我花了很长时间找钥匙，心情也很烦。从那以后，我对放钥匙这件事就更注意了。"},
+  {part:"PART 1",topic:"Keys",q:"Do you often forget your keys and lock yourself out?",en:"Not very often, but it has happened once or twice. After that, I developed a habit of checking my keys before leaving home, which has helped a lot.",cn:"不算经常，但确实发生过一两次。后来我养成了出门前检查钥匙的习惯，这对我帮助很大。"},
+  {part:"PART 1",topic:"Keys",q:"Do you think it's a good idea to leave your keys with a neighbour?",en:"Yes, I think it can be a good idea, as long as you trust your neighbour. It can be very helpful in emergencies, especially if you accidentally lock yourself out.",cn:"我觉得这是个不错的主意，前提是你信得过邻居。在紧急情况下，尤其是不小心被锁在门外时，会非常有用。"},
+  {part:"PART 1",topic:"Morning time",q:"Do you like getting up early in the morning?",en:"It depends. On weekdays, I don't really enjoy getting up early because I feel quite tired. But if I don't have much pressure, I actually like early mornings because they're quiet and peaceful.",cn:"这要分情况。工作日我不太喜欢早起，因为会觉得很累。但如果没什么压力，我其实挺喜欢清晨的，那种安静的感觉很好。"},
+  {part:"PART 1",topic:"Morning time",q:"What do you usually do in the morning?",en:"In the morning, I usually get ready for the day, have a simple breakfast, and check my phone for messages or news. After that, I head out to work or start my daily tasks.",cn:"早上我一般会洗漱、简单吃点早饭，然后看看手机里的消息或新闻。接着就出门上班，或者开始一天的事情。"},
+  {part:"PART 1",topic:"Morning time",q:"What did you do in the morning when you were little?",en:"When I was little, my mornings were quite simple. I usually got up, had breakfast, and then went to school. Everything was arranged by my parents, so I didn't have to think too much.",cn:"我小时候的早晨其实很简单。一般就是起床、吃早饭，然后去上学。因为都是父母安排好的，所以我不用操太多心。"},
+  {part:"PART 1",topic:"Gifts",q:"Have you ever sent handmade gifts to others?",en:"Yes, I have, but not very often. I've made some simple handmade gifts, like cards or small crafts, mainly for close friends. I think handmade gifts feel more personal, even if they're not very professional.",cn:"有过，但不算多。我做过一些比较简单的手工礼物，比如卡片或者小手工，一般都是送给关系比较亲近的朋友。我觉得手工礼物更有心意，即使看起来不那么专业。"},
+  {part:"PART 1",topic:"Gifts",q:"Have you ever received a great gift?",en:"Yes, I have. One of the best gifts I've received was something I really needed at the time. It wasn't very expensive, but it showed that the person understood me well, which made it special.",cn:"有的。我收到过的一个很棒的礼物，正好是我当时特别需要的东西。虽然不贵，但能看出来送礼的人很了解我，这一点让它变得很特别。"},
+  {part:"PART 1",topic:"Gifts",q:"What do you consider when choosing a gift?",en:"When choosing a gift, I mainly think about the person's interests and needs. I also consider the occasion and my budget. For me, a suitable gift is more important than an expensive one.",cn:"选礼物时，我主要会考虑对方的兴趣和需求。我也会看场合以及自己的预算。对我来说，合适比贵更重要。"},
+  {part:"PART 1",topic:"Walking",q:"Do you walk a lot?",en:"Yes, I do walk quite a lot in my daily life. I usually walk when I go to nearby places, and sometimes I take a walk just to relax and clear my mind.",cn:"是的，我平时走路还挺多的。去附近的地方我一般都会走着去，有时候也会专门散散步，让自己放松、清醒一下。"},
+  {part:"PART 1",topic:"Walking",q:"Why do people like to walk in parks?",en:"I think people like walking in parks because the environment is more pleasant. There's more fresh air and greenery, which helps people relax and escape from the noise of the city for a while.",cn:"我觉得人们喜欢在公园散步，是因为环境更舒服。空气更清新，还有很多绿色植物，可以让人暂时远离城市的喧闹，放松下来。"},
+  {part:"PART 1",topic:"Hobbies",q:"Do you have any hobbies?",en:"Yes, I do. In my free time, I enjoy doing a few simple things, like listening to music and watching shows. These hobbies help me relax and take my mind off work.",cn:"有的。空闲的时候我喜欢做一些比较简单的事情，比如听音乐、看节目。这些爱好能让我放松下来，暂时不去想工作的事。"},
+  {part:"PART 1",topic:"Dreams",q:"Can you remember the dreams you had?",en:"Sometimes I can, but not very clearly. I usually remember my dreams right after I wake up, but they fade quite quickly. After a while, I can only remember a few random scenes.",cn:"有时候能记得，但不是很清楚。我一般在刚醒来的时候还能记住梦的内容，但很快就会忘掉。过一会儿，通常只剩下一些零碎的画面。"},
+  {part:"PART 1",topic:"Dreams",q:"Do you share your dreams with others?",en:"Not very often. I only share my dreams with close friends if they're interesting or unusual. Most of the time, I just keep them to myself because they don't really make much sense.",cn:"不太常分享。如果梦比较有意思或者有点奇怪，我才会和比较亲近的朋友说。大多数时候我会自己留着，因为梦本身也没什么逻辑。"},
+  {part:"PART 1",topic:"Dreams",q:"Do you think dreams have special meanings?",en:"I'm not completely sure, but I think dreams can sometimes reflect our feelings or stress in real life. I don't believe every dream has a special meaning, but some of them might be connected to what we're experiencing.",cn:"我不是特别确定，但我觉得梦有时候会反映现实生活中的情绪或压力。我不认为每一个梦都有特殊含义，但有些梦可能和我们的经历有关。"},
+  {part:"PART 2",topic:"令你骄傲的家人",q:"Describe a family member who you are proud of.\n\n• Who this person is\n• How often you spend time together\n• What she/he has done to make you feel proud\n• Why you are proud of him/her",en:"I'd like to talk about my mother, who is the family member I feel most proud of. She has always played an important role in my life, not only as a parent but also as someone I truly respect. We don't spend time together every day because we're both busy, but we usually see each other on weekends or during family gatherings. Even when we're not together, we stay in touch through phone calls and messages. What makes me feel proud of her is her attitude towards life. She has faced many difficulties, especially balancing work and family, but she never complains. Instead, she always stays calm and tries to solve problems step by step. She has also been very supportive of my choices, even when they were not the easiest or safest ones. I'm proud of her because she sets a good example for me. She shows me what responsibility, patience, and resilience really mean.",cn:"我想说的是我的母亲，她是我最感到骄傲的家人。在我的生活中，她不仅是一个母亲，也是一位我非常尊敬的人。让我为她感到骄傲的是她对生活的态度。她经历过不少困难，尤其是在平衡工作和家庭方面，但她从不抱怨。相反，她总是保持冷静，一步一步地解决问题。我为她感到骄傲，是因为她给我树立了一个很好的榜样。"},
+  {part:"PART 3",topic:"令你骄傲的家人",q:"When was the last time that you felt proud of yourself?",en:"The last time I felt proud of myself was when I managed to overcome a personal challenge that required long-term effort. It wasn't something dramatic, but it took a lot of self-discipline and persistence. Looking back, what made me proud wasn't the final result, but the fact that I stayed committed even when progress was slow. In my opinion, being able to push through difficulties and stay responsible for one's own goals is something worth feeling proud of.",cn:"我上一次为自己感到骄傲，是在我克服了一个需要长期投入的个人挑战之后。这并不是一件特别轰动的事情，但它确实需要很强的自律和坚持。回过头来看，让我感到骄傲的并不是最终结果，而是在进展缓慢的时候，我依然没有放弃。"},
+  {part:"PART 3",topic:"令你骄傲的家人",q:"What would children do to make their parents proud?",en:"In general, children can make their parents proud by showing responsibility and independence. This doesn't necessarily mean achieving outstanding academic results. In many cases, parents care more about their children's attitude, such as being honest, hardworking, and willing to take responsibility for their actions. When children show respect to others and make sensible decisions, parents are more likely to feel proud of them.",cn:"总体来说，孩子通过表现出责任感和独立性，往往能让父母感到骄傲。这并不一定意味着取得特别突出的学习成绩。在很多情况下，父母更在意孩子的态度，比如是否诚实、是否努力，以及是否愿意为自己的行为负责。"},
+  {part:"PART 2",topic:"想见的名人",q:"Describe a famous person you would like to meet.\n\n• Who he/she is\n• How you knew him/her\n• How/where you would like to meet him/her\n• Why you would like to meet him/her",en:"I'd like to talk about a famous person I would like to meet, who is Jack Ma, the founder of Alibaba. He is well known in China and around the world as a successful entrepreneur. I first learned about him through news reports and interviews many years ago, especially when Alibaba was growing rapidly. What impressed me most was not only his business success, but also the way he talked about failure and perseverance. If I had the chance, I would like to meet him at a public talk or a small seminar rather than a formal business setting. I would like to meet him because his life experience is very inspiring. He failed many times before becoming successful, but he never gave up.",cn:"我想说一位我很想见的名人，他就是阿里巴巴的创始人马云。让我印象最深的，不只是他的商业成就，还有他谈论失败和坚持时的态度。如果有机会的话，我希望能在一次公开演讲或小型分享会上见到他。我想见他的原因是，他的人生经历非常有启发性。在成功之前他经历过很多失败，但从未放弃。"},
+  {part:"PART 2",topic:"家里放松的地方",q:"Describe your favourite place in your house where you can relax.\n\n• Where it is\n• What it is like\n• What you enjoy doing there\n• Why you feel relaxed at this place",en:"My favourite place in my house to relax is a small corner in my bedroom, right next to the window. It's a quiet and comfortable space with a desk, a chair, and a bookshelf nearby. The lighting there is soft, and during the daytime, natural light comes in through the window, which makes the whole area feel warm and calm. I usually read books, listen to music, or simply sit there and think. I feel relaxed in this place because it's private and free from distractions. Being away from noise and screens allows me to recharge mentally.",cn:"我家里最让我放松的地方是卧室里靠窗的一个小角落。那里的光线比较柔和，白天阳光从窗户照进来，让整个空间显得温暖而平静。我通常会在那里看书、听音乐，或者只是安静地坐着思考。我之所以在这个地方感到放松，是因为它非常私密，而且几乎没有干扰。"},
+  {part:"PART 2",topic:"令你失望的电影",q:"Describe a movie that you watched recently and you felt disappointed about.\n\n• What it was about\n• When it was\n• Why you decided to watch it\n• Why you felt disappointed about it",en:"I'd like to talk about a movie I watched recently that left me quite disappointed. It was a science fiction film about a future world where technology completely controls people's lives. I decided to watch it mainly because it had a strong cast and the trailer looked very impressive. Many people online also described it as a thought-provoking movie. However, after watching it, I felt disappointed for several reasons. Although the concept was interesting, the storyline was poorly developed and difficult to follow. The ending was quite rushed and failed to leave a strong impression. Overall, the movie focused too much on visual effects and neglected storytelling.",cn:"我想讲的是一部我最近看过但感到比较失望的电影，它是一部科幻片，讲的是在未来世界中，科技完全控制人类生活的故事。当初选择看它，主要是因为演员阵容很强，而且预告片看起来非常震撼。但看完之后，我感到有些失望。虽然题材本身很有吸引力，但剧情发展不够清晰，这部电影过于强调视觉效果，而忽视了故事本身。"}
+];
+
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SR) document.getElementById('unsupBar').style.display = 'block';
+
+const topics = ['全部', ...new Set(Q.map(q => q.topic))];
+let activeTopic = null;
+let filtered = Q;
+let idx = 0;
+let recognition = null;
+let isRec = false;
+let transcript = '';
+
+function buildTopics() {
+  const row = document.getElementById('topicRow');
+  topics.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'topic-btn' + (t === '全部' ? ' active' : '');
+    btn.textContent = t;
+    btn.onclick = () => {
+      document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeTopic = t === '全部' ? null : t;
+      filtered = activeTopic ? Q.filter(q => q.topic === activeTopic) : Q;
+      idx = 0; transcript = ''; stopRec(); render();
+    };
+    row.appendChild(btn);
+  });
+}
+
+function render() {
+  const q = filtered[idx];
+  document.getElementById('navInfo').textContent = `${idx + 1} / ${filtered.length}`;
+  const pc = q.part === 'PART 1' ? 'badge-p1' : q.part === 'PART 2' ? 'badge-p2' : 'badge-p3';
+  document.getElementById('qArea').innerHTML = `
+    <div class="question-card">
+      <div class="q-header">
+        <span class="q-part-badge ${pc}">${q.part}</span>
+        <span class="q-topic-tag">${q.topic}</span>
+      </div>
+      <div class="q-text">${q.q.replace(/\n/g,'<br>')}</div>
+      <div class="rec-status ${isRec ? 'active' : ''}" id="recStatus">
+        <div class="rec-dot"></div> 录音中，请用英语回答...
+      </div>
+      <div class="btn-row">
+        <button class="btn ${isRec ? 'btn-danger' : 'btn-primary'}" onclick="toggleRec()" id="recBtn">
+          ${isRec
+            ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="4" width="16" height="16" rx="2"/></svg> 停止录音'
+            : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> 开始录音'}
+        </button>
+        ${transcript ? `<button class="btn btn-sm" onclick="clearT()">清除</button>` : ''}
+      </div>
+      <div class="transcript-box ${transcript ? 'listening' : 'empty'}" id="tBox">
+        ${transcript || '你说的内容会显示在这里...'}
+      </div>
+      ${transcript ? `
+      <div class="wechat-row">
+        <button class="btn btn-copy" onclick="copyText()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          复制内容
+        </button>
+        <span class="wechat-hint">需要 John 批改？微信：<span class="wechat-id">JiahaoLee6666</span></span>
+      </div>` : ''}
+      <button class="ref-toggle" onclick="toggleRef(this)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        查看参考答案
+      </button>
+      <div class="ref-box" id="refBox">
+        <div class="ref-en">${q.en}</div>
+        <div class="ref-cn">${q.cn}</div>
+      </div>
+    </div>`;
+}
+
+function toggleRef(btn) {
+  const box = document.getElementById('refBox');
+  box.classList.toggle('show');
+  const svg = btn.querySelector('svg polyline');
+  svg.setAttribute('points', box.classList.contains('show') ? '6 15 12 9 18 15' : '6 9 12 15 18 9');
+}
+
+function clearT() { transcript = ''; render(); }
+
+function copyText() {
+  const q = filtered[idx];
+  const text = `【雅思口语练习 — John Class】\n题目：${q.q}\n\n我的回答：\n${transcript}`;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.btn-copy');
+    if (btn) {
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> 已复制！';
+      setTimeout(() => {
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> 复制内容';
+      }, 2000);
+    }
+  });
+}
+
+function toggleRec() { isRec ? stopRec() : startRec(); }
+
+function startRec() {
+  if (!SR) return;
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.onresult = e => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) transcript += e.results[i][0].transcript + ' ';
+      else interim += e.results[i][0].transcript;
+    }
+    const box = document.getElementById('tBox');
+    if (box) {
+      box.textContent = (transcript + interim) || '你说的内容会显示在这里...';
+      box.className = 'transcript-box listening';
+    }
+  };
+  recognition.onerror = () => stopRec();
+  recognition.onend = () => { if (isRec) recognition.start(); };
+  recognition.start();
+  isRec = true;
+  render();
+}
+
+function stopRec() {
+  if (recognition) { recognition.onend = null; recognition.stop(); recognition = null; }
+  isRec = false;
+  render();
+}
+
+function changeQ(dir) {
+  idx = (idx + dir + filtered.length) % filtered.length;
+  transcript = ''; stopRec(); render();
+}
+
+function go(e, href) {
+  e.preventDefault();
+  const ov = document.getElementById('ov');
+  ov.classList.add('show');
+  setTimeout(() => { window.location.href = href; }, 280);
+}
+
+buildTopics();
+render();
+</script>
+<script src="audio.js" onerror="void 0"></script>
+</body>
+</html>
