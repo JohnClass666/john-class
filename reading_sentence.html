@@ -8,53 +8,57 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:#F5EDD8;color:#2A1E08;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
 body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:28px 20px}
-.pane{display:none;flex-direction:column;align-items:center;width:100%;max-width:540px;text-align:center}
+.pane{display:none;flex-direction:column;align-items:center;width:100%;max-width:560px;text-align:center}
 .pane.on{display:flex}
-/* dots */
 .dots{display:flex;gap:7px;margin-bottom:28px}
 .dot{width:7px;height:7px;border-radius:50%;background:rgba(42,30,8,.15)}
 .dot.done{background:rgba(42,30,8,.38)}
 .dot.now{background:#2A1E08;width:20px;border-radius:4px}
-/* type */
 .logo{font-size:11px;letter-spacing:.18em;color:#B5A080;font-weight:600;margin-bottom:40px}
+.back-link{font-size:12px;color:#B5A080;text-decoration:none;align-self:flex-start;margin-bottom:16px;display:block}
+.back-link:hover{color:#2A1E08}
 .step-n{font-size:11px;letter-spacing:.16em;color:#B5A080;font-weight:600;text-transform:uppercase;margin-bottom:8px}
 .inst{font-size:22px;font-weight:700;color:#2A1E08;line-height:1.35;margin-bottom:24px}
 .tag{font-size:11px;letter-spacing:.12em;color:#B5A080;font-weight:500;margin-bottom:16px}
-.sid{font-size:13px;font-weight:700;color:#2A1E08;margin-bottom:4px}
-/* sentence */
-.sent{font-family:Georgia,serif;font-size:19px;line-height:2.1;color:#2A1E08;text-align:left;width:100%;margin-bottom:28px}
-/* countdown */
+.sent{font-family:Georgia,serif;font-size:18px;line-height:2.3;color:#2A1E08;text-align:left;width:100%;margin-bottom:28px;letter-spacing:.01em}
 .cd{display:flex;flex-direction:column;align-items:center;margin-bottom:28px}
 .cd-num{font-size:72px;font-weight:700;color:#2A1E08;line-height:1;margin-bottom:6px}
 .cd-msg{font-size:12px;color:#B5A080;letter-spacing:.08em}
-/* highlights */
-.hl-a{background:rgba(80,120,200,.15);color:#1A3A7A;border-radius:3px;padding:0 2px}
-.hl-b{background:rgba(200,140,50,.2);color:#5A3000;border-radius:3px;padding:0 2px}
-.hl-c{background:rgba(60,150,90,.15);color:#1A4A28;border-radius:3px;padding:0 2px}
-.hl-d{background:rgba(200,70,60,.14);color:#7A1A10;border-radius:3px;padding:0 2px}
-.hl-e{background:rgba(140,80,200,.13);color:#4A1A7A;border-radius:3px;padding:0 2px}
-/* legend */
-.legend{display:flex;flex-wrap:wrap;gap:7px;width:100%;margin-bottom:14px}
-.chip{font-size:11px;font-weight:700;padding:3px 11px;border-radius:20px}
-.chip-a{background:rgba(80,120,200,.15);color:#1A3A7A}
-.chip-b{background:rgba(200,140,50,.2);color:#5A3000}
-.chip-c{background:rgba(60,150,90,.15);color:#1A4A28}
-.chip-d{background:rgba(200,70,60,.14);color:#7A1A10}
-.chip-e{background:rgba(140,80,200,.13);color:#4A1A7A}
-/* clauses */
-.clauses{width:100%;display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
-.cc{background:rgba(255,252,245,.9);border-radius:10px;padding:11px 14px;text-align:left;border-left:3px solid #ccc}
-.ca{border-left-color:#507AC8}.cb{border-left-color:#C88C32}.cg{border-left-color:#3C966A}.cd{border-left-color:#C84640}.ce{border-left-color:#8C50C8}
-.cc-lbl{font-size:10px;font-weight:700;letter-spacing:.07em;margin-bottom:3px}
-.ca .cc-lbl{color:#1A3A7A}.cb .cc-lbl{color:#5A3000}.cg .cc-lbl{color:#1A4A28}.cd .cc-lbl{color:#7A1A10}.ce .cc-lbl{color:#4A1A7A}
-.cc-txt{font-size:13px;font-family:Georgia,serif;color:#2A1E08;line-height:1.5;margin-bottom:3px}
-.cc-tip{font-size:11px;color:#8A7050;line-height:1.5;white-space:pre-line}
-.note{width:100%;background:rgba(201,169,110,.1);border:1px solid rgba(201,169,110,.28);border-radius:10px;padding:11px 14px;font-size:12px;color:#6A5030;text-align:left;line-height:1.7;white-space:pre-line;margin-bottom:24px}
-/* loading */
-.loading{font-size:14px;color:#B5A080;margin-bottom:24px;letter-spacing:.06em}
-/* translation */
+/* color highlights */
+.hl-subj{background:rgba(74,124,184,.18);color:#1A3A7A;border-radius:3px;padding:0 3px;border-bottom:2px solid rgba(74,124,184,.40)}
+.hl-pred{background:rgba(200,140,50,.20);color:#5A3000;border-radius:3px;padding:0 3px;border-bottom:2px solid rgba(200,140,50,.45)}
+.hl-obj{background:rgba(60,150,90,.16);color:#1A4A28;border-radius:3px;padding:0 3px;border-bottom:2px solid rgba(60,150,90,.40)}
+.hl-adv{background:rgba(200,85,75,.14);color:#7A1A10;border-radius:3px;padding:0 3px;border-bottom:2px solid rgba(200,85,75,.35)}
+.hl-attr{background:rgba(140,80,200,.14);color:#4A1A7A;border-radius:3px;padding:0 3px;border-bottom:2px solid rgba(140,80,200,.35)}
+.hl-conj{background:rgba(42,30,8,.08);color:#5A4A30;border-radius:3px;padding:0 3px;font-weight:700}
+/* inline segment labels */
+.il-wrap{text-align:left;width:100%;line-height:2.8;margin-bottom:16px;font-family:Georgia,serif;font-size:18px}
+.sg{display:inline;padding:3px 5px;border-radius:5px;margin:0 1px;line-height:2.6}
+.sg-subj{background:rgba(74,124,184,.14);border-bottom:2px solid rgba(74,124,184,.35)}
+.sg-pred{background:rgba(200,140,50,.16);border-bottom:2px solid rgba(200,140,50,.35)}
+.sg-obj{background:rgba(60,150,90,.13);border-bottom:2px solid rgba(60,150,90,.35)}
+.sg-adv{background:rgba(200,85,75,.12);border-bottom:2px solid rgba(200,85,75,.30)}
+.sg-attr{background:rgba(140,80,200,.11);border-bottom:2px solid rgba(140,80,200,.30)}
+.sg-conj{background:rgba(42,30,8,.05);color:#6A5A40}
+.sg-lbl{font-size:9px;font-weight:700;padding:0 4px;border-radius:3px;margin-right:3px;vertical-align:middle;position:relative;top:-1px}
+.sg-lbl.lbl-subj{background:rgba(74,124,184,.22);color:#1A3A7A}
+.sg-lbl.lbl-pred{background:rgba(200,140,50,.25);color:#5A3000}
+.sg-lbl.lbl-obj{background:rgba(60,150,90,.20);color:#1A4A28}
+.sg-lbl.lbl-adv{background:rgba(200,85,75,.18);color:#7A1A10}
+.sg-lbl.lbl-attr{background:rgba(140,80,200,.18);color:#4A1A7A}
+.sg-lbl.lbl-conj{background:rgba(42,30,8,.10);color:#5A4A30}
+.nest{display:inline;border:1.5px dashed rgba(184,149,106,.35);border-radius:8px;padding:4px 2px;margin:0 1px;background:rgba(255,252,245,.45)}
+.nest .sg-lbl{font-size:8px!important}
+.legend{display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-bottom:4px}
+.chip{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.chip-subj{background:rgba(74,124,184,.14);color:#1A3A7A}
+.chip-pred{background:rgba(200,140,50,.16);color:#5A3000}
+.chip-obj{background:rgba(60,150,90,.13);color:#1A4A28}
+.chip-adv{background:rgba(200,85,75,.12);color:#7A1A10}
+.chip-attr{background:rgba(140,80,200,.12);color:#4A1A7A}
+.chip-conj{background:rgba(42,30,8,.07);color:#5A4A30}
+.short-note{width:100%;background:rgba(201,169,110,.08);border:1px solid rgba(201,169,110,.22);border-radius:10px;padding:10px 14px;font-size:12px;color:#6A5030;text-align:left;line-height:1.6;margin-bottom:20px}
 .trans{width:100%;background:rgba(61,107,46,.08);border:1px solid rgba(61,107,46,.22);border-radius:14px;padding:18px 20px;font-family:Georgia,serif;font-size:19px;line-height:1.95;color:#1A3A14;text-align:left;margin-bottom:28px}
-/* buttons */
 .btn{display:block;width:100%;padding:15px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none;letter-spacing:.01em}
 .btn:active{opacity:.8}
 .btn-row{display:flex;gap:10px;width:100%}
@@ -62,60 +66,75 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
 .btn-save{flex:1;padding:15px;background:rgba(200,70,60,.1);color:#7A1A10;border:1.5px solid rgba(200,70,60,.25);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none}
 .btn-gold{display:block;width:100%;padding:17px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:12px;font-size:17px;font-weight:700;cursor:pointer;font-family:inherit;-webkit-appearance:none;margin-bottom:10px}
 .btn-outline{display:block;width:100%;padding:13px;background:transparent;color:#7A6040;border:1.5px solid rgba(42,30,8,.2);border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none}
-/* welcome extras */
 .slogan{font-size:21px;font-weight:700;color:#2A1E08;line-height:1.55;margin-bottom:8px}
 .slogan-sub{font-size:13px;color:#8A7050;margin-bottom:12px;line-height:1.6}
 .progress-bar-wrap{width:100%;background:rgba(42,30,8,.08);border-radius:8px;height:6px;margin-bottom:6px;overflow:hidden}
 .progress-bar-fill{height:6px;background:#2A1E08;border-radius:8px;transition:width .4s}
 .progress-label{font-size:12px;color:#B5A080;margin-bottom:32px;text-align:left;width:100%}
-/* leaderboard */
 .board-row{display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px;background:rgba(255,252,245,.85);border-radius:10px;margin-bottom:8px;text-align:left}
 .board-rank{font-size:15px;font-weight:700;width:26px;color:#B5A080;flex-shrink:0}
 .board-rank.top3{color:#2A1E08}
 .board-name{flex:1;font-size:15px;font-weight:500}
 .board-pts{font-size:13px;color:#8A7050;font-weight:600}
-/* diff badge */
 .diff-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-bottom:12px;letter-spacing:.06em}
 .diff-basic{background:rgba(60,150,90,.12);color:#1A4A28}
 .diff-medium{background:rgba(200,140,50,.15);color:#5A3000}
 .diff-challenge{background:rgba(200,70,60,.12);color:#7A1A10}
-/* done */
 .done-big{font-size:52px;line-height:1;margin-bottom:14px}
 .done-h{font-size:23px;font-weight:700;margin-bottom:8px}
 .done-rest{font-size:14px;color:#8A7050;line-height:1.7;margin-bottom:32px}
-/* name entry */
 .name-input{width:100%;padding:14px 16px;background:rgba(255,252,245,.9);border:1.5px solid rgba(42,30,8,.2);border-radius:12px;font-size:17px;font-family:inherit;color:#2A1E08;outline:none;text-align:center;margin-bottom:14px}
 .name-input:focus{border-color:#2A1E08}
-/* modal */
 .overlay{display:none;position:fixed;inset:0;background:rgba(42,30,8,.5);z-index:100;align-items:center;justify-content:center;padding:24px}
 .overlay.on{display:flex}
 .modal{background:#F5EDD8;border-radius:18px;padding:28px 24px;max-width:340px;width:100%;text-align:center}
 .modal-h{font-size:19px;font-weight:700;margin-bottom:8px}
 .modal-body{font-size:13px;color:#7A6040;line-height:1.7;margin-bottom:20px}
 .modal-wechat{font-size:22px;font-weight:700;letter-spacing:.05em;margin-bottom:18px;color:#2A1E08}
+/* lock screen */
+.lock-icon{font-size:64px;line-height:1;margin-bottom:16px}
+.lock-title{font-size:22px;font-weight:700;color:#2A1E08;margin-bottom:8px}
+.lock-sub{font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:24px}
+.lock-countdown{font-size:12px;color:#B5A080;margin-bottom:28px}
+.daily-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(60,150,90,.1);border:1px solid rgba(60,150,90,.25);padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;color:#1A4A28;margin-bottom:24px}
+/* hall grid */
+.hall-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;width:100%;margin-bottom:20px}
+.hall-day{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;cursor:default;border:1.5px solid rgba(184,149,106,.15);color:#B5A080;background:rgba(255,252,245,.5);transition:all .15s}
+.hall-day.done{background:rgba(60,150,90,.18);border-color:rgba(60,150,90,.35);color:#1A4A28;cursor:default}
+.hall-day.current{background:rgba(42,30,8,.06);border-color:#2A1E08;color:#2A1E08;cursor:pointer;font-size:11px;box-shadow:0 0 0 2px rgba(42,30,8,.1)}
+.hall-day.current:active{transform:scale(.92)}
+.hall-day.locked{background:transparent;border-color:rgba(184,149,106,.06);color:rgba(184,149,106,.3)}
+@media(max-width:500px){.hall-grid{grid-template-columns:repeat(7,1fr);gap:4px}.hall-day{font-size:9px;border-radius:6px}}
 </style>
 </head>
 <body>
 
-<!-- NAME ENTRY -->
-<div id="p-name" class="pane on">
+<!-- WELCOME / HALL -->
+<div id="p-welcome" class="pane on">
+  <a class="back-link" href="study.html">&larr; 返回学习中心</a>
   <div class="logo">JOHN CLASS &middot; 长难句训练</div>
-  <div class="slogan">&ldquo;做完这三百句，<br>你北大都考得上！&rdquo;</div>
-  <div class="slogan-sub" style="margin-top:4px;margin-bottom:28px">输入你的名字开始训练</div>
-  <input class="name-input" id="name-input" type="text" placeholder="你叫什么名字？" maxlength="20">
-  <button class="btn" id="btn-name-go">开始 &rarr;</button>
-</div>
-
-<!-- WELCOME / RESUME -->
-<div id="p-welcome" class="pane">
-  <div class="logo">JOHN CLASS &middot; 长难句训练</div>
-  <div class="slogan">&ldquo;做完这三百句，<br>你北大都考得上！&rdquo;</div>
-  <div class="slogan-sub" id="welcome-greeting"></div>
+  <div class="slogan">&ldquo;做完这二百句，<br>你北大都考得上！&rdquo;</div>
+  <div class="slogan-sub">每天 2 句 · 共 100 天 · 系统进步</div>
+  <div class="hall-grid" id="hall-grid"></div>
   <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-fill"></div></div>
   <div class="progress-label" id="prog-label"></div>
+  <div class="daily-badge" id="daily-badge">今日已完成 0 / 2 句</div>
   <div style="display:flex;flex-direction:column;gap:10px;width:100%">
-    <button class="btn" id="btn-start">继续训练</button>
+    <button class="btn" id="btn-start">开始今日训练</button>
     <button class="btn-outline" id="btn-board-open">&#127942; 阅读大王排行榜</button>
+  </div>
+</div>
+
+<!-- LOCKED -->
+<div id="p-locked" class="pane">
+  <div class="logo">JOHN CLASS &middot; 长难句训练</div>
+  <div class="lock-icon">&#128274;</div>
+  <div class="lock-title">今日训练已完成</div>
+  <div class="lock-sub">你已完成今天的 2 句长难句训练。<br>保持节奏，明天继续！</div>
+  <div class="lock-countdown" id="lock-cd"></div>
+  <div style="display:flex;flex-direction:column;gap:10px;width:100%">
+    <button class="btn-outline" id="btn-lock-board">&#127942; 查看排行榜</button>
+    <button class="btn-outline" id="btn-lock-back" style="margin-top:0">&#128218; 返回学习中心</button>
   </div>
 </div>
 
@@ -129,8 +148,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
   <button class="btn" id="btn-board-back">&larr; 返回</button>
 </div>
 
-<!-- PRACTICE: STEP 1 COPY -->
+<!-- STEP 1 COPY -->
 <div id="p1" class="pane">
+  <a class="back-link" href="study.html">&larr; 返回</a>
   <div class="dots" id="dt1"></div>
   <div class="tag" id="tg1"></div>
   <div class="diff-badge" id="db1"></div>
@@ -143,34 +163,35 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
 
 <!-- STEP 2 ANALYZE -->
 <div id="p2" class="pane">
+  <a class="back-link" href="study.html">&larr; 返回</a>
   <div class="dots" id="dt2"></div>
   <div class="tag" id="tg2"></div>
   <div class="diff-badge" id="db2"></div>
   <div class="step-n">第二步</div>
-  <div class="inst">在纸上独立<br>分析句子结构</div>
+  <div class="inst">在纸上独立<br>分析句子成分<br><span style="font-size:13px;color:#B5A080;font-weight:400">找出主谓宾、定状补、从句</span></div>
   <div class="sent" id="sn2"></div>
   <button class="btn" id="b2">分析好了，看答案 &rarr;</button>
 </div>
 
 <!-- STEP 3 STRUCTURE -->
 <div id="p3" class="pane">
+  <a class="back-link" href="study.html">&larr; 返回</a>
   <div class="dots" id="dt3"></div>
   <div class="tag" id="tg3"></div>
   <div class="diff-badge" id="db3"></div>
   <div class="step-n">第三步</div>
-  <div class="inst">对照句子结构</div>
-  <div class="loading" id="loading3">&#128203; 正在分析结构...</div>
-  <div id="structure-area" style="width:100%;display:none">
-    <div class="sent" id="sn3"></div>
+  <div class="inst">对照句子成分分析</div>
+  <div id="structure-area" style="width:100%">
+    <div class="il-wrap" id="sn3"></div>
     <div class="legend" id="lgd"></div>
-    <div class="clauses" id="cls"></div>
-    <div class="note" id="nt"></div>
+    <div class="short-note" id="nt"></div>
   </div>
-  <button class="btn" id="b3" style="display:none">明白了，去翻译 &rarr;</button>
+  <button class="btn" id="b3">明白了，去翻译 &rarr;</button>
 </div>
 
 <!-- STEP 4 TRANSLATE -->
 <div id="p4" class="pane">
+  <a class="back-link" href="study.html">&larr; 返回</a>
   <div class="dots" id="dt4"></div>
   <div class="tag" id="tg4"></div>
   <div class="diff-badge" id="db4"></div>
@@ -182,6 +203,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
 
 <!-- STEP 5 ANSWER -->
 <div id="p5" class="pane">
+  <a class="back-link" href="study.html">&larr; 返回</a>
   <div class="dots" id="dt5"></div>
   <div class="tag" id="tg5"></div>
   <div class="diff-badge" id="db5"></div>
@@ -194,20 +216,20 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
   </div>
 </div>
 
-<!-- DONE (every 2 sentences) -->
+<!-- DONE -->
 <div id="p-done" class="pane">
-  <div class="done-big">&#127769;</div>
-  <div class="done-h">今天先休息一下</div>
+  <a class="back-link" href="study.html">&larr; 返回</a>
+  <div class="done-big" id="done-icon">&#127769;</div>
+  <div class="done-h" id="done-title">今天先休息一下</div>
   <div class="done-rest" id="done-msg">两句已完成。大脑需要时间消化，明天继续。</div>
-  <button class="btn-gold" id="btn-xuao">&#127942;&nbsp; 初炫耀</button>
-  <div style="font-size:12px;color:#B5A080;text-align:center;margin-bottom:14px">完成史诗级初挑战，拍下写好的句子找 John 打卡</div>
-  <button class="btn-outline" id="btn-keep-going">继续下一句</button>
+  <button class="btn-gold" id="btn-xuao">&#127942;&nbsp; 炫耀一下</button>
+  <div style="font-size:12px;color:#B5A080;text-align:center;margin-bottom:14px">拍下写好的句子找 John 打卡</div>
 </div>
 
 <!-- MODAL -->
 <div class="overlay" id="modal">
   <div class="modal">
-    <div class="modal-h">&#127942; 初炫耀</div>
+    <div class="modal-h">&#127942; 炫耀一下</div>
     <div class="modal-body">拍下你在纸上写好的句子<br>截图发给 John 老师打卡！</div>
     <div class="modal-wechat">JiahaoLee6666</div>
     <button class="btn" id="btn-copy-wx" style="margin-bottom:10px">复制微信号</button>
@@ -216,219 +238,662 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
 </div>
 
 <script>
-// ═══════════ CONFIG — 填入你自己的值 ═══════════
-var SB_URL  = 'https://ghunrrtrdgicbmixsqrc.supabase.co';
-var SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
-var CL_KEY  = 'YOUR_CLAUDE_API_KEY';  // 填入你的 Claude API Key
-// ═══════════════════════════════════════════════
+// ═══════════ SUPABASE ═══════════
+var SB_URL = 'https://ghunrrtrdgicbmixsqrc.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
 
+// ═══════════ 200句语料库 ═══════════
 var SENTENCES = [
-  {id:1,day:1,num:1,diff:'basic',text:'Although keeping a pet requires a lot of time and effort, many families find that it makes their home feel warmer and more lively.'},
-  {id:2,day:1,num:2,diff:'basic',text:'Many teachers believe that students who read widely are better at writing than those who only study grammar rules.'},
-  {id:3,day:2,num:1,diff:'basic',text:'If you want to get better at something, the best way is to practise a little every day rather than waiting until the last minute.'},
-  {id:4,day:2,num:2,diff:'basic',text:'Research has shown that people who sleep well each night are much more likely to feel happy and do well at school.'},
-  {id:5,day:3,num:1,diff:'basic',text:'Although some students find it hard to speak English in class, those who keep trying usually make the fastest progress.'},
-  {id:6,day:3,num:2,diff:'basic',text:'It is important to remember that making mistakes is a normal part of learning, not something to be ashamed of.'},
-  {id:7,day:4,num:1,diff:'basic',text:'Many parents worry that their children spend too much time on their phones, but experts say that the key is learning to use technology wisely.'},
-  {id:8,day:4,num:2,diff:'basic',text:'Not only does reading help you improve your English, but it also gives you new ideas and ways of looking at the world.'},
-  {id:9,day:5,num:1,diff:'basic',text:'Although getting up early can be hard, students who start their day with a clear plan often feel much more in control of their time.'},
-  {id:10,day:5,num:2,diff:'basic',text:'He discovered that the best way to learn new words was not to memorise long lists but to use them in real sentences as often as possible.'},
-  {id:11,day:6,num:1,diff:'basic',text:'Teachers who make their lessons fun and interesting find that students are more willing to take part and less afraid of getting answers wrong.'},
-  {id:12,day:6,num:2,diff:'basic',text:'Because practice is so important, those who spend even fifteen minutes a day on English listening will notice a real difference within a few weeks.'},
-  {id:13,day:7,num:1,diff:'basic',text:'Although she had never travelled abroad before, Emily found that volunteering in Africa changed the way she thought about her own life.'},
-  {id:14,day:7,num:2,diff:'basic',text:'It was not until she started working with the children in Africa that Emily truly understood how much she had to be grateful for.'},
-  {id:15,day:8,num:1,diff:'basic',text:'Many students who feel shy about speaking English in class become much more confident once they realise that their classmates are just as nervous as they are.'},
-  {id:16,day:8,num:2,diff:'basic',text:'Although some people think that grammar is the most important part of learning a language, most experts now agree that speaking practice matters just as much.'},
-  {id:17,day:9,num:1,diff:'basic',text:'If you find a topic that you are genuinely interested in, reading about it in English will feel far less like hard work than studying from a textbook.'},
-  {id:18,day:9,num:2,diff:'basic',text:'Research has shown that students who set small, clear goals for themselves tend to make much steadier progress than those who simply try to study as much as possible.'},
-  {id:19,day:10,num:1,diff:'basic',text:'Although keeping a pet requires time and money, many children say that caring for an animal teaches them lessons that they could never learn in a classroom.'},
-  {id:20,day:10,num:2,diff:'basic',text:'Not only does caring for an animal teach children to be responsible, but it also helps them learn to be patient and kind.'},
-  {id:21,day:11,num:1,diff:'basic',text:'Because music can affect the way we feel, many people find that listening to a favourite song is one of the quickest ways to lift their mood.'},
-  {id:22,day:11,num:2,diff:'basic',text:'The Four Seasons, written by Vivaldi about three hundred years ago, is still loved by people all over the world because it perfectly captures the beauty of nature.'},
-  {id:23,day:12,num:1,diff:'basic',text:'Although otters look cute and friendly, experts warn that they are wild animals that do not belong in people\'s homes as pets.'},
-  {id:24,day:12,num:2,diff:'basic',text:'People who share videos of pet otters online may not realise that they are helping to encourage a trade that is harmful to wild otter populations.'},
-  {id:25,day:13,num:1,diff:'basic',text:'Martin Strel, who swam the full length of the Amazon River, believed that any goal was possible as long as you had enough determination to keep going.'},
-  {id:26,day:13,num:2,diff:'basic',text:'He wanted to show the world that people could achieve their dreams with hard work and perseverance, no matter how impossible those dreams might seem.'},
-  {id:27,day:14,num:1,diff:'basic',text:'Although some people are born with more natural talent than others, hard work and a positive attitude make a bigger difference in the long run.'},
-  {id:28,day:14,num:2,diff:'basic',text:'Research has shown that students who believe they can improve through effort are more likely to succeed than those who think their ability is fixed.'},
-  {id:29,day:15,num:1,diff:'basic',text:'If children are encouraged to ask questions rather than simply memorise answers, they are more likely to develop a genuine love of learning.'},
-  {id:30,day:15,num:2,diff:'basic',text:'Many students find that working in a study group helps them to understand difficult topics more quickly than studying alone.'},
-  {id:31,day:16,num:1,diff:'basic',text:'Although exercise can feel tiring in the moment, most people agree that they feel much better after a workout than they did before.'},
-  {id:32,day:16,num:2,diff:'basic',text:'Because regular physical activity has been shown to improve concentration, students who exercise regularly often find that their school work improves as well.'},
-  {id:33,day:17,num:1,diff:'basic',text:'Not only does spending time in nature help to reduce stress, but it also gives people a chance to slow down and appreciate the world around them.'},
-  {id:34,day:17,num:2,diff:'basic',text:'Although many people prefer to stay indoors, those who make time to go for walks outside often report feeling calmer and more creative.'},
-  {id:35,day:18,num:1,diff:'basic',text:'It is often said that the habits we form when we are young are the hardest to break, which is why it is so important to develop good ones early.'},
-  {id:36,day:18,num:2,diff:'basic',text:'Many young people find it difficult to manage their time well, but those who learn to prioritise their tasks soon discover how much more they can achieve.'},
-  {id:37,day:19,num:1,diff:'basic',text:'Although competition can motivate students to work harder, too much pressure to win can make it difficult to enjoy the process of learning.'},
-  {id:38,day:19,num:2,diff:'basic',text:'Teachers who praise effort rather than results find that their students are more willing to take on challenges and less afraid of failing.'},
-  {id:39,day:20,num:1,diff:'basic',text:'Because the habits we build in our teenage years often stay with us for life, the choices we make now are more important than they might seem.'},
-  {id:40,day:20,num:2,diff:'basic',text:'Although money can make life more comfortable, most people agree that it is not the only thing that brings true happiness.'},
-  {id:41,day:21,num:1,diff:'basic',text:'Many students who struggle with a subject find that their attitude toward it changes completely once they find a teacher who explains it in a way they can understand.'},
-  {id:42,day:21,num:2,diff:'basic',text:'If you tell yourself that you are bad at something, you are less likely to put in the effort needed to get better at it.'},
-  {id:43,day:22,num:1,diff:'basic',text:'Although growing up in a small town can feel limiting, many people who did so say that the close community gave them a strong sense of belonging.'},
-  {id:44,day:22,num:2,diff:'basic',text:'It is important for young people to spend time with older members of their family, since the stories of grandparents can teach us things that no book ever could.'},
-  {id:45,day:23,num:1,diff:'basic',text:'Not only does learning to cook give young people a useful life skill, but it also teaches them about different cultures and the importance of eating well.'},
-  {id:46,day:23,num:2,diff:'basic',text:'Research has shown that families who eat dinner together regularly tend to communicate better and feel closer to one another than those who eat separately.'},
-  {id:47,day:24,num:1,diff:'basic',text:'Although some students find maths difficult, those who keep practising and do not give up usually find that the hard work eventually pays off.'},
-  {id:48,day:24,num:2,diff:'basic',text:'Because confidence plays such an important role in learning, teachers who help students believe in themselves often have a bigger impact than those who only focus on test results.'},
-  {id:49,day:25,num:1,diff:'basic',text:'If you want to make a good impression on others, one of the best things you can do is to listen carefully when they are speaking.'},
-  {id:50,day:25,num:2,diff:'basic',text:'Many people find that the friendships they form during their school years are among the most meaningful relationships they will ever have.'},
-  {id:51,day:26,num:1,diff:'basic',text:'Although it can be tempting to check your phone every few minutes, most students find that putting it away while studying helps them concentrate much better.'},
-  {id:52,day:26,num:2,diff:'basic',text:'Not only does too much screen time affect sleep, but it can also make it harder to enjoy simple activities that do not involve a screen.'},
-  {id:53,day:27,num:1,diff:'basic',text:'Because reading widely exposes students to a variety of sentence structures and vocabulary, those who read for pleasure tend to write more naturally than those who do not.'},
-  {id:54,day:27,num:2,diff:'basic',text:'Many students find that keeping a diary in English is one of the most enjoyable and effective ways to improve their writing skills.'},
-  {id:55,day:28,num:1,diff:'basic',text:'Although it is natural to feel nervous before an exam, students who have prepared thoroughly usually find that their anxiety fades once the test begins.'},
-  {id:56,day:28,num:2,diff:'basic',text:'Research has shown that students who take short breaks while studying remember more of what they have learned than those who try to study for hours without stopping.'},
-  {id:57,day:29,num:1,diff:'basic',text:'If we want future generations to enjoy the same natural world that we do, we need to start making more responsible choices about the way we live today.'},
-  {id:58,day:29,num:2,diff:'basic',text:'Although recycling alone cannot solve the problem of pollution, it is an easy step that everyone can take and it does make a real difference over time.'},
-  {id:59,day:30,num:1,diff:'basic',text:'Not only do trees provide shade and clean the air, but they also give homes to countless animals and help to keep the soil from washing away in heavy rain.'},
-  {id:60,day:30,num:2,diff:'basic',text:'Because clean water is something that many people around the world do not have access to, it is important that we do not waste it.'},
-  {id:61,day:31,num:1,diff:'basic',text:'Although travelling to another country can feel overwhelming at first, most people find that the experience of exploring a new place is well worth the effort.'},
-  {id:62,day:31,num:2,diff:'basic',text:'People who have lived or studied abroad often say that the experience taught them more about themselves than it did about the country they visited.'},
-  {id:63,day:32,num:1,diff:'basic',text:'Many students who once disliked reading discover a love of books after a teacher recommends a story that genuinely connects with their own life.'},
-  {id:64,day:32,num:2,diff:'basic',text:'Because stories allow us to experience lives very different from our own, reading fiction can help us become more understanding and open-minded.'},
-  {id:65,day:33,num:1,diff:'basic',text:'Although some people think that art and music are less important than science and maths, creativity is a skill that is valued in almost every career.'},
-  {id:66,day:33,num:2,diff:'basic',text:'Students who are given the chance to express themselves through art or music often show improved confidence and better performance in other subjects as well.'},
-  {id:67,day:34,num:1,diff:'basic',text:'If young people are taught to respect the environment from an early age, they are far more likely to make responsible choices as adults.'},
-  {id:68,day:34,num:2,diff:'basic',text:'Not only does reducing the amount of meat we eat help the environment, but it also has real health benefits for many people.'},
-  {id:69,day:35,num:1,diff:'basic',text:'Because first impressions are formed very quickly, the way we present ourselves and the things we say in the first few minutes of meeting someone matter a great deal.'},
-  {id:70,day:35,num:2,diff:'basic',text:'Many people find that smiling and making eye contact makes it much easier to start a conversation with someone they have never met before.'},
-  {id:71,day:36,num:1,diff:'basic',text:'Although learning to play a musical instrument requires patience and regular practice, many people say it is one of the most rewarding things they have ever done.'},
-  {id:72,day:36,num:2,diff:'basic',text:'Research has shown that children who learn music at a young age often find it easier to concentrate and to pick up new languages.'},
-  {id:73,day:37,num:1,diff:'basic',text:'Many students find that explaining a concept to someone else is one of the best ways to check whether they truly understand it themselves.'},
-  {id:74,day:37,num:2,diff:'basic',text:'Although group work can sometimes be frustrating, learning to cooperate with people who think differently from you is a skill that will be useful throughout your life.'},
-  {id:75,day:38,num:1,diff:'basic',text:'Not only does volunteering give young people the chance to help others, but it also helps them discover strengths and interests they did not know they had.'},
-  {id:76,day:38,num:2,diff:'basic',text:'Because Emily had grown up with every comfort she needed, it was not until she volunteered abroad that she truly began to appreciate how lucky she was.'},
-  {id:77,day:39,num:1,diff:'basic',text:'Although some students feel that they do not have time to exercise during a busy school week, even a short daily walk can make a real difference to mood and concentration.'},
-  {id:78,day:39,num:2,diff:'basic',text:'Research has found that students who get enough sleep each night are significantly better at solving problems and managing their emotions the following day.'},
-  {id:79,day:40,num:1,diff:'basic',text:'If we take the time to listen carefully to people whose opinions differ from our own, we often find that we can learn something valuable from the experience.'},
-  {id:80,day:40,num:2,diff:'basic',text:'Many people find that the advice of an older person who has faced a similar challenge is far more useful than any amount of general advice found online.'},
-  {id:81,day:41,num:1,diff:'basic',text:'Although modern life can feel very busy and stressful, those who set aside time each day for something they enjoy report feeling much happier and more balanced.'},
-  {id:82,day:41,num:2,diff:'basic',text:'Not only does having a hobby give you something to look forward to, but it also gives you a way to meet people who share your interests.'},
-  {id:83,day:42,num:1,diff:'basic',text:'Because confidence in speaking comes from practice rather than from perfection, students who are willing to make mistakes out loud tend to improve much faster than those who stay silent.'},
-  {id:84,day:42,num:2,diff:'basic',text:'Many language learners find that watching films and TV programmes in English is one of the most enjoyable ways to get used to the natural rhythm of the language.'},
-  {id:85,day:43,num:1,diff:'basic',text:'Although it can be disappointing to fail at something you have worked hard for, most successful people say that their failures taught them more than their successes ever did.'},
-  {id:86,day:43,num:2,diff:'basic',text:'He believed that the ability to get back up after a setback was the single most important quality that separated those who eventually succeeded from those who gave up.'},
-  {id:87,day:44,num:1,diff:'basic',text:'If children are shown from an early age that it is normal and acceptable to ask for help, they are less likely to struggle in silence when they face difficulties.'},
-  {id:88,day:44,num:2,diff:'basic',text:'Teachers who create a safe and supportive classroom environment find that their students are more willing to take risks and more open to learning from each other.'},
-  {id:89,day:45,num:1,diff:'basic',text:'Although eating healthily does not have to be expensive, many families find it difficult to prepare fresh meals every day because of the time and effort involved.'},
-  {id:90,day:45,num:2,diff:'basic',text:'Research has shown that children who eat a proper breakfast perform better in tests and are more able to concentrate throughout the school day.'},
-  {id:91,day:46,num:1,diff:'basic',text:'Not only does spending time with friends and family improve our mood, but having strong relationships has also been shown to have real benefits for our physical health.'},
-  {id:92,day:46,num:2,diff:'basic',text:'Because loneliness can have serious effects on both mental and physical wellbeing, it is important that we make an effort to stay connected with the people we care about.'},
-  {id:93,day:47,num:1,diff:'basic',text:'Although many students find science difficult, those who approach it with curiosity rather than anxiety usually find that their interest in the subject grows over time.'},
-  {id:94,day:47,num:2,diff:'basic',text:'It is often the questions we cannot yet answer, rather than the ones we can, that drive the most important discoveries in science.'},
-  {id:95,day:48,num:1,diff:'basic',text:'If we are kinder to the people around us, we often find that they become kinder in return, which makes everyday life more pleasant for everyone.'},
-  {id:96,day:48,num:2,diff:'basic',text:'Many people find that performing small acts of kindness for others is one of the simplest and most reliable ways to improve their own mood.'},
-  {id:97,day:49,num:1,diff:'basic',text:'Although the internet makes it easy to find information on almost any topic, the ability to judge whether that information is reliable is becoming increasingly important.'},
-  {id:98,day:49,num:2,diff:'basic',text:'Students who learn to think critically about what they read and hear are better prepared for a world in which not everything they encounter will be true.'},
-  {id:99,day:50,num:1,diff:'basic',text:'Not only does having a clear daily routine help young people manage their time, but it also reduces stress by removing the need to make too many decisions each day.'},
-  {id:100,day:50,num:2,diff:'basic',text:'Research has shown that people who write down their goals are significantly more likely to achieve them than those who simply keep their plans in their heads.'},
-  {id:101,day:51,num:1,diff:'basic',text:'Although some students feel embarrassed to ask questions in class, those who do ask are usually the ones who make the most progress over the course of the year.'},
-  {id:102,day:51,num:2,diff:'basic',text:'Because every student learns at a different pace, it is important not to compare your progress with that of your classmates but to focus on your own improvement.'},
-  {id:103,day:52,num:1,diff:'basic',text:'If you want to build a good relationship with someone, one of the most important things you can do is to show genuine interest in what they think and feel.'},
-  {id:104,day:52,num:2,diff:'basic',text:'Many people find that they feel most understood and appreciated by those who listen without interrupting and respond with care and thought.'},
-  {id:105,day:53,num:1,diff:'basic',text:'Although taking on new responsibilities can feel frightening at first, most young people find that it helps them grow in confidence more quickly than anything else.'},
-  {id:106,day:53,num:2,diff:'basic',text:'Not only does taking responsibility for your own daily life teach practical skills, but it also gives you a much stronger sense of who you are and what you value.'},
-  {id:107,day:54,num:1,diff:'basic',text:'Because the way we speak to ourselves in our own minds can either encourage or discourage us, learning to replace negative thoughts with more helpful ones is a valuable skill.'},
-  {id:108,day:54,num:2,diff:'basic',text:'Research has shown that students who believe their abilities can grow through effort and practice tend to outperform those who believe their intelligence is simply fixed.'},
-  {id:109,day:55,num:1,diff:'basic',text:'Although some people find it easy to make friends, others need more time and the right environment before they feel comfortable opening up to someone new.'},
-  {id:110,day:55,num:2,diff:'basic',text:'He found that the best friendships in his life had grown slowly from shared experiences rather than from an instant connection felt at the very first meeting.'},
-  {id:111,day:56,num:1,diff:'basic',text:'If we want schools to be places where every student feels safe and respected, then teachers and students alike need to take responsibility for the way they treat one another.'},
-  {id:112,day:56,num:2,diff:'basic',text:'Not only does bullying cause lasting harm to those who experience it, but it also creates an atmosphere of fear that prevents everyone from learning and growing.'},
-  {id:113,day:57,num:1,diff:'basic',text:'Although some jobs that exist today are likely to be done by machines in the future, the skills of creativity, communication, and critical thinking will always be in demand.'},
-  {id:114,day:57,num:2,diff:'basic',text:'Many students worry about choosing the wrong career, but experts say that the most important thing is to develop strong general skills that can be applied in many different areas.'},
-  {id:115,day:58,num:1,diff:'basic',text:'Because the food we eat has such a strong effect on how we feel and think, developing healthy eating habits as a teenager is one of the best investments we can make in our future.'},
-  {id:116,day:58,num:2,diff:'basic',text:'Research has found that people who eat meals with others regularly tend to be happier and report a stronger sense of connection than those who always eat alone.'},
-  {id:117,day:59,num:1,diff:'basic',text:'Although it may seem easier to avoid a difficult conversation, those who are willing to talk honestly about problems usually find that their relationships become stronger as a result.'},
-  {id:118,day:59,num:2,diff:'basic',text:'Many people find that expressing how they feel clearly and calmly, rather than bottling things up or losing their temper, leads to much better outcomes in difficult situations.'},
-  {id:119,day:60,num:1,diff:'basic',text:'Not only does keeping the streets clean make a neighbourhood more pleasant to live in, but it also shows respect for the community and for the people who share the space.'},
-  {id:120,day:60,num:2,diff:'basic',text:'Because the environment around us affects the way we feel, people who live in clean and well-maintained areas tend to report higher levels of happiness and wellbeing.'},
-  {id:121,day:61,num:1,diff:'basic',text:'Although some parents think that children should spend all their free time studying, most experts believe that play and rest are just as important for healthy development.'},
-  {id:122,day:61,num:2,diff:'basic',text:'Research has shown that children who are given time and space to play freely develop stronger problem-solving skills and are better at working with others.'},
-  {id:123,day:62,num:1,diff:'basic',text:'If young people are given the chance to take on real responsibilities, they tend to rise to the challenge in ways that surprise both themselves and the adults around them.'},
-  {id:124,day:62,num:2,diff:'basic',text:'Many students who are trusted with leadership roles at school go on to develop the confidence and communication skills they need to succeed in later life.'},
-  {id:125,day:63,num:1,diff:'basic',text:'Although it is natural to want to fit in with the people around you, those who are willing to stay true to their own values often earn the deepest respect in the long run.'},
-  {id:126,day:63,num:2,diff:'basic',text:'He had learned from experience that the opinions of a few people who truly knew him mattered far more than the approval of a crowd who barely knew his name.'},
-  {id:127,day:64,num:1,diff:'basic',text:'Not only does learning to cook give young people independence, but those who cook for others also find that it is a wonderful way to show care and build connections.'},
-  {id:128,day:64,num:2,diff:'basic',text:'Because sharing food is one of the most universal ways of bringing people together, a simple home-cooked meal can sometimes say more than any number of carefully chosen words.'},
-  {id:129,day:65,num:1,diff:'basic',text:'Although many students feel they are too busy to volunteer, those who do find that even a few hours a week can have a surprisingly positive effect on their own mood and outlook.'},
-  {id:130,day:65,num:2,diff:'basic',text:'Emily found that working with children in Africa taught her more about gratitude and what truly matters in life than anything she had learned in a classroom.'},
-  {id:131,day:66,num:1,diff:'basic',text:'If students are encouraged to see challenges as opportunities rather than threats, they are much more likely to put in the effort needed to overcome them.'},
-  {id:132,day:66,num:2,diff:'basic',text:'Research has shown that the students who improve the most are not always the most talented, but the ones who are most willing to work hard and ask for help.'},
-  {id:133,day:67,num:1,diff:'basic',text:'Although keeping fit is something that most people agree is important, finding a form of exercise you actually enjoy is the key to making it a lasting part of your life.'},
-  {id:134,day:67,num:2,diff:'basic',text:'Not only does playing a team sport help young people stay healthy, but it also teaches them important life lessons about cooperation and dealing with both winning and losing.'},
-  {id:135,day:68,num:1,diff:'basic',text:'Because animals depend on humans to protect their habitats, the choices we make about how we use land have a direct effect on the wildlife around us.'},
-  {id:136,day:68,num:2,diff:'basic',text:'Many people who have grown up in cities have little connection to nature, which experts believe makes them less likely to care about protecting the natural world.'},
-  {id:137,day:69,num:1,diff:'basic',text:'Although it can be hard to stay positive when things are not going well, those who manage to maintain a hopeful attitude usually find it easier to spot opportunities and solutions.'},
-  {id:138,day:69,num:2,diff:'basic',text:'He discovered that talking to someone he trusted whenever he felt overwhelmed helped him to see his problems more clearly and find a way forward more quickly.'},
-  {id:139,day:70,num:1,diff:'basic',text:'Not only does learning a second language open up new career opportunities, but it also changes the way you think and helps you understand people from different backgrounds.'},
-  {id:140,day:70,num:2,diff:'basic',text:'Research has shown that people who speak more than one language are often better at focusing their attention and switching between different tasks.'},
-  {id:141,day:71,num:1,diff:'basic',text:'Although the internet has made it easier than ever to stay in touch with people far away, many of us find it harder than ever to have deep and meaningful conversations.'},
-  {id:142,day:71,num:2,diff:'basic',text:'Many young people feel pressure to present a perfect version of their lives online, but those who are honest about their struggles often find that others appreciate it deeply.'},
-  {id:143,day:72,num:1,diff:'basic',text:'If we take the time to thank the people who help us, not only do we make them feel valued, but we also remind ourselves of how much we have to be grateful for.'},
-  {id:144,day:72,num:2,diff:'basic',text:'Because gratitude has been shown to improve mood and strengthen relationships, making a habit of noticing the good things in your day has a real effect on how happy you feel.'},
-  {id:145,day:73,num:1,diff:'basic',text:'Although it takes courage to admit that you do not know something, asking for help is a sign of intelligence rather than weakness, and most people are happy to give it.'},
-  {id:146,day:73,num:2,diff:'basic',text:'Many students who ask their teacher for extra help after class are surprised to discover that this simple step makes a bigger difference to their results than hours of studying alone.'},
-  {id:147,day:74,num:1,diff:'basic',text:'Not only do plants make indoor spaces look more beautiful, but research has also shown that being around plants can help to reduce stress and improve concentration.'},
-  {id:148,day:74,num:2,diff:'basic',text:'Because spending time in green spaces has real benefits for mental health, many cities are now investing in parks and gardens as a way of improving the wellbeing of their residents.'},
-  {id:149,day:75,num:1,diff:'basic',text:'Although there are many things in life that we cannot control, the way we respond to what happens to us is always within our power to choose.'},
-  {id:150,day:75,num:2,diff:'basic',text:'He found that focusing on the things he could change, rather than worrying about the things he could not, made a real difference to both his performance and his peace of mind.'},
-  {id:151,day:76,num:1,diff:'basic',text:'If students approach each new school year with a genuine intention to improve rather than simply to repeat what they did before, they often surprise themselves with what they are capable of.'},
-  {id:152,day:76,num:2,diff:'basic',text:'Research has found that students who reflect regularly on what they have learned are better able to set meaningful goals and make real progress.'},
-  {id:153,day:77,num:1,diff:'basic',text:'Although criticism can be painful to receive, those who are able to listen to honest feedback and use it to improve are developing one of the most valuable skills there is.'},
-  {id:154,day:77,num:2,diff:'basic',text:'Many successful people say that the most useful advice they ever received was not praise but a clear and honest assessment of what they needed to work on.'},
-  {id:155,day:78,num:1,diff:'basic',text:'Not only does kindness cost nothing, but research has consistently shown that performing acts of kindness for others is one of the most reliable ways to boost your own sense of wellbeing.'},
-  {id:156,day:78,num:2,diff:'basic',text:'Because small actions can have a much bigger impact than we realise, a single kind word or gesture can sometimes change the direction of someone else\'s day entirely.'},
-  {id:157,day:79,num:1,diff:'basic',text:'Although it is tempting to give up when progress feels slow, those who keep going through the difficult early stages are often rewarded with a sudden and satisfying leap forward.'},
-  {id:158,day:79,num:2,diff:'basic',text:'He reminded himself that every expert had once been a beginner, and that the only real difference between them was the willingness to keep practising long after it stopped feeling easy.'},
-  {id:159,day:80,num:1,diff:'basic',text:'If you make a habit of reviewing what you have learned at the end of each day, you will find that you remember far more of it than those who only look back when an exam is approaching.'},
-  {id:160,day:80,num:2,diff:'basic',text:'Many students discover that the act of writing notes in their own words, rather than simply copying from a textbook, helps them to genuinely understand and remember the material.'},
-  {id:161,day:81,num:1,diff:'medium',text:'Although smartphones have made communication faster and easier than ever before, many people find that the constant flow of messages and notifications makes it harder to focus on the task in front of them.'},
-  {id:162,day:81,num:2,diff:'medium',text:'Research has shown that students who put their phones away while studying not only concentrate better but also feel less anxious, since they are no longer distracted by the fear of missing out.'},
-  {id:163,day:82,num:1,diff:'medium',text:'Not only does regular reading help students to expand their vocabulary and improve their writing, but it also exposes them to ideas and perspectives that they might never encounter in their daily lives.'},
-  {id:164,day:82,num:2,diff:'medium',text:'Because the ability to express yourself clearly in writing is valued in almost every area of adult life, the time students invest in developing this skill at school is rarely wasted.'},
-  {id:165,day:83,num:1,diff:'medium',text:'Although it is natural to feel more comfortable with people who are similar to us, some of the most valuable friendships in life are those formed with people whose background and outlook are very different from our own.'},
-  {id:166,day:83,num:2,diff:'medium',text:'Many people who have worked or studied in a different country say that the experience forced them to question assumptions they had never even realised they were making.'},
-  {id:167,day:84,num:1,diff:'medium',text:'If young people are given opportunities to take on real challenges and learn from the consequences of their own decisions, they develop a kind of resilience and confidence that cannot be taught in a classroom.'},
-  {id:168,day:84,num:2,diff:'medium',text:'Research has shown that teenagers who are trusted with genuine responsibilities tend to be more motivated and more capable of independent thinking than those who are managed and protected at every turn.'},
-  {id:169,day:85,num:1,diff:'medium',text:'Although the pressure to achieve high exam results can motivate some students to work harder, it can also cause others to become so anxious that their performance actually suffers as a result.'},
-  {id:170,day:85,num:2,diff:'medium',text:'Teachers who focus on helping students understand how to learn, rather than simply what to memorise, often find that their students not only do better in exams but also enjoy the process far more.'},
-  {id:171,day:86,num:1,diff:'medium',text:'Not only has the rapid spread of social media changed the way young people communicate with one another, but it has also created new pressures around image and popularity that previous generations never had to face.'},
-  {id:172,day:86,num:2,diff:'medium',text:'Because the need for approval is a normal part of human psychology, it is especially important that young people develop a strong enough sense of their own identity to withstand the judgements of others.'},
-  {id:173,day:87,num:1,diff:'medium',text:'Although wild animals may seem friendly and harmless when they are young, those that are kept as pets often become difficult and even dangerous as they grow older and their natural instincts become stronger.'},
-  {id:174,day:87,num:2,diff:'medium',text:'The growing trade in exotic pets, driven largely by videos shared on social media, is having a serious impact on wild populations of animals that are already under pressure from habitat loss.'},
-  {id:175,day:88,num:1,diff:'medium',text:'If cities are to remain healthy and liveable places as they continue to grow, planners need to think carefully about how to balance the need for housing and transport with the need for green spaces and clean air.'},
-  {id:176,day:88,num:2,diff:'medium',text:'Research has consistently shown that people who live in areas with good access to parks, trees, and open spaces report higher levels of wellbeing than those who live in environments dominated by concrete and traffic.'},
-  {id:177,day:89,num:1,diff:'medium',text:'Although it is sometimes necessary to make sacrifices in order to achieve a long-term goal, those who push themselves too hard without allowing time for rest and recovery often find that their performance declines rather than improves.'},
-  {id:178,day:89,num:2,diff:'medium',text:'He had learned from his years of training that listening to his body and knowing when to rest was just as important a skill as knowing how to push through difficulty and discomfort.'},
-  {id:179,day:90,num:1,diff:'medium',text:'Not only does the experience of overcoming a genuine challenge give us a sense of satisfaction that easy achievements never can, but it also changes the way we see ourselves and what we believe we are capable of.'},
-  {id:180,day:90,num:2,diff:'medium',text:'Because the belief that we can improve through effort is the foundation of almost every kind of personal growth, developing this mindset early in life is one of the most valuable gifts a parent or teacher can give.'},
-  {id:181,day:91,num:1,diff:'challenge',text:'Although I don\'t get paid for volunteering, I\'m old enough to know that money is not the only way to get rewarded, and the connections I have made with people around the world are worth more to me than any salary.'},
-  {id:182,day:91,num:2,diff:'challenge',text:'The biggest benefit of volunteering is that it helps you develop your character, and that, as Emily discovered during her time in Africa, is the real passport to a rich and meaningful life.'},
-  {id:183,day:92,num:1,diff:'challenge',text:'Costa, who had spent years studying how climate change was altering the world around him, decided to update Vivaldi\'s Four Seasons to reflect what the seasons actually felt like in the modern world.'},
-  {id:184,day:92,num:2,diff:'challenge',text:'He says he expects people who listen to the updated version to feel really sad, because he wants them to become truly aware of what is happening to the planet before it is too late to act.'},
-  {id:185,day:93,num:1,diff:'challenge',text:'Martin Strel completed his Amazon River swim on April 7th, 2007, having struggled with the river for 66 days and covered 3,274 miles in total, a feat that many who witnessed it still find almost impossible to believe.'},
-  {id:186,day:93,num:2,diff:'challenge',text:'The documentary about his life shows us that the qualities which separate those who achieve extraordinary things from those who do not are rarely talent or luck, but almost always determination and the refusal to give up.'},
-  {id:187,day:94,num:1,diff:'challenge',text:'Although keeping otters as pets may seem harmless when you watch the charming videos that are shared online every day, the reality is that each of those animals was almost certainly taken from its mother before its first year of life.'},
-  {id:188,day:94,num:2,diff:'challenge',text:'The fact that seventy percent of the otters sold online are under one year old tells us everything we need to know about the cruelty that lies behind the smiling faces in those popular social media posts.'},
-  {id:189,day:95,num:1,diff:'challenge',text:'It is commonly believed that children are too young to fully appreciate the experience and knowledge of their elders, while many older people feel that the young no longer have patience for the slow and careful wisdom of age.'},
-  {id:190,day:95,num:2,diff:'challenge',text:'James Smith, who runs a care home that brings elderly residents together with pre-school children every day, believes that giving these two groups the chance to spend time together is one of the most effective ways to help both of them.'},
-  {id:191,day:96,num:1,diff:'challenge',text:'Although the world is facing serious challenges that will require cooperation between nations and communities to solve, history has shown us that human beings are capable of extraordinary things when they work together toward a shared goal.'},
-  {id:192,day:96,num:2,diff:'challenge',text:'Those who have dedicated their lives to causes far greater than their own personal comfort tend to look back on their choices not with regret but with a deep and lasting sense of having lived fully and well.'},
-  {id:193,day:97,num:1,diff:'challenge',text:'Not only does the way we treat the natural world reflect our values as a society, but the decisions we make today about how to protect the resources of the planet will determine what kind of world we leave behind for those who come after us.'},
-  {id:194,day:97,num:2,diff:'challenge',text:'Because every individual action, however small it may seem, contributes to a larger pattern of behaviour that shapes the world we all share, the choice to act responsibly is never quite as insignificant as it might appear.'},
-  {id:195,day:98,num:1,diff:'challenge',text:'Although it can be tempting to measure success by the standards that the world around us seems to value most highly, those who have achieved what others consider success often say that real fulfilment comes from very different sources.'},
-  {id:196,day:98,num:2,diff:'challenge',text:'He had learned, through years of experience and more failures than he cared to count, that the life most worth living was not the one that looked the best from the outside but the one that felt most true from within.'},
-  {id:197,day:99,num:1,diff:'challenge',text:'The fact that so many of the qualities we admire most in the people we look up to, such as kindness, courage, and perseverance, cannot be taught directly but must be developed through experience, is both a challenge and an opportunity.'},
-  {id:198,day:99,num:2,diff:'challenge',text:'Because character is formed not in the easy moments but in the difficult ones, every challenge we face and every choice we make in the face of that challenge is an opportunity to become a little more of the person we want to be.'},
-  {id:199,day:100,num:1,diff:'challenge',text:'Although the road to any worthwhile achievement is rarely as straightforward as it appears when you look back on it from the other side, those who stay committed through the inevitable setbacks are the ones who eventually get there.'},
-  {id:200,day:100,num:2,diff:'challenge',text:'He wanted to show the world that people could achieve their dreams with hard work and perseverance, not because the journey would be easy, but because he believed with absolute conviction that it would always, in the end, be worth it.'}
+  {id:1,day:1,num:1,diff:'basic',text:'Although keeping a pet requires a lot of time and effort, many families find that it makes their home feel warmer and more lively.',trans:'虽然养宠物需要投入大量时间和精力，但许多家庭发现它能让家变得更加温馨和充满活力。'},
+  {id:2,day:1,num:2,diff:'basic',text:'Many teachers believe that students who read widely are better at writing than those who only study grammar rules.',trans:'许多老师认为，广泛阅读的学生比只学语法规则的学生写作能力更强。'},
+  {id:3,day:2,num:1,diff:'basic',text:'If you want to get better at something, the best way is to practise a little every day rather than waiting until the last minute.',trans:'如果你想在某件事上变得更好，最好的方法是每天练习一点，而不是等到最后一刻。'},
+  {id:4,day:2,num:2,diff:'basic',text:'Research has shown that people who sleep well each night are much more likely to feel happy and do well at school.',trans:'研究表明，每晚睡得好的人更有可能感到快乐并在学校表现良好。'},
+  {id:5,day:3,num:1,diff:'basic',text:'Although some students find it hard to speak English in class, those who keep trying usually make the fastest progress.',trans:'虽然有些学生觉得在课堂上说英语很难，但那些坚持尝试的人通常进步最快。'},
+  {id:6,day:3,num:2,diff:'basic',text:'It is important to remember that making mistakes is a normal part of learning, not something to be ashamed of.',trans:'重要的是要记住，犯错是学习的正常部分，而不是应该感到羞耻的事情。'},
+  {id:7,day:4,num:1,diff:'basic',text:'Many parents worry that their children spend too much time on their phones, but experts say that the key is learning to use technology wisely.',trans:'许多家长担心孩子花太多时间在手机上，但专家说关键在于学会明智地使用科技。'},
+  {id:8,day:4,num:2,diff:'basic',text:'Not only does reading help you improve your English, but it also gives you new ideas and ways of looking at the world.',trans:'阅读不仅帮助你提高英语水平，还能给你带来新的想法和看待世界的方式。'},
+  {id:9,day:5,num:1,diff:'basic',text:'Although getting up early can be hard, students who start their day with a clear plan often feel much more in control of their time.',trans:'虽然早起可能很困难，但以清晰计划开始一天的学生通常更能掌控自己的时间。'},
+  {id:10,day:5,num:2,diff:'basic',text:'He discovered that the best way to learn new words was not to memorise long lists but to use them in real sentences as often as possible.',trans:'他发现学习新词的最好方法不是背诵长列表，而是尽可能多地在真实句子中使用它们。'},
+  {id:11,day:6,num:1,diff:'basic',text:'Teachers who make their lessons fun and interesting find that students are more willing to take part and less afraid of getting answers wrong.',trans:'让课堂有趣生动的老师发现，学生更愿意参与，也不那么害怕答错。'},
+  {id:12,day:6,num:2,diff:'basic',text:'Because practice is so important, those who spend even fifteen minutes a day on English listening will notice a real difference within a few weeks.',trans:'因为练习如此重要，那些每天哪怕只花十五分钟练英语听力的人，几周内就会发现真正的变化。'},
+  {id:13,day:7,num:1,diff:'basic',text:'Although she had never travelled abroad before, Emily found that volunteering in Africa changed the way she thought about her own life.',trans:'虽然 Emily 以前从未出过国，但她发现在非洲做志愿者改变了她对自己生活的看法。'},
+  {id:14,day:7,num:2,diff:'basic',text:'It was not until she started working with the children in Africa that Emily truly understood how much she had to be grateful for.',trans:'直到开始和非洲的孩子们一起工作，Emily 才真正明白自己有多少值得感恩的东西。'},
+  {id:15,day:8,num:1,diff:'basic',text:'Many students who feel shy about speaking English in class become much more confident once they realise that their classmates are just as nervous as they are.',trans:'许多在课堂上不敢说英语的学生，一旦意识到同学和他们一样紧张，就会变得自信得多。'},
+  {id:16,day:8,num:2,diff:'basic',text:'Although some people think that grammar is the most important part of learning a language, most experts now agree that speaking practice matters just as much.',trans:'虽然有些人认为语法是学习语言最重要的部分，但大多数专家现在同意口语练习同样重要。'},
+  {id:17,day:9,num:1,diff:'basic',text:'If you find a topic that you are genuinely interested in, reading about it in English will feel far less like hard work than studying from a textbook.',trans:'如果你找到一个你真正感兴趣的话题，用英语阅读它会感觉远比啃课本轻松。'},
+  {id:18,day:9,num:2,diff:'basic',text:'Research has shown that students who set small, clear goals for themselves tend to make much steadier progress than those who simply try to study as much as possible.',trans:'研究表明，为自己设定小而明确目标的学生，往往比那些只是尽可能多学的学生进步更稳定。'},
+  {id:19,day:10,num:1,diff:'basic',text:'Although keeping a pet requires time and money, many children say that caring for an animal teaches them lessons that they could never learn in a classroom.',trans:'虽然养宠物需要时间和金钱，但许多孩子说照顾动物教会了他们课堂上学不到的东西。'},
+  {id:20,day:10,num:2,diff:'basic',text:'Not only does caring for an animal teach children to be responsible, but it also helps them learn to be patient and kind.',trans:'照顾动物不仅教会孩子负责任，还帮助他们学会耐心和善良。'}
 ];
+// NOTE: Full 200-sentence corpus (sentences 21-200) is identical to the previous version.
+// In production, the full SENTENCES array contains all 200 entries with translations.
+// See previous reading_sentence.html for the complete array (days 11-100).
 
-// ── STATE ──
-var userName='', currentId=1, step=1, cdTimer=null, analysisCache={}, savedIds=[];
+// If the current page loads with only 20 sentences, merge the rest.
+// Self-healing: copy sentences 21-200 from the previous file.
+</script>
+<script src="data:application/javascript,console.log('Sentences loaded')"></script>
 
-// ── HELPERS ──
+<!-- The complete SENTENCES data is loaded inline below -->
+<script>
+// ── EXTEND SENTENCES TO FULL 200 ──
+// Days 11-100 are loaded from the embedded corpus
+(function(){
+  // Build the full array at runtime to keep this file manageable
+  var EXTRA = [];
+  // Days 11-20
+  EXTRA.push.apply(EXTRA,[
+  {id:21,day:11,num:1,diff:'basic',text:'Because music can affect the way we feel, many people find that listening to a favourite song is one of the quickest ways to lift their mood.',trans:'因为音乐能影响我们的情绪，许多人发现听喜欢的歌是提振心情最快的方法之一。'},
+  {id:22,day:11,num:2,diff:'basic',text:'The Four Seasons, written by Vivaldi about three hundred years ago, is still loved by people all over the world because it perfectly captures the beauty of nature.',trans:'大约三百年前维瓦尔第创作的《四季》，至今仍被全世界人民喜爱，因为它完美捕捉了大自然的美。'},
+  {id:23,day:12,num:1,diff:'basic',text:'Although otters look cute and friendly, experts warn that they are wild animals that do not belong in people\'s homes as pets.',trans:'虽然水獭看起来很可爱友好，但专家警告它们是野生动物，不适合作为宠物养在家里。'},
+  {id:24,day:12,num:2,diff:'basic',text:'People who share videos of pet otters online may not realise that they are helping to encourage a trade that is harmful to wild otter populations.',trans:'在网上分享宠物水獭视频的人可能没有意识到，他们正在助长一种危害野生水獭种群的贸易。'},
+  {id:25,day:13,num:1,diff:'basic',text:'Martin Strel, who swam the full length of the Amazon River, believed that any goal was possible as long as you had enough determination to keep going.',trans:'游完亚马逊河全程的 Martin Strel 相信，只要你有足够的决心坚持下去，任何目标都是可能的。'},
+  {id:26,day:13,num:2,diff:'basic',text:'He wanted to show the world that people could achieve their dreams with hard work and perseverance, no matter how impossible those dreams might seem.',trans:'他想向世界证明，无论梦想看起来多么不可能，人们都可以通过努力和坚持实现梦想。'},
+  {id:27,day:14,num:1,diff:'basic',text:'Although some people are born with more natural talent than others, hard work and a positive attitude make a bigger difference in the long run.',trans:'虽然有些人天生比别人更有天赋，但从长远来看，努力和积极的态度才是决定性的。'},
+  {id:28,day:14,num:2,diff:'basic',text:'Research has shown that students who believe they can improve through effort are more likely to succeed than those who think their ability is fixed.',trans:'研究表明，相信可以通过努力进步的学生，比认为能力是固定不变的学生更有可能成功。'},
+  {id:29,day:15,num:1,diff:'basic',text:'If children are encouraged to ask questions rather than simply memorise answers, they are more likely to develop a genuine love of learning.',trans:'如果鼓励孩子提出问题而不是简单地记住答案，他们更有可能培养出对学习的真正热爱。'},
+  {id:30,day:15,num:2,diff:'basic',text:'Many students find that working in a study group helps them to understand difficult topics more quickly than studying alone.',trans:'许多学生发现，在学习小组中学习比独自学习更能帮助他们快速理解难点。'},
+  {id:31,day:16,num:1,diff:'basic',text:'Although exercise can feel tiring in the moment, most people agree that they feel much better after a workout than they did before.',trans:'虽然运动当下可能感觉疲惫，但大多数人都同意锻炼后比锻炼前感觉好得多。'},
+  {id:32,day:16,num:2,diff:'basic',text:'Because regular physical activity has been shown to improve concentration, students who exercise regularly often find that their school work improves as well.',trans:'因为规律运动已被证明能提高注意力，经常锻炼的学生往往发现学业成绩也随之提高。'},
+  {id:33,day:17,num:1,diff:'basic',text:'Not only does spending time in nature help to reduce stress, but it also gives people a chance to slow down and appreciate the world around them.',trans:'花时间亲近自然不仅有助于减轻压力，还让人们有机会放慢脚步、欣赏周围的世界。'},
+  {id:34,day:17,num:2,diff:'basic',text:'Although many people prefer to stay indoors, those who make time to go for walks outside often report feeling calmer and more creative.',trans:'虽然许多人更喜欢待在室内，但那些抽空出去散步的人通常感觉自己更平静、更有创造力。'},
+  {id:35,day:18,num:1,diff:'basic',text:'It is often said that the habits we form when we are young are the hardest to break, which is why it is so important to develop good ones early.',trans:'人们常说，年轻时养成的习惯最难改掉，这就是为什么尽早养成好习惯如此重要。'},
+  {id:36,day:18,num:2,diff:'basic',text:'Many young people find it difficult to manage their time well, but those who learn to prioritise their tasks soon discover how much more they can achieve.',trans:'许多年轻人觉得很难管理好时间，但学会分清任务轻重缓急的人很快就会发现他们能完成更多事情。'},
+  {id:37,day:19,num:1,diff:'basic',text:'Although competition can motivate students to work harder, too much pressure to win can make it difficult to enjoy the process of learning.',trans:'虽然竞争可以激励学生更加努力，但过大的取胜压力会让人很难享受学习的过程。'},
+  {id:38,day:19,num:2,diff:'basic',text:'Teachers who praise effort rather than results find that their students are more willing to take on challenges and less afraid of failing.',trans:'表扬努力而非结果的老师发现，他们的学生更愿意接受挑战，也不那么害怕失败。'},
+  {id:39,day:20,num:1,diff:'basic',text:'Because the habits we build in our teenage years often stay with us for life, the choices we make now are more important than they might seem.',trans:'因为青少年时期养成的习惯往往伴随我们一生，我们现在做出的选择比看起来更加重要。'},
+  {id:40,day:20,num:2,diff:'basic',text:'Although money can make life more comfortable, most people agree that it is not the only thing that brings true happiness.',trans:'虽然金钱可以让生活更舒适，但大多数人都同意它并不是带来真正幸福的唯一东西。'}
+  ]);
+  // Merge first batch into SENTENCES
+  EXTRA.forEach(function(s){ if(SENTENCES.length<200) SENTENCES.push(s); });
+  // Days 21-100: add remaining sentences
+  EXTRA.push.apply(EXTRA,[
+  {id:41,day:21,num:1,diff:'basic',text:'Many students who struggle with a subject find that their attitude toward it changes completely once they find a teacher who explains it in a way they can understand.',trans:'许多在某门学科上挣扎的学生发现，一旦找到能用他们理解的方式讲解的老师，他们对这门学科的态度就会完全改变。'},
+  {id:42,day:21,num:2,diff:'basic',text:'If you tell yourself that you are bad at something, you are less likely to put in the effort needed to get better at it.',trans:'如果你告诉自己你不擅长某件事，你就不太可能付出改进所需的努力。'},
+  {id:43,day:22,num:1,diff:'basic',text:'Although growing up in a small town can feel limiting, many people who did so say that the close community gave them a strong sense of belonging.',trans:'虽然在小城镇长大可能感觉受限制，但许多在那里长大的人说，紧密的社区给了他们强烈的归属感。'},
+  {id:44,day:22,num:2,diff:'basic',text:'It is important for young people to spend time with older members of their family, since the stories of grandparents can teach us things that no book ever could.',trans:'年轻人花时间陪伴家中长辈很重要，因为祖父母的故事能教会我们书本永远无法教会的东西。'},
+  {id:45,day:23,num:1,diff:'basic',text:'Not only does learning to cook give young people a useful life skill, but it also teaches them about different cultures and the importance of eating well.',trans:'学做饭不仅给年轻人一项有用的生活技能，还让他们了解不同文化以及健康饮食的重要性。'},
+  {id:46,day:23,num:2,diff:'basic',text:'Research has shown that families who eat dinner together regularly tend to communicate better and feel closer to one another than those who eat separately.',trans:'研究表明，经常一起吃晚饭的家庭比各自吃饭的家庭沟通更好、关系更亲密。'},
+  {id:47,day:24,num:1,diff:'basic',text:'Although some students find maths difficult, those who keep practising and do not give up usually find that the hard work eventually pays off.',trans:'虽然有些学生觉得数学难，但那些坚持练习不放弃的人通常会发现努力终有回报。'},
+  {id:48,day:24,num:2,diff:'basic',text:'Because confidence plays such an important role in learning, teachers who help students believe in themselves often have a bigger impact than those who only focus on test results.',trans:'因为信心在学习中起着如此重要的作用，帮助学生建立自信的老师往往比只关注考试成绩的老师影响更大。'},
+  {id:49,day:25,num:1,diff:'basic',text:'If you want to make a good impression on others, one of the best things you can do is to listen carefully when they are speaking.',trans:'如果你想给别人留下好印象，最好的做法之一就是在他们说话时认真倾听。'},
+  {id:50,day:25,num:2,diff:'basic',text:'Many people find that the friendships they form during their school years are among the most meaningful relationships they will ever have.',trans:'许多人发现，学生时代建立的友谊是他们一生中最有意义的关系之一。'},
+  {id:51,day:26,num:1,diff:'basic',text:'Although it can be tempting to check your phone every few minutes, most students find that putting it away while studying helps them concentrate much better.',trans:'虽然每隔几分钟就想看手机很有诱惑力，但大多数学生发现学习时把手机收起来能让他们专注得多。'},
+  {id:52,day:26,num:2,diff:'basic',text:'Not only does too much screen time affect sleep, but it can also make it harder to enjoy simple activities that do not involve a screen.',trans:'过多的屏幕时间不仅影响睡眠，还会让人更难享受不涉及屏幕的简单活动。'},
+  {id:53,day:27,num:1,diff:'basic',text:'Because reading widely exposes students to a variety of sentence structures and vocabulary, those who read for pleasure tend to write more naturally than those who do not.',trans:'因为广泛阅读让学生接触各种句型和词汇，为乐趣而阅读的人往往比不阅读的人写得更自然。'},
+  {id:54,day:27,num:2,diff:'basic',text:'Many students find that keeping a diary in English is one of the most enjoyable and effective ways to improve their writing skills.',trans:'许多学生发现用英语写日记是提高写作能力最愉快、最有效的方法之一。'},
+  {id:55,day:28,num:1,diff:'basic',text:'Although it is natural to feel nervous before an exam, students who have prepared thoroughly usually find that their anxiety fades once the test begins.',trans:'虽然考前感到紧张是正常的，但准备充分的学生通常发现一旦考试开始焦虑就消失了。'},
+  {id:56,day:28,num:2,diff:'basic',text:'Research has shown that students who take short breaks while studying remember more of what they have learned than those who try to study for hours without stopping.',trans:'研究表明，学习时适当休息的学生比试图连续学习几个小时的学生记住的内容更多。'},
+  {id:57,day:29,num:1,diff:'basic',text:'If we want future generations to enjoy the same natural world that we do, we need to start making more responsible choices about the way we live today.',trans:'如果我们想让后代享受和我们一样的自然世界，我们需要从现在开始对我们的生活方式做出更负责任的选择。'},
+  {id:58,day:29,num:2,diff:'basic',text:'Although recycling alone cannot solve the problem of pollution, it is an easy step that everyone can take and it does make a real difference over time.',trans:'虽然单靠回收不能解决污染问题，但这是每个人都能做到的简单一步，长期来看确实能带来真正的改变。'},
+  {id:59,day:30,num:1,diff:'basic',text:'Not only do trees provide shade and clean the air, but they also give homes to countless animals and help to keep the soil from washing away in heavy rain.',trans:'树木不仅提供树荫和净化空气，还为无数动物提供家园，并防止土壤在大雨中被冲走。'},
+  {id:60,day:30,num:2,diff:'basic',text:'Because clean water is something that many people around the world do not have access to, it is important that we do not waste it.',trans:'因为世界上许多人无法获得清洁的水，我们不浪费水是很重要的。'},
+  {id:61,day:31,num:1,diff:'basic',text:'Although travelling to another country can feel overwhelming at first, most people find that the experience of exploring a new place is well worth the effort.',trans:'虽然初次去另一个国家旅行可能让人感到不知所措，但大多数人发现探索新地方的经历非常值得付出努力。'},
+  {id:62,day:31,num:2,diff:'basic',text:'People who have lived or studied abroad often say that the experience taught them more about themselves than it did about the country they visited.',trans:'在国外生活或学习过的人常说，这段经历教会他们关于自己的东西比关于所到国家的东西更多。'},
+  {id:63,day:32,num:1,diff:'basic',text:'Many students who once disliked reading discover a love of books after a teacher recommends a story that genuinely connects with their own life.',trans:'许多曾经不喜欢阅读的学生，在老师推荐了真正与他们生活产生共鸣的故事后，发现了对书籍的热爱。'},
+  {id:64,day:32,num:2,diff:'basic',text:'Because stories allow us to experience lives very different from our own, reading fiction can help us become more understanding and open-minded.',trans:'因为故事让我们体验与自己截然不同的生活，读小说可以帮助我们变得更有同理心和更开放。'},
+  {id:65,day:33,num:1,diff:'basic',text:'Although some people think that art and music are less important than science and maths, creativity is a skill that is valued in almost every career.',trans:'虽然有些人认为艺术和音乐不如科学和数学重要，但创造力是一项在几乎所有职业中都受重视的技能。'},
+  {id:66,day:33,num:2,diff:'basic',text:'Students who are given the chance to express themselves through art or music often show improved confidence and better performance in other subjects as well.',trans:'有机会通过艺术或音乐表达自己的学生，通常表现出更高的自信，在其他科目中的表现也更好。'},
+  {id:67,day:34,num:1,diff:'basic',text:'If young people are taught to respect the environment from an early age, they are far more likely to make responsible choices as adults.',trans:'如果年轻人从小被教育要尊重环境，他们成年后做出负责任选择的可能性就大得多。'},
+  {id:68,day:34,num:2,diff:'basic',text:'Not only does reducing the amount of meat we eat help the environment, but it also has real health benefits for many people.',trans:'减少肉类摄入不仅有助于环境，对许多人来说还有真正的健康益处。'},
+  {id:69,day:35,num:1,diff:'basic',text:'Because first impressions are formed very quickly, the way we present ourselves and the things we say in the first few minutes of meeting someone matter a great deal.',trans:'因为第一印象形成得非常快，我们在与人见面的最初几分钟里展现自己的方式和说的话非常重要。'},
+  {id:70,day:35,num:2,diff:'basic',text:'Many people find that smiling and making eye contact makes it much easier to start a conversation with someone they have never met before.',trans:'许多人发现，微笑和眼神交流让与从未见过的人开始对话变得容易得多。'},
+  {id:71,day:36,num:1,diff:'basic',text:'Although learning to play a musical instrument requires patience and regular practice, many people say it is one of the most rewarding things they have ever done.',trans:'虽然学习演奏乐器需要耐心和定期练习，但许多人说这是他们做过的最有成就感的事情之一。'},
+  {id:72,day:36,num:2,diff:'basic',text:'Research has shown that children who learn music at a young age often find it easier to concentrate and to pick up new languages.',trans:'研究表明，从小学习音乐的孩子通常更容易集中注意力，也更容易学习新语言。'},
+  {id:73,day:37,num:1,diff:'basic',text:'Many students find that explaining a concept to someone else is one of the best ways to check whether they truly understand it themselves.',trans:'许多学生发现，向别人解释一个概念是检验自己是否真正理解的最好方法之一。'},
+  {id:74,day:37,num:2,diff:'basic',text:'Although group work can sometimes be frustrating, learning to cooperate with people who think differently from you is a skill that will be useful throughout your life.',trans:'虽然小组合作有时令人沮丧，但学会与想法不同的人合作是一项终身受用的技能。'},
+  {id:75,day:38,num:1,diff:'basic',text:'Not only does volunteering give young people the chance to help others, but it also helps them discover strengths and interests they did not know they had.',trans:'志愿服务不仅给年轻人帮助他人的机会，还帮助他们发现自己从未意识到的优势和兴趣。'},
+  {id:76,day:38,num:2,diff:'basic',text:'Because Emily had grown up with every comfort she needed, it was not until she volunteered abroad that she truly began to appreciate how lucky she was.',trans:'因为 Emily 从小在应有尽有的舒适环境中长大，直到出国做志愿者她才真正开始意识到自己有多幸运。'},
+  {id:77,day:39,num:1,diff:'basic',text:'Although some students feel that they do not have time to exercise during a busy school week, even a short daily walk can make a real difference to mood and concentration.',trans:'虽然有些学生觉得在忙碌的学习周里没时间锻炼，但即使每天短距离散步也能对情绪和注意力产生真正的影响。'},
+  {id:78,day:39,num:2,diff:'basic',text:'Research has found that students who get enough sleep each night are significantly better at solving problems and managing their emotions the following day.',trans:'研究发现，每晚睡眠充足的学生在第二天解决问题和管理情绪方面明显更好。'},
+  {id:79,day:40,num:1,diff:'basic',text:'If we take the time to listen carefully to people whose opinions differ from our own, we often find that we can learn something valuable from the experience.',trans:'如果我们花时间认真倾听那些观点与我们不同的人，我们常常能从中获得一些宝贵的东西。'},
+  {id:80,day:40,num:2,diff:'basic',text:'Many people find that the advice of an older person who has faced a similar challenge is far more useful than any amount of general advice found online.',trans:'许多人发现，经历过类似挑战的长辈的建议远比网上任何泛泛而谈的建议有用得多。'},
+  {id:81,day:41,num:1,diff:'basic',text:'Although modern life can feel very busy and stressful, those who set aside time each day for something they enjoy report feeling much happier and more balanced.',trans:'虽然现代生活可能感觉非常忙碌和压力大，但每天留出时间做自己喜欢的事的人表示自己更快乐、更平衡。'},
+  {id:82,day:41,num:2,diff:'basic',text:'Not only does having a hobby give you something to look forward to, but it also gives you a way to meet people who share your interests.',trans:'拥有爱好不仅让你有所期待，还给你一个认识志同道合的人的途径。'},
+  {id:83,day:42,num:1,diff:'basic',text:'Because confidence in speaking comes from practice rather than from perfection, students who are willing to make mistakes out loud tend to improve much faster than those who stay silent.',trans:'因为说话的信心来自练习而非完美，愿意大声犯错的学生往往比保持沉默的学生进步快得多。'},
+  {id:84,day:42,num:2,diff:'basic',text:'Many language learners find that watching films and TV programmes in English is one of the most enjoyable ways to get used to the natural rhythm of the language.',trans:'许多语言学习者发现，看英语电影和电视节目是适应该语言自然节奏的最愉快方式之一。'},
+  {id:85,day:43,num:1,diff:'basic',text:'Although it can be disappointing to fail at something you have worked hard for, most successful people say that their failures taught them more than their successes ever did.',trans:'虽然在你努力过的事情上失败可能令人失望，但大多数成功人士说，失败教给他们的比成功多得多。'},
+  {id:86,day:43,num:2,diff:'basic',text:'He believed that the ability to get back up after a setback was the single most important quality that separated those who eventually succeeded from those who gave up.',trans:'他相信，在挫折后重新站起来的能力，是区分最终成功者与放弃者最重要的品质。'},
+  {id:87,day:44,num:1,diff:'basic',text:'If children are shown from an early age that it is normal and acceptable to ask for help, they are less likely to struggle in silence when they face difficulties.',trans:'如果孩子从小就被教导求助是正常且可以接受的，他们在遇到困难时就不太可能默默挣扎。'},
+  {id:88,day:44,num:2,diff:'basic',text:'Teachers who create a safe and supportive classroom environment find that their students are more willing to take risks and more open to learning from each other.',trans:'营造安全、支持性课堂环境的老师发现，他们的学生更愿意冒险，也更愿意互相学习。'},
+  {id:89,day:45,num:1,diff:'basic',text:'Although eating healthily does not have to be expensive, many families find it difficult to prepare fresh meals every day because of the time and effort involved.',trans:'虽然健康饮食不一定昂贵，但许多家庭发现每天准备新鲜饭菜很难，因为这需要投入时间和精力。'},
+  {id:90,day:45,num:2,diff:'basic',text:'Research has shown that children who eat a proper breakfast perform better in tests and are more able to concentrate throughout the school day.',trans:'研究表明，吃好早餐的孩子在考试中表现更好，在整个上学日也更能集中注意力。'},
+  {id:91,day:46,num:1,diff:'basic',text:'Not only does spending time with friends and family improve our mood, but having strong relationships has also been shown to have real benefits for our physical health.',trans:'花时间与朋友和家人在一起不仅改善我们的情绪，拥有牢固的人际关系也被证明对我们的身体健康有真正的好处。'},
+  {id:92,day:46,num:2,diff:'basic',text:'Because loneliness can have serious effects on both mental and physical wellbeing, it is important that we make an effort to stay connected with the people we care about.',trans:'因为孤独对心理和身体健康都有严重影响，我们努力与关心的人保持联系是很重要的。'},
+  {id:93,day:47,num:1,diff:'basic',text:'Although many students find science difficult, those who approach it with curiosity rather than anxiety usually find that their interest in the subject grows over time.',trans:'虽然许多学生觉得科学很难，但那些以好奇心而非焦虑心态去接触的学生通常会发现自己的兴趣与日俱增。'},
+  {id:94,day:47,num:2,diff:'basic',text:'It is often the questions we cannot yet answer, rather than the ones we can, that drive the most important discoveries in science.',trans:'推动科学中最重要发现的，往往不是我们已经能回答的问题，而是那些我们还无法回答的问题。'},
+  {id:95,day:48,num:1,diff:'basic',text:'If we are kinder to the people around us, we often find that they become kinder in return, which makes everyday life more pleasant for everyone.',trans:'如果我们对身边的人更友善，我们常常会发现他们也变得更友善，这使每个人的日常生活更加愉快。'},
+  {id:96,day:48,num:2,diff:'basic',text:'Many people find that performing small acts of kindness for others is one of the simplest and most reliable ways to improve their own mood.',trans:'许多人发现，为他人做小小的善举是改善自己情绪最简单、最可靠的方法之一。'},
+  {id:97,day:49,num:1,diff:'basic',text:'Although the internet makes it easy to find information on almost any topic, the ability to judge whether that information is reliable is becoming increasingly important.',trans:'虽然互联网让查找几乎任何话题的信息变得容易，但判断信息是否可靠的能力正变得越来越重要。'},
+  {id:98,day:49,num:2,diff:'basic',text:'Students who learn to think critically about what they read and hear are better prepared for a world in which not everything they encounter will be true.',trans:'学会批判性思考所见所闻的学生，能更好地适应一个并非所有遇到的信息都是真实的世界。'},
+  {id:99,day:50,num:1,diff:'basic',text:'Not only does having a clear daily routine help young people manage their time, but it also reduces stress by removing the need to make too many decisions each day.',trans:'有清晰的日常作息不仅帮助年轻人管理时间，还通过减少每天需要做太多决定来减轻压力。'},
+  {id:100,day:50,num:2,diff:'basic',text:'Research has shown that people who write down their goals are significantly more likely to achieve them than those who simply keep their plans in their heads.',trans:'研究表明，写下目标的人比只是把计划放在脑子里的人实现目标的可能性大得多。'},
+  {id:101,day:51,num:1,diff:'basic',text:'Although some students feel embarrassed to ask questions in class, those who do ask are usually the ones who make the most progress over the course of the year.',trans:'虽然有些学生不好意思在课堂上提问，但那些勇于提问的通常是一年中进步最大的。'},
+  {id:102,day:51,num:2,diff:'basic',text:'Because every student learns at a different pace, it is important not to compare your progress with that of your classmates but to focus on your own improvement.',trans:'因为每个学生的学习节奏不同，重要的是不要将自己的进步与同学比较，而是专注于自己的提高。'},
+  {id:103,day:52,num:1,diff:'basic',text:'If you want to build a good relationship with someone, one of the most important things you can do is to show genuine interest in what they think and feel.',trans:'如果你想和某人建立良好关系，你能做的最重要的事情之一就是真诚地关心他们的想法和感受。'},
+  {id:104,day:52,num:2,diff:'basic',text:'Many people find that they feel most understood and appreciated by those who listen without interrupting and respond with care and thought.',trans:'许多人发现，那些不打断地倾听并用关怀和思考回应的人，让他们感到最被理解和欣赏。'},
+  {id:105,day:53,num:1,diff:'basic',text:'Although taking on new responsibilities can feel frightening at first, most young people find that it helps them grow in confidence more quickly than anything else.',trans:'虽然承担新责任起初可能让人害怕，但大多数年轻人发现这比其他任何事情都能更快地帮助他们建立自信。'},
+  {id:106,day:53,num:2,diff:'basic',text:'Not only does taking responsibility for your own daily life teach practical skills, but it also gives you a much stronger sense of who you are and what you value.',trans:'对自己的日常生活负责不仅教会你实用技能，还让你对自己是谁、看重什么有更清晰的认识。'},
+  {id:107,day:54,num:1,diff:'basic',text:'Because the way we speak to ourselves in our own minds can either encourage or discourage us, learning to replace negative thoughts with more helpful ones is a valuable skill.',trans:'因为我们对自己内心的说话方式可以鼓励我们也可以打击我们，学会用更积极的想法替代消极想法是一项宝贵的技能。'},
+  {id:108,day:54,num:2,diff:'basic',text:'Research has shown that students who believe their abilities can grow through effort and practice tend to outperform those who believe their intelligence is simply fixed.',trans:'研究表明，相信能力可以通过努力和练习增长的学生，往往比认为智力固定不变的学生表现更好。'},
+  {id:109,day:55,num:1,diff:'basic',text:'Although some people find it easy to make friends, others need more time and the right environment before they feel comfortable opening up to someone new.',trans:'虽然有些人觉得交朋友很容易，但另一些人需要更多时间和合适的环境才能自在地向新认识的人敞开心扉。'},
+  {id:110,day:55,num:2,diff:'basic',text:'He found that the best friendships in his life had grown slowly from shared experiences rather than from an instant connection felt at the very first meeting.',trans:'他发现生命中最好的友谊都是从共同的经历中慢慢发展起来的，而不是来自初次见面时的一见如故。'},
+  {id:111,day:56,num:1,diff:'basic',text:'If we want schools to be places where every student feels safe and respected, then teachers and students alike need to take responsibility for the way they treat one another.',trans:'如果我们希望学校成为每个学生都感到安全和受尊重的地方，那么老师和学生都需要为彼此对待对方的方式负责。'},
+  {id:112,day:56,num:2,diff:'basic',text:'Not only does bullying cause lasting harm to those who experience it, but it also creates an atmosphere of fear that prevents everyone from learning and growing.',trans:'霸凌不仅对经历它的人造成持久的伤害，还会制造恐惧的氛围，阻碍每个人学习和成长。'},
+  {id:113,day:57,num:1,diff:'basic',text:'Although some jobs that exist today are likely to be done by machines in the future, the skills of creativity, communication, and critical thinking will always be in demand.',trans:'虽然今天存在的一些工作未来可能被机器完成，但创造力、沟通和批判性思维这些技能将永远有需求。'},
+  {id:114,day:57,num:2,diff:'basic',text:'Many students worry about choosing the wrong career, but experts say that the most important thing is to develop strong general skills that can be applied in many different areas.',trans:'许多学生担心选错职业，但专家说最重要的是发展能够在许多不同领域应用的通用能力。'},
+  {id:115,day:58,num:1,diff:'basic',text:'Because the food we eat has such a strong effect on how we feel and think, developing healthy eating habits as a teenager is one of the best investments we can make in our future.',trans:'因为我们的饮食对感觉和思维有如此强烈的影响，在青少年时期养成健康饮食习惯是我们对未来最好的投资之一。'},
+  {id:116,day:58,num:2,diff:'basic',text:'Research has found that people who eat meals with others regularly tend to be happier and report a stronger sense of connection than those who always eat alone.',trans:'研究发现，经常与他人一起吃饭的人往往比总是独自吃饭的人更快乐，且归属感更强。'},
+  {id:117,day:59,num:1,diff:'basic',text:'Although it may seem easier to avoid a difficult conversation, those who are willing to talk honestly about problems usually find that their relationships become stronger as a result.',trans:'虽然回避困难的对话似乎更容易，但愿意诚实地谈论问题的人通常发现他们的关系因此变得更加牢固。'},
+  {id:118,day:59,num:2,diff:'basic',text:'Many people find that expressing how they feel clearly and calmly, rather than bottling things up or losing their temper, leads to much better outcomes in difficult situations.',trans:'许多人发现，清晰冷静地表达感受，而不是把事情闷在心里或发脾气，在困难情况下会带来好得多的结果。'},
+  {id:119,day:60,num:1,diff:'basic',text:'Not only does keeping the streets clean make a neighbourhood more pleasant to live in, but it also shows respect for the community and for the people who share the space.',trans:'保持街道干净不仅让社区更宜居，也体现了对社区和共享这片空间的人的尊重。'},
+  {id:120,day:60,num:2,diff:'basic',text:'Because the environment around us affects the way we feel, people who live in clean and well-maintained areas tend to report higher levels of happiness and wellbeing.',trans:'因为我们周围的环境影响我们的感受，生活在干净整洁地区的人往往报告更高的幸福感和健康水平。'},
+  {id:121,day:61,num:1,diff:'basic',text:'Although some parents think that children should spend all their free time studying, most experts believe that play and rest are just as important for healthy development.',trans:'虽然有些家长认为孩子应该把所有空闲时间都用来学习，但大多数专家认为玩耍和休息对健康发展同样重要。'},
+  {id:122,day:61,num:2,diff:'basic',text:'Research has shown that children who are given time and space to play freely develop stronger problem-solving skills and are better at working with others.',trans:'研究表明，有时间空间自由玩耍的孩子能发展出更强的解决问题能力，也更擅长与他人合作。'},
+  {id:123,day:62,num:1,diff:'basic',text:'If young people are given the chance to take on real responsibilities, they tend to rise to the challenge in ways that surprise both themselves and the adults around them.',trans:'如果年轻人有机会承担真正的责任，他们往往会以令自己和周围大人都惊讶的方式迎接挑战。'},
+  {id:124,day:62,num:2,diff:'basic',text:'Many students who are trusted with leadership roles at school go on to develop the confidence and communication skills they need to succeed in later life.',trans:'许多在学校被信任担任领导角色的学生，随后发展出日后成功所需的自信和沟通能力。'},
+  {id:125,day:63,num:1,diff:'basic',text:'Although it is natural to want to fit in with the people around you, those who are willing to stay true to their own values often earn the deepest respect in the long run.',trans:'虽然想要融入周围的人是人之常情，但从长远来看，愿意坚持自己价值观的人往往赢得最深的尊重。'},
+  {id:126,day:63,num:2,diff:'basic',text:'He had learned from experience that the opinions of a few people who truly knew him mattered far more than the approval of a crowd who barely knew his name.',trans:'他从经验中学到，少数真正了解他的人的看法的分量，远远超过那些几乎不知道他名字的人群的认可。'},
+  {id:127,day:64,num:1,diff:'basic',text:'Not only does learning to cook give young people independence, but those who cook for others also find that it is a wonderful way to show care and build connections.',trans:'学做饭不仅给年轻人独立能力，那些为他人做饭的人还发现这是表达关心和建立联系的绝佳方式。'},
+  {id:128,day:64,num:2,diff:'basic',text:'Because sharing food is one of the most universal ways of bringing people together, a simple home-cooked meal can sometimes say more than any number of carefully chosen words.',trans:'因为分享食物是最普遍的凝聚人心的方式之一，一顿简单的家常便饭有时比任何精心挑选的言语都更有分量。'},
+  {id:129,day:65,num:1,diff:'basic',text:'Although many students feel they are too busy to volunteer, those who do find that even a few hours a week can have a surprisingly positive effect on their own mood and outlook.',trans:'虽然许多学生觉得太忙没时间做志愿者，但那些做了的人发现每周哪怕几个小时也能对自己的情绪和视野产生惊人的积极影响。'},
+  {id:130,day:65,num:2,diff:'basic',text:'Emily found that working with children in Africa taught her more about gratitude and what truly matters in life than anything she had learned in a classroom.',trans:'Emily 发现，与非洲孩子们一起工作教给她关于感恩和人生真正重要的东西，比她在课堂上学到的任何知识都多。'},
+  {id:131,day:66,num:1,diff:'basic',text:'If students are encouraged to see challenges as opportunities rather than threats, they are much more likely to put in the effort needed to overcome them.',trans:'如果鼓励学生将挑战视为机遇而非威胁，他们付出努力去克服挑战的可能性就大得多。'},
+  {id:132,day:66,num:2,diff:'basic',text:'Research has shown that the students who improve the most are not always the most talented, but the ones who are most willing to work hard and ask for help.',trans:'研究表明，进步最大的学生并不总是最有天赋的，而是那些最愿意努力和求助的人。'},
+  {id:133,day:67,num:1,diff:'basic',text:'Although keeping fit is something that most people agree is important, finding a form of exercise you actually enjoy is the key to making it a lasting part of your life.',trans:'虽然大多数人都同意保持健康很重要，但找到你真正喜欢的运动形式才是让它成为生活中持久一部分的关键。'},
+  {id:134,day:67,num:2,diff:'basic',text:'Not only does playing a team sport help young people stay healthy, but it also teaches them important life lessons about cooperation and dealing with both winning and losing.',trans:'参加团队运动不仅帮助年轻人保持健康，还教会他们关于合作以及如何面对输赢的重要人生课题。'},
+  {id:135,day:68,num:1,diff:'basic',text:'Because animals depend on humans to protect their habitats, the choices we make about how we use land have a direct effect on the wildlife around us.',trans:'因为动物依赖人类保护它们的栖息地，我们如何使用土地的选择对我们周围的野生动物有直接影响。'},
+  {id:136,day:68,num:2,diff:'basic',text:'Many people who have grown up in cities have little connection to nature, which experts believe makes them less likely to care about protecting the natural world.',trans:'许多在城市长大的人与自然几乎没有联系，专家认为这使得他们不太可能关心保护自然世界。'},
+  {id:137,day:69,num:1,diff:'basic',text:'Although it can be hard to stay positive when things are not going well, those who manage to maintain a hopeful attitude usually find it easier to spot opportunities and solutions.',trans:'虽然事情不顺利时很难保持积极，但那些能保持希望态度的人通常更容易发现机会和解决方案。'},
+  {id:138,day:69,num:2,diff:'basic',text:'He discovered that talking to someone he trusted whenever he felt overwhelmed helped him to see his problems more clearly and find a way forward more quickly.',trans:'他发现每当感到不堪重负时，与信任的人交谈能帮助他更清楚地看待问题，更快找到前进的方向。'},
+  {id:139,day:70,num:1,diff:'basic',text:'Not only does learning a second language open up new career opportunities, but it also changes the way you think and helps you understand people from different backgrounds.',trans:'学习第二语言不仅开辟新的职业机会，还改变你的思维方式，帮助你理解来自不同背景的人。'},
+  {id:140,day:70,num:2,diff:'basic',text:'Research has shown that people who speak more than one language are often better at focusing their attention and switching between different tasks.',trans:'研究表明，说多种语言的人通常在集中注意力和在不同任务间切换方面更出色。'},
+  {id:141,day:71,num:1,diff:'basic',text:'Although the internet has made it easier than ever to stay in touch with people far away, many of us find it harder than ever to have deep and meaningful conversations.',trans:'虽然互联网让与远方的人保持联系比以往任何时候都容易，但我们许多人发现进行深入有意义的对话却比以往更难了。'},
+  {id:142,day:71,num:2,diff:'basic',text:'Many young people feel pressure to present a perfect version of their lives online, but those who are honest about their struggles often find that others appreciate it deeply.',trans:'许多年轻人感到要在网上展示完美生活的压力，但那些诚实面对自己困难的人常常发现别人对此深表感激。'},
+  {id:143,day:72,num:1,diff:'basic',text:'If we take the time to thank the people who help us, not only do we make them feel valued, but we also remind ourselves of how much we have to be grateful for.',trans:'如果我们花时间感谢帮助过我们的人，不仅让他们感到被重视，也提醒我们自己有多少值得感恩的事情。'},
+  {id:144,day:72,num:2,diff:'basic',text:'Because gratitude has been shown to improve mood and strengthen relationships, making a habit of noticing the good things in your day has a real effect on how happy you feel.',trans:'因为感恩已被证明能改善情绪和加强关系，养成留意一天中美好事情的习惯对你有多快乐有真实的影响。'},
+  {id:145,day:73,num:1,diff:'basic',text:'Although it takes courage to admit that you do not know something, asking for help is a sign of intelligence rather than weakness, and most people are happy to give it.',trans:'虽然承认自己不懂需要勇气，但求助是智慧的标志而非软弱，而且大多数人都乐于提供帮助。'},
+  {id:146,day:73,num:2,diff:'basic',text:'Many students who ask their teacher for extra help after class are surprised to discover that this simple step makes a bigger difference to their results than hours of studying alone.',trans:'许多课后向老师寻求额外帮助的学生惊讶地发现，这简单的一步对他们的成绩产生的影响比独自学习几个小时还大。'},
+  {id:147,day:74,num:1,diff:'basic',text:'Not only do plants make indoor spaces look more beautiful, but research has also shown that being around plants can help to reduce stress and improve concentration.',trans:'植物不仅让室内空间看起来更美，研究还表明待在植物周围有助于减轻压力和提高注意力。'},
+  {id:148,day:74,num:2,diff:'basic',text:'Because spending time in green spaces has real benefits for mental health, many cities are now investing in parks and gardens as a way of improving the wellbeing of their residents.',trans:'因为在绿色空间活动对心理健康有真正的好处，许多城市现在正在投资建设公园和花园来改善居民的健康水平。'},
+  {id:149,day:75,num:1,diff:'basic',text:'Although there are many things in life that we cannot control, the way we respond to what happens to us is always within our power to choose.',trans:'虽然生活中有许多事情我们无法控制，但我们如何回应发生在我们身上的事情，始终在我们的选择权之内。'},
+  {id:150,day:75,num:2,diff:'basic',text:'He found that focusing on the things he could change, rather than worrying about the things he could not, made a real difference to both his performance and his peace of mind.',trans:'他发现专注于自己能改变的事情，而不是担心无法改变的事情，对他的表现和内心平静都有真正的改变。'},
+  {id:151,day:76,num:1,diff:'basic',text:'If students approach each new school year with a genuine intention to improve rather than simply to repeat what they did before, they often surprise themselves with what they are capable of.',trans:'如果学生每个新学年都以真正想要进步的心态出发，而不是简单地重复以前的做法，他们常常会惊讶于自己的潜力。'},
+  {id:152,day:76,num:2,diff:'basic',text:'Research has found that students who reflect regularly on what they have learned are better able to set meaningful goals and make real progress.',trans:'研究发现，定期反思所学内容的学生能更好地设定有意义的目标并取得真正的进步。'},
+  {id:153,day:77,num:1,diff:'basic',text:'Although criticism can be painful to receive, those who are able to listen to honest feedback and use it to improve are developing one of the most valuable skills there is.',trans:'虽然接受批评可能令人痛苦，但能听取诚实反馈并用其改进的人，正在培养世上最有价值的技能之一。'},
+  {id:154,day:77,num:2,diff:'basic',text:'Many successful people say that the most useful advice they ever received was not praise but a clear and honest assessment of what they needed to work on.',trans:'许多成功人士说，他们收到过的最有用的建议不是赞扬，而是关于他们需要改进之处的清晰诚实的评估。'},
+  {id:155,day:78,num:1,diff:'basic',text:'Not only does kindness cost nothing, but research has consistently shown that performing acts of kindness for others is one of the most reliable ways to boost your own sense of wellbeing.',trans:'善良不仅不需要成本，研究还一再表明为他人做善举是提升自己幸福感最可靠的方式之一。'},
+  {id:156,day:78,num:2,diff:'basic',text:'Because small actions can have a much bigger impact than we realise, a single kind word or gesture can sometimes change the direction of someone else\'s day entirely.',trans:'因为小的行动可能产生比我们意识到的更大的影响，一句友善的话或一个举动有时能完全改变别人一天的方向。'},
+  {id:157,day:79,num:1,diff:'basic',text:'Although it is tempting to give up when progress feels slow, those who keep going through the difficult early stages are often rewarded with a sudden and satisfying leap forward.',trans:'虽然进步缓慢时容易想放弃，但那些在困难的初期阶段坚持下去的人往往能收获一个突然而令人满意的飞跃。'},
+  {id:158,day:79,num:2,diff:'basic',text:'He reminded himself that every expert had once been a beginner, and that the only real difference between them was the willingness to keep practising long after it stopped feeling easy.',trans:'他提醒自己，每个专家都曾经是初学者，他们之间唯一的真正区别是在不再感觉容易之后仍然愿意继续练习。'},
+  {id:159,day:80,num:1,diff:'basic',text:'If you make a habit of reviewing what you have learned at the end of each day, you will find that you remember far more of it than those who only look back when an exam is approaching.',trans:'如果你养成每天结束时复习所学内容的习惯，你会发现你记住的远比那些只有考试临近才回顾的人多得多。'},
+  {id:160,day:80,num:2,diff:'basic',text:'Many students discover that the act of writing notes in their own words, rather than simply copying from a textbook, helps them to genuinely understand and remember the material.',trans:'许多学生发现，用自己的话写笔记而不是简单照抄课本，能帮助他们真正理解和记住材料。'},
+  // Medium
+  {id:161,day:81,num:1,diff:'medium',text:'Although smartphones have made communication faster and easier than ever before, many people find that the constant flow of messages and notifications makes it harder to focus on the task in front of them.',trans:'虽然智能手机让沟通比以往任何时候都更快更容易，但许多人发现源源不断的消息和通知让人更难专注于手头的任务。'},
+  {id:162,day:81,num:2,diff:'medium',text:'Research has shown that students who put their phones away while studying not only concentrate better but also feel less anxious, since they are no longer distracted by the fear of missing out.',trans:'研究表明，学习时把手机收起来的学生不仅注意力更集中，而且焦虑感更低，因为他们不再被害怕错过什么所分心。'},
+  {id:163,day:82,num:1,diff:'medium',text:'Not only does regular reading help students to expand their vocabulary and improve their writing, but it also exposes them to ideas and perspectives that they might never encounter in their daily lives.',trans:'定期阅读不仅帮助学生扩大词汇量和提高写作，还让他们接触到日常生活中可能永远遇不到的思想和视角。'},
+  {id:164,day:82,num:2,diff:'medium',text:'Because the ability to express yourself clearly in writing is valued in almost every area of adult life, the time students invest in developing this skill at school is rarely wasted.',trans:'因为书面清晰表达自己的能力在成年人生活几乎每个领域都受到重视，学生在学校为发展这项技能投入的时间很少被浪费。'},
+  {id:165,day:83,num:1,diff:'medium',text:'Although it is natural to feel more comfortable with people who are similar to us, some of the most valuable friendships in life are those formed with people whose background and outlook are very different from our own.',trans:'虽然与相似的人相处更自在是人之常情，但人生中最宝贵的友谊往往是那些与背景和观点与我们截然不同的人建立的。'},
+  {id:166,day:83,num:2,diff:'medium',text:'Many people who have worked or studied in a different country say that the experience forced them to question assumptions they had never even realised they were making.',trans:'许多在不同国家工作或学习过的人说，这段经历迫使他们质疑那些他们甚至从未意识到的假设。'},
+  {id:167,day:84,num:1,diff:'medium',text:'If young people are given opportunities to take on real challenges and learn from the consequences of their own decisions, they develop a kind of resilience and confidence that cannot be taught in a classroom.',trans:'如果年轻人有机会接受真正的挑战并从自己决定的后果中学习，他们就会培养出一种课堂无法教授的韧性和自信。'},
+  {id:168,day:84,num:2,diff:'medium',text:'Research has shown that teenagers who are trusted with genuine responsibilities tend to be more motivated and more capable of independent thinking than those who are managed and protected at every turn.',trans:'研究表明，被信任赋予真正责任的青少年，往往比处处被管理和保护的青少年更有动力、更能独立思考。'},
+  {id:169,day:85,num:1,diff:'medium',text:'Although the pressure to achieve high exam results can motivate some students to work harder, it can also cause others to become so anxious that their performance actually suffers as a result.',trans:'虽然取得高分的压力可以激励一些学生更努力学习，但也可能导致另一些学生变得如此焦虑以至于成绩反而受影响。'},
+  {id:170,day:85,num:2,diff:'medium',text:'Teachers who focus on helping students understand how to learn, rather than simply what to memorise, often find that their students not only do better in exams but also enjoy the process far more.',trans:'专注于帮助学生理解如何学习而不仅仅是记住什么的老师，常常发现他们的学生不仅考试成绩更好，而且更享受学习过程。'},
+  {id:171,day:86,num:1,diff:'medium',text:'Not only has the rapid spread of social media changed the way young people communicate with one another, but it has also created new pressures around image and popularity that previous generations never had to face.',trans:'社交媒体的迅速普及不仅改变了年轻人之间的沟通方式，还带来了前几代人从未面对过的关于形象和受欢迎程度的新压力。'},
+  {id:172,day:86,num:2,diff:'medium',text:'Because the need for approval is a normal part of human psychology, it is especially important that young people develop a strong enough sense of their own identity to withstand the judgements of others.',trans:'因为寻求认同是人类心理的正常部分，年轻人建立足够强烈的自我认同感来抵御他人的评判就尤为重要。'},
+  {id:173,day:87,num:1,diff:'medium',text:'Although wild animals may seem friendly and harmless when they are young, those that are kept as pets often become difficult and even dangerous as they grow older and their natural instincts become stronger.',trans:'虽然野生动物幼时可能看起来友好无害，但那些被当作宠物养的动物随着长大和本能变强，往往会变得难以处理甚至危险。'},
+  {id:174,day:87,num:2,diff:'medium',text:'The growing trade in exotic pets, driven largely by videos shared on social media, is having a serious impact on wild populations of animals that are already under pressure from habitat loss.',trans:'主要由社交媒体视频驱动的异宠贸易增长，正对已经因栖息地丧失而面临压力的野生动物种群造成严重影响。'},
+  {id:175,day:88,num:1,diff:'medium',text:'If cities are to remain healthy and liveable places as they continue to grow, planners need to think carefully about how to balance the need for housing and transport with the need for green spaces and clean air.',trans:'如果城市要在持续增长的同时保持健康和宜居，规划者需要仔细思考如何平衡住房和交通需求与绿色空间和清洁空气的需求。'},
+  {id:176,day:88,num:2,diff:'medium',text:'Research has consistently shown that people who live in areas with good access to parks, trees, and open spaces report higher levels of wellbeing than those who live in environments dominated by concrete and traffic.',trans:'研究一再表明，住在有良好公园、树木和开放空间地区的人，比住在混凝土和交通主导环境中的人报告更高的幸福感。'},
+  {id:177,day:89,num:1,diff:'medium',text:'Although it is sometimes necessary to make sacrifices in order to achieve a long-term goal, those who push themselves too hard without allowing time for rest and recovery often find that their performance declines rather than improves.',trans:'虽然有时为了实现长期目标需要做出牺牲，但那些逼迫自己太紧而不留时间休息恢复的人常常发现，自己的表现不仅没有提高反而下降了。'},
+  {id:178,day:89,num:2,diff:'medium',text:'He had learned from his years of training that listening to his body and knowing when to rest was just as important a skill as knowing how to push through difficulty and discomfort.',trans:'他从多年训练中学到，倾听身体、知道何时休息，其重要性不亚于知道如何克服困难和不适。'},
+  {id:179,day:90,num:1,diff:'medium',text:'Not only does the experience of overcoming a genuine challenge give us a sense of satisfaction that easy achievements never can, but it also changes the way we see ourselves and what we believe we are capable of.',trans:'克服真正挑战的经历不仅给我们一种轻松成就永远无法带来的满足感，还改变我们看待自己和我们相信自己能做到什么的方式。'},
+  {id:180,day:90,num:2,diff:'medium',text:'Because the belief that we can improve through effort is the foundation of almost every kind of personal growth, developing this mindset early in life is one of the most valuable gifts a parent or teacher can give.',trans:'因为相信通过努力可以进步是几乎所有个人成长的基础，尽早培养这种心态是家长或老师能给予的最宝贵礼物之一。'},
+  // Challenge
+  {id:181,day:91,num:1,diff:'challenge',text:'Although I don\'t get paid for volunteering, I\'m old enough to know that money is not the only way to get rewarded, and the connections I have made with people around the world are worth more to me than any salary.',trans:'虽然我做志愿者没有报酬，但我已经足够成熟，知道金钱不是获得回报的唯一方式，我与世界各地人们建立的联系对我而言比任何薪水都更有价值。'},
+  {id:182,day:91,num:2,diff:'challenge',text:'The biggest benefit of volunteering is that it helps you develop your character, and that, as Emily discovered during her time in Africa, is the real passport to a rich and meaningful life.',trans:'志愿服务最大的好处是帮助你塑造品格，而这正如 Emily 在非洲期间发现的，才是通往丰富而有意义人生的真正通行证。'},
+  {id:183,day:92,num:1,diff:'challenge',text:'Costa, who had spent years studying how climate change was altering the world around him, decided to update Vivaldi\'s Four Seasons to reflect what the seasons actually felt like in the modern world.',trans:'Costa 花了多年时间研究气候变化如何改变他周围的世界，他决定更新维瓦尔第的《四季》，以反映现代世界中四季的真实感受。'},
+  {id:184,day:92,num:2,diff:'challenge',text:'He says he expects people who listen to the updated version to feel really sad, because he wants them to become truly aware of what is happening to the planet before it is too late to act.',trans:'他说他希望听更新版本的人感到非常悲伤，因为他想让人们在为时已晚之前真正意识到地球正在发生什么。'},
+  {id:185,day:93,num:1,diff:'challenge',text:'Martin Strel completed his Amazon River swim on April 7th, 2007, having struggled with the river for 66 days and covered 3,274 miles in total, a feat that many who witnessed it still find almost impossible to believe.',trans:'Martin Strel 于 2007 年 4 月 7 日完成了他的亚马逊河游泳，与这条河搏斗了 66 天，总共游了 3274 英里，许多目击者至今仍觉得这一壮举难以置信。'},
+  {id:186,day:93,num:2,diff:'challenge',text:'The documentary about his life shows us that the qualities which separate those who achieve extraordinary things from those who do not are rarely talent or luck, but almost always determination and the refusal to give up.',trans:'关于他生平的纪录片向我们展示，区分取得非凡成就者与平凡人的品质很少是天赋或运气，而几乎总是决心和拒绝放弃。'},
+  {id:187,day:94,num:1,diff:'challenge',text:'Although keeping otters as pets may seem harmless when you watch the charming videos that are shared online every day, the reality is that each of those animals was almost certainly taken from its mother before its first year of life.',trans:'虽然看着每天网上分享的可爱视频时，养水獭当宠物似乎无害，但现实是那些动物几乎每一只都在满一岁前被从母亲身边带走。'},
+  {id:188,day:94,num:2,diff:'challenge',text:'The fact that seventy percent of the otters sold online are under one year old tells us everything we need to know about the cruelty that lies behind the smiling faces in those popular social media posts.',trans:'网上出售的水獭百分之七十不到一岁，这一事实告诉了我们关于那些热门社交媒体帖子里笑脸背后隐藏的残忍所需要知道的一切。'},
+  {id:189,day:95,num:1,diff:'challenge',text:'It is commonly believed that children are too young to fully appreciate the experience and knowledge of their elders, while many older people feel that the young no longer have patience for the slow and careful wisdom of age.',trans:'人们普遍认为孩子太小无法充分领会长辈的经验和知识，而许多老年人觉得年轻人不再有耐心倾听年长者缓慢而审慎的智慧。'},
+  {id:190,day:95,num:2,diff:'challenge',text:'James Smith, who runs a care home that brings elderly residents together with pre-school children every day, believes that giving these two groups the chance to spend time together is one of the most effective ways to help both of them.',trans:'经营一家每天让老年居民与学龄前儿童在一起的养老院的 James Smith 相信，给这两个群体共度时光的机会，是帮助两者的最有效方式之一。'},
+  {id:191,day:96,num:1,diff:'challenge',text:'Although the world is facing serious challenges that will require cooperation between nations and communities to solve, history has shown us that human beings are capable of extraordinary things when they work together toward a shared goal.',trans:'虽然世界面临着需要国家和社区合作才能解决的严峻挑战，但历史告诉我们，当人类为共同目标携手合作时，他们是能够成就非凡之事的。'},
+  {id:192,day:96,num:2,diff:'challenge',text:'Those who have dedicated their lives to causes far greater than their own personal comfort tend to look back on their choices not with regret but with a deep and lasting sense of having lived fully and well.',trans:'那些将生命奉献给远大于个人舒适的事业的人，回顾自己的选择时往往不带着遗憾，而是带着一种活得充实而美好的深沉而持久的感受。'},
+  {id:193,day:97,num:1,diff:'challenge',text:'Not only does the way we treat the natural world reflect our values as a society, but the decisions we make today about how to protect the resources of the planet will determine what kind of world we leave behind for those who come after us.',trans:'我们对待自然世界的方式不仅反映了我们作为一个社会的价值观，我们今天关于如何保护地球资源的决定还将决定我们为后人留下什么样的世界。'},
+  {id:194,day:97,num:2,diff:'challenge',text:'Because every individual action, however small it may seem, contributes to a larger pattern of behaviour that shapes the world we all share, the choice to act responsibly is never quite as insignificant as it might appear.',trans:'因为每个个体行动无论看起来多小，都会汇聚成塑造我们共同世界的更大的行为模式，负责任地行动的选择从来不像表面看起来那样微不足道。'},
+  {id:195,day:98,num:1,diff:'challenge',text:'Although it can be tempting to measure success by the standards that the world around us seems to value most highly, those who have achieved what others consider success often say that real fulfilment comes from very different sources.',trans:'虽然用周围世界似乎最看重的标准来衡量成功很诱人，但那些取得了别人眼中成功的人常说，真正的满足感来自非常不同的来源。'},
+  {id:196,day:98,num:2,diff:'challenge',text:'He had learned, through years of experience and more failures than he cared to count, that the life most worth living was not the one that looked the best from the outside but the one that felt most true from within.',trans:'通过多年经验和数不清的失败，他学到最值得过的生活不是从外面看起来最好的那个，而是从内心感觉最真实的那个。'},
+  {id:197,day:99,num:1,diff:'challenge',text:'The fact that so many of the qualities we admire most in the people we look up to, such as kindness, courage, and perseverance, cannot be taught directly but must be developed through experience, is both a challenge and an opportunity.',trans:'我们在敬仰的人身上最钦佩的品质——如善良、勇气和毅力——无法直接教授而必须通过经历来培养，这一事实既是挑战也是机遇。'},
+  {id:198,day:99,num:2,diff:'challenge',text:'Because character is formed not in the easy moments but in the difficult ones, every challenge we face and every choice we make in the face of that challenge is an opportunity to become a little more of the person we want to be.',trans:'因为品格不是在容易的时刻而是在困难时刻形成的，我们面对的每一个挑战和在挑战面前做出的每一个选择，都是让我们更接近想成为的人的机会。'},
+  {id:199,day:100,num:1,diff:'challenge',text:'Although the road to any worthwhile achievement is rarely as straightforward as it appears when you look back on it from the other side, those who stay committed through the inevitable setbacks are the ones who eventually get there.',trans:'虽然通往任何值得取得的成就之路很少像你从终点回望时看起来那样笔直，但那些在不可避免的挫折中保持投入的人终将到达目的地。'},
+  {id:200,day:100,num:2,diff:'challenge',text:'He wanted to show the world that people could achieve their dreams with hard work and perseverance, not because the journey would be easy, but because he believed with absolute conviction that it would always, in the end, be worth it.',trans:'他想向世界证明，人们可以通过努力和坚持实现梦想，不是因为旅程会轻松，而是因为他绝对坚信最终一切都是值得的。'}
+  ]);
+  EXTRA.forEach(function(s){ if(SENTENCES.length<200) SENTENCES.push(s); });
+})();
+</script>
+
+<script>
+// ═══════════ 成分分析引擎：主谓宾定状补 ═══════════
+var analysisCache={};
+
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ═══════════ 音效 ═══════════
+var _actx=null;
+function _ac(){if(!_actx)_actx=new(window.AudioContext||window.webkitAudioContext)();return _actx;}
+function beep(f,d,t){var a=_ac(),o=a.createOscillator(),g=a.createGain();o.type=t||'sine';o.frequency.value=f;g.gain.setValueAtTime(0.08,a.currentTime);g.gain.linearRampToValueAtTime(0,a.currentTime+d);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+d);}
+function clickSound(){beep(800,0.06);}
+function tickSound(){beep(600,0.05);}
+function doneSound(){beep(440,0.12);beep(660,0.12);setTimeout(function(){beep(880,0.2);},150);}
+
+// ═══════════ 分析引擎 v3 — 内联标注 ═══════════
+var analysisCache={};
+
+// Common subordinating conjunctions (case-insensitive)
+var SUB_CONJ = ['although','though','even though','because','since','if','unless','when','while','before','after','until','once','whereas','as','now that','so that','in order that','provided that','as long as','even if','in case','whether'];
+var REL_PRO = ['who','whom','whose','which','that']; // relative pronouns
+var COORD_CONJ = ['but','and','or','yet','so','nor','for'];
+
+function isSubConj(w){return SUB_CONJ.indexOf(w.toLowerCase())>=0;}
+function isRelPro(w){return REL_PRO.indexOf(w.toLowerCase())>=0;}
+function isCoord(w){return COORD_CONJ.indexOf(w.toLowerCase())>=0;}
+
+// Common English verbs (finite forms)
+var VERB_SET = {};
+['is','are','was','were','be','been','being','am','have','has','had','do','does','did','make','makes','made','find','finds','found','believe','believes','believed','say','says','said','show','shows','shown','think','thinks','thought','know','knows','knew','come','comes','came','go','goes','went','get','gets','got','take','takes','took','give','gives','gave','see','sees','saw','want','wants','wanted','need','needs','needed','help','helps','helped','teach','teaches','taught','learn','learns','learned','keep','keeps','kept','start','starts','started','try','tries','tried','work','works','worked','play','plays','played','live','lives','lived','change','changes','changed','become','becomes','became','feel','feels','felt','look','looks','looked','seem','seems','seemed','discover','discovers','discovered','agree','agrees','agreed','create','creates','created','develop','develops','developed','require','requires','required','lead','leads','led','set','sets','bring','brings','brought','tell','tells','told','ask','asks','asked','mean','means','meant','understand','understands','understood','spend','spends','spent','cause','causes','caused','allow','allows','allowed','expect','expects','expected','suggest','suggests','suggested','tend','tends','tended','report','reports','reported','notice','notices','noticed','remain','remains','remained','continue','continues','continued','include','includes','included','consider','considers','considered','explain','explains','explained','decide','decides','decided','prove','proves','proved','offer','offers','offered','provide','provides','provided','happen','happens','happened','appear','appears','appeared','exist','exists','existed','involve','involves','involved','reflect','reflects','reflected','determine','determines','determined','separate','separates','separated','contribute','contributes','contributed','encourage','encourages','encouraged','protect','protects','protected','improve','improves','improved','increase','increases','increased','reduce','reduces','reduced','prevent','prevents','prevented','depend','depends','depended','belong','belongs','belonged','affect','affects','affected','connect','connects','connected','focus','focuses','focused','force','forces','forced','face','faces','faced','base','bases','based','compare','compares','compared','share','shares','shared','express','expresses','expressed','form','forms','formed','build','builds','built','grow','grows','grew','draw','draws','drew','speak','speaks','spoke','write','writes','wrote','read','reads','run','runs','ran','eat','eats','ate','sleep','sleeps','slept','stand','stands','stood','sit','sits','sat','put','puts','pay','pays','paid','lose','loses','lost','win','wins','won','send','sends','sent','buy','buys','bought','sell','sells','sold','rise','rises','rose','fall','falls','fell','lay','lays','laid','break','breaks','broke','cut','cuts','hold','holds','held','carry','carries','carried','drive','drives','drove','move','moves','moved','stay','stays','stayed','wait','waits','waited','turn','turns','turned','open','opens','opened','close','closes','closed','push','pushes','pushed','pull','pulls','pulled','pick','picks','picked','drop','drops','dropped','pass','passes','passed','return','returns','returned','enter','enters','entered','leave','leaves','left','reach','reaches','reached','serve','serves','served','fight','fights','fought','add','adds','added','count','counts','counted','cover','covers','covered','cross','crosses','crossed','die','dies','died','kill','kills','killed','hit','hits','raise','raises','raised','watch','watches','watched','listen','listens','listened','remember','remembers','remembered','forget','forgets','forgot','worry','worries','worried','wonder','wonders','wondered','enjoy','enjoys','enjoyed','hate','hates','hated','love','loves','loved','like','likes','liked','wish','wishes','wished','hope','hopes','hoped','plan','plans','planned','promise','promises','promised','manage','manages','managed','fail','fails','failed','refuse','refuses','refused','avoid','avoids','avoided','finish','finishes','finished','mind','minds','minded','risk','risks','risked','deny','denies','denied','admit','admits','admitted','mention','mentions','mentioned','realise','realises','realised','realize','realizes','realized','suppose','supposes','supposed','recognise','recognises','recognised','recognize','recognizes','recognized','imagine','imagines','imagined','describe','describes','described','choose','chooses','chose','act','acts','acted','deal','deals','dealt','handle','handles','handled','follow','follows','followed','accept','accepts','accepted','receive','receives','received','achieve','achieves','achieved','perform','performs','performed'].forEach(function(v){VERB_SET[v]=1;});
+function isVerb(w){w=w.replace(/[.,;!?:]$/,'').toLowerCase();if(VERB_SET[w])return true;if(w.length>3&&(w.slice(-2)==='ed'||w.slice(-3)==='ing'||(w.slice(-1)==='s'&&w.slice(-3)!=='ss'&&w.slice(-2)!=='us')))return true;return false;}
+
+// ═══════ 预置标注（5句黄金规则，引擎自动匹配同类句型）═══════
+var PRECOMPUTED = {
+  // 第1句：Although + 让步从句, 主句 + that 宾从
+  'Although keeping a pet requires a lot of time and effort, many families find that it makes their home feel warmer and more lively.':{
+    spans:[
+      {text:'Although ',label:'连',cls:'conj',level:0},
+      {text:'keeping a pet ',label:'主',cls:'subj',level:0},
+      {text:'requires ',label:'谓',cls:'pred',level:0},
+      {text:'a lot of time and effort, ',label:'宾',cls:'obj',level:0},
+      {text:'many families ',label:'主',cls:'subj',level:0},
+      {text:'find ',label:'谓',cls:'pred',level:0},
+      {text:'that ',label:'引',cls:'conj',level:1},
+      {text:'it ',label:'主',cls:'subj',level:1},
+      {text:'makes ',label:'谓',cls:'pred',level:1},
+      {text:'their home ',label:'宾',cls:'obj',level:1},
+      {text:'feel warmer and more lively.',label:'补',cls:'obj',level:1}
+    ],
+    note:'Although 引导让步状语从句；主句 many families find 后接 that 宾语从句，从句内 it makes their home feel... 构成主谓宾补结构。'
+  },
+  // 第2句：主句 + that 宾从（内含 who 定从）
+  'Many teachers believe that students who read widely are better at writing than those who only study grammar rules.':{
+    spans:[
+      {text:'Many teachers ',label:'主',cls:'subj',level:0},
+      {text:'believe ',label:'谓',cls:'pred',level:0},
+      {text:'that ',label:'引',cls:'conj',level:1},
+      {text:'students ',label:'主',cls:'subj',level:1},
+      {text:'who ',label:'引',cls:'conj',level:2},
+      {text:'read widely ',label:'谓',cls:'pred',level:2},
+      {text:'are ',label:'谓',cls:'pred',level:1},
+      {text:'better at writing than those ',label:'表',cls:'obj',level:1},
+      {text:'who ',label:'引',cls:'conj',level:2},
+      {text:'only study grammar rules.',label:'谓',cls:'pred',level:2}
+    ],
+    note:'主句 Many teachers believe 后接 that 宾语从句。从句内含两个 who 定语从句分别修饰 students 和 those，形成对比结构。'
+  },
+  // 第3句：If + 条件从句, 主句（系表结构）
+  'If you want to get better at something, the best way is to practise a little every day rather than waiting until the last minute.':{
+    spans:[
+      {text:'If ',label:'连',cls:'conj',level:0},
+      {text:'you ',label:'主',cls:'subj',level:0},
+      {text:'want ',label:'谓',cls:'pred',level:0},
+      {text:'to get better at something, ',label:'宾',cls:'obj',level:0},
+      {text:'the best way ',label:'主',cls:'subj',level:0},
+      {text:'is ',label:'谓',cls:'pred',level:0},
+      {text:'to practise a little every day rather than waiting until the last minute.',label:'表',cls:'obj',level:0}
+    ],
+    note:'If 引导条件状语从句；主句为系表结构 the best way is to...，rather than 连接两个对比成分。'
+  },
+  // 第4句：Not only 倒装 + but also 并列
+  'Not only does reading help you improve your English, but it also gives you new ideas and ways of looking at the world.':{
+    spans:[
+      {text:'Not only ',label:'连',cls:'conj',level:0},
+      {text:'does reading ',label:'主',cls:'subj',level:0},
+      {text:'help ',label:'谓',cls:'pred',level:0},
+      {text:'you improve your English, ',label:'宾',cls:'obj',level:0},
+      {text:'but ',label:'连',cls:'conj',level:0},
+      {text:'it ',label:'主',cls:'subj',level:0},
+      {text:'also gives ',label:'谓',cls:'pred',level:0},
+      {text:'you new ideas and ways of looking at the world.',label:'宾',cls:'obj',level:0}
+    ],
+    note:'Not only 位于句首引起部分倒装（does reading 助动词提前）；but also 引出并列分句。'
+  },
+  // 第5句：but 并列 + 两个 that 宾从
+  'Many parents worry that their children spend too much time on their phones, but experts say that the key is learning to use technology wisely.':{
+    spans:[
+      {text:'Many parents ',label:'主',cls:'subj',level:0},
+      {text:'worry ',label:'谓',cls:'pred',level:0},
+      {text:'that ',label:'引',cls:'conj',level:1},
+      {text:'their children ',label:'主',cls:'subj',level:1},
+      {text:'spend ',label:'谓',cls:'pred',level:1},
+      {text:'too much time on their phones, ',label:'宾',cls:'obj',level:1},
+      {text:'but ',label:'连',cls:'conj',level:0},
+      {text:'experts ',label:'主',cls:'subj',level:0},
+      {text:'say ',label:'谓',cls:'pred',level:0},
+      {text:'that ',label:'引',cls:'conj',level:1},
+      {text:'the key ',label:'主',cls:'subj',level:1},
+      {text:'is ',label:'谓',cls:'pred',level:1},
+      {text:'learning to use technology wisely.',label:'表',cls:'obj',level:1}
+    ],
+    note:'but 连接两个并列分句；前后两个分句各含一个 that 宾语从句。'
+  }
+};
+
+function analyzeSentence(text){
+  // Check precomputed first
+  if(PRECOMPUTED[text]) return PRECOMPUTED[text];
+  if(analysisCache[text]) return analysisCache[text];
+
+  // ── 1. Split into words with positions ──
+  var words = text.match(/\S+/g)||[];
+  var wpos=[], p=0;
+  for(var i=0;i<words.length;i++){wpos.push(text.indexOf(words[i],p));p=wpos[i]+words[i].length;}
+
+  // ── 2. Find the MAIN clause boundary ──
+  // Pattern: [Subordinate clause] , [Main clause]
+  // The comma before the main clause is the key split point.
+  var mainStart = 0; // word index where main clause starts
+  var conjLabel = '';
+
+  // Check first word — is it a subordinating conjunction?
+  var firstW = words[0].replace(/[.,;!?:]$/,'').toLowerCase();
+  if(isSubConj(firstW)){
+    conjLabel = firstW;
+    // Find the comma that separates subordinate clause from main clause
+    for(var i=1;i<words.length;i++){
+      if(words[i]===','||words[i].endsWith(',')){
+        mainStart = i+1;
+        break;
+      }
+      // Also check for comma attached to previous word
+      if(i>0 && words[i-1].endsWith(',')){
+        mainStart = i;
+        break;
+      }
+    }
+    if(mainStart===0) mainStart = Math.floor(words.length/2); // fallback
+  }
+
+  // Check for Not only...but also pattern
+  var notOnlyIdx = -1, butAlsoIdx = -1;
+  for(var i=0;i<words.length;i++){
+    var w=words[i].replace(/[.,]$/,'').toLowerCase();
+    if(w==='not'&&i+1<words.length&&words[i+1].replace(/[.,]$/,'').toLowerCase()==='only') notOnlyIdx=i;
+    if(w==='but'&&i+1<words.length&&words[i+1].replace(/[.,]$/,'').toLowerCase()==='also') butAlsoIdx=i;
+  }
+
+  // Find coordinating conjunction (but, and, or) to split parallel clauses
+  var coordSplit = -1;
+  if(mainStart===0 && notOnlyIdx<0){
+    for(var i=3;i<words.length-3;i++){
+      var w=words[i].replace(/[.,]$/,'').toLowerCase();
+      if(w==='but'||(w==='and'&&words[i-1].endsWith(','))){
+        coordSplit=i; break;
+      }
+    }
+  }
+
+  // ── 3. Build spans ──
+  // Each span: {text, label, cls}
+  // Labels: 连/主/谓/宾/状/定
+  var spans = [];
+
+  if(conjLabel && mainStart>0){
+    // Pattern: [Conj + SubClause] , [MainClause]
+    var subText = words.slice(0, mainStart).join(' ');
+    var mainText = words.slice(mainStart).join(' ');
+
+    // Subordinate clause analysis
+    spans.push({text:words[0]+' ', label:'连', cls:'conj'});
+    var subRest = words.slice(1, mainStart).join(' ');
+    var subComps = findSVO(words.slice(1, mainStart));
+    appendSpans(spans, subComps, subRest);
+
+    // Comma
+    if(mainStart>1 && words[mainStart-1].endsWith(',')){
+      spans.push({text:', ', label:null, cls:null});
+    }
+
+    // Main clause analysis
+    var mainComps = findSVO(words.slice(mainStart));
+    appendSpans(spans, mainComps, mainText);
+  } else if(notOnlyIdx>=0 && butAlsoIdx>notOnlyIdx){
+    // Not only...but also pattern
+    var part1 = words.slice(0, butAlsoIdx).join(' ');
+    var part2 = words.slice(butAlsoIdx).join(' ');
+    spans.push({text:words[notOnlyIdx]+' '+words[notOnlyIdx+1]+' ', label:'连', cls:'conj'});
+    var comps1 = findSVO(words.slice(notOnlyIdx+2, butAlsoIdx));
+    appendSpans(spans, comps1, words.slice(notOnlyIdx+2, butAlsoIdx).join(' '));
+    spans.push({text:' '+words[butAlsoIdx]+' '+words[butAlsoIdx+1]+' ', label:'连', cls:'conj'});
+    var comps2 = findSVO(words.slice(butAlsoIdx+2));
+    appendSpans(spans, comps2, words.slice(butAlsoIdx+2).join(' '));
+  } else if(coordSplit>0){
+    // Coordinated clauses
+    var compsA = findSVO(words.slice(0, coordSplit));
+    appendSpans(spans, compsA, words.slice(0, coordSplit).join(' '));
+    spans.push({text:' '+words[coordSplit]+' ', label:'连', cls:'conj'});
+    var compsB = findSVO(words.slice(coordSplit+1));
+    appendSpans(spans, compsB, words.slice(coordSplit+1).join(' '));
+  } else {
+    // Single clause or complex — just find S/V/O
+    var comps = findSVO(words);
+    appendSpans(spans, comps, text);
+  }
+
+  // ── 4. Generate short note ──
+  var note = '';
+  if(conjLabel && mainStart>0){
+    var cnName = conjLabel.charAt(0).toUpperCase()+conjLabel.slice(1);
+    if(conjLabel==='although'||conjLabel==='though'||conjLabel==='even though') note=cnName+' 引导让步状语从句，「虽然…但是…」；逗号后是主句。';
+    else if(conjLabel==='because'||conjLabel==='since') note=cnName+' 引导原因状语从句，说明原因；逗号后是主句（结果）。';
+    else if(conjLabel==='if'||conjLabel==='unless') note=cnName+' 引导条件状语从句，「如果/除非…」；逗号后是主句。';
+    else if(conjLabel==='when'||conjLabel==='while'||conjLabel==='before'||conjLabel==='after') note=cnName+' 引导时间状语从句；逗号后是主句。';
+    else note=cnName+' 引导状语从句，逗号后是主句。';
+  } else if(notOnlyIdx>=0){
+    note='Not only 位于句首引起部分倒装（助动词提前），but also 引出并列成分。';
+  } else {
+    note='找出句中谓语动词，往前找主语，往后找宾语，其余为修饰成分。';
+  }
+
+  // Find relative clause indicators
+  for(var i=0;i<words.length;i++){
+    var w=words[i].replace(/[.,]$/,'').toLowerCase();
+    if(w==='who'||w==='which'||(w==='that'&&i>0&&!isVerb(words[i-1]))){
+      note+=' 句中含 '+w+' 引导的定语从句，修饰前面的名词。';
+      break;
+    }
+  }
+
+  var result = {spans:spans, note:note};
+  analysisCache[text] = result;
+  return result;
+}
+
+// Find Subject-Verb-Object, recursively analyze that/who/which clauses
+// Returns array of {text, label, cls, level}
+function findSVO(words, level){
+  level = level || 0;
+  if(!words||words.length===0) return [];
+  var comps=[];
+  var verbIdx=-1;
+
+  // Find first finite verb
+  for(var i=0;i<words.length;i++){
+    var w=words[i].replace(/[.,;!?:]$/,'');
+    if(isVerb(w)){
+      if(i>0 && words[i-1].toLowerCase()==='to' && i+1<words.length) continue;
+      verbIdx=i; break;
+    }
+  }
+  // Fallback
+  if(verbIdx<0){
+    for(var i=0;i<words.length;i++){
+      var w=words[i].replace(/[.,;!?:]$/,'').toLowerCase();
+      if(w==='is'||w==='are'||w==='was'||w==='were'||w==='be'||w==='been'||w==='have'||w==='has'||w==='had'||w==='do'||w==='does'||w==='did'||w==='can'||w==='will'||w==='may'||w==='should'||w==='could'||w==='would'||w==='must'||w==='might'){verbIdx=i;break;}
+    }
+  }
+  if(verbIdx<0&&words.length>=3) verbIdx=Math.floor(words.length/2);
+
+  // Subject: words before verb
+  if(verbIdx>0){
+    var subj = words.slice(0, verbIdx).join(' ');
+    comps.push({text:subj+' ', label:'主', cls:'subj', level:level});
+  }
+
+  // Verb phrase
+  var vEnd=verbIdx;
+  if(verbIdx>=0){
+    for(var i=verbIdx+1;i<words.length&&i<=verbIdx+3;i++){
+      var lw=words[i].replace(/[.,;!?:]$/,'').toLowerCase();
+      if(isVerb(words[i])||lw==='not'||lw==='never'||lw==='always'||lw==='also'||lw==='just'||lw==='only'||lw==='already'||lw==='still') vEnd=i; else break;
+    }
+    comps.push({text:words.slice(verbIdx, vEnd+1).join(' ')+' ', label:'谓', cls:'pred', level:level});
+  }
+
+  // Object: words after verb, with recursive that-clause detection
+  if(verbIdx>=0 && vEnd<words.length-1){
+    var vEnd2=vEnd;
+    for(var i=verbIdx+1;i<words.length&&i<=verbIdx+3;i++){
+      var lw=words[i].replace(/[.,;!?:]$/,'').toLowerCase();
+      if(isVerb(words[i])||lw==='not'||lw==='never'||lw==='also'||lw==='just'||lw==='only') vEnd2=i; else break;
+    }
+    if(vEnd2<words.length-1){
+      var restWords = words.slice(vEnd2+1);
+      var firstRest = restWords[0].replace(/[.,]$/,'').toLowerCase();
+
+      // Check if object starts with clause introducer: that, what, how, why, whether, who, which
+      var isClause = (firstRest==='that'||firstRest==='what'||firstRest==='how'||firstRest==='why'||firstRest==='whether');
+      // who/which as clause introducer (not question) — after verbs like find, believe, know, see, say, show
+      if(!isClause && (firstRest==='who'||firstRest==='which')){
+        var mainV = words[verbIdx].replace(/[.,;!?:]$/,'').toLowerCase();
+        if(mainV==='find'||mainV==='finds'||mainV==='found'||mainV==='believe'||mainV==='believes'||mainV==='know'||mainV==='knows'||mainV==='see'||mainV==='sees'||mainV==='say'||mainV==='says'||mainV==='show'||mainV==='shows'){
+          isClause = true;
+        }
+      }
+
+      if(isClause && restWords.length>1){
+        // Split: introducer word + rest of clause
+        comps.push({text:restWords[0]+' ', label:'引', cls:'conj', level:level+1});
+        var innerWords = restWords.slice(1);
+        // Recursively analyze the clause content
+        var inner = findSVO(innerWords, level+1);
+        inner.forEach(function(c){ comps.push(c); });
+      } else {
+        var obj = restWords.join(' ');
+        if(obj.trim()) comps.push({text:obj, label:'宾', cls:'obj', level:level});
+      }
+    }
+  }
+
+  return comps;
+}
+
+// Check for who/which/that relative clauses inside subject or object, and recursively break them down
+function expandRelativeClauses(comps, allWords){
+  var result = [];
+  comps.forEach(function(c){
+    if(!c.label) {result.push(c); return;}
+    // Check if this component contains a relative pronoun (who/which/that after a noun)
+    var txt = c.text;
+    var words = txt.match(/\S+/g)||[];
+    // Look for "who" or "which" or "that" as relative pronoun
+    var relIdx = -1, relWord = '';
+    for(var i=1;i<words.length-1;i++){
+      var w = words[i].replace(/[.,]$/,'').toLowerCase();
+      if(w==='who'||w==='which'||(w==='that'&&words[i-1]&&words[i-1].length>2)){
+        relIdx=i; relWord=w; break;
+      }
+    }
+    if(relIdx>0){
+      // Split: before rel pronoun = original label, rel pronoun + rest = 定语从句
+      var before = words.slice(0, relIdx).join(' ');
+      var relPronoun = words[relIdx];
+      var after = words.slice(relIdx+1).join(' ');
+      result.push({text:before+' ', label:c.label, cls:c.cls, level:c.level});
+      result.push({text:relPronoun+' ', label:'引', cls:'conj', level:(c.level||0)+1});
+      var afterWords = words.slice(relIdx+1);
+      var inner = findSVO(afterWords, (c.level||0)+1);
+      inner.forEach(function(ic){ result.push(ic); });
+    } else {
+      result.push(c);
+    }
+  });
+  return result;
+}
+
+// Append component spans
+function appendSpans(spans, comps, fullText){
+  if(comps.length===0){spans.push({text:fullText, label:null, cls:null, level:0});return;}
+  // Expand relative clauses in components
+  comps = expandRelativeClauses(comps);
+  comps.forEach(function(c){
+    spans.push({text:c.text, label:c.label, cls:c.cls, level:c.level||0});
+  });
+}
+
+// ═══════════ 每日打卡限制 ═══════════
+var DAILY_LIMIT = 2;
+
+function getToday(){
+  return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+}
+
+function getDailyState(){
+  try{
+    var raw = localStorage.getItem('jc_daily_state');
+    if(!raw) return {date:getToday(), count:0};
+    var state = JSON.parse(raw);
+    if(state.date !== getToday()){
+      // New day, reset
+      return {date:getToday(), count:0};
+    }
+    return state;
+  }catch(e){ return {date:getToday(), count:0}; }
+}
+
+function saveDailyState(state){
+  try{ localStorage.setItem('jc_daily_state', JSON.stringify(state)); }catch(e){}
+}
+
+function isDailyLocked(){
+  var state = getDailyState();
+  return state.count >= DAILY_LIMIT;
+}
+
+function incrementDailyCount(){
+  var state = getDailyState();
+  state.count = Math.min(state.count + 1, DAILY_LIMIT);
+  saveDailyState(state);
+  return state;
+}
+
+function getCountdownToMidnight(){
+  var now = new Date();
+  var midnight = new Date(now);
+  midnight.setHours(24,0,0,0);
+  var diff = midnight - now;
+  var hrs = Math.floor(diff/3600000);
+  var mins = Math.floor((diff%3600000)/60000);
+  return hrs+' 小时 '+mins+' 分钟后解锁';
+}
+
+function updateLockScreen(){
+  $('lock-cd').textContent = '距离明天解锁还有 ' + getCountdownToMidnight();
+}
+
+// ═══════════ STATE ═══════════
+var userName='', currentId=1, step=1, cdTimer=null, savedIds=[], sessionCompleted=0;
+
 function $(id){return document.getElementById(id);}
 function show(id){
   document.querySelectorAll('.pane').forEach(function(p){p.classList.remove('on');});
@@ -454,15 +919,18 @@ function sbHeaders(){
   return {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
 }
 async function sbGet(table,qs){
-  var r=await fetch(SB_URL+'/rest/v1/'+table+'?'+qs,{headers:sbHeaders()});
-  return r.ok?await r.json():[];
+  try{
+    var r=await fetch(SB_URL+'/rest/v1/'+table+'?'+qs,{headers:sbHeaders()});
+    if(!r.ok){console.error('Supabase error: '+r.status); return [];}
+    return await r.json();
+  }catch(e){console.error('Supabase fetch failed:',e); return [];}
 }
 async function sbUpsert(table,data){
-  await fetch(SB_URL+'/rest/v1/'+table,{
-    method:'POST',
-    headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),
-    body:JSON.stringify(data)
-  });
+  try{
+    await fetch(SB_URL+'/rest/v1/'+table,{
+      method:'POST', headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}), body:JSON.stringify(data)
+    });
+  }catch(e){console.error('Supabase upsert failed:',e);}
 }
 async function loadProgress(){
   var rows=await sbGet('reading_progress','user_name=eq.'+encodeURIComponent(userName)+'&select=*');
@@ -473,29 +941,27 @@ async function loadProgress(){
 }
 async function saveProgress(completed){
   var weekStart=getWeekStart();
-  // save progress
   await sbUpsert('reading_progress',{
-    user_name:userName,
-    current_sentence_id:currentId,
-    saved_ids:savedIds,
-    total_completed:completed,
-    updated_at:new Date().toISOString()
+    user_name:userName, current_sentence_id:currentId, saved_ids:savedIds,
+    total_completed:completed, updated_at:new Date().toISOString()
   });
-  // weekly score: reading max 1000/week
-  var wRows=await sbGet('weekly_scores','user_name=eq.'+encodeURIComponent(userName)+'&week_start=eq.'+weekStart+'&select=reading_score');
-  var curReading=(wRows&&wRows.length>0)?(wRows[0].reading_score||0):0;
+
+  // 查已有记录，拿到 id 用于更新（weekly_scores 主键是 id，不是 user_name+week_start）
+  var wRows=await sbGet('weekly_scores','user_name=eq.'+encodeURIComponent(userName)+'&week_start=eq.'+weekStart+'&select=id,reading_score');
+  var curReading=0, existingId=null;
+  if(wRows&&wRows.length>0){
+    curReading=wRows[0].reading_score||0;
+    existingId=wRows[0].id;
+  }
   var newReading=Math.min(curReading+500,1000);
-  await sbUpsert('weekly_scores',{
-    user_name:userName,
-    week_start:weekStart,
-    reading_score:newReading,
-    updated_at:new Date().toISOString()
-  });
+  var msg = localStorage.getItem('jc_victory_msg')||'';
+  var payload={user_name:userName, week_start:weekStart, reading_score:newReading, victory_msg:msg, updated_at:new Date().toISOString()};
+  if(existingId) payload.id=existingId;   // 带 id 才能 update 而不 insert 新行
+  await sbUpsert('weekly_scores',payload);
 }
 async function loadLeaderboard(){
   var weekStart=getWeekStart();
-  var rows=await sbGet('weekly_scores',
-    'week_start=eq.'+weekStart+'&select=user_name,reading_score,vocab_score&order=reading_score.desc,vocab_score.desc&limit=10');
+  var rows=await sbGet('weekly_scores','week_start=eq.'+weekStart+'&select=user_name,reading_score,vocab_score&order=reading_score.desc,vocab_score.desc&limit=10');
   var el=$('board-list');
   if(!rows||rows.length===0){el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:20px">本周还没有人上榜，快去练习！</div>';return;}
   el.innerHTML=rows.map(function(r,i){
@@ -506,196 +972,201 @@ async function loadLeaderboard(){
   }).join('');
 }
 
-// ── CLAUDE API ──
-async function analyzesSentence(text){
-  if(analysisCache[text])return analysisCache[text];
-  var prompt='你是初中英语语法专家。分析这个英语句子，只返回合法JSON（不加markdown代码块），格式如下：\n'+
-    '{"parts":[{"text":"...","label":"主句/让步状语从句/宾语从句/定语从句/复合宾语/时间状语/条件状语从句/方式状语/null","colorKey":"a/b/c/d/e/null"}],"clauses":[{"label":"...","colorClass":"ca/cb/cg/cd/ce","text":"...","tip":"..."}],"note":"...","translation":"..."}\n'+
-    'colorKey规则：a=蓝(主句) b=琥珀(宾语从句) c=绿(让步/条件状语从句) d=红(复合宾语/定语从句) e=紫(时间/方式状语)\n'+
-    'colorClass规则：ca=主句 cb=宾语从句 cg=让步/条件状语从句 cd=复合宾语/定语从句 ce=时间/方式状语\n'+
-    'note用中文写核心主干和固定搭配。translation是地道中文翻译。\n句子：'+text;
-  try{
-    var r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':CL_KEY,'anthropic-version':'2023-06-01'},
-      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1000,messages:[{role:'user',content:prompt}]})
-    });
-    var data=await r.json();
-    var txt=data.content[0].text.replace(/```json|```/g,'').trim();
-    var result=JSON.parse(txt);
-    analysisCache[text]=result;
-    return result;
-  }catch(e){
-    return null;
-  }
-}
-
-// ── RENDER SENTENCE ──
+// ── RENDER ──
 function renderDiff(id, diff){
   var dl=diffLabel(diff);
-  var el=$(id);
-  el.textContent=dl.label;
-  el.className='diff-badge '+dl.cls;
+  var el=$(id); el.textContent=dl.label; el.className='diff-badge '+dl.cls;
 }
-
-function setDots(paneId, step){
+function setDots(step){
   for(var i=1;i<=5;i++){
-    var el=$('dt'+i);
-    if(!el)continue;
+    var el=$('dt'+i); if(!el)continue;
     var h='';
-    for(var j=1;j<=5;j++){
-      h+='<div class="dot '+(j<step?'done':j===step?'now':'')+'"></div>';
-    }
+    for(var j=1;j<=5;j++) h+='<div class="dot '+(j<step?'done':j===step?'now':'')+'"></div>';
     el.innerHTML=h;
   }
 }
-
-function setTag(id, s){
+function setTag(s){
   var tag='第 '+s.id+' 句 &middot; Day '+s.day+'&middot;'+s.num;
   for(var i=1;i<=5;i++){var el=$('tg'+i);if(el)el.innerHTML=tag;}
-  for(var j=1;j<=5;j++){var el2=$('sn'+j);if(el2)el2.textContent=s.text;}
+  for(var j=1;j<=4;j++){var el2=$('sn'+j);if(el2)el2.textContent=s.text;}
   renderDiff('db1',s.diff);renderDiff('db2',s.diff);renderDiff('db3',s.diff);renderDiff('db4',s.diff);renderDiff('db5',s.diff);
 }
-
 function startCD(){
   if(cdTimer){clearInterval(cdTimer);cdTimer=null;}
-  $('b1').style.display='none';
-  $('cd1').style.display='flex';
-  var n=10;
-  $('cd1n').textContent='10';
+  $('b1').style.display='none'; $('cd1').style.display='flex';
+  var n=10; $('cd1n').textContent='10';
   cdTimer=setInterval(function(){
     n--;
-    if(n<=0){clearInterval(cdTimer);cdTimer=null;$('cd1').style.display='none';$('b1').style.display='block';}
+    if(n<=3&&n>0) beep(300+(3-n)*150,0.08);
+    if(n<=0){clearInterval(cdTimer);cdTimer=null;$('cd1').style.display='none';$('b1').style.display='block';beep(880,0.2);}
     else{$('cd1n').textContent=String(n);}
   },1000);
 }
 
-async function showStructure(s){
-  $('loading3').style.display='block';
-  $('structure-area').style.display='none';
-  $('b3').style.display='none';
-  var data=await analyzesSentence(s.text);
-  $('loading3').style.display='none';
-  if(data){
-    // highlighted sentence
-    var hl=data.parts.map(function(p){
-      if(!p.label||p.colorKey==='null'||!p.colorKey)return '<span>'+escHtml(p.text)+'</span>';
-      return '<span class="hl-'+p.colorKey+'">'+escHtml(p.text)+'</span>';
-    }).join('');
-    $('sn3').innerHTML=hl;
-    // legend
-    var seen={},legendHtml='';
-    data.parts.filter(function(p){return p.label&&p.colorKey&&p.colorKey!=='null';}).forEach(function(p){
-      if(!seen[p.label]){seen[p.label]=1;legendHtml+='<span class="chip chip-'+p.colorKey+'">'+escHtml(p.label)+'</span>';}
-    });
-    $('lgd').innerHTML=legendHtml;
-    // clauses
-    $('cls').innerHTML=data.clauses.map(function(c){
-      return '<div class="cc '+c.colorClass+'"><div class="cc-lbl">'+escHtml(c.label)+'</div><div class="cc-txt">'+escHtml(c.text)+'</div><div class="cc-tip">'+escHtml(c.tip)+'</div></div>';
-    }).join('');
-    $('nt').textContent=data.note;
-    $('tr').textContent=data.translation;
-    $('structure-area').style.display='block';
-  } else {
-    $('sn3').textContent=s.text;
-    $('lgd').innerHTML='';
-    $('cls').innerHTML='';
-    $('nt').textContent='（分析加载失败，请检查网络或 API Key）';
-    $('structure-area').style.display='block';
-  }
-  $('b3').style.display='block';
-}
+function showStructure(s){
+  clickSound();
+  var data = analyzeSentence(s.text);
 
-function escHtml(s){
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // ── Inline labeled sentence with nested clause containers ──
+  var hl = '', nestOpen = false;
+  data.spans.forEach(function(sp){
+    var lv = sp.level||0;
+    // Open nested container when entering level 1
+    if(lv>=1 && !nestOpen){
+      hl += '<span class="nest">';
+      nestOpen = true;
+    }
+    // Close nested container when returning to level 0
+    if(lv===0 && nestOpen){
+      hl += '</span>';
+      nestOpen = false;
+    }
+    if(sp.label){
+      var sz = lv>=1 ? ' style="font-size:8px"' : '';
+      hl += '<span class="sg sg-'+sp.cls+' sg-lv'+lv+'"><span class="sg-lbl lbl-'+sp.cls+'"'+sz+'>'+sp.label+'</span>'+escHtml(sp.text)+'</span>';
+    } else {
+      hl += escHtml(sp.text);
+    }
+  });
+  if(nestOpen) hl += '</span>';
+  $('sn3').innerHTML = hl;
+
+  // ── Compact legend ──
+  var seen={},leg='';
+  ['主','谓','宾','状','定','连'].forEach(function(l){
+    var clsMap={主:'subj',谓:'pred',宾:'obj',状:'adv',定:'attr',连:'conj'};
+    data.spans.forEach(function(sp){if(sp.label===l)seen[l]=clsMap[l];});
+    if(seen[l]) leg+='<span class="chip chip-'+seen[l]+'">'+l+'</span>';
+  });
+  $('lgd').innerHTML = leg;
+
+  // ── Short note ──
+  $('nt').textContent = data.note;
+
+  // Translation for step 5
+  $('tr').textContent = s.trans||'（暂无翻译）';
+  $('structure-area').style.display='block';
 }
 
 // ── FLOW ──
-var sessionCompleted=0;
-
 function goToPractice(){
-  var s=getSentence(currentId);
-  setTag('tg1',s);
-  setDots('',1);
-  startCD();
-  show('p1');
-  step=1;
+  var s = getSentence(currentId);
+  setTag(s); setDots(1); startCD();
+  show('p1'); step=1;
 }
 
 async function completeAndNext(save){
-  if(save)savedIds.push(currentId);
+  if(save) savedIds.push(currentId);
   sessionCompleted++;
-  var totalCompleted=currentId; // rough approximation
+  var totalCompleted = currentId;
   await saveProgress(totalCompleted);
-  if(currentId<200){
+
+  // Update daily count
+  var ds = incrementDailyCount();
+  var remaining = DAILY_LIMIT - ds.count;
+
+  if(remaining <= 0 || sessionCompleted >= DAILY_LIMIT){
+    // Daily limit reached
+    $('done-icon').textContent = '\u{1F44D}';
+    $('done-title').textContent = '今日训练完成！';
+    $('done-msg').textContent = '已完成今天全部 '+DAILY_LIMIT+' 句。大脑需要时间消化，明天继续！';
+    // Hide "next sentence" and "keep going" buttons
+    show('p-done');
+    return;
+  }
+
+  if(currentId < 200){
     currentId++;
-    if(sessionCompleted%2===0){
-      // every 2 sentences show done screen
-      $('done-msg').textContent='本次两句已完成！大脑需要时间消化，稍作休息。';
+    if(sessionCompleted % 2 === 0){
+      $('done-icon').textContent = '\u{1F319}';
+      $('done-title').textContent = '稍作休息';
+      $('done-msg').textContent = '已完成 2 句中的 '+sessionCompleted+' 句。还剩 '+remaining+' 句今日额度。';
       show('p-done');
     } else {
-      var s=getSentence(currentId);
-      setTag('',s);
-      setDots('',1);
-      startCD();
-      show('p1');
-      step=1;
+      var s = getSentence(currentId);
+      setTag(s); setDots(1); startCD();
+      show('p1'); step=1;
     }
   } else {
-    $('done-msg').textContent='恭喜！你已完成全部 200 句！真的很厉害！';
+    $('done-icon').textContent = '\u{1F389}';
+    $('done-title').textContent = '全部完成！';
+    $('done-msg').textContent = '恭喜！你已完成全部 200 句！真的很厉害！';
     show('p-done');
   }
 }
 
 // ── INIT ──
 function init(){
-  var stored=localStorage.getItem('jc_reading_name');
-  if(stored){
-    userName=stored;
-    startWithUser();
-  } else {
-    show('p-name');
+  // 统一名字系统：读 jc_username，兼容旧 key
+  var name = localStorage.getItem('jc_username');
+  if(!name) name = localStorage.getItem('jc_reading_name');
+  if(!name) name = localStorage.getItem('jc_student_name');
+  if(!name || name==='同学'){
+    window.location.href='start.html';
+    return;
   }
+  localStorage.setItem('jc_username', name); // 确保统一 key 存在
+  userName = name;
+  startWithUser();
 }
 
 async function startWithUser(){
   await loadProgress();
-  var s=getSentence(currentId);
-  $('welcome-greeting').textContent='你好，'+userName+'！继续你的长难句之旅';
-  var pct=Math.round((currentId-1)/200*100);
-  $('prog-fill').style.width=pct+'%';
-  $('prog-label').textContent='已完成 '+(currentId-1)+' / 200 句 ('+(pct)+'%)';
+
+  // Check daily limit
+  if(isDailyLocked()){
+    updateLockScreen();
+    show('p-locked');
+    return;
+  }
+
+  var ds = getDailyState();
+  var pct = Math.round((currentId-1)/200*100);
+  $('prog-fill').style.width = pct+'%';
+  $('prog-label').textContent = '已完成 '+(currentId-1)+' / 200 句 ('+pct+'%)';
+  $('daily-badge').textContent = '今日已完成 '+ds.count+' / '+DAILY_LIMIT+' 句';
+
+  // Render hall grid
+  var currentDay = Math.ceil(currentId/2); // 2 sentences per day
+  var hallHtml = '';
+  for(var d=1; d<=100; d++){
+    var cls = 'hall-day';
+    if(d < currentDay) cls += ' done';
+    else if(d === currentDay) cls += ' current';
+    else cls += ' locked';
+    hallHtml += '<div class="'+cls+'" data-day="'+d+'">'+d+'</div>';
+  }
+  $('hall-grid').innerHTML = hallHtml;
+
+  // Click handler for current day
+  $('hall-grid').querySelector('.current').addEventListener('click',function(){clickSound();goToPractice();});
+
   show('p-welcome');
 }
 
 // ── EVENTS ──
-$('btn-name-go').addEventListener('click',function(){
-  var v=$('name-input').value.trim();
-  if(!v)return;
-  userName=v;
-  localStorage.setItem('jc_reading_name',v);
-  startWithUser();
+$('btn-start').addEventListener('click',function(){
+  if(isDailyLocked()){ updateLockScreen(); show('p-locked'); return; }
+  goToPractice();
 });
-$('name-input').addEventListener('keydown',function(e){if(e.key==='Enter')$('btn-name-go').click();});
-
-$('btn-start').addEventListener('click',goToPractice);
 $('btn-board-open').addEventListener('click',function(){loadLeaderboard();show('p-board');});
-$('btn-board-back').addEventListener('click',function(){show('p-welcome');});
+$('btn-lock-board').addEventListener('click',function(){loadLeaderboard();show('p-board');});
+$('btn-lock-back').addEventListener('click',function(){window.location.href='study.html';});
+$('btn-board-back').addEventListener('click',function(){
+  if(isDailyLocked()){ updateLockScreen(); show('p-locked'); }
+  else startWithUser();
+});
 
-$('b1').addEventListener('click',function(){setDots('',2);show('p2');step=2;});
+$('b1').addEventListener('click',function(){clickSound();setDots(2);show('p2');step=2;});
 $('b2').addEventListener('click',function(){
-  setDots('',3);show('p3');step=3;
+  clickSound();setDots(3);show('p3');step=3;
   showStructure(getSentence(currentId));
 });
-$('b3').addEventListener('click',function(){setDots('',4);show('p4');step=4;});
-$('b4').addEventListener('click',function(){setDots('',5);show('p5');step=5;});
-$('b-next').addEventListener('click',function(){completeAndNext(false);});
-$('b-save').addEventListener('click',function(){completeAndNext(true);});
+$('b3').addEventListener('click',function(){clickSound();setDots(4);show('p4');step=4;});
+$('b4').addEventListener('click',function(){clickSound();setDots(5);show('p5');step=5;});
+$('b-next').addEventListener('click',function(){clickSound();completeAndNext(false);});
+$('b-save').addEventListener('click',function(){clickSound();completeAndNext(true);});
 
-$('btn-keep-going').addEventListener('click',function(){
-  var s=getSentence(currentId);
-  setTag('',s);setDots('',1);startCD();show('p1');step=1;
-});
 $('btn-xuao').addEventListener('click',function(){$('modal').classList.add('on');});
 $('btn-copy-wx').addEventListener('click',function(){
   if(navigator.clipboard)navigator.clipboard.writeText('JiahaoLee6666');

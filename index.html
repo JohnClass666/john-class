@@ -267,19 +267,28 @@ background: linear-gradient(to bottom, transparent, #F5EDD8);
         <div class="entry-sub">提问 · 炫耀 · 反馈 · 了解</div>
       </a>
     </div>
-    <div class="foot">Changsha · 2026</div>
+    <div class="foot">Changsha · 2026　<span style="color:rgba(160,120,70,.25);cursor:pointer" onclick="changeName()" title="切换名字">|</span></div>
   </div>
 </div>
 
 <script>
-const NAME_KEY = 'jc_student_name';
+const NAME_KEY = 'jc_username';
 
 function init() {
-  const saved = localStorage.getItem(NAME_KEY);
-  if (saved) {
+  var saved = localStorage.getItem(NAME_KEY);
+  if(!saved) saved = localStorage.getItem('jc_student_name');
+  if(!saved) saved = localStorage.getItem('jc_reading_name');
+  if (saved && saved!=='同学') {
+    localStorage.setItem(NAME_KEY, saved);
+    // 老用户没宣言 → 跳一次补宣言
+    if(!localStorage.getItem('jc_victory_msg')){
+      window.location.href = 'start.html';
+      return;
+    }
     showMain(saved, false);
   } else {
-    setTimeout(() => document.getElementById('nameInput').focus(), 400);
+    // 没名字 → 跳到门卫页统一走三问流程
+    window.location.href = 'start.html';
   }
 }
 
@@ -391,6 +400,12 @@ function showSplash(name, isKnown, then) {
   }, 1800);
 }
 
+function changeName(){
+  if(confirm('要切换成另一个名字吗？\n\n进度和分数不会丢失——换设备输入同一个名字就能找回来。')){
+    localStorage.removeItem('jc_username');
+    window.location.href='start.html';
+  }
+}
 function go(e, href) {
   e.preventDefault();
   document.getElementById('ov').classList.add('show');

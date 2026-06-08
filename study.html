@@ -62,79 +62,80 @@ html, body {
   font-size: 10px; font-weight: 600; letter-spacing: .14em;
   text-transform: uppercase; color: #B8956A;
   padding-bottom: 10px; border-bottom: 1px solid rgba(184,149,106,.2);
-  margin-bottom: 6px; position: relative; z-index: 1;
+  margin-bottom: 20px; position: relative; z-index: 1;
 }
-.tool-list {
-  display: flex; flex-direction: column;
-  margin-bottom: 36px; position: relative; z-index: 1;
+/* 网格卡片 */
+.tool-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  margin-bottom: 14px; position: relative; z-index: 1;
 }
-.tool-item {
-  display: flex; align-items: center; gap: 16px;
-  padding: 16px 0; border-bottom: 1px solid rgba(184,149,106,.12);
-  text-decoration: none; color: inherit; cursor: pointer; transition: transform .18s;
+.tool-card {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 26px 12px 20px; border-radius: 20px;
+  background: rgba(255,252,245,.65);
+  border: 1.5px solid rgba(184,149,106,.13);
+  text-decoration: none; color: inherit; cursor: pointer;
+  transition: transform .22s, box-shadow .22s;
 }
-.tool-item:last-child { border-bottom: none; }
-.tool-item:hover { transform: translateX(5px); }
-.tool-item:active { transform: scale(.98); }
-.tool-item.disabled {
-  opacity: .45; cursor: default; pointer-events: none;
-}
-.tool-circle {
-  width: 52px; height: 52px; border-radius: 50%;
+.tool-card:hover { transform: translateY(-5px); box-shadow: 0 14px 36px rgba(42,30,8,.10); }
+.tool-card:active { transform: scale(.95); }
+.tool-card.disabled { opacity: .45; cursor: default; pointer-events: none; }
+.tool-card.disabled:hover { transform: none; box-shadow: none; }
+.tool-card.single { grid-column: 1 / -1; max-width: 300px; justify-self: center; }
+.tool-card-icon {
+  width: 56px; height: 56px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 22px; flex-shrink: 0; transition: transform .18s;
+  font-size: 26px; margin-bottom: 10px; transition: transform .2s;
 }
-.tool-item:hover .tool-circle { transform: scale(1.08); }
-.c-gold   { background: rgba(201,169,110,.16); border: 1.5px solid rgba(201,169,110,.3); }
-.c-blue   { background: rgba(74,124,184,.12);  border: 1.5px solid rgba(74,124,184,.22); }
-.c-green  { background: rgba(74,124,63,.13);   border: 1.5px solid rgba(74,124,63,.25); }
-.c-orange { background: rgba(212,136,42,.12);  border: 1.5px solid rgba(212,136,42,.22); }
-.c-purple { background: rgba(122,76,184,.12);  border: 1.5px solid rgba(122,76,184,.22); }
-.c-dark   { background: rgba(184,149,106,.1);  border: 1.5px solid rgba(184,149,106,.2); }
-.tool-text { flex: 1; }
-.tool-name { font-size: 16px; font-weight: 600; color: #2A1E08; margin-bottom: 3px; letter-spacing: -.1px; }
-.tool-desc { font-size: 12px; color: #9A8060; line-height: 1.5; }
-.tool-badge {
-  font-size: 10px; font-weight: 600; letter-spacing: .06em;
-  text-transform: uppercase; padding: 3px 8px; border-radius: 20px; flex-shrink: 0;
+.tool-card:hover .tool-card-icon { transform: scale(1.10); }
+.ic-gold   { background: rgba(201,169,110,.16); border: 1.5px solid rgba(201,169,110,.3); }
+.ic-blue   { background: rgba(74,124,184,.12);  border: 1.5px solid rgba(74,124,184,.22); }
+.ic-green  { background: rgba(74,124,63,.13);   border: 1.5px solid rgba(74,124,63,.25); }
+.ic-orange { background: rgba(212,136,42,.12);  border: 1.5px solid rgba(212,136,42,.22); }
+.ic-purple { background: rgba(122,76,184,.12);  border: 1.5px solid rgba(122,76,184,.22); }
+.ic-teal   { background: rgba(42,150,150,.12);  border: 1.5px solid rgba(42,150,150,.22); }
+.tool-card-name { font-size: 16px; font-weight: 700; color: #2A1E08; margin-bottom: 3px; }
+.tool-card-desc { font-size: 11px; color: #9A8060; line-height: 1.5; }
+.tool-card-badge {
+  font-size: 9px; font-weight: 600; letter-spacing: .05em;
+  padding: 2px 8px; border-radius: 10px; margin-top: 8px;
 }
-.badge-live { background: rgba(74,124,63,.12); color: #4A7C3F; border: 1px solid rgba(74,124,63,.2); }
-.badge-soon { background: rgba(184,149,106,.1); color: #B8956A; border: 1px solid rgba(184,149,106,.2); }
-.tool-arrow {
-  color: rgba(184,149,106,.4); flex-shrink: 0; transition: transform .18s, color .18s;
-}
-.tool-item:hover .tool-arrow { transform: translateX(4px); color: #B8956A; }
-.wulin {
+.badge-live { background: rgba(74,124,63,.10); color: #4A7C3F; border: 1px solid rgba(74,124,63,.18); }
+.badge-soon { background: rgba(184,149,106,.08); color: #B8956A; border: 1px solid rgba(184,149,106,.16); }
+/* 大神榜卡片 */
+.god-card {
+  display: flex; align-items: center; gap: 14px;
   background: rgba(80,60,30,0.72); border-radius: 20px;
-  padding: 26px 26px 24px; position: relative; overflow: hidden; z-index: 1;
+  padding: 18px 22px; text-decoration: none; color: inherit; cursor: pointer;
+  transition: transform .18s; position: relative; z-index: 1; overflow: hidden;
 }
-.wulin::before {
+.god-card::before {
   content: ''; position: absolute; inset: 0;
-  background:
-    radial-gradient(circle at 15% 50%, rgba(201,169,110,.1) 0%, transparent 55%),
-    radial-gradient(circle at 85% 20%, rgba(201,169,110,.07) 0%, transparent 45%);
+  background: radial-gradient(circle at 15% 50%, rgba(201,169,110,.1) 0%, transparent 55%),
+              radial-gradient(circle at 85% 20%, rgba(201,169,110,.07) 0%, transparent 45%);
 }
-.wulin-top { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; position: relative; z-index: 1; }
-.wulin-icon {
-  width: 52px; height: 52px; border-radius: 50%;
+.god-card:hover { transform: translateY(-3px); }
+.god-card:active { transform: scale(.97); }
+.god-card-icon {
+  width: 48px; height: 48px; border-radius: 50%;
   background: rgba(201,169,110,.12); border: 1.5px solid rgba(201,169,110,.25);
-  display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0; position: relative; z-index: 1;
 }
-.wulin-title { font-size: 18px; font-weight: 600; color: #C9A96E; margin-bottom: 3px; }
-.wulin-sub { font-size: 12px; color: rgba(253,248,240,.45); }
-.wulin-items {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; position: relative; z-index: 1;
-}
-.wi {
-  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07);
-  border-radius: 12px; padding: 11px 13px; display: flex; align-items: center; gap: 9px;
-}
-.wi-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(201,169,110,.4); flex-shrink: 0; }
-.wi-text { font-size: 12px; color: rgba(253,248,240,.5); }
-.wulin-coming {
-  margin-top: 14px; font-size: 11px; letter-spacing: .08em;
-  text-transform: uppercase; color: rgba(201,169,110,.4); text-align: center; position: relative; z-index: 1;
-}
+.god-card-text { flex: 1; position: relative; z-index: 1; }
+.god-card-title { font-size: 16px; font-weight: 600; color: #C9A96E; margin-bottom: 2px; }
+.god-card-desc { font-size: 11px; color: rgba(253,248,240,.5); }
+/* modal */
+.modal-overlay{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(42,30,8,.4);backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex;opacity:1;pointer-events:all}
+.modal-box{background:#F5EDD8;border:1px solid rgba(184,149,106,.3);border-radius:22px;padding:28px 24px;width:min(320px,88vw);text-align:center;box-shadow:0 20px 60px rgba(42,30,8,.18)}
+.modal-box .m-icon{font-size:40px;margin-bottom:10px}
+.modal-box .m-title{font-size:18px;font-weight:700;color:#2A1E08;margin-bottom:8px}
+.modal-box .m-body{font-size:13px;color:#6A5030;line-height:1.8;margin-bottom:16px}
+.modal-box .m-wx{background:rgba(74,124,63,.08);border:1.5px solid rgba(74,124,63,.25);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:16px;font-weight:700;color:#2A5A1E;letter-spacing:.04em}
+.modal-box .m-btn{display:block;width:100%;padding:10px;border-radius:12px;background:#2A1E08;color:#F5EDD8;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:6px}
+.modal-box .m-btn-close{background:transparent;color:#9A8060;border:1.5px solid rgba(184,149,106,.3)}
+
 .foot {
   margin-top: 40px; font-size: 10px; letter-spacing: .12em;
   text-transform: uppercase; color: rgba(184,149,106,.4); position: relative; z-index: 1;
@@ -149,8 +150,8 @@ html, body {
 .page-title { animation-delay: .1s; }
 .page-sub   { animation-delay: .12s; }
 .sec-label  { animation-delay: .15s; }
-.tool-list  { animation-delay: .18s; }
-.wulin      { animation-delay: .22s; }
+.tool-grid  { animation-delay: .18s; }
+.god-card   { animation-delay: .22s; }
 @keyframes fadeIn {
   from { opacity: 0; transform: translateX(12px); }
   to   { opacity: 1; transform: none; }
@@ -187,117 +188,116 @@ html, body {
     <div class="page-sub">选择你需要的方向，系统进步。</div>
 
     <div class="sec-label">学习工具</div>
-    <div class="tool-list">
+    <div class="tool-grid">
 
-      <a class="tool-item" href="vocab.html" onclick="go(event,'vocab.html')">
-        <div class="tool-circle c-gold">📚</div>
-        <div class="tool-text">
-          <div class="tool-name">单词训练</div>
-          <div class="tool-desc">分级闯关 · 错词本 · 排行榜</div>
-        </div>
-        <span class="tool-badge badge-live">已上线</span>
-        <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <!-- 第1行：单词 | 语法 -->
+      <a class="tool-card" href="vocab.html" onclick="go(event,'vocab.html')">
+        <div class="tool-card-icon ic-gold">📚</div>
+        <div class="tool-card-name">单词</div>
+        <div class="tool-card-desc">分级闯关 · 错词本 · 排行榜</div>
+        <span class="tool-card-badge badge-live">已上线</span>
       </a>
 
-      <a class="tool-item" href="grammar_hub.html" onclick="go(event,'grammar_hub.html')">
-        <div class="tool-circle c-blue">📐</div>
-        <div class="tool-text">
-          <div class="tool-name">语法提升</div>
-          <div class="tool-desc">学习语法 · 语法应试 · 真题训练</div>
-        </div>
-        <span class="tool-badge badge-live">已上线</span>
-        <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <a class="tool-card" href="grammar_hub.html" onclick="go(event,'grammar_hub.html')">
+        <div class="tool-card-icon ic-blue">📐</div>
+        <div class="tool-card-name">语法</div>
+        <div class="tool-card-desc">学习语法 · 语法应试</div>
+        <span class="tool-card-badge badge-live">已上线</span>
       </a>
 
-      <a class="tool-item" href="exam.html" onclick="go(event,'exam.html')">
-        <div class="tool-circle c-purple">📝</div>
-        <div class="tool-text">
-          <div class="tool-name">真题专区</div>
-          <div class="tool-desc">中考真题 · 选择填空 · 自动批改 · 解析</div>
-        </div>
-        <span class="tool-badge badge-live">已上线</span>
-        <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <!-- 第2行：写作 | 阅读 -->
+      <a class="tool-card" href="writing.html" onclick="go(event,'writing.html')">
+        <div class="tool-card-icon ic-orange">✏️</div>
+        <div class="tool-card-name">写作</div>
+        <div class="tool-card-desc">拍照识别 · 专业批改 · 三维反馈</div>
+        <span class="tool-card-badge badge-live">已上线</span>
       </a>
 
-      <a class="tool-item" href="writing.html" onclick="go(event,'writing.html')">
-        <div class="tool-circle c-orange">✏️</div>
-        <div class="tool-text">
-          <div class="tool-name">英语写作批改</div>
-          <div class="tool-desc">拍照识别 · 专业批改 · 三维反馈 · 隐私保护</div>
-        </div>
-        <span class="tool-badge badge-live">已上线</span>
-        <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <a class="tool-card" href="reading_sentence.html" onclick="go(event,'reading_sentence.html')">
+        <div class="tool-card-icon ic-green">📖</div>
+        <div class="tool-card-name">阅读</div>
+        <div class="tool-card-desc">阅读理解最快提分手段</div>
+        <span class="tool-card-badge badge-live">已上线</span>
       </a>
 
-      <a class="tool-item" href="listening.html" onclick="go(event,'listening.html')">
-        <div class="tool-circle c-green">🎧</div>
-        <div class="tool-text">
-          <div class="tool-name">英语精听训练</div>
-          <div class="tool-desc">总听 · 听写 · 跟读 · 查误 · 裸听</div>
-        </div>
-        <span class="tool-badge badge-live">已上线</span>
-        <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <!-- 第3行：听力 | 口语 -->
+      <a class="tool-card" href="listening.html" onclick="go(event,'listening.html')">
+        <div class="tool-card-icon ic-green">🎧</div>
+        <div class="tool-card-name">听力</div>
+        <div class="tool-card-desc">总听 · 听写 · 跟读 · 查误 · 裸听</div>
+        <span class="tool-card-badge badge-live">已上线</span>
       </a>
 
-      <a class="tool-item" href="reading_sentence.html" onclick="go(event,'reading_sentence.html')">
-        <div class="tool-circle c-green">📖</div>
-        <div class="tool-text">
-          <div class="tool-name">长难句训练</div>
-          <div class="tool-desc">五步法 · 结构分析 · 排行榜 · 200句进阶</div>
-        </div>
-        <span class="tool-badge badge-live">已上线</span>
-        <svg class="tool-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
-
-      <div class="tool-item disabled">
-        <div class="tool-circle c-green">🔍</div>
-        <div class="tool-text">
-          <div class="tool-name">阅读理解方法论</div>
-          <div class="tool-desc">三步定位 · 六大题型</div>
-        </div>
-        <span class="tool-badge badge-soon">即将上线</span>
+      <div class="tool-card" onclick="showOralModal()">
+        <div class="tool-card-icon ic-teal">🗣️</div>
+        <div class="tool-card-name">口语</div>
+        <div class="tool-card-desc">联系12年口语教师 John</div>
+        <span class="tool-card-badge badge-soon">预约</span>
       </div>
 
-      <div class="tool-item disabled">
-        <div class="tool-circle c-purple">📖</div>
-        <div class="tool-text">
-          <div class="tool-name">写作框架与句型</div>
-          <div class="tool-desc">三段框架 · 高分句型</div>
-        </div>
-        <span class="tool-badge badge-soon">即将上线</span>
-      </div>
+      <!-- 第4行：真题（单独居中） -->
+      <a class="tool-card single" href="exam.html" onclick="go(event,'exam.html')">
+        <div class="tool-card-icon ic-purple">📝</div>
+        <div class="tool-card-name">真题</div>
+        <div class="tool-card-desc">中考真题 · 选择填空 · 自动批改 · 解析</div>
+        <span class="tool-card-badge badge-live">已上线</span>
+      </a>
 
     </div>
 
-    <div class="sec-label">武林秘籍</div>
-    <div class="wulin">
-      <div class="wulin-top">
-        <div class="wulin-icon">🥋</div>
-        <div>
-          <div class="wulin-title">武林秘籍</div>
-          <div class="wulin-sub">John 老师独家整理 · 内部资料</div>
-        </div>
+    <!-- 大神榜 -->
+    <div class="sec-label">学习榜单</div>
+    <a class="god-card" href="weekly_stars.html" onclick="go(event,'weekly_stars.html')">
+      <div class="god-card-icon">🏆</div>
+      <div class="god-card-text">
+        <div class="god-card-title">每周学习大神榜</div>
+        <div class="god-card-desc">阅读 + 词汇周榜 · 每周一重置</div>
       </div>
-      <div class="wulin-items">
-        <div class="wi"><div class="wi-dot"></div><div class="wi-text">期末复习宝典</div></div>
-        <div class="wi"><div class="wi-dot"></div><div class="wi-text">真题精讲</div></div>
-        <div class="wi"><div class="wi-dot"></div><div class="wi-text">专项训练集</div></div>
-        <div class="wi"><div class="wi-dot"></div><div class="wi-text">学神秘籍</div></div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(201,169,110,.4)" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+
+    <!-- 口语弹窗 -->
+    <div class="modal-overlay" id="oralModal">
+      <div class="modal-box">
+        <div class="m-icon">🗣️</div>
+        <div class="m-title">口语训练</div>
+        <div class="m-body">这个你真得联系 12 年口语教师 John<br>技术要求太高我还没做出来</div>
+        <div class="m-wx" id="oralWx">JiahaoLee6666</div>
+        <button class="m-btn" id="oralCopyBtn">复制微信号</button>
+        <button class="m-btn m-btn-close" onclick="closeOralModal()">关闭</button>
       </div>
-      <div class="wulin-coming">正在整理中 · 敬请期待</div>
     </div>
 
-    <div class="foot">Growing Skills · Shaping Futures</div>
+    <div class="foot">Growing Skills · Shaping Futures　<span id="nameTag" style="color:rgba(160,120,70,.3);cursor:pointer;font-size:9px" onclick="changeName()"></span></div>
   </div>
 </div>
 
 <script>
+// 显示当前用户名
+(function(){
+  var n = localStorage.getItem('jc_username')||'';
+  if(n) document.getElementById('nameTag').textContent = '当前：'+n+' · 切换';
+})();
+function changeName(){
+  if(confirm('要切换名字吗？进度和分数不会丢失。')){
+    localStorage.removeItem('jc_username');
+    window.location.href='start.html';
+  }
+}
 function go(e, href) {
   e.preventDefault();
   const ov = document.getElementById('ov');
   ov.classList.add('show');
   setTimeout(() => { window.location.href = href; }, 280);
 }
+function showOralModal(){ document.getElementById('oralModal').classList.add('show'); }
+function closeOralModal(){ document.getElementById('oralModal').classList.remove('show'); }
+document.getElementById('oralCopyBtn').addEventListener('click',function(){
+  var wx=document.getElementById('oralWx').textContent;
+  if(navigator.clipboard){navigator.clipboard.writeText(wx);}
+  this.textContent='✓ 已复制'; var t=this;
+  setTimeout(function(){t.textContent='复制微信号';},2000);
+});
 </script>
   <script src="audio.js"></script>
 </body>

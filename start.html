@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>欢迎 · John Class</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#F5EDD8;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased;color:#2A1E08}
+body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:28px 20px}
+.card{width:100%;max-width:420px;text-align:center}
+.logo{font-size:11px;letter-spacing:.18em;color:#B5A080;font-weight:600;margin-bottom:44px}
+.step{display:none;flex-direction:column;align-items:center}
+.step.on{display:flex}
+.step-emoji{font-size:48px;margin-bottom:16px;line-height:1}
+.step-title{font-size:22px;font-weight:700;margin-bottom:8px;color:#2A1E08}
+.step-sub{font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:28px}
+.inp{width:100%;padding:14px 16px;background:rgba(255,252,245,.9);border:1.5px solid rgba(42,30,8,.2);border-radius:14px;font-size:17px;font-family:inherit;color:#2A1E08;outline:none;text-align:center;margin-bottom:14px}
+.inp:focus{border-color:#2A1E08}
+.btn{display:block;width:100%;padding:15px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn:active{opacity:.8}
+.btn-row{display:flex;gap:10px;width:100%}
+.btn-ghost{flex:1;padding:13px;background:transparent;color:#7A6040;border:1.5px solid rgba(42,30,8,.2);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-skip{display:block;width:100%;padding:12px;background:transparent;color:#B5A080;border:none;font-size:14px;cursor:pointer;font-family:inherit;margin-top:8px}
+.char-count{font-size:11px;color:#B5A080;text-align:right;width:100%;margin-top:-8px;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">JOHN CLASS</div>
+
+  <!-- Step 1: 亲学生 -->
+  <div id="s1" class="step on">
+    <div class="step-emoji">🤔</div>
+    <div class="step-title">你是 John 的亲学生吗？</div>
+    <div class="step-sub">如实回答，反正都能进</div>
+    <div class="btn-row">
+      <button class="btn" onclick="next(1,true)">当然了</button>
+      <button class="btn-ghost" onclick="next(1,false)">我路过看看</button>
+    </div>
+  </div>
+
+  <!-- Step 2: 名字 -->
+  <div id="s2" class="step">
+    <div class="step-emoji">✏️</div>
+    <div class="step-title">你叫什么名字？</div>
+    <div class="step-sub">这个名字会伴随你整个学习旅程<br>换设备输入同一个名字就能恢复进度</div>
+    <input class="inp" id="nameInp" type="text" placeholder="输入你的名字" maxlength="20">
+    <button class="btn" id="nameBtn">继续 →</button>
+  </div>
+
+  <!-- Step 3: 胜利宣言 -->
+  <div id="s3" class="step">
+    <div class="step-emoji">👑</div>
+    <div class="step-title">登上大神榜后</div>
+    <div class="step-sub">你想对手下败将说什么？</div>
+    <input class="inp" id="msgInp" type="text" placeholder="例如：我无敌，你随意" maxlength="40">
+    <div class="char-count" id="msgCount">0/40</div>
+    <button class="btn" id="msgBtn">完成，开始学习 →</button>
+    <button class="btn-skip" id="msgSkip">跳过，以后再说</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Try to pre-fill name from any old localStorage key
+  var prefill = '';
+  var oldKeys = ['jc_reading_name','jc_username','vocab_name','jc_name'];
+  for(var i=0; i<oldKeys.length; i++){
+    var v = localStorage.getItem(oldKeys[i]);
+    if(v && v.trim() && v!=='同学'){
+      prefill = v.trim();
+      break;
+    }
+  }
+  if(prefill){
+    document.getElementById('nameInp').value = prefill;
+  }
+
+  // Pre-fill existing victory msg
+  var oldMsg = localStorage.getItem('jc_victory_msg');
+  if(oldMsg){
+    document.getElementById('msgInp').value = oldMsg;
+    document.getElementById('msgCount').textContent = oldMsg.length+'/40';
+  }
+})();
+
+function next(from, answer){
+  document.getElementById('s'+from).classList.remove('on');
+  document.getElementById('s'+(from+1)).classList.add('on');
+  if(from===2){
+    document.getElementById('nameInp').focus();
+  }
+  if(from===3){
+    document.getElementById('msgInp').focus();
+  }
+}
+
+function finish(){
+  var name = document.getElementById('nameInp').value.trim();
+  if(!name){ alert('请输入你的名字'); return; }
+  localStorage.setItem('jc_username', name);
+
+  var msg = document.getElementById('msgInp').value.trim();
+  if(msg) localStorage.setItem('jc_victory_msg', msg);
+
+  window.location.href = 'study.html';
+}
+
+document.getElementById('nameBtn').addEventListener('click',function(){
+  var name = document.getElementById('nameInp').value.trim();
+  if(!name){ alert('请输入你的名字'); return; }
+  next(2);
+  document.getElementById('msgInp').focus();
+});
+
+document.getElementById('nameInp').addEventListener('keydown',function(e){
+  if(e.key==='Enter') document.getElementById('nameBtn').click();
+});
+
+document.getElementById('msgBtn').addEventListener('click', finish);
+document.getElementById('msgSkip').addEventListener('click', finish);
+
+document.getElementById('msgInp').addEventListener('input',function(){
+  var len = this.value.length;
+  document.getElementById('msgCount').textContent = len+'/40';
+});
+document.getElementById('msgInp').addEventListener('keydown',function(e){
+  if(e.key==='Enter') finish();
+});
+</script>
+</body>
+</html>

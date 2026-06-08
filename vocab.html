@@ -2680,6 +2680,30 @@ const _sb = {
     },
     body: JSON.stringify({name, score, grade, data: S.gd, updated_at: new Date().toISOString()})
    });
+
+   // 同时写入 weekly_scores 供明星榜使用
+   var d=new Date(), day=d.getDay(), diff=d.getDate()-day+(day===0?-6:1);
+   d.setDate(diff);
+   var ws=d.toISOString().split('T')[0];
+   // 先查已有记录的 id
+   var wkCheck=await fetch(SUPABASE_URL+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+ws+'&select=id&limit=1',
+    {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}});
+   var vm = localStorage.getItem('jc_victory_msg')||'';
+   var wkPayload={user_name:name, week_start:ws, vocab_score:score, victory_msg:vm, updated_at:new Date().toISOString()};
+   if(wkCheck.ok){
+    var wkRows=await wkCheck.json();
+    if(wkRows&&wkRows.length>0) wkPayload.id=wkRows[0].id;
+   }
+   await fetch(SUPABASE_URL+'/rest/v1/weekly_scores', {
+    method:'POST',
+    headers:{
+     'apikey': SUPABASE_KEY,
+     'Authorization': 'Bearer '+SUPABASE_KEY,
+     'Content-Type': 'application/json',
+     'Prefer': 'resolution=merge-duplicates'
+    },
+    body: JSON.stringify(wkPayload)
+   });
   }catch(e){}
  },
  async fetchMine(name){
@@ -2728,8 +2752,13 @@ function lbUpdate(){
    S.grade = 当前年级 id；S.gd[gradeId] = {points, prog} */
 let S={name:"",muted:false,grade:"",gd:{}};
 function load(){
+ // 统一名字：读 jc_username，兼容旧数据
+ var unified = localStorage.getItem('jc_username');
+ if(unified && !S.name) S.name = unified;
  try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r));}catch(e){}
  if(!S.gd)S.gd={};
+ // 确保 jc_username 同步
+ if(S.name) localStorage.setItem('jc_username', S.name);
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 // 当前年级存档（懒创建）
@@ -2970,7 +2999,7 @@ SCREENS.welcome=function(){clear();const d=document.createElement("div");d.class
  const btn=d.querySelector("#go");
  const start=async()=>{
   const v=inp.value.trim();if(!v){inp.focus();inp.style.borderColor="var(--warn)";return;}
-  S.name=v;save();sfx.tap();
+  S.name=v;localStorage.setItem('jc_username',v);save();sfx.tap();
   btn.disabled=true;btn.textContent="连接云端...";
   try{
     const cloud=await _sb.fetchMine(v);
