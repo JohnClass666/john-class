@@ -228,12 +228,12 @@ html, body {
         <span class="tool-card-badge badge-live">已上线</span>
       </a>
 
-      <div class="tool-card" onclick="showOralModal()">
+      <a class="tool-card" href="speaking.html" onclick="go(event,'speaking.html')">
         <div class="tool-card-icon ic-teal">🗣️</div>
         <div class="tool-card-name">口语</div>
-        <div class="tool-card-desc">联系12年口语教师 John</div>
-        <span class="tool-card-badge badge-soon">预约</span>
-      </div>
+        <div class="tool-card-desc">话题练习 · 录音转写 · 参考答案</div>
+        <span class="tool-card-badge badge-live">已上线</span>
+      </a>
 
       <!-- 第4行：真题（单独居中） -->
       <a class="tool-card single" href="exam.html" onclick="go(event,'exam.html')">
@@ -256,15 +256,6 @@ html, body {
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(201,169,110,.4)" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
 
-    <!-- 口语弹窗 -->
-    <div class="modal-overlay" id="oralModal">
-      <div class="modal-box">
-        <div class="m-icon">🗣️</div>
-        <div class="m-title">口语训练</div>
-        <div class="m-body">这个你真得联系 12 年口语教师 John<br>技术要求太高我还没做出来</div>
-        <div class="m-wx" id="oralWx">JiahaoLee6666</div>
-        <button class="m-btn" id="oralCopyBtn">复制微信号</button>
-        <button class="m-btn m-btn-close" onclick="closeOralModal()">关闭</button>
       </div>
     </div>
 
@@ -290,7 +281,6 @@ function go(e, href) {
   ov.classList.add('show');
   setTimeout(() => { window.location.href = href; }, 280);
 }
-function showOralModal(){ document.getElementById('oralModal').classList.add('show'); }
 function closeOralModal(){ document.getElementById('oralModal').classList.remove('show'); }
 document.getElementById('oralCopyBtn').addEventListener('click',function(){
   var wx=document.getElementById('oralWx').textContent;
