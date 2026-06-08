@@ -22,6 +22,8 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
 .btn-row{display:flex;gap:10px;width:100%}
 .btn-ghost{flex:1;padding:13px;background:transparent;color:#7A6040;border:1.5px solid rgba(42,30,8,.2);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
 .btn-skip{display:block;width:100%;padding:12px;background:transparent;color:#B5A080;border:none;font-size:14px;cursor:pointer;font-family:inherit;margin-top:8px}
+.btn-big{padding:17px;font-size:18px}
+.btn-small{padding:12px;font-size:14px}
 .char-count{font-size:11px;color:#B5A080;text-align:right;width:100%;margin-top:-8px;margin-bottom:12px}
 </style>
 </head>
@@ -34,9 +36,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
     <div class="step-emoji">🤔</div>
     <div class="step-title">你是 John 的亲学生吗？</div>
     <div class="step-sub">如实回答，反正都能进</div>
-    <div class="btn-row">
-      <button class="btn" onclick="next(1,true)">当然了</button>
-      <button class="btn-ghost" onclick="next(1,false)">我路过看看</button>
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%">
+      <button class="btn btn-big" onclick="next(1,true)">必须的</button>
+      <button class="btn-ghost btn-small" onclick="next(1,false)">我爱英语，路过看看</button>
     </div>
   </div>
 
