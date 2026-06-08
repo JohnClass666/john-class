@@ -92,8 +92,9 @@ var SB_URL = 'https://ghunrrtrdgicbmixsqrc.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
 
 function getWeekStart(){
-  var d=new Date(),day=d.getDay(),diff=d.getDate()-day+(day===0?-6:1);
-  d.setDate(diff);
+  // 周日为每周第一天（周六晚12点一过自动重置）
+  var d=new Date();
+  d.setDate(d.getDate()-d.getDay());
   return d.toISOString().split('T')[0];
 }
 function formatWeek(s){
