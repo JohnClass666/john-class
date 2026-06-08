@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>每周学习明星榜 · John Class</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#F5EDD8;color:#2A1E08;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;min-height:100%}
+.wrap{max-width:480px;margin:0 auto;padding:40px 24px 80px}
+.back{font-size:13px;color:#B5A080;text-decoration:none;display:block;margin-bottom:32px}
+.back:hover{color:#2A1E08}
+.page-title{font-size:26px;font-weight:700;margin-bottom:4px}
+.page-sub{font-size:13px;color:#8A7050;margin-bottom:28px;line-height:1.6}
+.week-label{font-size:11px;letter-spacing:.14em;color:#B5A080;font-weight:600;margin-bottom:14px}
+.board-row{display:flex;align-items:center;gap:14px;padding:14px 16px;background:rgba(255,252,245,.88);border-radius:12px;margin-bottom:8px}
+.rank{font-size:17px;font-weight:700;width:30px;flex-shrink:0;color:#B5A080}
+.rank.top{color:#2A1E08}
+.name{flex:1;font-size:15px;font-weight:500}
+.score-wrap{text-align:right}
+.total{font-size:16px;font-weight:700;color:#2A1E08}
+.breakdown{font-size:11px;color:#B5A080;margin-top:2px}
+.legend{display:flex;gap:16px;margin-top:20px;padding:14px 16px;background:rgba(42,30,8,.04);border-radius:10px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#8A7050}
+.dot-read{width:8px;height:8px;border-radius:50%;background:rgba(61,107,46,.6);flex-shrink:0}
+.dot-vocab{width:8px;height:8px;border-radius:50%;background:rgba(80,120,200,.6);flex-shrink:0}
+.empty{font-size:14px;color:#B5A080;text-align:center;padding:32px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="study.html">&larr; 返回学习中心</a>
+  <div class="page-title">&#127942; 每周学习明星榜</div>
+  <div class="page-sub">阅读每句 500 分，每周上限 1000 分<br>词汇分数由词汇训练自动累计 &middot; 每周一重置</div>
+  <div class="week-label" id="week-label">本周</div>
+  <div id="board-list"><div class="empty">加载中...</div></div>
+  <div class="legend">
+    <div class="legend-item"><div class="dot-read"></div>阅读得分（上限 1000/周）</div>
+    <div class="legend-item"><div class="dot-vocab"></div>词汇得分</div>
+  </div>
+</div>
+<script>
+var SB_URL = 'https://ghunrrtrdgicbmixsqrc.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
+
+function getWeekStart(){
+  var d=new Date(),day=d.getDay(),diff=d.getDate()-day+(day===0?-6:1);
+  d.setDate(diff);
+  return d.toISOString().split('T')[0];
+}
+function formatWeek(s){
+  var d=new Date(s),end=new Date(d);
+  end.setDate(d.getDate()+6);
+  return (d.getMonth()+1)+'月'+d.getDate()+'日 — '+(end.getMonth()+1)+'月'+end.getDate()+'日';
+}
+async function load(){
+  var ws=getWeekStart();
+  document.getElementById('week-label').textContent='本周（'+formatWeek(ws)+'）';
+  try{
+    var r=await fetch(SB_URL+'/rest/v1/weekly_scores?week_start=eq.'+ws+'&select=user_name,reading_score,vocab_score&order=reading_score.desc,vocab_score.desc&limit=15',
+      {headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}});
+    var data=await r.json();
+    var el=document.getElementById('board-list');
+    if(!data||data.length===0){el.innerHTML='<div class="empty">本周还没有人上榜！快去练习吧 &#128170;</div>';return;}
+    var medals=['&#127947;','&#129352;','&#129353;'];
+    el.innerHTML=data.map(function(row,i){
+      var reading=row.reading_score||0, vocab=row.vocab_score||0, total=reading+vocab;
+      var rank=i<3?medals[i]:String(i+1);
+      return '<div class="board-row"><div class="rank '+(i<3?'top':'')+'">'+rank+'</div><div class="name">'+row.user_name+'</div><div class="score-wrap"><div class="total">'+total+' 分</div><div class="breakdown">阅读 '+reading+' &middot; 词汇 '+vocab+'</div></div></div>';
+    }).join('');
+  }catch(e){
+    document.getElementById('board-list').innerHTML='<div class="empty">加载失败，请检查网络</div>';
+  }
+}
+load();
+</script>
+</body>
+</html>
