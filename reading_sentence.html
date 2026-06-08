@@ -909,8 +909,9 @@ function diffLabel(d){
 }
 
 function getWeekStart(){
-  var d=new Date(), day=d.getDay(), diff=d.getDate()-day+(day===0?-6:1);
-  d.setDate(diff);
+  // 周日为每周第一天（周六晚12点一过自动重置）
+  var d=new Date();
+  d.setDate(d.getDate()-d.getDay());
   return d.toISOString().split('T')[0];
 }
 

@@ -2682,8 +2682,8 @@ const _sb = {
    });
 
    // 同时写入 weekly_scores 供明星榜使用
-   var d=new Date(), day=d.getDay(), diff=d.getDate()-day+(day===0?-6:1);
-   d.setDate(diff);
+   // 周日为每周第一天（周六晚12点一过自动重置）
+   var d=new Date(); d.setDate(d.getDate()-d.getDay());
    var ws=d.toISOString().split('T')[0];
    // 先查已有记录的 id
    var wkCheck=await fetch(SUPABASE_URL+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+ws+'&select=id&limit=1',
