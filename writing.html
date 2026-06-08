@@ -1,1 +1,170 @@
-
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>写作批改 · John Class</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  min-height: 100%;
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: #F5EDD8; color: #2A1E08;
+}
+.layout { display: flex; min-height: 100vh; }
+.left {
+  position: fixed; top: 0; left: 0;
+  width: 52%; height: 100vh; overflow: hidden;
+}
+.left img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top; display: block;
+}
+.left::after {
+  content: ''; position: absolute; top: 0; right: 0;
+  width: 80px; height: 100%;
+  background: linear-gradient(to right, transparent, #F5EDD8);
+}
+.right {
+  margin-left: 52%; flex: 1; background: #F5EDD8;
+  min-height: 100vh; padding: 52px 44px 64px 28px; position: relative;
+}
+.right::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 80% 15%, rgba(201,169,110,.07) 0%, transparent 50%),
+    radial-gradient(circle at 20% 85%, rgba(120,160,80,.05) 0%, transparent 40%);
+  pointer-events: none;
+}
+.nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 44px; position: relative; z-index: 1;
+}
+.nav-brand {
+  font-size: 13px; font-weight: 600; letter-spacing: .18em;
+  text-transform: uppercase; color: #B8956A; text-decoration: none;
+}
+.nav-back {
+  font-size: 12px; color: #9A8060; text-decoration: none;
+  display: flex; align-items: center; gap: 5px; transition: color .2s;
+}
+.nav-back:hover { color: #2A1E08; }
+.page-title {
+  font-size: clamp(24px, 3vw, 32px); font-weight: 600; color: #2A1E08;
+  letter-spacing: -.4px; margin-bottom: 6px; position: relative; z-index: 1;
+}
+.page-sub {
+  font-size: 13px; color: #9A8060; margin-bottom: 32px; position: relative; z-index: 1;
+}
+.card {
+  background: rgba(255,252,245,.65); border: 1.5px solid rgba(184,149,106,.13);
+  border-radius: 20px; padding: 32px 24px; margin-bottom: 20px;
+  text-align: center; position: relative; z-index: 1;
+}
+.card-icon { font-size: 48px; margin-bottom: 16px; line-height: 1; }
+.card-title { font-size: 20px; font-weight: 700; color: #2A1E08; margin-bottom: 8px; }
+.card-desc { font-size: 14px; color: #6A5030; line-height: 1.8; margin-bottom: 24px; }
+.wechat-box {
+  background: rgba(74,124,63,.06); border: 1.5px solid rgba(74,124,63,.25);
+  border-radius: 14px; padding: 18px 20px; margin-bottom: 18px; text-align: center;
+}
+.wechat-label { font-size: 11px; color: #9A8060; letter-spacing: .06em; margin-bottom: 4px; }
+.wechat-id { font-size: 20px; font-weight: 700; color: #2A5A1E; letter-spacing: .04em; }
+.btn {
+  display: block; width: 100%; padding: 14px; background: #2A1E08; color: #F5EDD8;
+  border: none; border-radius: 12px; font-size: 16px; font-weight: 600;
+  cursor: pointer; font-family: inherit; margin-bottom: 8px;
+}
+.btn:active { opacity: .8; }
+.steps { text-align: left; margin-top: 8px; }
+.step-row {
+  display: flex; align-items: baseline; gap: 10px;
+  margin-bottom: 10px; font-size: 14px; color: #4A3A18; line-height: 1.6;
+}
+.step-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(184,149,106,.12); color: #8A6A30;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; flex-shrink: 0;
+}
+.foot {
+  margin-top: 40px; font-size: 10px; letter-spacing: .12em;
+  text-transform: uppercase; color: rgba(184,149,106,.4); position: relative; z-index: 1;
+}
+.overlay {
+  position: fixed; inset: 0; background: #F5EDD8; z-index: 999;
+  opacity: 0; pointer-events: none; transition: opacity .3s ease;
+}
+.overlay.show { opacity: 1; pointer-events: all; }
+.right > * { animation: fadeIn .6s cubic-bezier(.22,1,.36,1) both; }
+.nav        { animation-delay: .05s; }
+.page-title { animation-delay: .10s; }
+.page-sub   { animation-delay: .12s; }
+.card       { animation-delay: .16s; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(12px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (max-width: 680px) {
+  .layout { flex-direction: column; }
+  .left { position: relative; width: 100%; height: 56vw; min-height: 260px; max-height: 400px; }
+  .left::after {
+    top: auto; bottom: 0; left: 0; right: 0;
+    width: 100%; height: 60px;
+    background: linear-gradient(to bottom, transparent, #F5EDD8);
+  }
+  .right { margin-left: 0; padding: 32px 24px 56px; }
+}
+</style>
+</head>
+<body>
+<div class="overlay" id="ov"></div>
+<div class="layout">
+  <div class="left"><img src="bg.png" alt="John Class"></div>
+  <div class="right">
+    <div class="nav">
+      <a class="nav-brand" href="index.html" onclick="go(event,'index.html')">John Class</a>
+      <a class="nav-back" href="study.html" onclick="go(event,'study.html')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>返回
+      </a>
+    </div>
+    <div class="page-title">写作批改</div>
+    <div class="page-sub">写好作文，发给 John，获得专业批改反馈</div>
+    <div class="card">
+      <div class="card-icon">&#9997;&#65039;</div>
+      <div class="card-title">发作文给 John</div>
+      <div class="card-desc">任何英语作文都可以发给 John<br>语法纠错 · 结构优化 · 高分建议</div>
+      <div class="steps">
+        <div class="step-row"><span class="step-num">1</span> 在纸上写好英语作文</div>
+        <div class="step-row"><span class="step-num">2</span> 拍照或截图</div>
+        <div class="step-row"><span class="step-num">3</span> 通过微信发给 John</div>
+        <div class="step-row"><span class="step-num">4</span> John 批改后发回给你</div>
+      </div>
+    </div>
+    <div class="wechat-box">
+      <div class="wechat-label">JOHN 老师微信</div>
+      <div class="wechat-id" id="wxId">JiahaoLee6666</div>
+    </div>
+    <button class="btn" id="copyBtn">复制微信号，发作文去</button>
+    <div class="foot">Writing Skills · John Class · Changsha 2026</div>
+  </div>
+</div>
+<script>
+function go(e, href) {
+  e.preventDefault();
+  document.getElementById('ov').classList.add('show');
+  setTimeout(function(){ window.location.href = href; }, 280);
+}
+document.getElementById('copyBtn').addEventListener('click', function(){
+  var wx = document.getElementById('wxId').textContent;
+  if(navigator.clipboard){ navigator.clipboard.writeText(wx); }
+  this.textContent = '已复制！去微信发给 John';
+  var t = this;
+  setTimeout(function(){ t.textContent = '复制微信号，发作文去'; }, 2500);
+});
+</script>
+<script src="audio.js"></script>
+<script src="bgm-cross.js"></script>
+</body>
+</html>
