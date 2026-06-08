@@ -147,6 +147,8 @@ html, body {
 }
 .btn-copy:hover { background: rgba(74,124,63,.14); }
 .btn-sm { font-size: 11px; padding: 6px 12px; }
+.btn-send { background: rgba(74,124,63,.08); color: #3A6A2A; border-color: rgba(74,124,63,.25); }
+.btn-send:hover { background: rgba(74,124,63,.14); }
 
 /* 转录文字框 */
 .transcript-box {
@@ -378,6 +380,7 @@ function render() {
             ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="4" width="16" height="16" rx="2"/></svg> 停止录音'
             : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> 开始录音'}
         </button>
+        <button class="btn btn-sm btn-send" onclick="sendToJohn()">发给John批改</button>
         ${transcript ? `<button class="btn btn-sm" onclick="clearT()">清除</button>` : ''}
       </div>
       <div class="transcript-box ${transcript ? 'listening' : 'empty'}" id="tBox">
@@ -426,6 +429,20 @@ function copyText() {
 }
 
 function toggleRec() { isRec ? stopRec() : startRec(); }
+
+function sendToJohn(){
+  var q = filtered[idx];
+  var text = (transcript || '（还没录音，先录一段口语回答再发哦）');
+  var msg = '【口语练习 · John Class】\n题目：'+q.q+'\n\n我的回答：\n'+text;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(msg).then(function(){
+      var btn = document.querySelector('.btn-send');
+      btn.textContent = '已复制！微信发给 John';
+      setTimeout(function(){ btn.textContent = '发给John批改'; }, 2500);
+    });
+  }
+  window.open('https://weixin.qq.com/', '_blank');
+}
 
 function startRec() {
   if (!SR) return;
