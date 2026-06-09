@@ -84,7 +84,10 @@ function toggleRec(){ isRec ? stopRec() : startRec(); }
 function startRec(){
   recognition = new SR();
   recognition.lang = 'en-US';
-  recognition.continuous = true;
+  var ua = navigator.userAgent;
+  var isAndroid = /Android/i.test(ua);
+  // Android 用单次模式（continuous 会 abort）
+  recognition.continuous = !isAndroid;
   recognition.interimResults = true;
   recognition.onresult = function(e){
     var t = '';
@@ -101,7 +104,17 @@ function startRec(){
     document.getElementById('statusBar').className = 'status fail';
     stopRec();
   };
-  recognition.onend = function(){ if(isRec) recognition.start(); };
+  // Android 单次模式不需要重连
+  recognition.onend = function(){
+    isRec = false;
+    var btn = document.getElementById('recBtn');
+    btn.innerHTML = '重新测试录音';
+    btn.style.background = '#2A1E08';
+    if(transcript){
+      document.getElementById('statusBar').textContent = '✅ 录音成功！你的设备可以用语音识别';
+      document.getElementById('statusBar').className = 'status ok';
+    }
+  };
   recognition.start();
   isRec = true;
   document.getElementById('recBtn').innerHTML = '<span class="rec-dot"></span>录音中，点击停止';
