@@ -69,6 +69,19 @@ html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Helvetica Neu
 .msg-item-grade{font-size:11px;color:#B8956A;margin-left:6px}
 .msg-item-time{font-size:11px;color:rgba(154,128,96,.6)}
 .msg-item-text{font-size:13.5px;color:#3A2A10;line-height:1.7}
+.msg-reply-btn{font-size:11px;color:#B8956A;cursor:pointer;background:none;border:none;padding:4px 0;font-family:inherit;margin-top:8px;display:inline-block}
+.msg-reply-btn:hover{color:#2A1E08;text-decoration:underline}
+.reply-inline{display:none;margin-top:8px;padding-left:12px;border-left:2px solid rgba(184,149,106,.25)}
+.reply-inline.show{display:block}
+.reply-inline textarea{width:100%;padding:10px 12px;font-family:inherit;font-size:13px;color:#2A1E08;background:rgba(255,255,255,.7);border:1.5px solid rgba(184,149,106,.25);border-radius:10px;outline:none;resize:none;min-height:56px;line-height:1.5;margin-bottom:6px}
+.reply-inline textarea:focus{border-color:#B8956A}
+.reply-inline .reply-actions{display:flex;gap:8px;align-items:center}
+.reply-inline .reply-submit{padding:6px 14px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+.reply-inline .reply-cancel{padding:6px 12px;background:transparent;color:#9A8060;border:1px solid rgba(184,149,106,.3);border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit}
+.reply-item{margin-top:8px;padding:8px 12px;background:rgba(255,252,245,.7);border-radius:10px;font-size:13px;line-height:1.6;border-left:3px solid rgba(184,149,106,.25)}
+.reply-item-name{font-weight:600;color:#2A1E08;font-size:12px}
+.reply-item-time{font-size:10px;color:rgba(154,128,96,.6);margin-left:6px}
+.msg-item-text{font-size:13.5px;color:#3A2A10;line-height:1.7;white-space:pre-wrap}
 .msg-empty{text-align:center;padding:32px;font-size:13px;color:rgba(154,128,96,.6)}
 .msg-loading{opacity:.4}
 .skel{background:rgba(184,149,106,.15);border-radius:8px;height:14px;margin-bottom:8px}
@@ -186,7 +199,7 @@ document.getElementById('msgInput').addEventListener('input',function(){
 });
 
 /* 读取学生名字预填 */
-const savedName=localStorage.getItem('jc_student_name');
+const savedName=localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name');
 if(savedName){
   document.getElementById('msgName').value=savedName;
   document.getElementById('jBubble').innerHTML=`${esc(savedName)}，有什么想说的？<br>提问、炫耀成绩、说说反馈——<br>都欢迎。<b>我会看的。</b>`;
@@ -264,8 +277,9 @@ async function sendMsg(){
 async function loadMsgs(){
   const list=document.getElementById('msgList');
   try{
+    // 查所有留言和回复
     const res=await fetch(
-      `${SB_URL}/rest/v1/messages?select=name,grade,content,created_at&order=created_at.desc&limit=50`,
+      `${SB_URL}/rest/v1/messages?select=id,name,grade,content,reply_to,created_at&order=created_at.desc&limit=100`,
       {headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`}}
     );
     if(!res.ok)throw new Error(res.status);
@@ -276,20 +290,86 @@ async function loadMsgs(){
       return;
     }
 
-    list.innerHTML=data.map(m=>{
+    // 分离主留言和回复
+    const mains = data.filter(m=>!m.reply_to);
+    const replies = data.filter(m=>m.reply_to);
+
+    list.innerHTML=mains.map(m=>{
       const dt=new Date(m.created_at);
       const t=`${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
-      return `<div class="msg-item">
+      const childReplies = replies.filter(r=>r.reply_to===m.id);
+      let replyHTML = '';
+      if(childReplies.length>0){
+        replyHTML = childReplies.map(r=>{
+          const rd=new Date(r.created_at);
+          const rt=`${rd.getMonth()+1}/${rd.getDate()} ${String(rd.getHours()).padStart(2,'0')}:${String(rd.getMinutes()).padStart(2,'0')}`;
+          return `<div class="reply-item"><span class="reply-item-name">${esc(r.name)}</span><span class="reply-item-time">${rt}</span><br>${esc(r.content)}</div>`;
+        }).join('');
+      }
+      return `<div class="msg-item" id="msg${m.id}">
         <div class="msg-item-head">
           <span><span class="msg-item-name">${esc(m.name)}</span>${m.grade?`<span class="msg-item-grade">${esc(m.grade)}</span>`:''}</span>
           <span class="msg-item-time">${t}</span>
         </div>
         <div class="msg-item-text">${esc(m.content)}</div>
+        ${replyHTML}
+        <button class="msg-reply-btn" onclick="toggleReply(${m.id})">💬 回复</button>
+        <div class="reply-inline" id="replyBox${m.id}">
+          <textarea id="replyInput${m.id}" placeholder="写下你的回复…" maxlength="200"></textarea>
+          <div class="reply-actions">
+            <button class="reply-submit" onclick="sendReply(${m.id})">发送回复</button>
+            <button class="reply-cancel" onclick="toggleReply(${m.id})">取消</button>
+          </div>
+        </div>
       </div>`;
     }).join('');
 
   }catch(e){
     list.innerHTML='<div class="msg-empty" style="color:#C0392B">加载失败，点刷新重试</div>';
+  }
+}
+
+/* 切换回复框 */
+function toggleReply(id){
+  const box=document.getElementById('replyBox'+id);
+  if(!box)return;
+  const show=!box.classList.contains('show');
+  box.classList.toggle('show');
+  if(show){
+    const inp=document.getElementById('replyInput'+id);
+    const saved=localStorage.getItem('jc_username')||'';
+    inp.placeholder = saved ? '以 '+saved+' 的身份回复…' : '写下你的回复…';
+    inp.focus();
+  }
+}
+
+/* 发送回复 */
+async function sendReply(parentId){
+  const inp=document.getElementById('replyInput'+parentId);
+  const content=inp.value.trim();
+  if(!content){inp.style.borderColor='#C0392B';setTimeout(()=>{inp.style.borderColor='';},1200);return;}
+
+  const name=localStorage.getItem('jc_username')||'同学';
+  const btn=document.querySelector('#replyBox'+parentId+' .reply-submit');
+  btn.disabled=true; btn.textContent='发送中…';
+
+  try{
+    const res=await fetch(`${SB_URL}/rest/v1/messages`,{
+      method:'POST',
+      headers:{
+        'apikey':SB_KEY,
+        'Authorization':`Bearer ${SB_KEY}`,
+        'Content-Type':'application/json',
+        'Prefer':'return=minimal'
+      },
+      body:JSON.stringify({name,content,reply_to:parentId})
+    });
+    if(!res.ok)throw new Error(res.status);
+    inp.value='';
+    document.getElementById('replyBox'+parentId).classList.remove('show');
+    loadMsgs();
+  }catch(e){
+    btn.disabled=false; btn.textContent='失败，重试';
   }
 }
 
