@@ -1077,7 +1077,7 @@ function renderForestNodes(positions) {
     const lvl = LEVELS.find(l => l.id === p.id);
     if (!lvl) return;
     const cls = p.done ? 'done' : 'current';
-    const clickable = p.current ? `onclick="forestOpen(${p.id})"` : '';
+    const clickable = (p.current || p.done) ? `onclick="forestOpen(${p.id})"` : '';
     h += `<div class="f-node ${cls}" style="left:${p.x}px;top:${p.y}px;transform:translate(-50%,-50%)" ${clickable}>
       <div class="f-lantern"><span class="f-node-num">${p.id}</span></div>
       <div class="f-glow-ground"></div>
