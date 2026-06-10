@@ -3531,7 +3531,7 @@ SCREENS.stage=function(stageId){clear();const d=document.createElement("div");d.
  let rows="";
  list.forEach(g=>{
    rows+=`<div class="grow ${g.ready?'':'glock'}" data-g="${g.id}">
-     <span class="gl">${g.label}${g.isNew?"<span class=\"newtag\">新</span>":""}</span>
+     <span class="gl">${g.label}${g.isNew?'<span class="newtag">新</span>':''}</span>
      ${g.ready?'<span class="chev">›</span>':'<span class="gtag">🔒</span>'}</div>`;
  });
  d.innerHTML=`
@@ -3661,7 +3661,7 @@ SCREENS.unit=function(n){clear();const u=UNITS.find(x=>x.n===n);const st=unitSta
    const cls=s.done?"lvl-done":(s.open?"lvl-open":"lvl-lock");
    lvls+=`<div class="lvl ${cls}" data-m="${s.open?s.m:''}">
      <div class="lvl-dot">${s.done?"✓":(s.open?idx+1:"🔒")}</div>
-     <div class="lvl-tx"><span class="lvl-no">${s.label}${g.isNew?"<span class=\"newtag\">新</span>":""}</span><b>${s.name}</b><p>${s.desc}</p></div>
+     <div class="lvl-tx"><span class="lvl-no">${s.label}${g.isNew?'<span class="newtag">新</span>':''}</span><b>${s.name}</b><p>${s.desc}</p></div>
      ${s.done?'<div class="lvl-tag">已通关</div>':(s.open?'<div class="chev">›</div>':'<div class="lvl-tag locktag">待解锁</div>')}
    </div>`;
    if(idx<stagesArr.length-1)lvls+=`<div class="lvl-link ${s.done?'lit':''}"></div>`;
