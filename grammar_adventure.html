@@ -676,8 +676,6 @@ function normalOpen(id) {
   const c = document.getElementById('nContent');
   c.style.display = 'block';
   c.innerHTML = buildLvlContent(lvl, id);
-  // 如果之前通过，恢复
-  if (isDone(id) && progress.quizResults[id]) restoreDoneState(lvl);
   c.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -693,13 +691,12 @@ function buildLvlContent(lvl, id) {
         <p>${c.text}</p>
         ${c.examples.map(e => `<div class="kp-eg"><div class="en">📝 ${e.en}</div>${e.zh ? `<div class="zh">${e.zh}</div>` : ''}</div>`).join('')}
       </div>`).join('')}
-    ${!isDone(id) ? `
-      <div class="qz-area">
-        <div class="qz-title">⚔️ 闯关测验（答对 ${need}/${lvl.quiz.length} 题通关）</div>
-        ${lvl.quiz.map((q, qi) => buildQuizItem(q, qi)).join('')}
-      </div>` : `<p style="font-size:12px;color:#4A7C3F;margin-top:12px">✅ 此关已通关</p>`}
+    <div class="qz-area">
+      <div class="qz-title">${isDone(id) ? '📖 复习测验（已通关，再练一遍）' : `⚔️ 闯关测验（答对 ${need}/${lvl.quiz.length} 题通关）`}</div>
+      ${lvl.quiz.map((q, qi) => buildQuizItem(q, qi)).join('')}
+    </div>
     <div class="act-row">
-      ${!isDone(id) ? `<button class="btn btn-p" onclick="submitNormalQuiz(${id})">✓ 提交批改</button>` : ''}
+      <button class="btn btn-p" id="nSubmitBtn${id}" onclick="submitNormalQuiz(${id})">${isDone(id) ? '✓ 查看答案' : '✓ 提交批改'}</button>
       <button class="btn btn-o" onclick="normalUndo()">← 返回列表</button>
     </div>
     <div class="r-block" id="normalResult"></div>`;
@@ -747,13 +744,12 @@ function buildLvlContentPopup(lvl, id) {
         <p>${c.text}</p>
         ${c.examples.map(e => `<div class="kp-eg"><div class="en">📝 ${e.en}</div>${e.zh ? `<div class="zh">${e.zh}</div>` : ''}</div>`).join('')}
       </div>`).join('')}
-    ${!isDone(id) ? `
-      <div class="qz-area">
-        <div class="qz-title">⚔️ 闯关测验（答对 ${need}/${lvl.quiz.length} 题通关）</div>
-        ${lvl.quiz.map((q, qi) => buildPopupQuizItem(q, qi)).join('')}
-      </div>` : `<p style="font-size:12px;color:#4A7C3F;margin-top:12px">✅ 此关已通关</p>`}
+    <div class="qz-area">
+      <div class="qz-title">${isDone(id) ? '📖 复习测验（已通关，再练一遍）' : `⚔️ 闯关测验（答对 ${need}/${lvl.quiz.length} 题通关）`}</div>
+      ${lvl.quiz.map((q, qi) => buildPopupQuizItem(q, qi)).join('')}
+    </div>
     <div class="act-row">
-      ${!isDone(id) ? `<button class="btn btn-p" onclick="submitForestQuiz(${id})">✓ 提交批改</button>` : ''}
+      <button class="btn btn-p" id="fSubmitBtn${id}" onclick="submitForestQuiz(${id})">${isDone(id) ? '✓ 查看答案' : '✓ 提交批改'}</button>
       <button class="btn btn-o" onclick="closeLvlOverlay()">← 返回森林</button>
     </div>
     <div class="r-block" id="forestResult"></div>`;
@@ -781,14 +777,25 @@ function submitQuiz(levelId) {
 
 function submitNormalQuiz(levelId) {
   const lvl = LEVELS.find(l => l.id === levelId);
-  if (!lvl || isDone(levelId)) return;
+  if (!lvl) return;
+  const alreadyDone = isDone(levelId);
   const result = gradeQuiz(lvl, 'n');
+  if (alreadyDone) {
+    // 已通关：只展示对错，不修改进度
+    const res = document.getElementById('normalResult');
+    if (res) {
+      res.classList.add('show');
+      res.innerHTML = '<b style="color:#4A7C3F">✅ 已通关 · 本次复习：答对 '+result.correct+'/'+result.total+' 题</b>';
+    }
+    return;
+  }
   if (result.passed) onLevelPassed(levelId, 'normal');
 }
 
 function submitForestQuiz(levelId) {
   const lvl = LEVELS.find(l => l.id === levelId);
-  if (!lvl || isDone(levelId)) return;
+  if (!lvl) return;
+  const alreadyDone = isDone(levelId);
 
   let correct = 0;
   lvl.quiz.forEach((q, qi) => {
@@ -821,22 +828,26 @@ function submitForestQuiz(levelId) {
   const total = lvl.quiz.length;
   const pct = Math.round(correct / total * 100);
   const passed = pct >= 60;
-  progress.quizResults[levelId] = { correct, total, passed };
-  if (passed && !progress.completed.includes(levelId)) progress.completed.push(levelId);
-  saveProg();
+  // 已通关时不修改进度，只展示对错
+  if (!alreadyDone) {
+    progress.quizResults[levelId] = { correct, total, passed };
+    if (passed && !progress.completed.includes(levelId)) progress.completed.push(levelId);
+    saveProg();
+  }
   quizAnswers = {};
 
   const block = document.getElementById('forestResult');
   if (block) {
-    block.innerHTML = `<div class="r-stars">${pct===100?'🌟🌟🌟':pct>=80?'🌟🌟':pct>=60?'🌟':'💪'}</div>
-      <div class="r-score">${correct}<span>/${total}</span></div>
-      <div style="font-size:11px;color:#9A8060">得分率 ${pct}% · ${passed?'✅ 通关':'❌ 未通过（需≥60%）'}</div>
-      <div class="r-msg">${passed?(pct===100?'满分通关！✨':'恭喜通关！🏮'):'再试一次吧📚'}</div>`;
+    const reviewHint = alreadyDone ? ' · 复习模式，进度不变' : '';
+    block.innerHTML = '<div class="r-stars">'+(pct===100?'🌟🌟🌟':pct>=80?'🌟🌟':pct>=60?'🌟':'💪')+'</div>'
+      +'<div class="r-score">'+correct+'<span>/'+total+'</span></div>'
+      +'<div style="font-size:11px;color:#9A8060">得分率 '+pct+'% · '+(passed?'✅ 通关':'❌ 未通过（需≥60%）')+reviewHint+'</div>'
+      +'<div class="r-msg">'+(passed?(pct===100?'满分！✨':(alreadyDone?'复习完成！🏮':'恭喜通关！🏮')):'再试一次吧📚')+'</div>';
     block.classList.add('show');
     block.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  if (passed) {
+  if (passed && !alreadyDone) {
     // 推进 forestCurrentId 到下一个未完成的关卡
     forestCurrentId = 1;
     while (progress.completed.includes(forestCurrentId) && forestCurrentId < LEVELS.length) forestCurrentId++;
@@ -1121,27 +1132,6 @@ function forestOpen(id) {
   quizAnswers = {};
   document.getElementById('lvlCard').innerHTML = buildLvlContentPopup(lvl, id);
   document.getElementById('lvlOverlay').classList.add('show');
-  if (isDone(id) && progress.quizResults[id]) {
-    const r = progress.quizResults[id];
-    if (r && r.passed) {
-      lvl.quiz.forEach((q, qi) => {
-        const item = document.getElementById('fqItem' + qi);
-        if (!item) return;
-        const explain = document.getElementById('fexplain' + qi);
-        if (q.type === 'choice') {
-          item.querySelectorAll('.qo').forEach((o, oi) => {
-            o.disabled = true;
-            if (oi === q.ans) o.classList.add('correct');
-          });
-        } else {
-          const inp = document.getElementById('ffill' + qi);
-          if (inp) { inp.value = q.ans; inp.disabled = true; inp.style.borderColor = '#4A7C3F'; inp.style.background = 'rgba(74,124,63,.1)'; }
-        }
-        item.classList.add('graded');
-        if (explain) explain.classList.add('show');
-      });
-    }
-  }
 }
 
 function forestCelebrate() {
