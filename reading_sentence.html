@@ -97,29 +97,204 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
 .lock-sub{font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:24px}
 .lock-countdown{font-size:12px;color:#B5A080;margin-bottom:28px}
 .daily-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(60,150,90,.1);border:1px solid rgba(60,150,90,.25);padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;color:#1A4A28;margin-bottom:24px}
-/* hall grid */
-.hall-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;width:100%;margin-bottom:20px}
-.hall-day{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;cursor:default;border:1.5px solid rgba(184,149,106,.15);color:#B5A080;background:rgba(255,252,245,.5);transition:all .15s}
-.hall-day.done{background:rgba(60,150,90,.18);border-color:rgba(60,150,90,.35);color:#1A4A28;cursor:default}
-.hall-day.current{background:rgba(42,30,8,.06);border-color:#2A1E08;color:#2A1E08;cursor:pointer;font-size:11px;box-shadow:0 0 0 2px rgba(42,30,8,.1)}
-.hall-day.current:active{transform:scale(.92)}
-.hall-day.locked{background:transparent;border-color:rgba(184,149,106,.06);color:rgba(184,149,106,.3)}
-@media(max-width:500px){.hall-grid{grid-template-columns:repeat(7,1fr);gap:4px}.hall-day{font-size:9px;border-radius:6px}}
+/* ── MARIO MAP ── */
+.mario-scroll-wrap{
+  width:100%;overflow-x:auto;overflow-y:visible;
+  margin-bottom:16px;
+  /* hide scrollbar on iOS/WebKit */
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  padding-bottom:8px;
+}
+.mario-scroll-wrap::-webkit-scrollbar{display:none}
+
+.mario-track{
+  display:flex;align-items:flex-end;
+  gap:0;
+  padding:36px 20px 4px 20px;
+  /* wide enough so all 100 nodes fit – each node ~52px */
+  width:max-content;
+  position:relative;
+}
+
+/* winding path line below nodes */
+.mario-track::before{
+  content:'';
+  position:absolute;
+  bottom:22px; left:20px; right:20px;
+  height:4px;
+  border-radius:2px;
+  background:repeating-linear-gradient(90deg,
+    rgba(184,149,106,.35) 0 8px,
+    transparent 8px 14px
+  );
+  pointer-events:none;
+}
+
+/* each day node */
+.m-node{
+  display:flex;flex-direction:column;align-items:center;
+  gap:4px;
+  flex-shrink:0;
+  width:52px;
+  cursor:default;
+  position:relative;
+}
+
+/* wave rhythm via inline --wave var set in JS */
+.m-node .m-coin{
+  transform:translateY(var(--wave,0px));
+}
+
+/* connector strip between nodes */
+.m-node::after{
+  content:'';
+  position:absolute;
+  bottom:18px; left:calc(50% + 16px);
+  width:calc(52px - 32px + 0px);
+  height:3px;
+  border-radius:2px;
+  background:rgba(184,149,106,.20);
+}
+.m-node:last-child::after{display:none}
+
+.m-coin{
+  width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;
+  border:2px solid rgba(184,149,106,.22);
+  background:rgba(255,252,245,.6);
+  color:#C4A070;
+  transition:transform .15s, box-shadow .15s;
+  position:relative;z-index:1;
+}
+.m-node.done .m-coin{
+  background:rgba(60,150,90,.22);
+  border-color:rgba(60,150,90,.45);
+  color:#1A5C28;
+}
+/* star inside done nodes */
+.m-node.done .m-coin::after{
+  content:'★';font-size:9px;
+  position:absolute;top:1px;right:2px;
+  color:rgba(60,150,90,.7);
+}
+
+.m-node.current .m-coin{
+  background:#2A1E08;
+  border-color:#2A1E08;
+  color:#F5EDD8;
+  cursor:pointer;
+  transform:translateY(0)!important;
+  box-shadow:0 4px 12px rgba(42,30,8,.30), 0 0 0 3px rgba(42,30,8,.10);
+  animation:mario-pulse 1.6s ease-in-out infinite;
+}
+.m-node.current:active .m-coin{transform:scale(.88)!important;}
+
+.m-node.locked .m-coin{
+  background:rgba(255,252,245,.25);
+  border-color:rgba(184,149,106,.08);
+  color:rgba(196,160,112,.25);
+}
+
+/* day label under coin */
+.m-lbl{
+  font-size:9px;font-weight:600;
+  color:#C4A070;letter-spacing:.04em;
+  line-height:1;
+}
+.m-node.done .m-lbl{color:#3A8050;}
+.m-node.current .m-lbl{color:#2A1E08;font-weight:700;}
+.m-node.locked .m-lbl{color:rgba(196,160,112,.22);}
+
+/* mario character riding the current node */
+.m-mario{
+  font-size:22px;line-height:1;
+  margin-bottom:2px;
+  animation:mario-bounce 0.6s ease-in-out infinite alternate;
+}
+.m-node.done .m-mario,
+.m-node.locked .m-mario{display:none}
+
+/* milestone flags every 10 days */
+.m-node.milestone .m-coin{
+  border-radius:10px;
+  width:42px;height:42px;
+}
+.m-node.milestone.done .m-coin::before{
+  content:'🏁';font-size:13px;
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+}
+.m-node.milestone:not(.done):not(.current) .m-coin::before{
+  content:'⛳';font-size:12px;
+  position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+  opacity:.25;
+}
+
+@keyframes mario-pulse{
+  0%,100%{box-shadow:0 4px 12px rgba(42,30,8,.28), 0 0 0 3px rgba(42,30,8,.10);}
+  50%{box-shadow:0 6px 18px rgba(42,30,8,.38), 0 0 0 5px rgba(42,30,8,.08);}
+}
+@keyframes mario-bounce{
+  from{transform:translateY(0px)}
+  to{transform:translateY(-5px)}
+}
+
+/* ── SPLASH INTRO ── */
+#splash{
+  position:fixed;inset:0;
+  background:#F5EDD8;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:200;
+  padding:40px 32px;
+  cursor:pointer;
+  transition:opacity .5s ease;
+}
+#splash.fade-out{opacity:0;pointer-events:none;}
+.splash-logo{font-size:11px;letter-spacing:.18em;color:#B5A080;font-weight:600;margin-bottom:48px}
+.splash-quote{
+  font-size:26px;font-weight:700;color:#2A1E08;
+  line-height:1.5;text-align:center;
+  margin-bottom:16px;
+}
+.splash-sub{font-size:13px;color:#8A7050;margin-bottom:56px;line-height:1.6;text-align:center}
+.splash-tap{
+  font-size:12px;letter-spacing:.12em;color:#B5A080;font-weight:600;
+  animation:tap-blink 1.4s ease-in-out infinite;
+}
+@keyframes tap-blink{
+  0%,100%{opacity:.3}
+  50%{opacity:1}
+}
+/* elements to reveal after splash */
+.main-reveal{
+  opacity:0;
+  transition:opacity .4s ease .1s;
+}
+.main-reveal.shown{opacity:1;}
 </style>
 </head>
 <body>
 
+<!-- SPLASH INTRO -->
+<div id="splash">
+  <div class="splash-logo">JOHN CLASS &middot; 长难句训练</div>
+  <div class="splash-quote">&ldquo;做完这二百句，<br>你北大都考得上！&rdquo;</div>
+  <div class="splash-sub">每天 2 句 · 共 100 天 · 系统进步</div>
+  <div class="splash-tap">▶ &nbsp;点击屏幕开始</div>
+</div>
+
 <!-- WELCOME / HALL -->
 <div id="p-welcome" class="pane on">
-  <a class="back-link" href="study.html">&larr; 返回学习中心</a>
-  <div class="logo">JOHN CLASS &middot; 长难句训练</div>
-  <div class="slogan">&ldquo;做完这二百句，<br>你北大都考得上！&rdquo;</div>
-  <div class="slogan-sub">每天 2 句 · 共 100 天 · 系统进步</div>
-  <div class="hall-grid" id="hall-grid"></div>
-  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-fill"></div></div>
-  <div class="progress-label" id="prog-label"></div>
-  <div class="daily-badge" id="daily-badge">今日已完成 0 / 2 句</div>
-  <div style="display:flex;flex-direction:column;gap:10px;width:100%">
+  <a class="back-link main-reveal" href="study.html">&larr; 返回学习中心</a>
+  <div class="logo main-reveal">JOHN CLASS &middot; 长难句训练</div>
+  <div class="mario-scroll-wrap main-reveal" id="mario-scroll-wrap">
+    <div class="mario-track" id="hall-grid"></div>
+  </div>
+  <div class="progress-bar-wrap main-reveal"><div class="progress-bar-fill" id="prog-fill"></div></div>
+  <div class="progress-label main-reveal" id="prog-label"></div>
+  <div class="daily-badge main-reveal" id="daily-badge">今日已完成 0 / 2 句</div>
+  <div class="main-reveal" style="display:flex;flex-direction:column;gap:10px;width:100%">
     <button class="btn" id="btn-start">开始今日训练</button>
     <button class="btn-outline" id="btn-board-open">&#127942; 阅读大王排行榜</button>
   </div>
@@ -140,12 +315,11 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
 
 <!-- LEADERBOARD -->
 <div id="p-board" class="pane">
-  <div class="tag" style="margin-bottom:4px">本周学习明星榜</div>
+  <div class="tag" style="margin-bottom:4px">本周阅读榜</div>
   <div style="font-size:19px;font-weight:700;margin-bottom:6px">&#127942; 阅读大王</div>
-  <div style="font-size:12px;color:#B5A080;margin-bottom:20px">每句 500 分 &middot; 每周最高 1000 分（阅读）</div>
+  <div style="font-size:12px;color:#B5A080;margin-bottom:20px">每句 500 分 &middot; 每周上限 1000 分 &middot; 仅统计长难句阅读</div>
   <div id="board-list" style="width:100%"><div style="font-size:13px;color:#B5A080;padding:20px">加载中...</div></div>
-  <div style="font-size:11px;color:#B5A080;margin-top:12px;margin-bottom:20px">词汇分数由词汇训练自动累计</div>
-  <button class="btn" id="btn-board-back">&larr; 返回</button>
+  <button class="btn" id="btn-board-back" style="margin-top:20px">&larr; 返回</button>
 </div>
 
 <!-- STEP 1 COPY -->
@@ -962,15 +1136,17 @@ async function saveProgress(completed){
 }
 async function loadLeaderboard(){
   var weekStart=getWeekStart();
-  var rows=await sbGet('weekly_scores','week_start=eq.'+weekStart+'&select=user_name,reading_score,vocab_score&order=reading_score.desc,vocab_score.desc&limit=10');
+  // 只查阅读分，按 reading_score 排序，不混入口语等其他分数
+  var rows=await sbGet('weekly_scores','week_start=eq.'+weekStart+'&select=user_name,reading_score&order=reading_score.desc&limit=10');
   var el=$('board-list');
   if(!rows||rows.length===0){el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:20px">本周还没有人上榜，快去练习！</div>';return;}
   el.innerHTML=rows.map(function(r,i){
-    var total=(r.reading_score||0)+(r.vocab_score||0);
+    var pts = r.reading_score||0;
+    if(pts===0) return ''; // 跳过 0 分
     var rankCls=i<3?'board-rank top3':'board-rank';
     var medal=i===0?'&#127947;':i===1?'&#129352;':i===2?'&#129353;':String(i+1);
-    return '<div class="board-row"><div class="'+rankCls+'">'+medal+'</div><div class="board-name">'+r.user_name+'</div><div class="board-pts">'+total+' 分</div></div>';
-  }).join('');
+    return '<div class="board-row"><div class="'+rankCls+'">'+medal+'</div><div class="board-name">'+r.user_name+'</div><div class="board-pts">'+pts+' 分</div></div>';
+  }).filter(Boolean).join('') || '<div style="font-size:13px;color:#B5A080;padding:20px">本周还没有人上榜，快去练习！</div>';
 }
 
 // ── RENDER ──
@@ -1127,20 +1303,62 @@ async function startWithUser(){
   $('prog-label').textContent = '已完成 '+(currentId-1)+' / 200 句 ('+pct+'%)';
   $('daily-badge').textContent = '今日已完成 '+ds.count+' / '+DAILY_LIMIT+' 句';
 
-  // Render hall grid
+  // Render Mario map
   var currentDay = Math.ceil(currentId/2); // 2 sentences per day
+  // wave heights for visual rhythm (pixels, cycling pattern)
+  var wavePattern = [0, -8, -16, -10, -4, -18, -12, -6, -14, -2];
   var hallHtml = '';
   for(var d=1; d<=100; d++){
-    var cls = 'hall-day';
+    var cls = 'm-node';
+    if(d % 10 === 0) cls += ' milestone';
     if(d < currentDay) cls += ' done';
     else if(d === currentDay) cls += ' current';
     else cls += ' locked';
-    hallHtml += '<div class="'+cls+'" data-day="'+d+'">'+d+'</div>';
+
+    var waveY = wavePattern[(d-1) % wavePattern.length];
+    // current node: no wave offset (bouncing animation handles it)
+    if(d === currentDay) waveY = 0;
+    // future locked: smaller wave
+    if(d > currentDay) waveY = Math.round(waveY * 0.4);
+
+    var waveStyle = 'style="--wave:'+waveY+'px"';
+
+    if(d === currentDay){
+      hallHtml += '<div class="'+cls+'" data-day="'+d+'" '+waveStyle+'>'
+        +'<div class="m-mario">🏃</div>'
+        +'<div class="m-coin">'+d+'</div>'
+        +'<div class="m-lbl">Day '+d+'</div>'
+        +'</div>';
+    } else {
+      hallHtml += '<div class="'+cls+'" data-day="'+d+'" '+waveStyle+'>'
+        +'<div class="m-coin">'+d+'</div>'
+        +'<div class="m-lbl">Day '+d+'</div>'
+        +'</div>';
+    }
   }
   $('hall-grid').innerHTML = hallHtml;
 
+  // Scroll so current node is visible with a cinematic pan-in
+  setTimeout(function(){
+    var wrap = $('mario-scroll-wrap');
+    var curNode = $('hall-grid').querySelector('.current');
+    if(curNode && wrap){
+      var nodeLeft = curNode.offsetLeft;
+      var nodeWidth = curNode.offsetWidth;
+      var wrapWidth = wrap.offsetWidth;
+      var target = nodeLeft - (wrapWidth / 2) + (nodeWidth / 2);
+      target = Math.max(0, target);
+      // Start slightly before then pan to current (mario running in)
+      wrap.scrollLeft = Math.max(0, target - 140);
+      setTimeout(function(){
+        wrap.scrollTo({left: target, behavior:'smooth'});
+      }, 200);
+    }
+  }, 100);
+
   // Click handler for current day
-  $('hall-grid').querySelector('.current').addEventListener('click',function(){clickSound();goToPractice();});
+  var curNode2 = $('hall-grid').querySelector('.current');
+  if(curNode2) curNode2.addEventListener('click',function(){clickSound();goToPractice();});
 
   show('p-welcome');
 }
@@ -1174,6 +1392,27 @@ $('btn-copy-wx').addEventListener('click',function(){
   $('btn-copy-wx').textContent='已复制 ✓';
 });
 $('btn-modal-close').addEventListener('click',function(){$('modal').classList.remove('on');});
+
+// ── SPLASH ──
+(function(){
+  var splash = document.getElementById('splash');
+  var splashDismissed = false;
+  function dismissSplash(){
+    if(splashDismissed) return;
+    splashDismissed = true;
+    clickSound();
+    splash.classList.add('fade-out');
+    // Reveal main content elements
+    document.querySelectorAll('.main-reveal').forEach(function(el){
+      el.classList.add('shown');
+    });
+    setTimeout(function(){
+      splash.style.display='none';
+    }, 520);
+  }
+  splash.addEventListener('click', dismissSplash);
+  splash.addEventListener('touchend', function(e){e.preventDefault(); dismissSplash();});
+})();
 
 init();
 </script>
