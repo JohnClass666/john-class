@@ -2,1487 +2,494 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>发音跟读训练 · John Class</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>口语训练 · John Class</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#F5EDD8;color:#2A1E08;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
-body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 20px}
-
-/* ── PANE SYSTEM ── */
-.pane{display:none;flex-direction:column;align-items:center;width:100%;max-width:480px;text-align:center}
-.pane.on{display:flex}
-
-/* ── SHARED ── */
-.logo{font-size:11px;letter-spacing:.18em;color:#B5A080;font-weight:600;margin-bottom:36px}
-.back-link{font-size:12px;color:#B5A080;text-decoration:none;align-self:flex-start;margin-bottom:20px}
-.back-link:hover{color:#2A1E08}
-.btn{display:block;width:100%;padding:15px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none;letter-spacing:.01em}
-.btn:active{opacity:.8}
-.btn:disabled{opacity:.35;cursor:default}
-.btn-ghost{display:block;width:100%;padding:14px;background:transparent;color:#7A6040;border:1.5px solid rgba(42,30,8,.2);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none}
-.btn-ghost:active{opacity:.7}
-
-/* ── ENTRY SCREEN ── */
-.entry-emoji{font-size:52px;line-height:1;margin-bottom:20px}
-.entry-title{font-size:24px;font-weight:700;color:#2A1E08;margin-bottom:8px}
-.entry-sub{font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:32px}
-.mode-cards{display:flex;flex-direction:column;gap:12px;width:100%;margin-bottom:24px}
-.mode-card{
-  display:flex;align-items:center;gap:16px;
-  padding:18px 20px;
-  background:rgba(255,252,245,.9);
-  border:1.5px solid rgba(184,149,106,.22);
-  border-radius:14px;cursor:pointer;text-align:left;
-  transition:border-color .18s, box-shadow .18s;
-  font-family:inherit;color:#2A1E08;width:100%;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  min-height: 100%;
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: #F5EDD8;
+  color: #2A1E08;
 }
-.mode-card:hover{border-color:rgba(42,30,8,.35);box-shadow:0 2px 12px rgba(42,30,8,.08)}
-.mode-card:active{opacity:.8}
-.mode-card.recommended{border-color:rgba(42,30,8,.6);background:rgba(42,30,8,.04)}
-.mode-icon{font-size:28px;flex-shrink:0}
-.mode-info{flex:1}
-.mode-name{font-size:16px;font-weight:700;margin-bottom:3px}
-.mode-desc{font-size:12px;color:#8A7050;line-height:1.5}
-.mode-tag{font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:10px;flex-shrink:0}
-.tag-rec{background:rgba(42,30,8,.08);color:#2A1E08}
-.tag-android{background:rgba(74,124,184,.12);color:#1A3A7A}
-.tag-ios{background:rgba(60,150,90,.12);color:#1A4A28}
-.tag-dev{background:rgba(200,140,50,.15);color:#5A3000}
-
-/* ── QUOTA BAR ── */
-.quota-wrap{width:100%;margin-bottom:8px}
-.quota-label{display:flex;justify-content:space-between;font-size:11px;color:#B5A080;margin-bottom:5px}
-.quota-track{width:100%;height:4px;background:rgba(42,30,8,.08);border-radius:2px;overflow:hidden}
-.quota-fill{height:4px;background:#2A1E08;border-radius:2px;transition:width .4s}
-.quota-fill.warn{background:#C85A2A}
-.quota-fill.full{background:#A03020}
-.quota-locked{font-size:13px;color:#A03020;font-weight:600;text-align:center;padding:10px;background:rgba(200,70,60,.08);border-radius:10px;margin-bottom:12px}
-
-/* ── SCENE FILTER ── */
-.scene-scroll{width:100%;overflow-x:auto;scrollbar-width:none;margin-bottom:20px}
-.scene-scroll::-webkit-scrollbar{display:none}
-.scene-row{display:flex;gap:8px;width:max-content;padding:2px 0}
-.scene-chip{
-  padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;
-  border:1.5px solid rgba(184,149,106,.25);background:rgba(255,252,245,.7);
-  color:#8A7050;cursor:pointer;white-space:nowrap;font-family:inherit;
-  transition:all .15s;-webkit-appearance:none;
+.layout { display: flex; min-height: 100vh; }
+.left {
+  position: fixed; top: 0; left: 0;
+  width: 52%; height: 100vh; overflow: hidden;
 }
-.scene-chip.active{background:#2A1E08;color:#F5EDD8;border-color:#2A1E08}
-.scene-chip:active{opacity:.75}
-
-/* ── SENTENCE CARD ── */
-.sent-card{
-  width:100%;background:rgba(255,252,245,.92);
-  border:1.5px solid rgba(184,149,106,.2);border-radius:16px;
-  padding:22px 20px;margin-bottom:16px;text-align:left;
+.left img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top; display: block;
 }
-.sent-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.sent-num{font-size:11px;color:#B5A080;font-weight:600;letter-spacing:.08em}
-.sent-scene{font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:10px}
-.scene-meeting{background:rgba(74,124,184,.1);color:#1A3A7A}
-.scene-bug{background:rgba(200,70,60,.1);color:#7A1A10}
-.scene-dev{background:rgba(200,140,50,.12);color:#5A3000}
-.scene-qa{background:rgba(60,150,90,.1);color:#1A4A28}
-.scene-product{background:rgba(140,80,200,.1);color:#4A1A7A}
-.scene-sprint{background:rgba(42,30,8,.07);color:#5A4A30}
-.scene-opinion{background:rgba(212,136,42,.12);color:#5A3000}
-.scene-deadline{background:rgba(184,149,106,.15);color:#7A5A30}
-.scene-everymatrix{background:rgba(42,30,8,.1);color:#2A1E08}
-.sent-text{
-  font-family:Georgia,serif;font-size:19px;line-height:1.75;
-  color:#2A1E08;letter-spacing:.01em;
+.left::after {
+  content: ''; position: absolute; top: 0; right: 0;
+  width: 80px; height: 100%;
+  background: linear-gradient(to right, transparent, #F5EDD8);
+}
+.right {
+  margin-left: 52%; flex: 1; background: #F5EDD8;
+  min-height: 100vh; padding: 52px 44px 64px 28px; position: relative;
+}
+.right::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 80% 15%, rgba(201,169,110,.07) 0%, transparent 50%),
+    radial-gradient(circle at 20% 85%, rgba(120,160,80,.05) 0%, transparent 40%);
+  pointer-events: none;
+}
+.nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 44px; position: relative; z-index: 1;
+}
+.nav-brand {
+  font-size: 13px; font-weight: 600; letter-spacing: .18em;
+  text-transform: uppercase; color: #B8956A; text-decoration: none;
+}
+.nav-back {
+  font-size: 12px; color: #9A8060; text-decoration: none;
+  display: flex; align-items: center; gap: 5px; transition: color .2s;
+}
+.nav-back:hover { color: #2A1E08; }
+.page-title {
+  font-size: clamp(24px, 3vw, 32px); font-weight: 600; color: #2A1E08;
+  letter-spacing: -.4px; margin-bottom: 6px; position: relative; z-index: 1;
+}
+.page-sub {
+  font-size: 13px; color: #9A8060; margin-bottom: 32px; position: relative; z-index: 1;
+}
+.sec-label {
+  font-size: 10px; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: #B8956A;
+  padding-bottom: 10px; border-bottom: 1px solid rgba(184,149,106,.2);
+  margin-bottom: 16px; position: relative; z-index: 1;
 }
 
-/* ── DIFF HIGHLIGHT ── */
-.w-correct{color:#1A4A28}
-.w-wrong{color:#A03020;text-decoration:underline wavy rgba(200,70,60,.5);text-underline-offset:3px}
-.w-missing{color:#A03020;font-style:italic;opacity:.6}
+/* 话题筛选 */
+.topic-scroll {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 20px; position: relative; z-index: 1;
+}
+.topic-btn {
+  font-size: 11px; font-weight: 600; letter-spacing: .04em;
+  padding: 5px 12px; border-radius: 20px; border: 1.5px solid rgba(184,149,106,.25);
+  background: rgba(255,252,245,.5); color: #9A8060;
+  cursor: pointer; transition: all .18s; white-space: nowrap;
+}
+.topic-btn:hover { border-color: rgba(184,149,106,.5); color: #6A5030; }
+.topic-btn.active {
+  background: #2A1E08; color: #F5EDD8;
+  border-color: #2A1E08;
+}
 
-/* ── SCORE BADGE ── */
-.score-wrap{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:16px}
-.score-circle{
-  width:72px;height:72px;border-radius:50%;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  font-weight:700;border:2px solid;
+/* 问题卡片 */
+.question-card {
+  background: rgba(255,252,245,.65);
+  border: 1.5px solid rgba(184,149,106,.13);
+  border-radius: 20px; padding: 26px 22px 22px;
+  margin-bottom: 14px; position: relative; z-index: 1;
+  animation: fadeIn .5s cubic-bezier(.22,1,.36,1) both;
 }
-.score-A{background:rgba(60,150,90,.12);border-color:rgba(60,150,90,.4);color:#1A4A28}
-.score-B{background:rgba(74,124,184,.12);border-color:rgba(74,124,184,.35);color:#1A3A7A}
-.score-C{background:rgba(200,140,50,.12);border-color:rgba(200,140,50,.35);color:#5A3000}
-.score-D{background:rgba(200,70,60,.1);border-color:rgba(200,70,60,.3);color:#7A1A10}
-.score-num{font-size:22px;line-height:1}
-.score-lbl{font-size:10px;letter-spacing:.06em;margin-top:2px}
-.score-msg{font-size:14px;font-weight:600;color:#2A1E08;line-height:1.4;text-align:left;flex:1}
+.q-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+}
+.q-part-badge {
+  font-size: 9px; font-weight: 700; letter-spacing: .08em;
+  padding: 3px 9px; border-radius: 10px;
+}
+.badge-p1 { background: rgba(201,169,110,.12); color: #8A6A30; border: 1px solid rgba(201,169,110,.25); }
+.badge-p2 { background: rgba(74,124,63,.10); color: #3A6A2A; border: 1px solid rgba(74,124,63,.2); }
+.badge-p3 { background: rgba(122,76,184,.10); color: #5A3A90; border: 1px solid rgba(122,76,184,.2); }
+.q-topic-tag {
+  font-size: 11px; color: #9A8060;
+}
+.q-text {
+  font-size: 15px; font-weight: 600; color: #2A1E08;
+  line-height: 1.6; margin-bottom: 18px; white-space: pre-line;
+}
 
-/* ── TRANSCRIPT BOX ── */
-.transcript-box{
-  width:100%;background:rgba(255,252,245,.85);
-  border:1.5px solid rgba(184,149,106,.18);border-radius:12px;
-  padding:14px 16px;font-size:14px;line-height:1.8;
-  min-height:52px;text-align:left;margin-bottom:14px;
-  font-family:Georgia,serif;color:#2A1E08;
+/* 录音区 */
+.rec-status {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: #B86A42; margin-bottom: 10px;
+  opacity: 0; transition: opacity .2s;
 }
-.transcript-box.empty{color:#B5A080;font-style:italic;font-family:inherit;font-size:13px;text-align:center;padding:16px}
-.transcript-box.listening{border-color:rgba(200,70,60,.4)}
+.rec-status.active { opacity: 1; }
+.rec-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #C94A3A; animation: pulse 1s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.25} }
 
-/* ── REC BUTTON ── */
-.rec-btn-wrap{width:100%;margin-bottom:14px}
-.rec-btn{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  width:100%;padding:16px;
-  background:#2A1E08;color:#F5EDD8;
-  border:none;border-radius:14px;
-  font-size:17px;font-weight:600;cursor:pointer;
-  font-family:inherit;-webkit-appearance:none;
-  transition:background .2s;
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.btn {
+  font-size: 13px; font-weight: 600;
+  padding: 9px 18px; border-radius: 12px;
+  border: 1.5px solid rgba(184,149,106,.3);
+  background: rgba(255,252,245,.7); color: #2A1E08;
+  cursor: pointer; display: flex; align-items: center; gap: 6px;
+  transition: all .18s; font-family: inherit;
 }
-.rec-btn.recording{background:#A03020}
-.rec-btn:disabled{opacity:.35;cursor:default}
-.rec-dot{width:9px;height:9px;border-radius:50%;background:#F5EDD8;animation:blink 1s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.btn:hover { border-color: rgba(184,149,106,.6); transform: translateY(-1px); }
+.btn:active { transform: scale(.96); }
+.btn-primary {
+  background: #2A1E08; color: #F5EDD8; border-color: #2A1E08;
+}
+.btn-primary:hover { background: #3D2D10; border-color: #3D2D10; }
+.btn-danger {
+  background: rgba(180,60,40,.08); color: #A03020;
+  border-color: rgba(180,60,40,.25);
+}
+.btn-danger:hover { background: rgba(180,60,40,.14); }
+.btn-copy {
+  background: rgba(74,124,63,.08); color: #3A6A2A;
+  border-color: rgba(74,124,63,.25);
+}
+.btn-copy:hover { background: rgba(74,124,63,.14); }
+.btn-sm { font-size: 11px; padding: 6px 12px; }
+.btn-send { background: rgba(74,124,63,.08); color: #3A6A2A; border-color: rgba(74,124,63,.25); }
+.btn-send:hover { background: rgba(74,124,63,.14); }
 
-/* ── POINTS TOAST ── */
-.pts-toast{
-  position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:#2A1E08;color:#F5EDD8;
-  padding:10px 22px;border-radius:20px;
-  font-size:14px;font-weight:600;letter-spacing:.04em;
-  opacity:0;transition:opacity .3s, transform .3s;
-  pointer-events:none;z-index:99;white-space:nowrap;
+/* 转录文字框 */
+.transcript-box {
+  background: rgba(42,30,8,.04); border: 1.5px solid rgba(184,149,106,.15);
+  border-radius: 12px; padding: 14px 16px;
+  font-size: 14px; line-height: 1.8; color: #2A1E08;
+  min-height: 72px; margin-bottom: 12px;
+  white-space: pre-wrap; transition: border-color .2s;
 }
-.pts-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.transcript-box.listening { border-color: rgba(184,149,106,.4); }
+.transcript-box.empty { color: #C4A870; font-style: italic; font-size: 13px; }
 
-/* ── LOADING SPINNER ── */
-.spinner{
-  display:inline-block;width:18px;height:18px;
-  border:2px solid rgba(245,237,216,.3);
-  border-top-color:#F5EDD8;border-radius:50%;
-  animation:spin .7s linear infinite;vertical-align:middle;margin-right:8px;
+/* 微信提示 */
+.wechat-row {
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap; margin-top: 4px;
 }
-@keyframes spin{to{transform:rotate(360deg)}}
+.wechat-hint {
+  font-size: 12px; color: #9A8060;
+  display: flex; align-items: center; gap: 5px;
+}
+.wechat-id {
+  font-weight: 700; color: #2A1E08; letter-spacing: .02em;
+}
 
-/* ── DONE SCREEN ── */
-.done-emoji{font-size:52px;margin-bottom:16px}
-.done-title{font-size:22px;font-weight:700;margin-bottom:8px}
-.done-sub{font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:28px}
-.done-stat{
-  width:100%;display:flex;gap:10px;margin-bottom:28px;
+/* 参考答案 */
+.ref-toggle {
+  width: 100%; text-align: left;
+  font-size: 12px; color: #9A8060; font-family: inherit;
+  background: transparent; border: none; cursor: pointer;
+  padding: 10px 0 0; display: flex; align-items: center; gap: 5px;
+  transition: color .2s;
 }
-.done-stat-item{
-  flex:1;padding:16px 12px;
-  background:rgba(255,252,245,.9);border:1.5px solid rgba(184,149,106,.2);
-  border-radius:12px;text-align:center;
+.ref-toggle:hover { color: #2A1E08; }
+.ref-box {
+  display: none; margin-top: 10px;
+  background: rgba(74,124,63,.05);
+  border-left: 3px solid rgba(74,124,63,.3);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 16px;
 }
-.done-stat-num{font-size:26px;font-weight:700;color:#2A1E08;line-height:1}
-.done-stat-lbl{font-size:11px;color:#8A7050;margin-top:4px}
+.ref-box.show { display: block; }
+.ref-en { font-size: 13px; line-height: 1.85; color: #2A1E08; }
+.ref-cn { font-size: 12px; line-height: 1.8; color: #7A6040; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(184,149,106,.15); }
 
-/* ── ATTEMPT COUNTER ── */
-.attempt-row{
-  display:flex;align-items:center;justify-content:center;
-  gap:8px;margin-bottom:14px;
+/* 导航翻页 */
+.nav-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 4px; position: relative; z-index: 1;
 }
-.attempt-dot{
-  width:10px;height:10px;border-radius:50%;
-  background:rgba(184,149,106,.2);border:1.5px solid rgba(184,149,106,.3);
-  transition:all .2s;
-}
-.attempt-dot.used-pass{background:rgba(60,150,90,.5);border-color:rgba(60,150,90,.7)}
-.attempt-dot.used-fail{background:rgba(200,70,60,.4);border-color:rgba(200,70,60,.6)}
-.attempt-dot.current{background:#2A1E08;border-color:#2A1E08;transform:scale(1.2)}
-.attempt-label{font-size:11px;color:#B5A080;letter-spacing:.06em}
+.nav-info { font-size: 12px; color: #9A8060; }
 
-/* ── ERROR BOOK ── */
-.error-word-chip{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:7px 12px;margin:4px;
-  background:rgba(200,70,60,.08);border:1.5px solid rgba(200,70,60,.2);
-  border-radius:20px;font-size:13px;font-weight:600;color:#7A1A10;
+/* 不支持提示 */
+.unsupported-bar {
+  display: none; background: rgba(201,169,110,.12);
+  border: 1.5px solid rgba(201,169,110,.3); border-radius: 12px;
+  padding: 10px 14px; font-size: 12px; color: #7A5A20;
+  margin-bottom: 14px; position: relative; z-index: 1;
 }
-.error-word-chip .error-count{
-  font-size:10px;background:rgba(200,70,60,.15);
-  padding:1px 5px;border-radius:8px;font-weight:700;
+
+.foot {
+  margin-top: 40px; font-size: 10px; letter-spacing: .12em;
+  text-transform: uppercase; color: rgba(184,149,106,.4); position: relative; z-index: 1;
 }
-.error-sent-ref{font-size:11px;color:#B5A080;font-style:italic}
-.error-section-title{
-  font-size:11px;font-weight:700;letter-spacing:.1em;color:#B5A080;
-  text-transform:uppercase;margin:16px 0 8px;width:100%;text-align:left;
+.overlay {
+  position: fixed; inset: 0; background: #F5EDD8; z-index: 999;
+  opacity: 0; pointer-events: none; transition: opacity .3s ease;
 }
-.error-empty{
-  text-align:center;padding:32px 20px;
-  font-size:14px;color:#B5A080;line-height:1.8;
+.overlay.show { opacity: 1; pointer-events: all; }
+
+.right > * { animation: fadeIn .6s cubic-bezier(.22,1,.36,1) both; }
+.nav        { animation-delay: .05s; }
+.page-title { animation-delay: .10s; }
+.page-sub   { animation-delay: .12s; }
+.sec-label  { animation-delay: .15s; }
+.topic-scroll { animation-delay: .18s; }
+.question-card { animation-delay: .22s; }
+.nav-row    { animation-delay: .26s; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(12px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (max-width: 680px) {
+  .layout { flex-direction: column; }
+  .left { position: relative; width: 100%; height: 56vw; min-height: 260px; max-height: 400px; }
+  .left::after {
+    top: auto; bottom: 0; left: 0; right: 0;
+    width: 100%; height: 60px;
+    background: linear-gradient(to bottom, transparent, #F5EDD8);
+  }
+  .right { margin-left: 0; padding: 32px 24px 56px; }
 }
 </style>
 </head>
 <body>
 
-<!-- ══ PANE: ENTRY ══ -->
-<div id="p-entry" class="pane on">
-  <a class="back-link" href="study.html">← 返回学习中心</a>
-  <div class="logo">JOHN CLASS · 发音跟读</div>
-  <div class="entry-emoji">🎤</div>
-  <div class="entry-title">职场英语发音跟读</div>
-  <div class="entry-sub">跟着读，检查发音准确度<br>针对 EveryMatrix 日常沟通场景</div>
-  <div class="mode-cards" id="modeCards">
-    <!-- rendered by JS based on device -->
-  </div>
-  <div class="quota-wrap" id="entryQuota" style="display:none">
-    <div class="quota-label">
-      <span>今日进度</span>
-      <span id="entryQuotaText">0 / 10 句</span>
+<div class="overlay" id="ov"></div>
+
+<div class="layout">
+  <div class="left"><img src="bg.png" alt="John Class"></div>
+
+  <div class="right">
+    <div class="nav">
+      <a class="nav-brand" href="index.html" onclick="go(event,'index.html')">John Class</a>
+      <a class="nav-back" href="study.html" onclick="go(event,'study.html')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        返回
+      </a>
     </div>
-    <div class="quota-track"><div class="quota-fill" id="entryQuotaFill" style="width:0%"></div></div>
-  </div>
-  <button class="btn-ghost" onclick="showPane('p-errors');loadErrorBook();" style="margin-top:8px;font-size:13px;padding:10px">📖 查看我的错词本</button>
-</div>
 
-<!-- ══ PANE: PRACTICE ══ -->
-<div id="p-practice" class="pane">
-  <a class="back-link" href="#" id="backToEntry">← 返回</a>
-  <div class="logo">JOHN CLASS · 发音跟读</div>
-  <div class="quota-wrap" style="margin-bottom:16px">
-    <div class="quota-label">
-      <span>今日已练</span>
-      <span id="quotaText">0 / 10 句</span>
+    <div class="page-title">口语训练</div>
+    <div class="page-sub">录音 · 转文字 · 对比参考答案 · 发给 John 批改<br><a href="speaking-test.html" style="font-size:11px;color:#B5A080">🎤 测试我的设备能不能录音</a></div>
+
+    <div class="sec-label">话题筛选</div>
+    <div class="topic-scroll" id="topicRow"></div>
+
+    <div class="unsupported-bar" id="unsupBar">
+      ⚠️ 你的手机不支持自动语音识别。<br>安卓用户：长按键盘空格键 → 点🎤语音输入 → 对键盘说话即可转文字！<br>苹果用户：用 <strong>Safari</strong> 打开即可使用
     </div>
-    <div class="quota-track"><div class="quota-fill" id="quotaFill" style="width:0%"></div></div>
-  </div>
-  <div id="quotaLockedMsg" class="quota-locked" style="display:none">今日 10 句已完成，明天继续 💪</div>
 
-  <!-- scene filter -->
-  <div class="scene-scroll">
-    <div class="scene-row" id="sceneRow"></div>
-  </div>
+    <div id="qArea"></div>
 
-  <!-- sentence card -->
-  <div class="sent-card" id="sentCard">
-    <div class="sent-meta">
-      <span class="sent-num" id="sentNum">句子 1 / 100</span>
-      <span class="sent-scene" id="sentScene"></span>
+    <div class="nav-row">
+      <button class="btn" onclick="changeQ(-1)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        上一题
+      </button>
+      <span class="nav-info" id="navInfo"></span>
+      <button class="btn" onclick="changeQ(1)">
+        下一题
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
     </div>
-    <div class="sent-text" id="sentText"></div>
-  </div>
 
-  <!-- transcript -->
-  <div class="transcript-box empty" id="transcriptBox">按下录音，开始朗读上方句子</div>
-
-  <!-- attempt counter -->
-  <div class="attempt-row" id="attemptRow">
-    <span class="attempt-label">本句尝试</span>
-    <div class="attempt-dot" id="dot1"></div>
-    <div class="attempt-dot" id="dot2"></div>
-    <div class="attempt-dot" id="dot3"></div>
-  </div>
-
-  <!-- score (hidden until result) -->
-  <div id="scoreWrap" style="display:none;width:100%;margin-bottom:14px">
-    <div class="score-wrap">
-      <div class="score-circle" id="scoreCircle">
-        <div class="score-num" id="scoreNum">—</div>
-        <div class="score-lbl" id="scoreLbl">分</div>
-      </div>
-      <div class="score-msg" id="scoreMsg"></div>
-    </div>
-    <div class="transcript-box" id="diffBox" style="margin-bottom:0"></div>
-  </div>
-
-  <!-- rec button -->
-  <div class="rec-btn-wrap">
-    <button class="rec-btn" id="recBtn" onclick="toggleRec()">
-      🎤 按住开始录音
-    </button>
-  </div>
-
-  <!-- action buttons -->
-  <div style="display:flex;gap:10px;width:100%" id="actionRow">
-    <button class="btn-ghost" id="btnSkip" onclick="skipSentence()" style="flex:1">换一句</button>
-    <button class="btn-ghost" id="btnRetry" onclick="retryCurrentSentence()" style="flex:1;display:none">再试一次 🔄</button>
-    <button class="btn" id="btnNext" onclick="nextSentence()" style="flex:2;display:none">下一句 →</button>
-  </div>
-
-  <div style="margin-top:14px;width:100%">
-    <button class="btn-ghost" onclick="showPane('p-entry')" style="font-size:13px;padding:10px">退出训练</button>
+    <div class="foot">Speaking Skills · John Class · Changsha 2026</div>
   </div>
 </div>
-
-<!-- ══ PANE: DONE ══ -->
-<div id="p-done" class="pane">
-  <div class="logo">JOHN CLASS · 发音跟读</div>
-  <div class="done-emoji">🎉</div>
-  <div class="done-title">今日训练完成！</div>
-  <div class="done-sub">已完成今天全部 10 句跟读<br>大脑需要时间消化，明天继续！</div>
-  <div class="done-stat">
-    <div class="done-stat-item">
-      <div class="done-stat-num" id="doneCount">10</div>
-      <div class="done-stat-lbl">今日句数</div>
-    </div>
-    <div class="done-stat-item">
-      <div class="done-stat-num" id="doneScore">+500</div>
-      <div class="done-stat-lbl">获得积分</div>
-    </div>
-    <div class="done-stat-item">
-      <div class="done-stat-num" id="doneAvg">—</div>
-      <div class="done-stat-lbl">平均得分</div>
-    </div>
-  </div>
-  <button class="btn" onclick="showPane('p-errors')" style="margin-bottom:10px">查看错词本 📖</button>
-  <button class="btn-ghost" onclick="window.location.href='study.html'" style="margin-bottom:10px">返回学习中心</button>
-  <button class="btn-ghost" onclick="showPane('p-entry')">再练一轮</button>
-</div>
-
-<!-- ══ PANE: ERROR BOOK ══ -->
-<div id="p-errors" class="pane">
-  <a class="back-link" href="#" id="errorBookBack">← 返回</a>
-  <div class="logo">JOHN CLASS · 发音跟读</div>
-  <div style="font-size:22px;font-weight:700;color:#2A1E08;margin-bottom:6px">📖 我的错词本</div>
-  <div style="font-size:13px;color:#8A7050;margin-bottom:20px">发音不准确的单词会记录在这里</div>
-  <div id="errorBookList" style="width:100%">
-    <div style="font-size:13px;color:#B5A080;padding:20px;text-align:center">加载中...</div>
-  </div>
-  <div style="margin-top:16px;width:100%">
-    <button class="btn-ghost" onclick="showPane('p-done')">← 返回</button>
-  </div>
-</div>
-
-<!-- points toast -->
-<div class="pts-toast" id="ptsToast">+50 分 🎯</div>
 
 <script>
-// ══════════════════════════════════════════
-// CONFIG
-// ══════════════════════════════════════════
-var SB_URL = 'https://ghunrrtrdgicbmixsqrc.supabase.co';
-var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.P5ixZCEYtAkEtFjnHDweVHClLIrFcE2CxHt1eTMyNuQ';
-var BAILIAN_KEY = 'sk-864699328fc34ae0b433a87671a0f9c4';
-var DAILY_LIMIT = 10;
-var POINTS_PER_SENT = 50;
-
-// ══════════════════════════════════════════
-// SENTENCE BANK  (100 sentences)
-// ══════════════════════════════════════════
-var SENTENCES = [
-  // scene: meeting
-  {id:1,  scene:'meeting',  text:'Good morning, everyone. Shall we get started?'},
-  {id:2,  scene:'meeting',  text:'Can everyone hear me okay? I\'m having some connection issues.'},
-  {id:3,  scene:'meeting',  text:'Sorry I\'m a bit late — my previous meeting ran over.'},
-  {id:4,  scene:'meeting',  text:'Let me share my screen real quick.'},
-  {id:5,  scene:'meeting',  text:'Could you go back to the previous slide? I missed that part.'},
-  {id:6,  scene:'meeting',  text:'I\'ll send the meeting notes to the group after this.'},
-  {id:7,  scene:'meeting',  text:'Does anyone have any questions before we move on?'},
-  {id:8,  scene:'meeting',  text:'Let\'s wrap up here — I\'ll follow up with an email.'},
-  // scene: bug
-  {id:9,  scene:'bug',      text:'I found a bug in the payment module — it\'s blocking the release.'},
-  {id:10, scene:'bug',      text:'The issue only happens when the user is logged out. Can you reproduce it?'},
-  {id:11, scene:'bug',      text:'I\'ve tested it on Chrome and Firefox, but not Safari yet.'},
-  {id:12, scene:'bug',      text:'This is a high-priority bug — we need to fix it before Friday.'},
-  {id:13, scene:'bug',      text:'The test case passed locally but failed on the staging server.'},
-  {id:14, scene:'bug',      text:'Can you check the logs and see what error message comes up?'},
-  {id:15, scene:'bug',      text:'I\'ll open a Jira ticket for this and assign it to you.'},
-  {id:16, scene:'bug',      text:'We need to write more test cases for the edge cases.'},
-  {id:17, scene:'bug',      text:'The regression testing is done — no new issues found.'},
-  {id:18, scene:'bug',      text:'This bug was introduced in the last deployment.'},
-  // scene: dev
-  {id:19, scene:'dev',      text:'I\'ve pushed the changes to the dev branch — can you review it?'},
-  {id:20, scene:'dev',      text:'There\'s a merge conflict in the main branch. I\'ll resolve it now.'},
-  {id:21, scene:'dev',      text:'The API is returning a 500 error. I\'m looking into it.'},
-  {id:22, scene:'dev',      text:'I need to refactor this function — it\'s getting too complicated.'},
-  {id:23, scene:'dev',      text:'Can you explain what this part of the code is supposed to do?'},
-  {id:24, scene:'dev',      text:'The build failed because of a missing dependency.'},
-  {id:25, scene:'dev',      text:'I\'ll write the unit tests once the feature is complete.'},
-  {id:26, scene:'dev',      text:'This logic needs to be moved to the backend.'},
-  {id:27, scene:'dev',      text:'We should add some error handling here in case the request fails.'},
-  {id:28, scene:'dev',      text:'The performance is slow — I think it\'s a database query issue.'},
-  {id:29, scene:'dev',      text:'I\'m getting a NullPointerException — I think the object isn\'t being initialized properly.'},
-  {id:30, scene:'dev',      text:'The endpoint is working, but the response time is way too slow.'},
-  {id:31, scene:'dev',      text:'I need to add a new column to the database — I\'ll write the migration script.'},
-  {id:32, scene:'dev',      text:'The service is throwing an exception when the input is null. I\'ll add a null check.'},
-  {id:33, scene:'dev',      text:'I\'ve updated the dependency in the POM file — please pull the latest version.'},
-  {id:34, scene:'dev',      text:'The scheduled job ran twice last night — I think there\'s a timing issue in the config.'},
-  {id:35, scene:'dev',      text:'I\'ll add some logging here so we can trace what\'s happening in production.'},
-  {id:36, scene:'dev',      text:'The connection pool is getting exhausted under heavy load — we need to tune it.'},
-  {id:37, scene:'dev',      text:'Can you review my pull request? I want a second pair of eyes before merging.'},
-  {id:38, scene:'dev',      text:'I deployed to staging — can you do a quick sanity check?'},
-  // scene: qa
-  {id:39, scene:'qa',       text:'I\'ve written 30 test cases for the registration flow — I\'ll share them with you.'},
-  {id:40, scene:'qa',       text:'The smoke test passed, but the full regression is still running.'},
-  {id:41, scene:'qa',       text:'This is a critical path — if this breaks, nothing else works.'},
-  {id:42, scene:'qa',       text:'I need a test account with admin privileges to complete this test.'},
-  {id:43, scene:'qa',       text:'The bug is intermittent — it doesn\'t happen every time, which makes it hard to reproduce.'},
-  {id:44, scene:'qa',       text:'I\'ve attached screenshots and a screen recording to the Jira ticket.'},
-  {id:45, scene:'qa',       text:'The fix looks good in staging, but I want to run one more round of testing.'},
-  {id:46, scene:'qa',       text:'Can you deploy the hotfix to the test environment first so I can verify it?'},
-  {id:47, scene:'qa',       text:'I tested all the scenarios in the test plan — only two minor issues found.'},
-  {id:48, scene:'qa',       text:'This needs exploratory testing — the requirements don\'t cover all the edge cases.'},
-  {id:49, scene:'qa',       text:'The data in the test environment is outdated — can someone refresh it?'},
-  {id:50, scene:'qa',       text:'I\'ll sign off on this once the last two bugs are fixed.'},
-  // scene: product
-  {id:51, scene:'product',  text:'The requirements aren\'t clear enough — can we get more details from the client?'},
-  {id:52, scene:'product',  text:'This feature wasn\'t in the original scope. We\'ll need to update the timeline.'},
-  {id:53, scene:'product',  text:'I just want to make sure we\'re building the right thing before we start coding.'},
-  {id:54, scene:'product',  text:'Can you walk me through the expected behavior step by step?'},
-  {id:55, scene:'product',  text:'The acceptance criteria need to be more specific — "works correctly" isn\'t enough.'},
-  {id:56, scene:'product',  text:'Let\'s keep this simple for the first version and improve it later.'},
-  {id:57, scene:'product',  text:'I have some concerns about this approach — do you have five minutes to talk?'},
-  {id:58, scene:'product',  text:'Who is the owner of this feature? I need to get sign-off before I proceed.'},
-  // scene: sprint
-  {id:59, scene:'sprint',   text:'I\'m currently working on the login module — should be done by tomorrow.'},
-  {id:60, scene:'sprint',   text:'I\'m blocked on this task because I\'m waiting for the API documentation.'},
-  {id:61, scene:'sprint',   text:'This ticket is taking longer than expected — I may need to push it to the next sprint.'},
-  {id:62, scene:'sprint',   text:'Can we reprioritize? The bug fix feels more urgent than the new feature right now.'},
-  {id:63, scene:'sprint',   text:'I finished my tasks early — is there anything else I can pick up?'},
-  {id:64, scene:'sprint',   text:'The sprint ends on Friday — let\'s make sure everything is merged and tested.'},
-  {id:65, scene:'sprint',   text:'I\'ll update the Jira board at the end of today.'},
-  {id:66, scene:'sprint',   text:'We\'re on track to hit the deadline — no blockers at the moment.'},
-  // scene: collab (foreign colleagues)
-  {id:67, scene:'meeting',  text:'I\'m not sure I fully understood — could you say that again more slowly?'},
-  {id:68, scene:'meeting',  text:'Just to confirm, you want me to finish this by end of day Thursday, right?'},
-  {id:69, scene:'meeting',  text:'I\'ll be out of office next Monday — please contact David if it\'s urgent.'},
-  {id:70, scene:'meeting',  text:'We\'re five hours ahead of the Romania team, so let\'s schedule for 3 PM our time.'},
-  {id:71, scene:'meeting',  text:'Can we move the call to tomorrow? I have a conflict at that time.'},
-  {id:72, scene:'meeting',  text:'The Ukraine team handles the front-end — I\'ll loop them in.'},
-  {id:73, scene:'meeting',  text:'My English isn\'t perfect, but let me try to explain.'},
-  {id:74, scene:'meeting',  text:'Could you put that in writing? I want to make sure I get it right.'},
-  {id:75, scene:'meeting',  text:'I think there might be a miscommunication — let me clarify.'},
-  // scene: everymatrix
-  {id:76, scene:'everymatrix', text:'The client\'s platform went down during peak betting hours — it\'s critical.'},
-  {id:77, scene:'everymatrix', text:'We need to make sure the payment gateway is stable before the match starts.'},
-  {id:78, scene:'everymatrix', text:'EveryMatrix\'s sportsbook integration needs to be tested end-to-end.'},
-  {id:79, scene:'everymatrix', text:'The casino module has a new feature request from the Thailand team.'},
-  {id:80, scene:'everymatrix', text:'We\'re running load tests to make sure the system handles high traffic.'},
-  {id:81, scene:'everymatrix', text:'The compliance team needs this feature before the product goes live.'},
-  {id:82, scene:'everymatrix', text:'This is a third-party API — we don\'t control how it behaves.'},
-  // scene: opinion
-  {id:83, scene:'opinion',  text:'I understand the urgency, but rushing this could introduce more bugs.'},
-  {id:84, scene:'opinion',  text:'I think there\'s a better way to do this — can I show you what I have in mind?'},
-  {id:85, scene:'opinion',  text:'I\'m not comfortable merging this without proper testing.'},
-  {id:86, scene:'opinion',  text:'That\'s a good point — I hadn\'t thought of it from that angle.'},
-  {id:87, scene:'opinion',  text:'I disagree with this approach, but I\'m happy to discuss it further.'},
-  {id:88, scene:'opinion',  text:'I think we need to involve the team lead before making this decision.'},
-  {id:89, scene:'opinion',  text:'I can do that, but it will affect the timeline for the other tasks.'},
-  // scene: deadline
-  {id:90, scene:'deadline', text:'Is the deadline flexible? The current timeline is really tight.'},
-  {id:91, scene:'deadline', text:'I can have it ready by Wednesday if I focus on just this task.'},
-  {id:92, scene:'deadline', text:'I\'ll need at least two more days to do this properly.'},
-  {id:93, scene:'deadline', text:'Can we break this into two parts and deliver the first half on Friday?'},
-  {id:94, scene:'deadline', text:'Let\'s set a realistic deadline together — I want to commit to something I can actually deliver.'},
-  // extra dev / qa
-  {id:95, scene:'dev',      text:'The feature is behind a feature flag — I\'ll enable it for testing.'},
-  {id:96, scene:'dev',      text:'I\'ll cherry-pick that commit and apply it to the release branch.'},
-  {id:97, scene:'qa',       text:'I\'m doing a final round of smoke tests before we release to production.'},
-  {id:98, scene:'qa',       text:'The test environment is down — I\'ll raise it with the DevOps team.'},
-  {id:99, scene:'sprint',   text:'Let\'s do a quick sync before the stand-up to align on priorities.'},
-  {id:100,scene:'meeting',  text:'Thanks everyone — great work this week. See you on Monday.'}
+const Q = [
+  {part:"PART 1",topic:"Food",q:"Do you have a favourite food?",en:"Yes, I do. I'd say my favourite food is noodles, especially the kind you can find in local restaurants. What I like most about noodles is that they're very versatile. You can have them in soup, stir-fried, or with different toppings, so I never really get bored of them. Also, they remind me of home, so there's a bit of an emotional connection as well.",cn:"有的。我最喜欢的食物应该是面条，尤其是那种在本地小店里能吃到的。我最喜欢面条的一点是它非常百搭，可以做成汤面、炒面，或者加不同的配料，所以怎么吃都不太容易腻。而且它会让我想到家，所以在情感上也有一点联系。"},
+  {part:"PART 1",topic:"Food",q:"Is there any food you don't like?",en:"Yes, there is. I'm not a big fan of very spicy food. It's not that I can't eat it at all, but if a dish is too spicy, it kind of ruins the whole experience for me. I can't really taste the flavour of the food, and I end up focusing on how uncomfortable it feels instead of enjoying the meal.",cn:"有的。我不太喜欢特别辣的食物。倒不是说我完全不能吃辣，但如果一道菜太辣了，会影响我整个用餐体验。我基本尝不出食物本身的味道，只会一直注意到有多难受，而不是在享受这顿饭。"},
+  {part:"PART 1",topic:"Day off",q:"When was the last time you had a few days off?",en:"The last time I had a few days off was a couple of months ago, during a short holiday. I didn't travel very far. Most of the time, I just stayed at home and tried to slow down a bit. I caught up on sleep, watched some shows, and basically gave myself a break from my usual routine.",cn:"我上一次有连续几天假期大概是几个月前，在一个小假期的时候。我没有去太远的地方，大部分时间都待在家里，刻意让自己的节奏慢下来。我补了补觉，看了些剧，算是暂时从平时的生活节奏中抽离了一下。"},
+  {part:"PART 1",topic:"Day off",q:"Do you usually spend your days off with your parents or with your friends?",en:"It really depends on the situation. If it's a longer break, I tend to spend more time with my parents, because we don't get to see each other that often. But if it's just a single day off, I usually meet up with friends, maybe grab a meal together or just hang out and chat.",cn:"这其实要看情况。如果是假期比较长，我一般会多陪陪父母，因为平时见面的机会不算多。但如果只是一天的假期，我通常会和朋友见面，吃个饭，或者随便聊聊天。"},
+  {part:"PART 1",topic:"Day off",q:"What would you like to do if you had a day off tomorrow?",en:"If I had a day off tomorrow, I'd probably keep things simple. I'd like to sleep in, go out for a nice meal, and maybe take a walk to clear my head. I wouldn't plan anything too packed. For me, a good day off is more about relaxing and recharging than doing something special.",cn:"如果我明天能休息一天，我可能会把安排弄得简单一点。我想睡个懒觉，出去吃顿不错的饭，然后散散步，放空一下。我不会把行程安排得太满，对我来说，一个好的休息日更重要的是放松和充电，而不是做多特别的事情。"},
+  {part:"PART 1",topic:"Pets & Animals",q:"Do you like animals?",en:"Yes, I do. I wouldn't say I'm a huge animal lover, but I generally enjoy being around animals. They make people feel more relaxed, and sometimes just watching them can be quite comforting, especially after a long day.",cn:"是的，我挺喜欢动物的。我不算那种特别狂热的动物爱好者，但我整体上很享受和动物待在一起。它们会让人放松下来，有时候光是看着它们，就挺治愈的，尤其是在忙了一整天之后。"},
+  {part:"PART 1",topic:"Pets & Animals",q:"What's your favourite animal?",en:"My favourite animal is probably dogs. What I like most about dogs is that they're very loyal and easy to connect with. They seem to understand human emotions quite well, and being with a dog usually puts me in a better mood.",cn:"我最喜欢的动物应该是狗。我最欣赏狗的一点是它们很忠诚，也很容易和人建立情感连接。它们似乎挺懂人的情绪，和狗待在一起通常会让我心情变好。"},
+  {part:"PART 1",topic:"Pets & Animals",q:"Did you want to keep a pet when you were young?",en:"Yes, I did. When I was young, I really wanted to have a pet, especially a dog. However, my parents were quite busy, and they didn't think we had enough time or energy to take proper care of an animal, so it never really happened.",cn:"想过的。我小时候特别想养宠物，尤其是想养一只狗。但我父母那时候比较忙，他们觉得我们没有足够的时间和精力好好照顾宠物，所以这件事最后也就不了了之了。"},
+  {part:"PART 1",topic:"Pets & Animals",q:"Where do you prefer to keep your pet — indoors or outdoors?",en:"I personally prefer to keep pets indoors. For one thing, it's easier to take care of them and keep an eye on their health. Also, pets are more like family members nowadays, so I feel they should share the living space with us instead of being left outside.",cn:"我个人更倾向于把宠物养在室内。一方面，室内更方便照顾，也更容易关注它们的健康状况。而且现在很多人都把宠物当作家庭成员，我觉得它们更适合和人一起生活，而不是被单独放在外面。"},
+  {part:"PART 1",topic:"Pets & Animals",q:"What's the most popular animal in China?",en:"I'd say dogs are probably the most popular animals in China nowadays. More and more people are keeping dogs as pets, especially in cities. They're seen not only as companions but also as part of the family, which explains why pet-related services have become so common.",cn:"我觉得现在中国最受欢迎的动物应该是狗。越来越多的人开始养狗，尤其是在城市里。狗不仅被当作陪伴者，也被视为家庭的一部分，这也解释了为什么和宠物相关的服务变得越来越普遍。"},
+  {part:"PART 1",topic:"Fix things",q:"Can you fix things?",en:"To be honest, I'm not very good at fixing things. I can handle some simple problems, like tightening a screw or changing a light bulb, but when it comes to more complicated issues, I usually need some help.",cn:"说实话，我不太擅长修东西。一些简单的问题我还能应付，比如拧螺丝或者换灯泡，但要是情况复杂一点，我通常就得找别人帮忙了。"},
+  {part:"PART 1",topic:"Fix things",q:"Did anybody teach you how to fix things when you were a child?",en:"Not really. When I was a child, no one taught me how to fix things in a systematic way. Most of the time, my parents preferred to fix things themselves or ask a professional to do it, so I didn't get many chances to learn.",cn:"其实没有。我小时候没有人系统地教我怎么修东西。大多数时候，我父母要么自己修，要么直接找专业人士来处理，所以我也没什么机会学习。"},
+  {part:"PART 1",topic:"Fix things",q:"Do you think it is necessary for people to learn to fix things?",en:"Yes, I do think it's necessary to some extent. Learning to fix basic things can save time and money, and it also makes people more independent. Even if you're not an expert, knowing how to deal with small problems can be very practical in daily life.",cn:"我觉得在一定程度上是有必要的。学会修一些基础的小东西可以省时间、省钱，也能让人更独立。即使不是专业人士，能处理一些小问题，在日常生活中也非常实用。"},
+  {part:"PART 1",topic:"Fix things",q:"What do you do when a thing is broken and cannot be fixed?",en:"If something is broken and can't be fixed, I usually stop using it and consider replacing it. Before throwing it away, I try to see if it can be recycled or reused in some way. If not, I'll just get rid of it and move on.",cn:"如果一个东西坏了而且修不好，我一般就会停止使用，考虑换一个新的。在扔掉之前，我会先看看能不能回收，或者有没有再利用的可能。如果实在不行，我就直接处理掉，然后继续生活。"},
+  {part:"PART 1",topic:"Sports team",q:"Have you ever been part of a sports team?",en:"Yes, I have, but only at school. When I was a student, I was part of a basketball team for a short time. I wouldn't say I was very good at it, but I really enjoyed the team atmosphere. Training and playing together helped me learn how to cooperate with others.",cn:"有过，但只是在学校的时候。我上学时短暂加入过篮球队，虽然水平一般，但我很享受那种团队氛围。一起训练、一起比赛的过程，也让我学会了如何和别人配合。"},
+  {part:"PART 1",topic:"Sports team",q:"Do you have a team to support?",en:"Yes, I do. I support a sports team, but I wouldn't call myself a hardcore fan. I usually follow their major games and check the results from time to time. Supporting a team makes watching sports more interesting and gives me something to talk about with friends.",cn:"有的，我有支持的球队，但我不算铁杆球迷。我一般只会关注一些重要比赛，偶尔看看比赛结果。支持一支球队会让看比赛变得更有意思，也能让我和朋友多一些共同话题。"},
+  {part:"PART 1",topic:"Reading",q:"Have you read any books lately?",en:"Yes, I have. Recently, I've been reading a few non-fiction books in my spare time. I don't read for very long each day, but I try to read a little before going to bed, which helps me relax.",cn:"有的。最近我在空闲时间读了一些非虚构类的书。虽然每天读得不算多，但我通常会在睡前读一会儿，这样能让我放松下来。"},
+  {part:"PART 1",topic:"Reading",q:"Do you prefer speed reading or thoughtful reading?",en:"I personally prefer thoughtful reading. I like to take my time and really understand what the writer is trying to say. For me, reading is more about quality than speed.",cn:"我个人更喜欢精读。我更愿意慢一点，真正理解作者想表达的内容。对我来说，阅读重在质量，而不是速度。"},
+  {part:"PART 1",topic:"Reading",q:"Why do some people like speed reading?",en:"I think some people like speed reading because it saves time. They may have a lot of information to go through, especially for work or study, so speed reading helps them get the main ideas quickly.",cn:"我觉得有些人喜欢速读是因为它比较省时间。尤其是在工作或学习中，需要处理大量信息时，速读可以帮助他们快速抓住重点。"},
+  {part:"PART 1",topic:"Keys",q:"Do you always bring a lot of keys with you?",en:"No, not really. I try to keep my keychain simple. I usually only carry the keys that I actually need, like my house key, so it's easier to manage.",cn:"不会。我尽量让钥匙串保持简单，一般只带真正需要的钥匙，比如家里的钥匙，这样更方便。"},
+  {part:"PART 1",topic:"Keys",q:"Have you ever lost your keys?",en:"Yes, I have, and it was quite stressful. I spent a long time looking for them and felt really annoyed. Since then, I've been more careful about where I put my keys.",cn:"有过，而且那次挺让人焦虑的。我花了很长时间找钥匙，心情也很烦。从那以后，我对放钥匙这件事就更注意了。"},
+  {part:"PART 1",topic:"Keys",q:"Do you often forget your keys and lock yourself out?",en:"Not very often, but it has happened once or twice. After that, I developed a habit of checking my keys before leaving home, which has helped a lot.",cn:"不算经常，但确实发生过一两次。后来我养成了出门前检查钥匙的习惯，这对我帮助很大。"},
+  {part:"PART 1",topic:"Keys",q:"Do you think it's a good idea to leave your keys with a neighbour?",en:"Yes, I think it can be a good idea, as long as you trust your neighbour. It can be very helpful in emergencies, especially if you accidentally lock yourself out.",cn:"我觉得这是个不错的主意，前提是你信得过邻居。在紧急情况下，尤其是不小心被锁在门外时，会非常有用。"},
+  {part:"PART 1",topic:"Morning time",q:"Do you like getting up early in the morning?",en:"It depends. On weekdays, I don't really enjoy getting up early because I feel quite tired. But if I don't have much pressure, I actually like early mornings because they're quiet and peaceful.",cn:"这要分情况。工作日我不太喜欢早起，因为会觉得很累。但如果没什么压力，我其实挺喜欢清晨的，那种安静的感觉很好。"},
+  {part:"PART 1",topic:"Morning time",q:"What do you usually do in the morning?",en:"In the morning, I usually get ready for the day, have a simple breakfast, and check my phone for messages or news. After that, I head out to work or start my daily tasks.",cn:"早上我一般会洗漱、简单吃点早饭，然后看看手机里的消息或新闻。接着就出门上班，或者开始一天的事情。"},
+  {part:"PART 1",topic:"Morning time",q:"What did you do in the morning when you were little?",en:"When I was little, my mornings were quite simple. I usually got up, had breakfast, and then went to school. Everything was arranged by my parents, so I didn't have to think too much.",cn:"我小时候的早晨其实很简单。一般就是起床、吃早饭，然后去上学。因为都是父母安排好的，所以我不用操太多心。"},
+  {part:"PART 1",topic:"Gifts",q:"Have you ever sent handmade gifts to others?",en:"Yes, I have, but not very often. I've made some simple handmade gifts, like cards or small crafts, mainly for close friends. I think handmade gifts feel more personal, even if they're not very professional.",cn:"有过，但不算多。我做过一些比较简单的手工礼物，比如卡片或者小手工，一般都是送给关系比较亲近的朋友。我觉得手工礼物更有心意，即使看起来不那么专业。"},
+  {part:"PART 1",topic:"Gifts",q:"Have you ever received a great gift?",en:"Yes, I have. One of the best gifts I've received was something I really needed at the time. It wasn't very expensive, but it showed that the person understood me well, which made it special.",cn:"有的。我收到过的一个很棒的礼物，正好是我当时特别需要的东西。虽然不贵，但能看出来送礼的人很了解我，这一点让它变得很特别。"},
+  {part:"PART 1",topic:"Gifts",q:"What do you consider when choosing a gift?",en:"When choosing a gift, I mainly think about the person's interests and needs. I also consider the occasion and my budget. For me, a suitable gift is more important than an expensive one.",cn:"选礼物时，我主要会考虑对方的兴趣和需求。我也会看场合以及自己的预算。对我来说，合适比贵更重要。"},
+  {part:"PART 1",topic:"Walking",q:"Do you walk a lot?",en:"Yes, I do walk quite a lot in my daily life. I usually walk when I go to nearby places, and sometimes I take a walk just to relax and clear my mind.",cn:"是的，我平时走路还挺多的。去附近的地方我一般都会走着去，有时候也会专门散散步，让自己放松、清醒一下。"},
+  {part:"PART 1",topic:"Walking",q:"Why do people like to walk in parks?",en:"I think people like walking in parks because the environment is more pleasant. There's more fresh air and greenery, which helps people relax and escape from the noise of the city for a while.",cn:"我觉得人们喜欢在公园散步，是因为环境更舒服。空气更清新，还有很多绿色植物，可以让人暂时远离城市的喧闹，放松下来。"},
+  {part:"PART 1",topic:"Hobbies",q:"Do you have any hobbies?",en:"Yes, I do. In my free time, I enjoy doing a few simple things, like listening to music and watching shows. These hobbies help me relax and take my mind off work.",cn:"有的。空闲的时候我喜欢做一些比较简单的事情，比如听音乐、看节目。这些爱好能让我放松下来，暂时不去想工作的事。"},
+  {part:"PART 1",topic:"Dreams",q:"Can you remember the dreams you had?",en:"Sometimes I can, but not very clearly. I usually remember my dreams right after I wake up, but they fade quite quickly. After a while, I can only remember a few random scenes.",cn:"有时候能记得，但不是很清楚。我一般在刚醒来的时候还能记住梦的内容，但很快就会忘掉。过一会儿，通常只剩下一些零碎的画面。"},
+  {part:"PART 1",topic:"Dreams",q:"Do you share your dreams with others?",en:"Not very often. I only share my dreams with close friends if they're interesting or unusual. Most of the time, I just keep them to myself because they don't really make much sense.",cn:"不太常分享。如果梦比较有意思或者有点奇怪，我才会和比较亲近的朋友说。大多数时候我会自己留着，因为梦本身也没什么逻辑。"},
+  {part:"PART 1",topic:"Dreams",q:"Do you think dreams have special meanings?",en:"I'm not completely sure, but I think dreams can sometimes reflect our feelings or stress in real life. I don't believe every dream has a special meaning, but some of them might be connected to what we're experiencing.",cn:"我不是特别确定，但我觉得梦有时候会反映现实生活中的情绪或压力。我不认为每一个梦都有特殊含义，但有些梦可能和我们的经历有关。"},
+  {part:"PART 2",topic:"令你骄傲的家人",q:"Describe a family member who you are proud of.\n\n• Who this person is\n• How often you spend time together\n• What she/he has done to make you feel proud\n• Why you are proud of him/her",en:"I'd like to talk about my mother, who is the family member I feel most proud of. She has always played an important role in my life, not only as a parent but also as someone I truly respect. We don't spend time together every day because we're both busy, but we usually see each other on weekends or during family gatherings. Even when we're not together, we stay in touch through phone calls and messages. What makes me feel proud of her is her attitude towards life. She has faced many difficulties, especially balancing work and family, but she never complains. Instead, she always stays calm and tries to solve problems step by step. She has also been very supportive of my choices, even when they were not the easiest or safest ones. I'm proud of her because she sets a good example for me. She shows me what responsibility, patience, and resilience really mean.",cn:"我想说的是我的母亲，她是我最感到骄傲的家人。在我的生活中，她不仅是一个母亲，也是一位我非常尊敬的人。让我为她感到骄傲的是她对生活的态度。她经历过不少困难，尤其是在平衡工作和家庭方面，但她从不抱怨。相反，她总是保持冷静，一步一步地解决问题。我为她感到骄傲，是因为她给我树立了一个很好的榜样。"},
+  {part:"PART 3",topic:"令你骄傲的家人",q:"When was the last time that you felt proud of yourself?",en:"The last time I felt proud of myself was when I managed to overcome a personal challenge that required long-term effort. It wasn't something dramatic, but it took a lot of self-discipline and persistence. Looking back, what made me proud wasn't the final result, but the fact that I stayed committed even when progress was slow. In my opinion, being able to push through difficulties and stay responsible for one's own goals is something worth feeling proud of.",cn:"我上一次为自己感到骄傲，是在我克服了一个需要长期投入的个人挑战之后。这并不是一件特别轰动的事情，但它确实需要很强的自律和坚持。回过头来看，让我感到骄傲的并不是最终结果，而是在进展缓慢的时候，我依然没有放弃。"},
+  {part:"PART 3",topic:"令你骄傲的家人",q:"What would children do to make their parents proud?",en:"In general, children can make their parents proud by showing responsibility and independence. This doesn't necessarily mean achieving outstanding academic results. In many cases, parents care more about their children's attitude, such as being honest, hardworking, and willing to take responsibility for their actions. When children show respect to others and make sensible decisions, parents are more likely to feel proud of them.",cn:"总体来说，孩子通过表现出责任感和独立性，往往能让父母感到骄傲。这并不一定意味着取得特别突出的学习成绩。在很多情况下，父母更在意孩子的态度，比如是否诚实、是否努力，以及是否愿意为自己的行为负责。"},
+  {part:"PART 2",topic:"想见的名人",q:"Describe a famous person you would like to meet.\n\n• Who he/she is\n• How you knew him/her\n• How/where you would like to meet him/her\n• Why you would like to meet him/her",en:"I'd like to talk about a famous person I would like to meet, who is Jack Ma, the founder of Alibaba. He is well known in China and around the world as a successful entrepreneur. I first learned about him through news reports and interviews many years ago, especially when Alibaba was growing rapidly. What impressed me most was not only his business success, but also the way he talked about failure and perseverance. If I had the chance, I would like to meet him at a public talk or a small seminar rather than a formal business setting. I would like to meet him because his life experience is very inspiring. He failed many times before becoming successful, but he never gave up.",cn:"我想说一位我很想见的名人，他就是阿里巴巴的创始人马云。让我印象最深的，不只是他的商业成就，还有他谈论失败和坚持时的态度。如果有机会的话，我希望能在一次公开演讲或小型分享会上见到他。我想见他的原因是，他的人生经历非常有启发性。在成功之前他经历过很多失败，但从未放弃。"},
+  {part:"PART 2",topic:"家里放松的地方",q:"Describe your favourite place in your house where you can relax.\n\n• Where it is\n• What it is like\n• What you enjoy doing there\n• Why you feel relaxed at this place",en:"My favourite place in my house to relax is a small corner in my bedroom, right next to the window. It's a quiet and comfortable space with a desk, a chair, and a bookshelf nearby. The lighting there is soft, and during the daytime, natural light comes in through the window, which makes the whole area feel warm and calm. I usually read books, listen to music, or simply sit there and think. I feel relaxed in this place because it's private and free from distractions. Being away from noise and screens allows me to recharge mentally.",cn:"我家里最让我放松的地方是卧室里靠窗的一个小角落。那里的光线比较柔和，白天阳光从窗户照进来，让整个空间显得温暖而平静。我通常会在那里看书、听音乐，或者只是安静地坐着思考。我之所以在这个地方感到放松，是因为它非常私密，而且几乎没有干扰。"},
+  {part:"PART 2",topic:"令你失望的电影",q:"Describe a movie that you watched recently and you felt disappointed about.\n\n• What it was about\n• When it was\n• Why you decided to watch it\n• Why you felt disappointed about it",en:"I'd like to talk about a movie I watched recently that left me quite disappointed. It was a science fiction film about a future world where technology completely controls people's lives. I decided to watch it mainly because it had a strong cast and the trailer looked very impressive. Many people online also described it as a thought-provoking movie. However, after watching it, I felt disappointed for several reasons. Although the concept was interesting, the storyline was poorly developed and difficult to follow. The ending was quite rushed and failed to leave a strong impression. Overall, the movie focused too much on visual effects and neglected storytelling.",cn:"我想讲的是一部我最近看过但感到比较失望的电影，它是一部科幻片，讲的是在未来世界中，科技完全控制人类生活的故事。当初选择看它，主要是因为演员阵容很强，而且预告片看起来非常震撼。但看完之后，我感到有些失望。虽然题材本身很有吸引力，但剧情发展不够清晰，这部电影过于强调视觉效果，而忽视了故事本身。"}
 ];
 
-var SCENE_LABELS = {
-  meeting:'会议沟通', bug:'Bug处理', dev:'开发', qa:'QA测试',
-  product:'需求讨论', sprint:'Sprint', opinion:'表达意见',
-  deadline:'截止时间', everymatrix:'EveryMatrix'
-};
-var SCENE_CSS = {
-  meeting:'scene-meeting', bug:'scene-bug', dev:'scene-dev', qa:'scene-qa',
-  product:'scene-product', sprint:'scene-sprint', opinion:'scene-opinion',
-  deadline:'scene-deadline', everymatrix:'scene-everymatrix'
-};
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SR) document.getElementById('unsupBar').style.display = 'block';
 
-// ══════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════
-var userName = '';
-var currentMode = ''; // 'ios' or 'android'
-var currentScene = 'all';
-var filteredSents = [];
-var currentIdx = 0;
-var isRecording = false;
-var recLocked = false;
-var recognition = null;
-var mediaRecorder = null; // kept for safety but unused
-var audioChunks = [];
-var sessionScores = [];
-var sessionPoints = 0;
-var currentAttempt = 0;
-var MAX_ATTEMPTS = 3;
-var PASS_SCORE = 70;
+const topics = ['全部', ...new Set(Q.map(q => q.topic))];
+let activeTopic = null;
+let filtered = Q;
+let idx = 0;
+let recognition = null;
+let isRec = false;
+let transcript = '';
 
-// ══════════════════════════════════════════
-// DEVICE DETECTION
-// ══════════════════════════════════════════
-var UA = navigator.userAgent;
-var IS_IOS = /iPhone|iPad|iPod/i.test(UA);
-var IS_ANDROID = /Android/i.test(UA);
-
-function getForceMode(){
-  var p = new URLSearchParams(window.location.search);
-  return p.get('mode') || '';
-}
-
-function resolveMode(){
-  if(window._devAndroid) return 'android';
-  var force = getForceMode();
-  if(force === 'android') return 'android';
-  if(force === 'ios') return 'ios';
-  if(IS_ANDROID) return 'android';
-  return 'ios';
-}
-
-// ══════════════════════════════════════════
-// DAILY QUOTA
-// ══════════════════════════════════════════
-function getToday(){ return new Date().toISOString().split('T')[0]; }
-
-function getQuota(){
-  try{
-    var raw = localStorage.getItem('jc_speaking_quota');
-    if(!raw) return {date:getToday(), count:0};
-    var q = JSON.parse(raw);
-    if(q.date !== getToday()) return {date:getToday(), count:0};
-    return q;
-  }catch(e){ return {date:getToday(), count:0}; }
-}
-
-function saveQuota(q){ try{ localStorage.setItem('jc_speaking_quota', JSON.stringify(q)); }catch(e){} }
-
-function incrementQuota(){
-  var q = getQuota();
-  q.count = Math.min(q.count + 1, DAILY_LIMIT);
-  saveQuota(q);
-  return q;
-}
-
-function isQuotaFull(){ return getQuota().count >= DAILY_LIMIT; }
-
-function updateQuotaUI(){
-  var q = getQuota();
-  var pct = Math.round(q.count / DAILY_LIMIT * 100);
-  var fillCls = pct >= 100 ? 'quota-fill full' : pct >= 70 ? 'quota-fill warn' : 'quota-fill';
-
-  ['quotaText','entryQuotaText'].forEach(function(id){
-    var el = document.getElementById(id);
-    if(el) el.textContent = q.count + ' / ' + DAILY_LIMIT + ' 句';
-  });
-  ['quotaFill','entryQuotaFill'].forEach(function(id){
-    var el = document.getElementById(id);
-    if(el){ el.style.width = pct+'%'; el.className = fillCls; }
-  });
-
-  var lockMsg = document.getElementById('quotaLockedMsg');
-  if(lockMsg) lockMsg.style.display = isQuotaFull() ? 'block' : 'none';
-
-  var recBtn = document.getElementById('recBtn');
-  if(recBtn) recBtn.disabled = isQuotaFull();
-}
-
-// ══════════════════════════════════════════
-// SUPABASE
-// ══════════════════════════════════════════
-function sbHeaders(){
-  return {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
-}
-async function sbGet(table, qs){
-  try{
-    var r = await fetch(SB_URL+'/rest/v1/'+table+'?'+qs,{headers:sbHeaders()});
-    if(!r.ok) return [];
-    return await r.json();
-  }catch(e){ return []; }
-}
-async function sbUpsert(table, data){
-  try{
-    await fetch(SB_URL+'/rest/v1/'+table,{
-      method:'POST',
-      headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),
-      body:JSON.stringify(data)
-    });
-  }catch(e){ console.error('upsert fail',e); }
-}
-
-function getWeekStart(){
-  var d = new Date();
-  d.setDate(d.getDate() - d.getDay());
-  return d.toISOString().split('T')[0];
-}
-
-async function addSpeakingScore(){
-  if(!userName) return;
-  var weekStart = getWeekStart();
-  var rows = await sbGet('weekly_scores',
-    'user_name=eq.'+encodeURIComponent(userName)+
-    '&week_start=eq.'+weekStart+'&select=id,speaking_score');
-  var cur = 0, existingId = null;
-  if(rows && rows.length > 0){ cur = rows[0].speaking_score || 0; existingId = rows[0].id; }
-  var payload = {
-    user_name: userName,
-    week_start: weekStart,
-    speaking_score: cur + POINTS_PER_SENT,
-    updated_at: new Date().toISOString()
-  };
-  if(existingId) payload.id = existingId;
-  await sbUpsert('weekly_scores', payload);
-}
-
-// ══════════════════════════════════════════
-// LEVENSHTEIN + DIFF
-// ══════════════════════════════════════════
-function levenshtein(a, b){
-  var m = a.length, n = b.length;
-  var dp = [];
-  for(var i=0;i<=m;i++){ dp[i]=[]; for(var j=0;j<=n;j++) dp[i][j]=0; }
-  for(var i=0;i<=m;i++) dp[i][0]=i;
-  for(var j=0;j<=n;j++) dp[0][j]=j;
-  for(var i=1;i<=m;i++) for(var j=1;j<=n;j++){
-    dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1] : 1+Math.min(dp[i-1][j-1],dp[i-1][j],dp[i][j-1]);
-  }
-  return dp[m][n];
-}
-
-function normalizeWord(w){ return w.toLowerCase().replace(/[^a-z0-9']/g,''); }
-
-function calcScore(ref, spoken){
-  var refWords = ref.split(/\s+/).map(normalizeWord).filter(Boolean);
-  var spkWords = spoken.split(/\s+/).map(normalizeWord).filter(Boolean);
-  var correct = 0;
-  refWords.forEach(function(w){
-    var idx = spkWords.indexOf(w);
-    if(idx !== -1){ correct++; spkWords.splice(idx,1); }
-  });
-  return refWords.length ? Math.round(correct / refWords.length * 100) : 0;
-}
-
-function buildDiff(ref, spoken){
-  var refWords = ref.split(/\s+/);
-  var spkWords = spoken.trim().split(/\s+/);
-  var refNorm = refWords.map(normalizeWord);
-  var spkNorm = spkWords.map(normalizeWord);
-
-  // simple greedy alignment
-  var html = '';
-  var spkUsed = spkNorm.slice();
-  refWords.forEach(function(rw, i){
-    var rn = refNorm[i];
-    var idx = spkUsed.indexOf(rn);
-    if(idx !== -1){
-      html += '<span class="w-correct">'+escHtml(rw)+'</span> ';
-      spkUsed[idx] = null;
-    } else {
-      // find close match
-      var best = -1, bestDist = 99;
-      spkUsed.forEach(function(sw, j){
-        if(!sw) return;
-        var d = levenshtein(rn, sw);
-        if(d <= 2 && d < bestDist){ bestDist=d; best=j; }
-      });
-      if(best !== -1){
-        html += '<span class="w-wrong">'+escHtml(rw)+'</span> ';
-        spkUsed[best] = null;
-      } else {
-        html += '<span class="w-missing">'+escHtml(rw)+'</span> ';
-      }
-    }
-  });
-  return html.trim();
-}
-
-function escHtml(s){
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function scoreGrade(pct){
-  if(pct>=90) return {grade:'A',msg:'非常棒！发音准确，继续保持 💪'};
-  if(pct>=75) return {grade:'B',msg:'不错！大部分都对，再练几遍更完美'};
-  if(pct>=55) return {grade:'C',msg:'有进步空间，重点注意标红的单词'};
-  return {grade:'D',msg:'再来一遍！对照句子仔细朗读'};
-}
-
-// ══════════════════════════════════════════
-// RENDER ENTRY
-// ══════════════════════════════════════════
-function renderEntry(){
-  var mode = resolveMode();
-  var force = getForceMode();
-  var cards = '';
-
-  if(window._devAndroid){
-    // dev test mode — only show android card, direct entry
-    cards += makeCard('android', true, false);
-  } else if(force === 'android' || force === 'ios'){
-    cards += makeCard('ios',   mode==='ios',   true);
-    cards += makeCard('android', mode==='android', true);
-  } else if(IS_ANDROID){
-    cards += makeCard('android', true, false);
-  } else {
-    cards += makeCard('ios', true, false);
-  }
-
-  document.getElementById('modeCards').innerHTML = cards;
-
-  var eq = document.getElementById('entryQuota');
-  if(eq) eq.style.display = 'block';
-  updateQuotaUI();
-}
-
-function makeCard(mode, isRec, showBoth){
-  var rec = isRec ? ' recommended' : '';
-  var tag = isRec ? (showBoth ? '<span class="mode-tag tag-dev">当前设备</span>' : '') : '';
-  if(mode === 'ios'){
-    return '<button class="mode-card'+rec+'" onclick="startMode(\'ios\')">'
-      +'<div class="mode-icon">🍎</div>'
-      +'<div class="mode-info">'
-      +'<div class="mode-name">iOS / 桌面</div>'
-      +'<div class="mode-desc">使用系统内置语音识别<br>Safari · 无需网络请求</div>'
-      +'</div>'
-      +(tag||'<span class="mode-tag tag-ios">推荐</span>')
-      +'</button>';
-  } else {
-    return '<button class="mode-card'+rec+'" onclick="startMode(\'android\')">'
-      +'<div class="mode-icon">🤖</div>'
-      +'<div class="mode-info">'
-      +'<div class="mode-name">Android</div>'
-      +'<div class="mode-desc">使用阿里云百炼识别<br>Paraformer-v2 · 精准英语识别</div>'
-      +'</div>'
-      +(tag||'<span class="mode-tag tag-android">Android专用</span>')
-      +'</button>';
-  }
-}
-
-function startMode(mode){
-  currentMode = mode;
-  buildFilteredList();
-  renderSceneFilter();
-  renderSentence();
-  updateQuotaUI();
-  showPane('p-practice');
-}
-
-// ══════════════════════════════════════════
-// SCENE FILTER
-// ══════════════════════════════════════════
-function buildFilteredList(){
-  if(currentScene === 'all'){
-    filteredSents = SENTENCES.slice();
-  } else {
-    filteredSents = SENTENCES.filter(function(s){ return s.scene === currentScene; });
-  }
-  // shuffle
-  for(var i=filteredSents.length-1;i>0;i--){
-    var j=Math.floor(Math.random()*(i+1));
-    var tmp=filteredSents[i]; filteredSents[i]=filteredSents[j]; filteredSents[j]=tmp;
-  }
-  currentIdx = 0;
-}
-
-function renderSceneFilter(){
-  var scenes = ['all'].concat(Object.keys(SCENE_LABELS));
-  var html = scenes.map(function(sc){
-    var label = sc==='all' ? '全部' : SCENE_LABELS[sc];
-    var active = sc===currentScene ? ' active' : '';
-    return '<button class="scene-chip'+active+'" onclick="setScene(\''+sc+'\')">'+label+'</button>';
-  }).join('');
-  document.getElementById('sceneRow').innerHTML = html;
-}
-
-function setScene(sc){
-  currentScene = sc;
-  buildFilteredList();
-  renderSceneFilter();
-  resetPracticeUI();
-  renderSentence();
-}
-
-// ══════════════════════════════════════════
-// SENTENCE RENDER
-// ══════════════════════════════════════════
-function renderSentence(){
-  if(!filteredSents.length) return;
-  var s = filteredSents[currentIdx % filteredSents.length];
-  document.getElementById('sentNum').textContent = '句子 ' + s.id + ' / 100';
-  document.getElementById('sentText').textContent = s.text;
-  var scEl = document.getElementById('sentScene');
-  scEl.textContent = SCENE_LABELS[s.scene] || s.scene;
-  scEl.className = 'sent-scene ' + (SCENE_CSS[s.scene]||'');
-  resetPracticeUI();
-}
-
-function resetPracticeUI(){
-  var tb = document.getElementById('transcriptBox');
-  tb.textContent = '按下录音，开始朗读上方句子';
-  tb.className = 'transcript-box empty';
-  document.getElementById('scoreWrap').style.display = 'none';
-  document.getElementById('btnNext').style.display = 'none';
-  document.getElementById('btnRetry').style.display = 'none';
-  document.getElementById('btnSkip').style.display = 'inline-block';
-  currentAttempt = 0;
-  updateAttemptDots();
-  recLocked = false;
-  updateQuotaUI();
-  updateRecBtn(false);
-}
-
-function updateAttemptDots(){
-  for(var i=1;i<=3;i++){
-    var d = document.getElementById('dot'+i);
-    if(!d) continue;
-    d.className = 'attempt-dot';
-    if(i <= currentAttempt){
-      // already used — colour set after result
-    } else if(i === currentAttempt+1 && currentAttempt < MAX_ATTEMPTS){
-      d.className = 'attempt-dot current';
-    }
-  }
-}
-
-function markAttemptDot(passed){
-  var d = document.getElementById('dot'+currentAttempt);
-  if(d) d.className = 'attempt-dot '+(passed?'used-pass':'used-fail');
-}
-
-function retryCurrentSentence(){
-  // Don't move to next sentence — just reset UI for same sentence
-  var tb = document.getElementById('transcriptBox');
-  tb.textContent = '按下录音，开始朗读上方句子';
-  tb.className = 'transcript-box empty';
-  document.getElementById('scoreWrap').style.display = 'none';
-  document.getElementById('btnNext').style.display = 'none';
-  document.getElementById('btnRetry').style.display = 'none';
-  document.getElementById('btnSkip').style.display = 'none'; // can't skip mid-attempt
-  recLocked = false;
-  updateRecBtn(false);
-  updateAttemptDots();
-}
-
-function skipSentence(){
-  currentIdx = (currentIdx + 1) % filteredSents.length;
-  resetPracticeUI();
-  renderSentence();
-}
-
-function nextSentence(){
-  currentIdx = (currentIdx + 1) % filteredSents.length;
-  resetPracticeUI();
-  renderSentence();
-}
-
-// ══════════════════════════════════════════
-// REC BUTTON UI
-// ══════════════════════════════════════════
-function updateRecBtn(recording){
-  var btn = document.getElementById('recBtn');
-  if(!btn) return;
-  if(isQuotaFull()){
-    btn.disabled = true;
-    btn.innerHTML = '今日已完成 10 句';
-    btn.className = 'rec-btn';
-    return;
-  }
-  if(recording){
-    btn.innerHTML = '<span class="rec-dot"></span>录音中，点击停止';
-    btn.className = 'rec-btn recording';
-    btn.disabled = false;
-  } else {
-    btn.innerHTML = '🎤 按下开始录音';
-    btn.className = 'rec-btn';
-    btn.disabled = false;
-  }
-}
-
-// ══════════════════════════════════════════
-// TOGGLE REC — routes to correct mode
-// ══════════════════════════════════════════
-function toggleRec(){
-  if(recLocked||isRecording)return;
-  if(currentMode==='ios') startIOS();
-  else startAndroid();
-}
-  if(isRecording){
-    if(currentMode === 'ios') stopIOS();
-    else stopAndroid();
-  } else {
-    if(currentMode === 'ios') startIOS();
-    else startAndroid();
-  }
-}
-
-// ══════════════════════════════════════════
-// iOS — Web Speech API
-// ══════════════════════════════════════════
-var recTimer = null;
-var pendingFinal = '';
-
-function startIOS(){
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){ alert('你的浏览器不支持语音识别，请用 Safari 打开'); return; }
-
-  if(recognition){ try{ recognition.abort(); }catch(e){} recognition = null; }
-  if(recTimer){ clearTimeout(recTimer); recTimer = null; }
-  pendingFinal = '';
-
-  var tb = document.getElementById('transcriptBox');
-  tb.textContent = '准备中...';
-  tb.className = 'transcript-box listening';
-
-  setTimeout(function(){
-    var SR2 = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SR2();
-    recognition.lang = 'en-US';
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 1;
-
-    recognition.onresult = function(e){
-      var interim = '', final = '';
-      for(var i = 0; i < e.results.length; i++){
-        if(e.results[i].isFinal) final += e.results[i][0].transcript;
-        else interim += e.results[i][0].transcript;
-      }
-      var display = final || interim;
-      if(display){ tb.textContent = display; tb.className = 'transcript-box'; }
-      if(final) pendingFinal = final;
+function buildTopics() {
+  const row = document.getElementById('topicRow');
+  topics.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'topic-btn' + (t === '全部' ? ' active' : '');
+    btn.textContent = t;
+    btn.onclick = () => {
+      document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeTopic = t === '全部' ? null : t;
+      filtered = activeTopic ? Q.filter(q => q.topic === activeTopic) : Q;
+      idx = 0; transcript = ''; stopRec(); render();
     };
+    row.appendChild(btn);
+  });
+}
 
-    recognition.onend = function(){
-      if(recTimer){ clearTimeout(recTimer); recTimer = null; }
-      recognition = null;
-      isRecording = false;
-      updateRecBtn(false);
-      if(pendingFinal.trim()){
-        processResult(pendingFinal.trim());
-      } else {
-        tb.textContent = '没有识别到内容，请重新录音';
-        tb.className = 'transcript-box empty';
-      }
-    };
+function render() {
+  const q = filtered[idx];
+  document.getElementById('navInfo').textContent = `${idx + 1} / ${filtered.length}`;
+  const pc = q.part === 'PART 1' ? 'badge-p1' : q.part === 'PART 2' ? 'badge-p2' : 'badge-p3';
+  document.getElementById('qArea').innerHTML = `
+    <div class="question-card">
+      <div class="q-header">
+        <span class="q-part-badge ${pc}">${q.part}</span>
+        <span class="q-topic-tag">${q.topic}</span>
+      </div>
+      <div class="q-text">${q.q.replace(/\n/g,'<br>')}</div>
+      <div class="rec-status ${isRec ? 'active' : ''}" id="recStatus">
+        <div class="rec-dot"></div> 录音中，请用英语回答...
+      </div>
+      <div class="btn-row">
+        <button class="btn ${isRec ? 'btn-danger' : 'btn-primary'}" onclick="toggleRec()" id="recBtn">
+          ${isRec
+            ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="4" width="16" height="16" rx="2"/></svg> 停止录音'
+            : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> 开始录音'}
+        </button>
+        <button class="btn btn-sm btn-send" onclick="sendToJohn()">发给John批改</button>
+        ${transcript ? `<button class="btn btn-sm" onclick="clearT()">清除</button>` : ''}
+      </div>
+      <div class="transcript-box ${transcript ? 'listening' : 'empty'}" id="tBox">
+        ${transcript || '你说的内容会显示在这里...'}
+      </div>
+      ${transcript ? `
+      <div class="wechat-row">
+        <button class="btn btn-copy" onclick="copyText()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          复制内容
+        </button>
+        <span class="wechat-hint">需要 John 批改？微信：<span class="wechat-id">JiahaoLee6666</span></span>
+      </div>` : ''}
+      <button class="ref-toggle" onclick="toggleRef(this)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        查看参考答案
+      </button>
+      <div class="ref-box" id="refBox">
+        <div class="ref-en">${q.en}</div>
+        <div class="ref-cn">${q.cn}</div>
+      </div>
+    </div>`;
+}
 
-    recognition.onerror = function(e){
-      if(recTimer){ clearTimeout(recTimer); recTimer = null; }
-      if(e.error === 'not-allowed'){
-        tb.textContent = '请允许麦克风权限后重试';
-        tb.className = 'transcript-box empty';
-      }
-    };
+function toggleRef(btn) {
+  const box = document.getElementById('refBox');
+  box.classList.toggle('show');
+  const svg = btn.querySelector('svg polyline');
+  svg.setAttribute('points', box.classList.contains('show') ? '6 15 12 9 18 15' : '6 9 12 15 18 9');
+}
 
-    try{
-      recognition.start();
-      isRecording = true;
-      updateRecBtn(true);
-      tb.textContent = '🔴 正在录音，说完后会自动识别';
-      recTimer = setTimeout(function(){
-        if(recognition){ try{ recognition.abort(); }catch(e){} }
-      }, 15000);
-    }catch(err){
-      tb.textContent = '启动失败，请重试';
-      tb.className = 'transcript-box empty';
-      recognition = null;
+function clearT() { transcript = ''; render(); }
+
+function copyText() {
+  const q = filtered[idx];
+  const text = `【雅思口语练习 — John Class】\n题目：${q.q}\n\n我的回答：\n${transcript}`;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.btn-copy');
+    if (btn) {
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> 已复制！';
+      setTimeout(() => {
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> 复制内容';
+      }, 2000);
     }
-  }, 350);
-}
-
-function stopIOS(){
-  if(recTimer){ clearTimeout(recTimer); recTimer = null; }
-  isRecording = false;
-  updateRecBtn(false);
-  var tb = document.getElementById('transcriptBox');
-  if(recognition){
-    recognition.onend = null;
-    recognition.onresult = null;
-    recognition.onerror = null;
-    try{ recognition.abort(); }catch(e){}
-    recognition = null;
-  }
-  if(pendingFinal.trim()){
-    processResult(pendingFinal.trim());
-  } else {
-    tb.textContent = '没有识别到内容，请重新录音';
-    tb.className = 'transcript-box empty';
-  }
-}
-
-// ══════════════════════════════════════════
-// Android — Bailian Paraformer WebSocket 实时识别
-// ══════════════════════════════════════════
-var wsConn = null;
-var wsTaskId = null;
-var wsAudioCtx = null;
-var wsProcessor = null;
-var wsStream = null;
-var wsFinalText = '';
-var wsSubmitted = false;
-var wsStarting = false;   // 防止 startAndroid 重入
-
-function startAndroid(){
-  // ── 防重入：如果已经在启动或录音中，直接忽略 ──
-  if(wsStarting || isRecording) return;
-  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-    alert('你的浏览器不支持录音，请更新 Chrome'); return;
-  }
-  wsStarting = true;
-
-  var tb = document.getElementById('transcriptBox');
-  tb.textContent = '连接中...';
-  tb.className = 'transcript-box listening';
-
-  // 重置本次会话状态
-  wsFinalText = '';
-  wsSubmitted = false;
-  wsTaskId = 'task-' + Date.now();
-
-  // 确保旧连接彻底关闭
-  wsCleanup();
-
-  // 建立 WebSocket（浏览器不支持自定义 header，token 放 URL 参数）
-  var wsUrl = 'wss://dashscope.aliyuncs.com/api-ws/v1/inference'
-    + '?Authorization=' + encodeURIComponent('Bearer ' + BAILIAN_KEY);
-
-  try{ wsConn = new WebSocket(wsUrl); }
-  catch(e){
-    tb.textContent = '无法建立连接: ' + e.message;
-    tb.className = 'transcript-box empty';
-    wsStarting = false;
-    return;
-  }
-
-  wsConn.onopen = function(){
-    // 发送 run-task
-    wsConn.send(JSON.stringify({
-      header: { action:'run-task', task_id:wsTaskId, streaming:'duplex' },
-      payload: {
-        task_group:'audio', task:'asr', function:'recognition',
-        model:'paraformer-realtime-v2',
-        parameters:{
-          format:'pcm', sample_rate:16000,
-          language_hints:['en'],
-          punctuation_prediction:false,
-          inverse_text_normalization:false
-        },
-        input:{}
-      }
-    }));
-
-    // 获取麦克风
-    navigator.mediaDevices.getUserMedia({
-      audio:{ sampleRate:16000, channelCount:1, echoCancellation:true }
-    }).then(function(stream){
-      wsStream = stream;
-      wsAudioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate:16000 });
-      var source = wsAudioCtx.createMediaStreamSource(stream);
-      wsProcessor = wsAudioCtx.createScriptProcessor(3200, 1, 1);
-      wsProcessor.onaudioprocess = function(e){
-        // 只在连接开着且没提交时推送音频
-        if(!wsConn || wsConn.readyState !== WebSocket.OPEN || wsSubmitted) return;
-        var pcm16 = float32ToPcm16(e.inputBuffer.getChannelData(0));
-        wsConn.send(pcm16.buffer);
-      };
-      source.connect(wsProcessor);
-      wsProcessor.connect(wsAudioCtx.destination);
-
-      isRecording = true;
-      wsStarting = false;
-      updateRecBtn(true);
-      tb.textContent = '🔴 录音中，朗读后点击停止...';
-      tb.className = 'transcript-box listening';
-    }).catch(function(err){
-      tb.textContent = '无法访问麦克风: ' + err.message;
-      tb.className = 'transcript-box empty';
-      wsCleanup();
-      wsStarting = false;
-    });
-  };
-
-  wsConn.onmessage = function(evt){
-    try{
-      var msg = JSON.parse(evt.data);
-      var event = (msg.header || {}).event;
-      var output = ((msg.payload || {}).output || {});
-      var sentence = output.sentence || {};
-
-      if(event === 'result-generated'){
-        var text = sentence.text || '';
-        if(text){
-          tb.textContent = text;
-          tb.className = 'transcript-box';
-          // 只累积 sentence_end=true 的最终句
-          if(sentence.sentence_end){
-            wsFinalText += (wsFinalText ? ' ' : '') + text;
-          }
-        }
-      }
-
-      if(event === 'task-finished'){
-        // 如果没有累积到 sentence_end，用最后一条 text 兜底
-        if(!wsFinalText && sentence.text) wsFinalText = sentence.text;
-        wsCleanup();
-        isRecording = false;
-        updateRecBtn(false);
-        // wsSubmitted 确保 processResult 只调用一次
-        if(wsFinalText.trim() && !wsSubmitted){
-          wsSubmitted = true;
-          processResult(wsFinalText.trim());
-        } else if(!wsFinalText.trim()){
-          tb.textContent = '没有识别到内容，请重新录音';
-          tb.className = 'transcript-box empty';
-        }
-      }
-
-      if(event === 'task-failed'){
-        var errMsg = (msg.payload || {}).message || '识别失败，请重试';
-        tb.textContent = errMsg;
-        tb.className = 'transcript-box empty';
-        wsCleanup();
-        isRecording = false;
-        updateRecBtn(false);
-      }
-    }catch(e){ console.error('ws parse error', e); }
-  };
-
-  wsConn.onerror = function(){
-    tb.textContent = '连接失败，请检查网络后重试';
-    tb.className = 'transcript-box empty';
-    wsCleanup();
-    isRecording = false;
-    wsStarting = false;
-    updateRecBtn(false);
-  };
-
-  wsConn.onclose = function(){
-    wsStarting = false;
-    if(isRecording){
-      isRecording = false;
-      updateRecBtn(false);
-    }
-  };
-}
-
-function stopAndroid(){
-  if(!wsConn) return;
-  // 先停麦克风，不再推音频
-  if(wsProcessor){ try{ wsProcessor.disconnect(); }catch(e){} wsProcessor = null; }
-  if(wsAudioCtx){ try{ wsAudioCtx.close(); }catch(e){} wsAudioCtx = null; }
-  if(wsStream){ wsStream.getTracks().forEach(function(t){ t.stop(); }); wsStream = null; }
-
-  // 发 finish-task，服务端收到后返回 task-finished，再关闭连接
-  if(wsConn.readyState === WebSocket.OPEN){
-    wsConn.send(JSON.stringify({
-      header:{ action:'finish-task', task_id:wsTaskId, streaming:'duplex' },
-      payload:{ input:{} }
-    }));
-    var tb = document.getElementById('transcriptBox');
-    tb.innerHTML = '<span class="spinner"></span>识别中，请稍候...';
-    tb.className = 'transcript-box';
-  }
-  isRecording = false;
-  updateRecBtn(false);
-}
-
-function wsCleanup(){
-  if(wsProcessor){ try{ wsProcessor.disconnect(); }catch(e){} wsProcessor = null; }
-  if(wsAudioCtx){ try{ wsAudioCtx.close(); }catch(e){} wsAudioCtx = null; }
-  if(wsStream){ try{ wsStream.getTracks().forEach(function(t){ t.stop(); }); }catch(e){} wsStream = null; }
-  if(wsConn){
-    // 移除所有事件避免触发 onclose 的二次处理
-    wsConn.onopen = wsConn.onmessage = wsConn.onerror = wsConn.onclose = null;
-    try{ wsConn.close(); }catch(e){}
-    wsConn = null;
-  }
-}
-
-function float32ToPcm16(float32){
-  var buf = new Int16Array(float32.length);
-  for(var i=0;i<float32.length;i++){
-    var s = Math.max(-1, Math.min(1, float32[i]));
-    buf[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
-  }
-  return buf;
-}
-
-// ══════════════════════════════════════════
-// PROCESS RESULT (shared iOS + Android)
-// ══════════════════════════════════════════
-function processResult(spoken){
-  recLocked = true;
-  currentAttempt++;
-
-  var s = filteredSents[currentIdx % filteredSents.length];
-  var pct = calcScore(s.text, spoken);
-  var passed = pct >= PASS_SCORE;
-
-  // Mark dot
-  markAttemptDot(passed);
-
-  // Score circle
-  var grade = pct>=90?'A':pct>=70?'B':pct>=55?'C':'D';
-  document.getElementById('scoreCircle').className = 'score-circle score-'+grade;
-  document.getElementById('scoreNum').textContent = pct;
-  document.getElementById('scoreLbl').textContent = '分';
-
-  // Diff display
-  document.getElementById('diffBox').innerHTML = buildDiff(s.text, spoken);
-  document.getElementById('scoreWrap').style.display = 'block';
-  updateRecBtn(false);
-  document.getElementById('recBtn').disabled = true;
-  document.getElementById('btnSkip').style.display = 'none';
-
-  if(passed){
-    // ── PASSED ──
-    var msg = pct>=90 ? '完美！发音非常准确 🎉' : '通过！继续下一句 👍';
-    document.getElementById('scoreMsg').textContent = msg;
-    document.getElementById('btnNext').style.display = 'inline-block';
-    document.getElementById('btnRetry').style.display = 'none';
-
-    // Deduct quota
-    var q = incrementQuota();
-    updateQuotaUI();
-    sessionScores.push(pct);
-
-    // Points only on pass
-    sessionPoints += POINTS_PER_SENT;
-    addSpeakingScore();
-    showPointsToast('+50 分 ✅');
-
-    // Save wrong words (only if not perfect)
-    if(pct < 90) saveErrorWords(s, spoken);
-
-    if(q.count >= DAILY_LIMIT) setTimeout(showDoneScreen, 1800);
-
-  } else {
-    // ── FAILED this attempt ──
-    var attemptsLeft = MAX_ATTEMPTS - currentAttempt;
-
-    if(attemptsLeft > 0){
-      // Can retry
-      var msgs = ['再试一次，注意标红的单词 💪','最后一次机会，慢慢来 🎯'];
-      document.getElementById('scoreMsg').textContent = msgs[currentAttempt-1] || '再试一次 💪';
-      document.getElementById('btnRetry').style.display = 'inline-block';
-      document.getElementById('btnNext').style.display = 'none';
-      // recLocked stays true until retry is clicked
-
-    } else {
-      // ── 3 attempts exhausted ──
-      document.getElementById('scoreMsg').textContent = '已用完 3 次机会，错词已记录，继续下一句';
-      document.getElementById('btnNext').style.display = 'inline-block';
-      document.getElementById('btnRetry').style.display = 'none';
-
-      // Deduct quota (counts as attempted)
-      var q = incrementQuota();
-      updateQuotaUI();
-      sessionScores.push(pct);
-
-      // No points, but save error words
-      saveErrorWords(s, spoken);
-
-      if(q.count >= DAILY_LIMIT) setTimeout(showDoneScreen, 1800);
-    }
-  }
-}
-
-// ══════════════════════════════════════════
-// ERROR WORDS — extract & save
-// ══════════════════════════════════════════
-function getWrongWords(ref, spoken){
-  var refWords = ref.split(/\s+/);
-  var refNorm  = refWords.map(normalizeWord);
-  var spkNorm  = spoken.split(/\s+/).map(normalizeWord).filter(Boolean);
-  var spkUsed  = spkNorm.slice();
-  var wrong = [];
-  refNorm.forEach(function(rn, i){
-    if(!rn) return;
-    var idx = spkUsed.indexOf(rn);
-    if(idx !== -1){ spkUsed[idx] = null; return; }
-    // fuzzy: close match?
-    var best = -1, bestDist = 99;
-    spkUsed.forEach(function(sw, j){
-      if(!sw) return;
-      var d = levenshtein(rn, sw);
-      if(d <= 2 && d < bestDist){ bestDist=d; best=j; }
-    });
-    if(best !== -1){ spkUsed[best] = null; return; }
-    // truly missing/wrong
-    wrong.push(refWords[i].replace(/[^a-zA-Z'-]/g,''));
   });
-  return wrong.filter(Boolean);
 }
 
-async function saveErrorWords(sentence, spoken){
-  var words = getWrongWords(sentence.text, spoken);
-  if(!words.length || !userName) return;
-  var rows = words.map(function(w){
-    return {
-      user_name: userName,
-      word: w.toLowerCase(),
-      sentence_id: sentence.id,
-      sentence_text: sentence.text
-    };
-  });
-  try{
-    await fetch(SB_URL+'/rest/v1/speaking_errors',{
-      method:'POST',
-      headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),
-      body:JSON.stringify(rows)
-    });
-  }catch(e){ console.error('saveErrorWords fail',e); }
-}
+function toggleRec() { isRec ? stopRec() : startRec(); }
 
-// ══════════════════════════════════════════
-// LOAD ERROR BOOK
-// ══════════════════════════════════════════
-async function loadErrorBook(){
-  var el = document.getElementById('errorBookList');
-  el.innerHTML = '<div style="font-size:13px;color:#B5A080;padding:20px;text-align:center">加载中...</div>';
-
-  var rows = await sbGet('speaking_errors',
-    'user_name=eq.'+encodeURIComponent(userName)+
-    '&select=word,sentence_text,created_at&order=created_at.desc&limit=200');
-
-  if(!rows || !rows.length){
-    el.innerHTML = '<div class="error-empty">🎉 暂无错词记录<br>继续保持！</div>';
-    return;
-  }
-
-  // Count word frequency
-  var freq = {};
-  var sentMap = {};
-  rows.forEach(function(r){
-    var w = r.word;
-    freq[w] = (freq[w]||0) + 1;
-    if(!sentMap[w]) sentMap[w] = r.sentence_text;
-  });
-
-  // Sort by frequency
-  var sorted = Object.keys(freq).sort(function(a,b){ return freq[b]-freq[a]; });
-
-  var html = '<div class="error-section-title">高频错词（按出现次数）</div>';
-  html += '<div style="display:flex;flex-wrap:wrap;width:100%;margin-bottom:20px">';
-  sorted.forEach(function(w){
-    html += '<div class="error-word-chip">'
-      + w
-      + (freq[w]>1 ? '<span class="error-count">×'+freq[w]+'</span>' : '')
-      +'</div>';
-  });
-  html += '</div>';
-
-  // Recent 5 sentences with errors
-  var recentSents = [];
-  rows.forEach(function(r){
-    if(r.sentence_text && recentSents.indexOf(r.sentence_text)===-1) recentSents.push(r.sentence_text);
-  });
-  recentSents = recentSents.slice(0,5);
-  if(recentSents.length){
-    html += '<div class="error-section-title">近期出错的句子</div>';
-    recentSents.forEach(function(t){
-      html += '<div style="width:100%;background:rgba(255,252,245,.85);border:1.5px solid rgba(184,149,106,.18);border-radius:10px;padding:12px 14px;margin-bottom:8px;font-family:Georgia,serif;font-size:14px;line-height:1.7;text-align:left;color:#2A1E08">'+escHtml(t)+'</div>';
+function sendToJohn(){
+  var q = filtered[idx];
+  var text = (transcript || '（还没录音，先录一段口语回答再发哦）');
+  var msg = '【口语练习 · John Class】\n题目：'+q.q+'\n\n我的回答：\n'+text;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(msg).then(function(){
+      var btn = document.querySelector('.btn-send');
+      btn.textContent = '已复制！微信发给 John';
+      setTimeout(function(){ btn.textContent = '发给John批改'; }, 2500);
     });
   }
-
-  html += '<div style="margin-top:8px;font-size:11px;color:#B5A080;text-align:center">共 '+rows.length+' 条错词记录</div>';
-  el.innerHTML = html;
+  window.open('https://weixin.qq.com/', '_blank');
 }
 
-// ══════════════════════════════════════════
-// POINTS TOAST
-// ══════════════════════════════════════════
-function showPointsToast(msg){
-  var t = document.getElementById('ptsToast');
-  t.textContent = msg || '+50 分 🎯';
-  t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 2000);
-}
-
-// ══════════════════════════════════════════
-// DONE SCREEN
-// ══════════════════════════════════════════
-function showDoneScreen(){
-  var count = sessionScores.length;
-  var avg = count ? Math.round(sessionScores.reduce(function(a,b){return a+b;},0)/count) : 0;
-  document.getElementById('doneCount').textContent = count;
-  document.getElementById('doneScore').textContent = '+' + sessionPoints;
-  document.getElementById('doneAvg').textContent = avg || '—';
-  showPane('p-done');
-  loadErrorBook();
-}
-
-// ══════════════════════════════════════════
-// PANE SWITCHER
-// ══════════════════════════════════════════
-function showPane(id){
-  document.querySelectorAll('.pane').forEach(function(p){ p.classList.remove('on'); });
-  document.getElementById(id).classList.add('on');
-}
-
-// ══════════════════════════════════════════
-// BROWSER CHECK
-// ══════════════════════════════════════════
-function checkBrowser(){
-  // Secret dev mode: ?jc_dev=bailian — shows Android mode on any device
-  var params = new URLSearchParams(window.location.search);
-  if(params.get('jc_dev') === 'bailian'){
-    // Bypass all checks, force android mode — only you know this param
-    window._devAndroid = true;
-    return true;
-  }
-
-  // iOS but not Safari (e.g. QQ, WeChat, Chrome on iOS)
-  var isIOSNonSafari = IS_IOS && !/^((?!chrome|android).)*safari/i.test(UA);
-  var isQQ = /QQ\//i.test(UA) || /MQQBrowser/i.test(UA);
-  var isWechat = /MicroMessenger/i.test(UA);
-
-  if(IS_IOS && (isIOSNonSafari || isQQ || isWechat)){
-    document.body.innerHTML =
-      '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px;background:#F5EDD8">'
-      +'<div style="max-width:380px;text-align:center">'
-      +'<div style="font-size:56px;margin-bottom:20px">🌐</div>'
-      +'<div style="font-size:20px;font-weight:700;color:#2A1E08;margin-bottom:10px">请用 Safari 打开</div>'
-      +'<div style="font-size:14px;color:#8A7050;line-height:1.8;margin-bottom:28px">'
-      +'iOS 上的语音识别只在 <strong>Safari</strong> 里有效。<br>'
-      +'QQ浏览器、微信、Chrome 均不支持。<br><br>'
-      +'点击右上角 <strong>···</strong> 或 <strong>分享按钮</strong>，<br>'
-      +'选择「在 Safari 中打开」即可。'
-      +'</div>'
-      +'<div style="font-size:12px;color:#B5A080">JOHN CLASS · 发音跟读</div>'
-      +'</div></div>';
-    return false;
-  }
-  return true;
-}
-
-// ══════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════
-function init(){
-  // Browser check first
-  if(!checkBrowser()) return;
-
-  var params = new URLSearchParams(window.location.search);
-  var isTest = params.get('test') === '1';
-
-  var name = localStorage.getItem('jc_username') || localStorage.getItem('jc_student_name');
-  if(!name || name==='同学'){
-    if(isTest){
-      // test mode: use a placeholder name, skip redirect
-      name = 'TestUser';
-      localStorage.setItem('jc_username', name);
-    } else {
-      window.location.href='start.html'; return;
+function startRec() {
+  if (!SR) return;
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.onresult = e => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) transcript += e.results[i][0].transcript + ' ';
+      else interim += e.results[i][0].transcript;
     }
-  }
-  userName = name;
-
-  document.getElementById('backToEntry').addEventListener('click', function(e){
-    e.preventDefault();
-    if(isRecording){
-      if(currentMode==='ios' && recognition){ recognition.stop(); recognition = null; }
-      if(currentMode==='android'){ stopAndroid(); wsCleanup(); }
-      isRecording = false;
+    const box = document.getElementById('tBox');
+    if (box) {
+      box.textContent = (transcript + interim) || '你说的内容会显示在这里...';
+      box.className = 'transcript-box listening';
     }
-    showPane('p-entry');
-  });
-
-  // Error book back: go to done if session finished, else entry
-  document.getElementById('errorBookBack').addEventListener('click', function(e){
-    e.preventDefault();
-    if(sessionScores.length > 0) showPane('p-done');
-    else showPane('p-entry');
-  });
-
-  renderEntry();
+  };
+  recognition.onerror = () => stopRec();
+  recognition.onend = () => { if (isRec) recognition.start(); };
+  recognition.start();
+  isRec = true;
+  render();
 }
 
-init();
+function stopRec() {
+  if (recognition) { recognition.onend = null; recognition.stop(); recognition = null; }
+  isRec = false;
+  render();
+}
+
+function changeQ(dir) {
+  idx = (idx + dir + filtered.length) % filtered.length;
+  transcript = ''; stopRec(); render();
+}
+
+function go(e, href) {
+  e.preventDefault();
+  const ov = document.getElementById('ov');
+  ov.classList.add('show');
+  setTimeout(() => { window.location.href = href; }, 280);
+}
+
+buildTopics();
+render();
 </script>
+<script src="audio.js" onerror="void 0"></script>
 </body>
 </html>
