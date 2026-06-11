@@ -3204,9 +3204,10 @@ let S={name:"",muted:false,grade:"",gd:{}};
 function load(){
  // 统一名字：读 jc_username，兼容旧数据
  var unified = localStorage.getItem('jc_username');
- if(unified && !S.name) S.name = unified;
+ // ★ 先恢复存档（分数、进度等），再用统一名字覆盖，确保 jc_username 是权威来源
  try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r));}catch(e){}
  if(!S.gd)S.gd={};
+ if(unified) S.name = unified;
  // 确保 jc_username 同步
  if(S.name) localStorage.setItem('jc_username', S.name);
 }
