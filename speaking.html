@@ -887,8 +887,10 @@ function updateRecBtn(recording){
 // TOGGLE REC — routes to correct mode
 // ══════════════════════════════════════════
 function toggleRec(){
-  if(recLocked) return;
-  if(isQuotaFull()){ showDoneScreen(); return; }
+  if(recLocked||isRecording)return;
+  if(currentMode==='ios') startIOS();
+  else startAndroid();
+}
   if(isRecording){
     if(currentMode === 'ios') stopIOS();
     else stopAndroid();
@@ -901,56 +903,95 @@ function toggleRec(){
 // ══════════════════════════════════════════
 // iOS — Web Speech API
 // ══════════════════════════════════════════
+var recTimer = null;
+var pendingFinal = '';
+
 function startIOS(){
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if(!SR){ alert('你的浏览器不支持语音识别，请用 Safari 打开'); return; }
-  recognition = new SR();
-  recognition.lang = 'en-US';
-  recognition.continuous = false;
-  recognition.interimResults = false;  // 只要最终结果，不猜测
-  recognition.maxAlternatives = 1;     // 只取第一个结果
 
-  var finalText = '';
+  if(recognition){ try{ recognition.abort(); }catch(e){} recognition = null; }
+  if(recTimer){ clearTimeout(recTimer); recTimer = null; }
+  pendingFinal = '';
+
   var tb = document.getElementById('transcriptBox');
-  tb.textContent = '正在听...';
+  tb.textContent = '准备中...';
   tb.className = 'transcript-box listening';
 
-  recognition.onresult = function(e){
-    // Only grab final results
-    finalText = '';
-    for(var i = 0; i < e.results.length; i++){
-      if(e.results[i].isFinal) finalText += e.results[i][0].transcript;
-    }
-    if(finalText) tb.textContent = finalText;
-    tb.className = 'transcript-box';
-  };
+  setTimeout(function(){
+    var SR2 = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SR2();
+    recognition.lang = 'en-US';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
 
-  recognition.onend = function(){
-    isRecording = false;
-    updateRecBtn(false);
-    if(finalText.trim()) processResult(finalText.trim());
-    else {
-      tb.textContent = '没有识别到内容，请重新录音';
+    recognition.onresult = function(e){
+      var interim = '', final = '';
+      for(var i = 0; i < e.results.length; i++){
+        if(e.results[i].isFinal) final += e.results[i][0].transcript;
+        else interim += e.results[i][0].transcript;
+      }
+      var display = final || interim;
+      if(display){ tb.textContent = display; tb.className = 'transcript-box'; }
+      if(final) pendingFinal = final;
+    };
+
+    recognition.onend = function(){
+      if(recTimer){ clearTimeout(recTimer); recTimer = null; }
+      recognition = null;
+      isRecording = false;
+      updateRecBtn(false);
+      if(pendingFinal.trim()){
+        processResult(pendingFinal.trim());
+      } else {
+        tb.textContent = '没有识别到内容，请重新录音';
+        tb.className = 'transcript-box empty';
+      }
+    };
+
+    recognition.onerror = function(e){
+      if(recTimer){ clearTimeout(recTimer); recTimer = null; }
+      if(e.error === 'not-allowed'){
+        tb.textContent = '请允许麦克风权限后重试';
+        tb.className = 'transcript-box empty';
+      }
+    };
+
+    try{
+      recognition.start();
+      isRecording = true;
+      updateRecBtn(true);
+      tb.textContent = '🔴 正在录音，说完后会自动识别';
+      recTimer = setTimeout(function(){
+        if(recognition){ try{ recognition.abort(); }catch(e){} }
+      }, 15000);
+    }catch(err){
+      tb.textContent = '启动失败，请重试';
       tb.className = 'transcript-box empty';
+      recognition = null;
     }
-  };
-
-  recognition.onerror = function(e){
-    isRecording = false;
-    updateRecBtn(false);
-    tb.textContent = '识别出错: '+e.error+'，请重试';
-    tb.className = 'transcript-box empty';
-  };
-
-  recognition.start();
-  isRecording = true;
-  updateRecBtn(true);
+  }, 350);
 }
 
 function stopIOS(){
-  if(recognition){ recognition.stop(); recognition = null; }
+  if(recTimer){ clearTimeout(recTimer); recTimer = null; }
   isRecording = false;
   updateRecBtn(false);
+  var tb = document.getElementById('transcriptBox');
+  if(recognition){
+    recognition.onend = null;
+    recognition.onresult = null;
+    recognition.onerror = null;
+    try{ recognition.abort(); }catch(e){}
+    recognition = null;
+  }
+  if(pendingFinal.trim()){
+    processResult(pendingFinal.trim());
+  } else {
+    tb.textContent = '没有识别到内容，请重新录音';
+    tb.className = 'transcript-box empty';
+  }
 }
 
 // ══════════════════════════════════════════
