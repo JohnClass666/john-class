@@ -496,13 +496,13 @@ var currentIdx = 0;
 var isRecording = false;
 var recLocked = false;
 var recognition = null;
-var mediaRecorder = null;
+var mediaRecorder = null; // kept for safety but unused
 var audioChunks = [];
 var sessionScores = [];
 var sessionPoints = 0;
-var currentAttempt = 0;   // 0-2, max 3 attempts per sentence
+var currentAttempt = 0;
 var MAX_ATTEMPTS = 3;
-var PASS_SCORE = 70;       // 70分以上算通过
+var PASS_SCORE = 70;
 
 // ══════════════════════════════════════════
 // DEVICE DETECTION
@@ -954,116 +954,200 @@ function stopIOS(){
 }
 
 // ══════════════════════════════════════════
-// Android — Bailian Paraformer-v2
+// Android — Bailian Paraformer WebSocket 实时识别
 // ══════════════════════════════════════════
+var wsConn = null;
+var wsTaskId = null;
+var wsAudioCtx = null;
+var wsProcessor = null;
+var wsStream = null;
+var wsFinalText = '';
+var wsSubmitted = false;
+var wsStarting = false;   // 防止 startAndroid 重入
+
 function startAndroid(){
+  // ── 防重入：如果已经在启动或录音中，直接忽略 ──
+  if(wsStarting || isRecording) return;
   if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
     alert('你的浏览器不支持录音，请更新 Chrome'); return;
   }
+  wsStarting = true;
+
   var tb = document.getElementById('transcriptBox');
-  tb.textContent = '请求麦克风权限...';
+  tb.textContent = '连接中...';
   tb.className = 'transcript-box listening';
 
-  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
-    audioChunks = [];
-    // prefer wav-compatible format
-    var opts = {};
-    if(MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) opts.mimeType='audio/webm;codecs=opus';
-    mediaRecorder = new MediaRecorder(stream, opts);
-    mediaRecorder.ondataavailable = function(e){ if(e.data.size>0) audioChunks.push(e.data); };
-    mediaRecorder.onstop = function(){
-      stream.getTracks().forEach(function(t){ t.stop(); });
-      var blob = new Blob(audioChunks, {type: mediaRecorder.mimeType || 'audio/webm'});
-      sendToBailian(blob);
-    };
-    mediaRecorder.start();
-    isRecording = true;
-    updateRecBtn(true);
-    tb.textContent = '🔴 录音中，朗读后点击停止...';
-    tb.className = 'transcript-box listening';
-  }).catch(function(err){
-    tb.textContent = '无法访问麦克风: '+err.message;
+  // 重置本次会话状态
+  wsFinalText = '';
+  wsSubmitted = false;
+  wsTaskId = 'task-' + Date.now();
+
+  // 确保旧连接彻底关闭
+  wsCleanup();
+
+  // 建立 WebSocket（浏览器不支持自定义 header，token 放 URL 参数）
+  var wsUrl = 'wss://dashscope.aliyuncs.com/api-ws/v1/inference'
+    + '?Authorization=' + encodeURIComponent('Bearer ' + BAILIAN_KEY);
+
+  try{ wsConn = new WebSocket(wsUrl); }
+  catch(e){
+    tb.textContent = '无法建立连接: ' + e.message;
     tb.className = 'transcript-box empty';
-  });
+    wsStarting = false;
+    return;
+  }
+
+  wsConn.onopen = function(){
+    // 发送 run-task
+    wsConn.send(JSON.stringify({
+      header: { action:'run-task', task_id:wsTaskId, streaming:'duplex' },
+      payload: {
+        task_group:'audio', task:'asr', function:'recognition',
+        model:'paraformer-realtime-v2',
+        parameters:{
+          format:'pcm', sample_rate:16000,
+          language_hints:['en'],
+          punctuation_prediction:false,
+          inverse_text_normalization:false
+        },
+        input:{}
+      }
+    }));
+
+    // 获取麦克风
+    navigator.mediaDevices.getUserMedia({
+      audio:{ sampleRate:16000, channelCount:1, echoCancellation:true }
+    }).then(function(stream){
+      wsStream = stream;
+      wsAudioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate:16000 });
+      var source = wsAudioCtx.createMediaStreamSource(stream);
+      wsProcessor = wsAudioCtx.createScriptProcessor(3200, 1, 1);
+      wsProcessor.onaudioprocess = function(e){
+        // 只在连接开着且没提交时推送音频
+        if(!wsConn || wsConn.readyState !== WebSocket.OPEN || wsSubmitted) return;
+        var pcm16 = float32ToPcm16(e.inputBuffer.getChannelData(0));
+        wsConn.send(pcm16.buffer);
+      };
+      source.connect(wsProcessor);
+      wsProcessor.connect(wsAudioCtx.destination);
+
+      isRecording = true;
+      wsStarting = false;
+      updateRecBtn(true);
+      tb.textContent = '🔴 录音中，朗读后点击停止...';
+      tb.className = 'transcript-box listening';
+    }).catch(function(err){
+      tb.textContent = '无法访问麦克风: ' + err.message;
+      tb.className = 'transcript-box empty';
+      wsCleanup();
+      wsStarting = false;
+    });
+  };
+
+  wsConn.onmessage = function(evt){
+    try{
+      var msg = JSON.parse(evt.data);
+      var event = (msg.header || {}).event;
+      var output = ((msg.payload || {}).output || {});
+      var sentence = output.sentence || {};
+
+      if(event === 'result-generated'){
+        var text = sentence.text || '';
+        if(text){
+          tb.textContent = text;
+          tb.className = 'transcript-box';
+          // 只累积 sentence_end=true 的最终句
+          if(sentence.sentence_end){
+            wsFinalText += (wsFinalText ? ' ' : '') + text;
+          }
+        }
+      }
+
+      if(event === 'task-finished'){
+        // 如果没有累积到 sentence_end，用最后一条 text 兜底
+        if(!wsFinalText && sentence.text) wsFinalText = sentence.text;
+        wsCleanup();
+        isRecording = false;
+        updateRecBtn(false);
+        // wsSubmitted 确保 processResult 只调用一次
+        if(wsFinalText.trim() && !wsSubmitted){
+          wsSubmitted = true;
+          processResult(wsFinalText.trim());
+        } else if(!wsFinalText.trim()){
+          tb.textContent = '没有识别到内容，请重新录音';
+          tb.className = 'transcript-box empty';
+        }
+      }
+
+      if(event === 'task-failed'){
+        var errMsg = (msg.payload || {}).message || '识别失败，请重试';
+        tb.textContent = errMsg;
+        tb.className = 'transcript-box empty';
+        wsCleanup();
+        isRecording = false;
+        updateRecBtn(false);
+      }
+    }catch(e){ console.error('ws parse error', e); }
+  };
+
+  wsConn.onerror = function(){
+    tb.textContent = '连接失败，请检查网络后重试';
+    tb.className = 'transcript-box empty';
+    wsCleanup();
+    isRecording = false;
+    wsStarting = false;
+    updateRecBtn(false);
+  };
+
+  wsConn.onclose = function(){
+    wsStarting = false;
+    if(isRecording){
+      isRecording = false;
+      updateRecBtn(false);
+    }
+  };
 }
 
 function stopAndroid(){
-  if(mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  if(!wsConn) return;
+  // 先停麦克风，不再推音频
+  if(wsProcessor){ try{ wsProcessor.disconnect(); }catch(e){} wsProcessor = null; }
+  if(wsAudioCtx){ try{ wsAudioCtx.close(); }catch(e){} wsAudioCtx = null; }
+  if(wsStream){ wsStream.getTracks().forEach(function(t){ t.stop(); }); wsStream = null; }
+
+  // 发 finish-task，服务端收到后返回 task-finished，再关闭连接
+  if(wsConn.readyState === WebSocket.OPEN){
+    wsConn.send(JSON.stringify({
+      header:{ action:'finish-task', task_id:wsTaskId, streaming:'duplex' },
+      payload:{ input:{} }
+    }));
+    var tb = document.getElementById('transcriptBox');
+    tb.innerHTML = '<span class="spinner"></span>识别中，请稍候...';
+    tb.className = 'transcript-box';
+  }
   isRecording = false;
   updateRecBtn(false);
-  var tb = document.getElementById('transcriptBox');
-  tb.innerHTML = '<span class="spinner"></span>识别中，请稍候...';
-  tb.className = 'transcript-box';
 }
 
-async function sendToBailian(blob){
-  var tb = document.getElementById('transcriptBox');
-  // Guard: only one request at a time
-  if(recLocked){ tb.textContent='请等待上一次结果'; return; }
-  recLocked = true;
-
-  try{
-    // Convert blob to base64
-    var base64 = await blobToBase64(blob);
-    var audioData = base64.split(',')[1]; // strip data:...;base64,
-
-    var body = {
-      model: 'paraformer-v2',
-      input: { audio_format:'webm', sample_rate:16000, audio: audioData },
-      parameters: {
-        language_hints: ['en'],
-        punctuation_prediction: false,   // 不加标点，听到什么返回什么
-        inverse_text_normalization: false // 不做语义规范化
-      }
-    };
-
-    var resp = await fetch('https://dashscope.aliyuncs.com/api/v1/services/audio/asr/transcription', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer '+BAILIAN_KEY,
-        'Content-Type': 'application/json',
-        'X-DashScope-Async': 'disable'
-      },
-      body: JSON.stringify(body)
-    });
-
-    if(!resp.ok){
-      var errText = await resp.text();
-      throw new Error('API '+resp.status+': '+errText);
-    }
-
-    var data = await resp.json();
-    var text = '';
-    if(data.output && data.output.sentence && data.output.sentence.length){
-      text = data.output.sentence.map(function(s){ return s.text; }).join(' ');
-    } else if(data.output && data.output.text){
-      text = data.output.text;
-    }
-
-    if(text.trim()){
-      tb.textContent = text;
-      tb.className = 'transcript-box';
-      processResult(text.trim());
-    } else {
-      tb.textContent = '没有识别到内容，请重新录音';
-      tb.className = 'transcript-box empty';
-      recLocked = false;
-    }
-  }catch(e){
-    console.error('Bailian error:', e);
-    tb.textContent = '识别失败: '+e.message+'，请重试';
-    tb.className = 'transcript-box empty';
-    recLocked = false;
+function wsCleanup(){
+  if(wsProcessor){ try{ wsProcessor.disconnect(); }catch(e){} wsProcessor = null; }
+  if(wsAudioCtx){ try{ wsAudioCtx.close(); }catch(e){} wsAudioCtx = null; }
+  if(wsStream){ try{ wsStream.getTracks().forEach(function(t){ t.stop(); }); }catch(e){} wsStream = null; }
+  if(wsConn){
+    // 移除所有事件避免触发 onclose 的二次处理
+    wsConn.onopen = wsConn.onmessage = wsConn.onerror = wsConn.onclose = null;
+    try{ wsConn.close(); }catch(e){}
+    wsConn = null;
   }
 }
 
-function blobToBase64(blob){
-  return new Promise(function(resolve, reject){
-    var reader = new FileReader();
-    reader.onload = function(){ resolve(reader.result); };
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
+function float32ToPcm16(float32){
+  var buf = new Int16Array(float32.length);
+  for(var i=0;i<float32.length;i++){
+    var s = Math.max(-1, Math.min(1, float32[i]));
+    buf[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+  }
+  return buf;
 }
 
 // ══════════════════════════════════════════
@@ -1340,8 +1424,8 @@ function init(){
   document.getElementById('backToEntry').addEventListener('click', function(e){
     e.preventDefault();
     if(isRecording){
-      if(currentMode==='ios' && recognition){ recognition.stop(); }
-      if(currentMode==='android' && mediaRecorder && mediaRecorder.state!=='inactive') mediaRecorder.stop();
+      if(currentMode==='ios' && recognition){ recognition.stop(); recognition = null; }
+      if(currentMode==='android'){ stopAndroid(); wsCleanup(); }
       isRecording = false;
     }
     showPane('p-entry');
