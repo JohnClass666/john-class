@@ -700,8 +700,10 @@ function renderEntry(){
   var force = getForceMode();
   var cards = '';
 
-  if(force === 'android' || force === 'ios'){
-    // dev mode — show both, current highlighted
+  if(window._devAndroid){
+    // dev test mode — only show android card, direct entry
+    cards += makeCard('android', true, false);
+  } else if(force === 'android' || force === 'ios'){
     cards += makeCard('ios',   mode==='ios',   true);
     cards += makeCard('android', mode==='android', true);
   } else if(IS_ANDROID){
@@ -712,7 +714,6 @@ function renderEntry(){
 
   document.getElementById('modeCards').innerHTML = cards;
 
-  // quota display on entry
   var eq = document.getElementById('entryQuota');
   if(eq) eq.style.display = 'block';
   updateQuotaUI();
