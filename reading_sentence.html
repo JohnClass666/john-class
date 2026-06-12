@@ -280,7 +280,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
 <div id="splash">
   <div class="splash-logo">JOHN CLASS &middot; 长难句训练</div>
   <div class="splash-quote">&ldquo;做完这二百句，<br>你北大都考得上！&rdquo;</div>
-  <div class="splash-sub">每天 2 句 · 共 100 天 · 系统进步</div>
+  <div class="splash-sub">共 200 句长难句 · 每句 50 分</div>
   <div class="splash-tap">▶ &nbsp;点击屏幕开始</div>
 </div>
 
@@ -293,9 +293,9 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
   </div>
   <div class="progress-bar-wrap main-reveal"><div class="progress-bar-fill" id="prog-fill"></div></div>
   <div class="progress-label main-reveal" id="prog-label"></div>
-  <div class="daily-badge main-reveal" id="daily-badge">今日已完成 0 / 2 句</div>
+  <div class="daily-badge main-reveal" id="daily-badge" style="display:none"></div>
   <div class="main-reveal" style="display:flex;flex-direction:column;gap:10px;width:100%">
-    <button class="btn" id="btn-start">开始今日训练</button>
+    <button class="btn" id="btn-start">开始训练</button>
     <button class="btn-outline" id="btn-board-open">&#127942; 阅读大王排行榜</button>
   </div>
 </div>
@@ -317,7 +317,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
 <div id="p-board" class="pane">
   <div class="tag" style="margin-bottom:4px">本周阅读榜</div>
   <div style="font-size:19px;font-weight:700;margin-bottom:6px">&#127942; 阅读大王</div>
-  <div style="font-size:12px;color:#B5A080;margin-bottom:20px">每句 500 分 &middot; 每周上限 1000 分 &middot; 仅统计长难句阅读</div>
+  <div style="font-size:12px;color:#B5A080;margin-bottom:20px">每句 50 分 · 仅统计长难句阅读</div>
   <div id="board-list" style="width:100%"><div style="font-size:13px;color:#B5A080;padding:20px">加载中...</div></div>
   <button class="btn" id="btn-board-back" style="margin-top:20px">&larr; 返回</button>
 </div>
@@ -1016,7 +1016,7 @@ function appendSpans(spans, comps, fullText){
 }
 
 // ═══════════ 每日打卡限制 ═══════════
-var DAILY_LIMIT = 2;
+var DAILY_LIMIT = 999; // 不再限制，学生可以一直做
 
 function getToday(){
   return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
@@ -1040,8 +1040,7 @@ function saveDailyState(state){
 }
 
 function isDailyLocked(){
-  var state = getDailyState();
-  return state.count >= DAILY_LIMIT;
+  return false; // 不再限制每日数量，学生可以一直做
 }
 
 function incrementDailyCount(){
@@ -1128,7 +1127,7 @@ async function saveProgress(completed){
     curReading=wRows[0].reading_score||0;
     existingId=wRows[0].id;
   }
-  var newReading=Math.min(curReading+500,1000);
+  var newReading=curReading+50;
   var msg = localStorage.getItem('jc_victory_msg')||'';
   var payload={user_name:userName, week_start:weekStart, reading_score:newReading, victory_msg:msg, updated_at:new Date().toISOString()};
   if(existingId) payload.id=existingId;   // 带 id 才能 update 而不 insert 新行
@@ -1238,32 +1237,11 @@ async function completeAndNext(save){
   var totalCompleted = currentId;
   await saveProgress(totalCompleted);
 
-  // Update daily count
-  var ds = incrementDailyCount();
-  var remaining = DAILY_LIMIT - ds.count;
-
-  if(remaining <= 0 || sessionCompleted >= DAILY_LIMIT){
-    // Daily limit reached
-    $('done-icon').textContent = '\u{1F44D}';
-    $('done-title').textContent = '今日训练完成！';
-    $('done-msg').textContent = '已完成今天全部 '+DAILY_LIMIT+' 句。大脑需要时间消化，明天继续！';
-    // Hide "next sentence" and "keep going" buttons
-    show('p-done');
-    return;
-  }
-
   if(currentId < 200){
     currentId++;
-    if(sessionCompleted % 2 === 0){
-      $('done-icon').textContent = '\u{1F319}';
-      $('done-title').textContent = '稍作休息';
-      $('done-msg').textContent = '已完成 2 句中的 '+sessionCompleted+' 句。还剩 '+remaining+' 句今日额度。';
-      show('p-done');
-    } else {
-      var s = getSentence(currentId);
-      setTag(s); setDots(1); startCD();
-      show('p1'); step=1;
-    }
+    var s = getSentence(currentId);
+    setTag(s); setDots(1); startCD();
+    show('p1'); step=1;
   } else {
     $('done-icon').textContent = '\u{1F389}';
     $('done-title').textContent = '全部完成！';
@@ -1290,22 +1268,12 @@ function init(){
 async function startWithUser(){
   await loadProgress();
 
-  // Check daily limit
-  if(isDailyLocked()){
-    updateLockScreen();
-    show('p-locked');
-    return;
-  }
-
-  var ds = getDailyState();
   var pct = Math.round((currentId-1)/200*100);
   $('prog-fill').style.width = pct+'%';
   $('prog-label').textContent = '已完成 '+(currentId-1)+' / 200 句 ('+pct+'%)';
-  $('daily-badge').textContent = '今日已完成 '+ds.count+' / '+DAILY_LIMIT+' 句';
 
-  // Render Mario map
-  var currentDay = Math.ceil(currentId/2); // 2 sentences per day
-  // wave heights for visual rhythm (pixels, cycling pattern)
+  // Render Mario map (100 nodes, each = 2 sentences)
+  var currentDay = Math.ceil(currentId/2);
   var wavePattern = [0, -8, -16, -10, -4, -18, -12, -6, -14, -2];
   var hallHtml = '';
   for(var d=1; d<=100; d++){
@@ -1313,7 +1281,7 @@ async function startWithUser(){
     if(d % 10 === 0) cls += ' milestone';
     if(d < currentDay) cls += ' done';
     else if(d === currentDay) cls += ' current';
-    else cls += ' locked';
+    // No more locking — all future nodes are available
 
     var waveY = wavePattern[(d-1) % wavePattern.length];
     // current node: no wave offset (bouncing animation handles it)
@@ -1365,15 +1333,13 @@ async function startWithUser(){
 
 // ── EVENTS ──
 $('btn-start').addEventListener('click',function(){
-  if(isDailyLocked()){ updateLockScreen(); show('p-locked'); return; }
   goToPractice();
 });
 $('btn-board-open').addEventListener('click',function(){loadLeaderboard();show('p-board');});
 $('btn-lock-board').addEventListener('click',function(){loadLeaderboard();show('p-board');});
 $('btn-lock-back').addEventListener('click',function(){window.location.href='study.html';});
 $('btn-board-back').addEventListener('click',function(){
-  if(isDailyLocked()){ updateLockScreen(); show('p-locked'); }
-  else startWithUser();
+  startWithUser();
 });
 
 $('b1').addEventListener('click',function(){clickSound();setDots(2);show('p2');step=2;});
