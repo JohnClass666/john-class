@@ -2,279 +2,101 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>英语学习提升 · John Class</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>英语学习提升 · John Class 学院城堡</title>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-  min-height: 100%;
-  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  background: #F5EDD8;
-  color: #2A1E08;
-}
-.layout { display: flex; min-height: 100vh; }
-.left {
-  position: fixed; top: 0; left: 0;
-  width: 52%; height: 100vh; overflow: hidden;
-}
-.left img {
-  width: 100%; height: 100%;
-  object-fit: cover; object-position: center top; display: block;
-}
-.left::after {
-  content: ''; position: absolute; top: 0; right: 0;
-  width: 80px; height: 100%;
-  background: linear-gradient(to right, transparent, #F5EDD8);
-}
-.right {
-  margin-left: 52%; flex: 1; background: #F5EDD8;
-  min-height: 100vh; padding: 52px 44px 64px 28px; position: relative;
-}
-.right::before {
-  content: ''; position: absolute; inset: 0;
-  background:
-    radial-gradient(circle at 80% 15%, rgba(201,169,110,.07) 0%, transparent 50%),
-    radial-gradient(circle at 20% 85%, rgba(120,160,80,.05) 0%, transparent 40%);
-  pointer-events: none;
-}
-.nav {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 44px; position: relative; z-index: 1;
-}
-.nav-brand {
-  font-size: 13px; font-weight: 600; letter-spacing: .18em;
-  text-transform: uppercase; color: #B8956A; text-decoration: none;
-}
-.nav-back {
-  font-size: 12px; color: #9A8060; text-decoration: none;
-  display: flex; align-items: center; gap: 5px; transition: color .2s;
-}
-.nav-back:hover { color: #2A1E08; }
-.page-title {
-  font-size: clamp(24px, 3vw, 32px); font-weight: 600; color: #2A1E08;
-  letter-spacing: -.4px; margin-bottom: 6px; position: relative; z-index: 1;
-}
-.page-sub {
-  font-size: 13px; color: #9A8060; margin-bottom: 40px; position: relative; z-index: 1;
-}
-.sec-label {
-  font-size: 10px; font-weight: 600; letter-spacing: .14em;
-  text-transform: uppercase; color: #B8956A;
-  padding-bottom: 10px; border-bottom: 1px solid rgba(184,149,106,.2);
-  margin-bottom: 20px; position: relative; z-index: 1;
-}
-/* 网格卡片 */
-.tool-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
-  margin-bottom: 14px; position: relative; z-index: 1;
-}
-.tool-card {
-  display: flex; flex-direction: column; align-items: center; text-align: center;
-  padding: 26px 12px 20px; border-radius: 20px;
-  background: rgba(255,252,245,.65);
-  border: 1.5px solid rgba(184,149,106,.13);
-  text-decoration: none; color: inherit; cursor: pointer;
-  transition: transform .22s, box-shadow .22s;
-}
-.tool-card:hover { transform: translateY(-5px); box-shadow: 0 14px 36px rgba(42,30,8,.10); }
-.tool-card:active { transform: scale(.95); }
-.tool-card.disabled { opacity: .45; cursor: default; pointer-events: none; }
-.tool-card.disabled:hover { transform: none; box-shadow: none; }
-.tool-card.single { grid-column: 1 / -1; max-width: 300px; justify-self: center; }
-.tool-card-icon {
-  width: 56px; height: 56px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 26px; margin-bottom: 10px; transition: transform .2s;
-}
-.tool-card:hover .tool-card-icon { transform: scale(1.10); }
-.ic-gold   { background: rgba(201,169,110,.16); border: 1.5px solid rgba(201,169,110,.3); }
-.ic-blue   { background: rgba(74,124,184,.12);  border: 1.5px solid rgba(74,124,184,.22); }
-.ic-green  { background: rgba(74,124,63,.13);   border: 1.5px solid rgba(74,124,63,.25); }
-.ic-orange { background: rgba(212,136,42,.12);  border: 1.5px solid rgba(212,136,42,.22); }
-.ic-purple { background: rgba(122,76,184,.12);  border: 1.5px solid rgba(122,76,184,.22); }
-.ic-teal   { background: rgba(42,150,150,.12);  border: 1.5px solid rgba(42,150,150,.22); }
-.tool-card-name { font-size: 16px; font-weight: 700; color: #2A1E08; margin-bottom: 3px; }
-.tool-card-desc { font-size: 11px; color: #9A8060; line-height: 1.5; }
-.tool-card-badge {
-  font-size: 9px; font-weight: 600; letter-spacing: .05em;
-  padding: 2px 8px; border-radius: 10px; margin-top: 8px;
-}
-.badge-live { background: rgba(74,124,63,.10); color: #4A7C3F; border: 1px solid rgba(74,124,63,.18); }
-.badge-soon { background: rgba(184,149,106,.08); color: #B8956A; border: 1px solid rgba(184,149,106,.16); }
-/* 大神榜卡片 */
-.god-card {
-  display: flex; align-items: center; gap: 14px;
-  background: rgba(80,60,30,0.72); border-radius: 20px;
-  padding: 18px 22px; text-decoration: none; color: inherit; cursor: pointer;
-  transition: transform .18s; position: relative; z-index: 1; overflow: hidden;
-}
-.god-card::before {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(circle at 15% 50%, rgba(201,169,110,.1) 0%, transparent 55%),
-              radial-gradient(circle at 85% 20%, rgba(201,169,110,.07) 0%, transparent 45%);
-}
-.god-card:hover { transform: translateY(-3px); }
-.god-card:active { transform: scale(.97); }
-.god-card-icon {
-  width: 48px; height: 48px; border-radius: 50%;
-  background: rgba(201,169,110,.12); border: 1.5px solid rgba(201,169,110,.25);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px; flex-shrink: 0; position: relative; z-index: 1;
-}
-.god-card-text { flex: 1; position: relative; z-index: 1; }
-.god-card-title { font-size: 16px; font-weight: 600; color: #C9A96E; margin-bottom: 2px; }
-.god-card-desc { font-size: 11px; color: rgba(253,248,240,.5); }
-/* modal */
-.modal-overlay{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(42,30,8,.4);backdrop-filter:blur(4px)}
-.modal-overlay.show{display:flex;opacity:1;pointer-events:all}
-.modal-box{background:#F5EDD8;border:1px solid rgba(184,149,106,.3);border-radius:22px;padding:28px 24px;width:min(320px,88vw);text-align:center;box-shadow:0 20px 60px rgba(42,30,8,.18)}
-.modal-box .m-icon{font-size:40px;margin-bottom:10px}
-.modal-box .m-title{font-size:18px;font-weight:700;color:#2A1E08;margin-bottom:8px}
-.modal-box .m-body{font-size:13px;color:#6A5030;line-height:1.8;margin-bottom:16px}
-.modal-box .m-wx{background:rgba(74,124,63,.08);border:1.5px solid rgba(74,124,63,.25);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:16px;font-weight:700;color:#2A5A1E;letter-spacing:.04em}
-.modal-box .m-btn{display:block;width:100%;padding:10px;border-radius:12px;background:#2A1E08;color:#F5EDD8;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:6px}
-.modal-box .m-btn-close{background:transparent;color:#9A8060;border:1.5px solid rgba(184,149,106,.3)}
-
-.foot {
-  margin-top: 40px; font-size: 10px; letter-spacing: .12em;
-  text-transform: uppercase; color: rgba(184,149,106,.4); position: relative; z-index: 1;
-}
-.overlay {
-  position: fixed; inset: 0; background: #F5EDD8; z-index: 999;
-  opacity: 0; pointer-events: none; transition: opacity .3s ease;
-}
-.overlay.show { opacity: 1; pointer-events: all; }
-.right > * { animation: fadeIn .6s cubic-bezier(.22,1,.36,1) both; }
-.nav        { animation-delay: .05s; }
-.page-title { animation-delay: .1s; }
-.page-sub   { animation-delay: .12s; }
-.sec-label  { animation-delay: .15s; }
-.tool-grid  { animation-delay: .18s; }
-.god-card   { animation-delay: .22s; }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateX(12px); }
-  to   { opacity: 1; transform: none; }
-}
-@media (max-width: 680px) {
-  .layout { flex-direction: column; }
-  .left { position: relative; width: 100%; height: 56vw; min-height: 260px; max-height: 400px; }
-  .left::after {
-    top: auto; bottom: 0; left: 0; right: 0;
-    width: 100%; height: 60px;
-    background: linear-gradient(to bottom, transparent, #F5EDD8);
-  }
-  .right { margin-left: 0; padding: 32px 24px 56px; }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#F5EDD8;
+  font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;color:#2A1E08;
+  -webkit-font-smoothing:antialiased}
+#scene{position:fixed;inset:0}
+#labels{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.b-label{background:rgba(255,252,245,.9);border:1px solid rgba(184,149,106,.45);
+  color:#5A4420;font-size:12px;font-weight:600;padding:3px 11px;border-radius:11px;
+  white-space:nowrap;pointer-events:none;transition:transform .2s,border-color .2s,color .2s;
+  box-shadow:0 2px 8px rgba(42,30,8,.08)}
+.b-label.hot{border-color:#C85A2A;color:#2A1E08;transform:scale(1.14)}
+.hud-top{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;
+  justify-content:space-between;padding:20px 26px;z-index:10;pointer-events:none}
+.hud-top a,.hud-top span{pointer-events:auto}
+.hud-top a{text-decoration:none}
+.brand{font-size:13px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8956A}
+.back{font-size:12px;color:#9A8060;display:flex;align-items:center;gap:5px;transition:color .2s;cursor:pointer}
+.back:hover{color:#2A1E08}
+.name-tag{font-size:11px;color:#9A8060;cursor:pointer;margin-right:16px}
+.name-tag:hover{color:#2A1E08}
+.hud-title{position:fixed;left:26px;bottom:86px;z-index:10;pointer-events:none}
+.hud-title h1{font-size:clamp(20px,2.6vw,28px);font-weight:600;letter-spacing:-.3px;
+  font-family:"Noto Serif SC",Georgia,serif}
+.hud-title p{font-size:12px;color:#9A8060;margin-top:4px}
+.quick-nav{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;gap:12px;
+  padding:28px 16px calc(14px + env(safe-area-inset-bottom));overflow-x:auto;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  background:linear-gradient(to top,rgba(245,237,216,.95),rgba(245,237,216,0))}
+.quick-nav::-webkit-scrollbar{display:none}
+.qbtn{position:relative;flex-shrink:0;font-size:12px;font-weight:600;color:#5A4420;
+  text-decoration:none;background:#FFFDF6;padding:9px 18px;border-radius:18px;
+  box-shadow:0 7px 16px rgba(42,30,8,.16);
+  animation:cloudFloat 3.2s ease-in-out infinite alternate;
+  transition:box-shadow .25s,color .2s,transform .25s}
+.qbtn::before,.qbtn::after{content:'';position:absolute;background:#FFFDF6;border-radius:50%}
+.qbtn::before{width:16px;height:16px;top:-7px;left:14px}
+.qbtn::after{width:22px;height:22px;top:-10px;left:32px}
+.qbtn:hover{color:#C85A2A;animation-play-state:paused;
+  transform:translateY(-6px) scale(1.05);box-shadow:0 14px 24px rgba(42,30,8,.22)}
+.qbtn:active{transform:translateY(-2px) scale(.97)}
+@keyframes cloudFloat{from{transform:translateY(0)}to{transform:translateY(-5px)}}
+@media (prefers-reduced-motion:reduce){.qbtn{animation:none}}
+#overlay{position:fixed;inset:0;background:#F5EDD8;z-index:999;opacity:0;
+  pointer-events:none;transition:opacity .28s ease}
+#overlay.show{opacity:1;pointer-events:all}
+#loading{position:fixed;inset:0;background:#F5EDD8;z-index:998;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  transition:opacity .5s}
+#loading .lb{font-size:13px;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:#B8956A}
+#loading .ls{font-size:11px;color:#9A8060}
+.switch-simple{position:fixed;right:16px;bottom:100px;z-index:20;
+  background:rgba(255,252,245,.7);border:1px solid rgba(184,149,106,.35);
+  color:#9A8060;font-size:10px;padding:6px 14px;border-radius:14px;
+  cursor:pointer;font-family:inherit;transition:all .2s}
+.switch-simple:hover{background:rgba(255,252,245,1);color:#2A1E08;border-color:#B8956A}
+@media (max-width:680px){
+  .hud-title{bottom:96px;left:20px}
+  .hud-top{padding:16px 20px}
+  .switch-simple{bottom:108px;right:12px}
 }
 </style>
 </head>
 <body>
 
-<div class="overlay" id="ov"></div>
+<div id="overlay"></div>
+<div id="loading"><div class="lb">John Class</div><div class="ls">城堡正在升起…</div></div>
 
-<div class="layout">
-  <div class="left"><img src="bg.png" alt="John Class"></div>
-
-  <div class="right">
-    <div class="nav">
-      <a class="nav-brand" href="index.html">John Class</a>
-      <a class="nav-back" href="index.html" onclick="go(event,'index.html')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        返回
-      </a>
-    </div>
-
-    <div class="page-title">英语学习提升</div>
-    <div class="page-sub">选择你需要的方向，系统进步。</div>
-
-    <div class="sec-label">学习工具</div>
-    <div class="tool-grid">
-
-      <!-- 第1行：单词 | 语法 -->
-      <a class="tool-card" href="vocab.html" onclick="go(event,'vocab.html')">
-        <div class="tool-card-icon ic-gold">📚</div>
-        <div class="tool-card-name">单词</div>
-        <div class="tool-card-desc">分级闯关 · 错词本 · 排行榜</div>
-        <span class="tool-card-badge badge-live">已上线</span>
-      </a>
-
-      <a class="tool-card" href="grammar_hub.html" onclick="go(event,'grammar_hub.html')">
-        <div class="tool-card-icon ic-blue">📐</div>
-        <div class="tool-card-name">语法</div>
-        <div class="tool-card-desc">学习语法 · 语法应试</div>
-        <span class="tool-card-badge badge-live">已上线</span>
-      </a>
-
-      <!-- 第2行：写作 | 阅读 -->
-      <a class="tool-card" href="writing.html" onclick="go(event,'writing.html')">
-        <div class="tool-card-icon ic-orange">✏️</div>
-        <div class="tool-card-name">写作</div>
-        <div class="tool-card-desc">拍照识别 · 专业批改 · 三维反馈</div>
-        <span class="tool-card-badge badge-live">已上线</span>
-      </a>
-
-      <a class="tool-card" href="reading_sentence.html" onclick="go(event,'reading_sentence.html')">
-        <div class="tool-card-icon ic-green">📖</div>
-        <div class="tool-card-name">阅读</div>
-        <div class="tool-card-desc">阅读理解最快提分手段</div>
-        <span class="tool-card-badge badge-live">已上线</span>
-      </a>
-
-      <!-- 第3行：听力 | 口语 -->
-      <a class="tool-card" href="listening.html" onclick="go(event,'listening.html')">
-        <div class="tool-card-icon ic-green">🎧</div>
-        <div class="tool-card-name">听力</div>
-        <div class="tool-card-desc">总听 · 听写 · 跟读 · 查误 · 裸听</div>
-        <span class="tool-card-badge badge-live">已上线</span>
-      </a>
-
-      <a class="tool-card" href="speaking.html" onclick="go(event,'speaking.html')">
-        <div class="tool-card-icon ic-teal">🗣️</div>
-        <div class="tool-card-name">口语</div>
-        <div class="tool-card-desc">话题练习 · 录音转写 · 参考答案</div>
-        <span class="tool-card-badge badge-live">已上线</span>
-      </a>
-
-      <!-- 第4行：真题 | 程序员专区 -->
-      <a class="tool-card" href="exam.html" onclick="go(event,'exam.html')">
-        <div class="tool-card-icon ic-purple">📝</div>
-        <div class="tool-card-name">真题</div>
-        <div class="tool-card-desc">中考真题 · 选择填空 · 自动批改 · 解析</div>
-        <span class="tool-card-badge badge-live">已上线</span>
-      </a>
-
-      <a class="tool-card" href="programmer.html" onclick="go(event,'programmer.html')">
-        <div class="tool-card-icon ic-teal">💻</div>
-        <div class="tool-card-name">程序员专区</div>
-        <div class="tool-card-desc">发音 · 口语 · 码神排行榜</div>
-        <span class="tool-card-badge badge-live">已上线</span>
-      </a>
-
-    </div>
-
-    <!-- 大神榜 -->
-    <div class="sec-label">学习榜单</div>
-    <a class="god-card" href="weekly_stars.html" onclick="go(event,'weekly_stars.html')">
-      <div class="god-card-icon">🏆</div>
-      <div class="god-card-text">
-        <div class="god-card-title">每周学习大神榜</div>
-        <div class="god-card-desc">阅读 + 词汇周榜 · 每周一重置</div>
-      </div>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(201,169,110,.4)" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-
-      </div>
-    </div>
-
-    <div class="foot">Growing Skills · Shaping Futures　<span id="nameTag" style="color:rgba(160,120,70,.3);cursor:pointer;font-size:9px" onclick="changeName()"></span></div>
+<div class="hud-top">
+  <a class="brand" href="index.html" onclick="go(event,'index.html')">John Class</a>
+  <div style="display:flex;align-items:center;gap:16px">
+    <span class="name-tag" id="nameTag" onclick="changeName()"></span>
+    <a class="back" href="index.html" onclick="go(event,'index.html')">← 返回</a>
   </div>
 </div>
+<div class="hud-title">
+  <h1>英语学习提升</h1>
+  <p>拖动旋转你的城堡 · 点击建筑进入领地</p>
+</div>
 
+<button class="switch-simple" onclick="localStorage.setItem('jc_ui_mode','simple');location.href='study-classic.html'">切换简洁版</button>
+
+<div id="scene"></div>
+<div id="labels"></div>
+
+<nav class="quick-nav" id="quickNav"></nav>
+
+<!-- WebGL 检测 & 用户逻辑 -->
 <script>
-// 显示当前用户名
 (function(){
   var n = localStorage.getItem('jc_username')||'';
-  if(n) document.getElementById('nameTag').textContent = '当前：'+n+' · 切换';
+  if(n) document.getElementById('nameTag').textContent = n + ' · 切换';
 })();
 function changeName(){
   if(confirm('要切换名字吗？进度和分数不会丢失。')){
@@ -284,19 +106,548 @@ function changeName(){
 }
 function go(e, href) {
   e.preventDefault();
-  const ov = document.getElementById('ov');
-  ov.classList.add('show');
-  setTimeout(() => { window.location.href = href; }, 280);
+  document.getElementById('overlay').classList.add('show');
+  setTimeout(function(){ window.location.href = href; }, 280);
 }
-function closeOralModal(){ document.getElementById('oralModal').classList.remove('show'); }
-document.getElementById('oralCopyBtn').addEventListener('click',function(){
-  var wx=document.getElementById('oralWx').textContent;
-  if(navigator.clipboard){navigator.clipboard.writeText(wx);}
-  this.textContent='✓ 已复制'; var t=this;
-  setTimeout(function(){t.textContent='复制微信号';},2000);
+function hasWebGL(){
+  try { var c=document.createElement('canvas');
+    return !!window.WebGLRenderingContext &&
+      !!(c.getContext('webgl')||c.getContext('experimental-webgl')); }
+  catch(e){ return false; }
+}
+if(!hasWebGL()){
+  window.location.replace('study-classic.html');
+}
+</script>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+/* ═══════════ 一、程序化贴图 ═══════════ */
+
+function canvasTex(w, h, painter){
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  painter(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+function jitter(base, amt){
+  const [h,s,l] = base;
+  return `hsl(${h + (Math.random()-.5)*amt*2},${s + (Math.random()-.5)*8}%,${l + (Math.random()-.5)*amt}%)`;
+}
+function speckle(ctx,w,h,n,col,a){
+  ctx.globalAlpha = a;
+  for(let i=0;i<n;i++){ ctx.fillStyle = col;
+    ctx.beginPath();
+    ctx.ellipse(Math.random()*w, Math.random()*h, 1+Math.random()*2.5, 1+Math.random()*1.5, Math.random()*3, 0, 7);
+    ctx.fill(); }
+  ctx.globalAlpha = 1;
+}
+
+function stoneTexture(hsl=[42,38,82]){
+  return canvasTex(256,256,(ctx,w,h)=>{
+    ctx.fillStyle = `hsl(${hsl[0]},${hsl[1]}%,${hsl[2]}%)`; ctx.fillRect(0,0,w,h);
+    const bh = 26;
+    for(let row=0; row*bh<h+bh; row++){
+      const off = row%2 ? 34 : 0;
+      for(let x=-68+off; x<w; x+=68){
+        const bw = 60 + Math.random()*8;
+        ctx.fillStyle = jitter(hsl, 5);
+        ctx.beginPath(); ctx.roundRect(x+2, row*bh+2, bw, bh-4, 4); ctx.fill();
+        ctx.strokeStyle = `hsla(${hsl[0]},30%,40%,.28)`; ctx.lineWidth = 1.6; ctx.stroke();
+      }
+    }
+    speckle(ctx,w,h,140,'#8a7448',.10);
+    speckle(ctx,w,h,90,'#fffbe8',.14);
+    const g = ctx.createLinearGradient(0,h*.55,0,h);
+    g.addColorStop(0,'rgba(90,60,28,0)'); g.addColorStop(1,'rgba(90,60,28,.30)');
+    ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+  });
+}
+function roofTexture(hsl){
+  return canvasTex(256,256,(ctx,w,h)=>{
+    ctx.fillStyle = `hsl(${hsl[0]},${hsl[1]}%,${hsl[2]-6}%)`; ctx.fillRect(0,0,w,h);
+    const th = 30, tw = 42;
+    for(let row=0; row*th<h+th; row++){
+      const off = row%2 ? tw/2 : 0;
+      for(let x=-tw+off; x<w+tw; x+=tw){
+        ctx.fillStyle = jitter(hsl, 6);
+        ctx.beginPath();
+        ctx.moveTo(x, row*th);
+        ctx.lineTo(x+tw, row*th);
+        ctx.lineTo(x+tw, row*th+th*.55);
+        ctx.arc(x+tw/2, row*th+th*.55, tw/2, 0, Math.PI);
+        ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = `hsla(${hsl[0]},${hsl[1]}%,22%,.35)`; ctx.lineWidth = 1.4; ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,.10)';
+        ctx.fillRect(x+4, row*th+2, tw-8, 3);
+      }
+    }
+  });
+}
+function grassTexture(){
+  return canvasTex(256,256,(ctx,w,h)=>{
+    ctx.fillStyle = 'hsl(82,42%,56%)'; ctx.fillRect(0,0,w,h);
+    for(let i=0;i<46;i++){ ctx.globalAlpha=.16; ctx.fillStyle = jitter([82,46,52],14);
+      ctx.beginPath(); ctx.ellipse(Math.random()*w,Math.random()*h,14+Math.random()*30,10+Math.random()*18,Math.random()*3,0,7); ctx.fill(); }
+    ctx.globalAlpha=1;
+    speckle(ctx,w,h,260,'hsl(75,55%,70%)',.30);
+    speckle(ctx,w,h,140,'hsl(95,40%,38%)',.22);
+  });
+}
+function rockTexture(){
+  return canvasTex(256,256,(ctx,w,h)=>{
+    ctx.fillStyle = 'hsl(33,30%,52%)'; ctx.fillRect(0,0,w,h);
+    for(let i=0;i<60;i++){ ctx.globalAlpha=.22; ctx.fillStyle = jitter([33,28,46],12);
+      ctx.beginPath();
+      const x=Math.random()*w, y=Math.random()*h, r=10+Math.random()*26;
+      ctx.moveTo(x+r,y);
+      for(let a=0;a<6.3;a+=1.05) ctx.lineTo(x+Math.cos(a)*r*(0.7+Math.random()*.5), y+Math.sin(a)*r*(0.7+Math.random()*.5));
+      ctx.closePath(); ctx.fill(); }
+    ctx.globalAlpha=1;
+    speckle(ctx,w,h,120,'#5a4628',.18);
+  });
+}
+function woodTexture(){
+  return canvasTex(256,256,(ctx,w,h)=>{
+    ctx.fillStyle = 'hsl(28,42%,46%)'; ctx.fillRect(0,0,w,h);
+    for(let y=0;y<h;y+=32){
+      ctx.fillStyle = jitter([28,42,44],6);
+      ctx.fillRect(0,y+1,w,30);
+      ctx.strokeStyle='rgba(70,40,14,.5)'; ctx.lineWidth=2;
+      ctx.strokeRect(-2,y+1,w+4,30);
+      for(let i=0;i<4;i++){ ctx.strokeStyle='rgba(70,40,14,.25)'; ctx.lineWidth=1;
+        const yy=y+6+Math.random()*20; ctx.beginPath(); ctx.moveTo(0,yy);
+        ctx.bezierCurveTo(w*.3,yy+3,w*.6,yy-3,w,yy); ctx.stroke(); }
+    }
+  });
+}
+function windowTexture(glow='#F7D88A'){
+  return canvasTex(64,96,(ctx,w,h)=>{
+    ctx.fillStyle = '#4A3318'; ctx.beginPath(); ctx.roundRect(0,0,w,h,[26,26,6,6]); ctx.fill();
+    const g = ctx.createRadialGradient(w/2,h*.42,4,w/2,h*.42,h*.6);
+    g.addColorStop(0,'#FFF3C4'); g.addColorStop(1,glow);
+    ctx.fillStyle = g; ctx.beginPath(); ctx.roundRect(6,6,w-12,h-12,[20,20,4,4]); ctx.fill();
+    ctx.strokeStyle = '#4A3318'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(w/2,6); ctx.lineTo(w/2,h-6);
+    ctx.moveTo(6,h*.45); ctx.lineTo(w-6,h*.45); ctx.stroke();
+  });
+}
+
+/* ═══════════ 二、材质库 ═══════════ */
+
+function matStone(hsl, rx, ry){
+  const t = stoneTexture(hsl); t.repeat.set(rx, ry);
+  return new THREE.MeshStandardMaterial({ map:t, roughness:.95 });
+}
+function matRoof(hsl, rx, ry){
+  const t = roofTexture(hsl); t.repeat.set(rx, ry);
+  return new THREE.MeshStandardMaterial({ map:t, roughness:.85 });
+}
+const grassT = grassTexture(); grassT.repeat.set(5,5);
+const rockT  = rockTexture();  rockT.repeat.set(4,2);
+const MAT = {
+  grass:  new THREE.MeshStandardMaterial({ map:grassT, roughness:1 }),
+  rock:   new THREE.MeshStandardMaterial({ map:rockT, roughness:1 }),
+  wood:   new THREE.MeshStandardMaterial({ map:woodTexture(), roughness:.9 }),
+  gold:   new THREE.MeshStandardMaterial({ color:'#D9B878', roughness:.5, metalness:.25 }),
+  rust:   new THREE.MeshStandardMaterial({ color:'#C85A2A', roughness:.7, side:THREE.DoubleSide }),
+  dark:   new THREE.MeshStandardMaterial({ color:'#4A3318', roughness:1 }),
+  teal:   new THREE.MeshStandardMaterial({ color:'#2A9696', emissive:'#1D7A7A', emissiveIntensity:.55, roughness:.5 }),
+  cloud:  new THREE.MeshStandardMaterial({ color:'#FFFDF4', roughness:1, flatShading:true }),
+  path:   new THREE.MeshStandardMaterial({ color:'#E2D2A8', roughness:1 })
+};
+const winT  = windowTexture();
+const winTT = windowTexture('#7FE0D0');
+function matWin(t){ return new THREE.MeshBasicMaterial({ map:t }); }
+
+/* ═══════════ 三、建模工具 ═══════════ */
+
+function M(geo, mat, x=0,y=0,z=0){
+  const m = new THREE.Mesh(geo, mat);
+  m.position.set(x,y,z); m.castShadow = true; m.receiveShadow = true;
+  return m;
+}
+function addWin(g, r, y, ang, t=winT, s=1){
+  const w = new THREE.Mesh(new THREE.PlaneGeometry(.7*s, 1.05*s), matWin(t));
+  w.position.set(Math.sin(ang)*(r+.03), y, Math.cos(ang)*(r+.03));
+  w.rotation.y = ang; g.add(w);
+}
+function crenels(g, hw, hd, y){
+  const b = new THREE.BoxGeometry(.55,.55,.55);
+  for(let x=-hw; x<=hw; x+=1.1){
+    g.add(M(b, g.userData.wallMat, x, y, hd)); g.add(M(b, g.userData.wallMat, x, y, -hd)); }
+  for(let z=-hd+1.1; z<=hd-1.1; z+=1.1){
+    g.add(M(b, g.userData.wallMat, hw, y, z)); g.add(M(b, g.userData.wallMat, -hw, y, z)); }
+}
+function flag(g, x, y, z, len=1.0){
+  const pole = M(new THREE.CylinderGeometry(.045,.045,1.5,6), MAT.dark, x, y+.75, z);
+  const fg = new THREE.PlaneGeometry(len,.5); fg.translate(len/2, 0, 0);
+  const f = M(fg, MAT.rust, x+.03, y+1.25, z);
+  f.castShadow = false; g.add(pole); g.add(f);
+  flags.push(f); return f;
+}
+function tower({r=1, h=5, roof=[200,42,46], roofH=2.2, wall=[42,38,82], wins=3, winT:wt=winT}){
+  const g = new THREE.Group();
+  const wallMat = matStone(wall, 3, Math.max(2, h/2.4));
+  g.add(M(new THREE.CylinderGeometry(r*1.2, r*1.3, .5, 9), MAT.rock, 0, .25, 0));
+  g.add(M(new THREE.CylinderGeometry(r, r*1.1, h, 9), wallMat, 0, h/2+.4, 0));
+  g.add(M(new THREE.CylinderGeometry(r*1.26, r*1.26, .42, 9), matStone(wall,4,.5), 0, h+.5, 0));
+  g.add(M(new THREE.ConeGeometry(r*1.5, roofH, 9), matRoof(roof, 3, 1.4), 0, h+.7+roofH/2, 0));
+  g.add(M(new THREE.SphereGeometry(.14,8,8), MAT.gold, 0, h+.78+roofH, 0));
+  for(let i=0;i<wins;i++) addWin(g, r, 1.6 + i*(h-2.2)/Math.max(1,wins-1), -.35 + i*.85, wt);
+  g.userData.topY = h + roofH + 1;
+  return g;
+}
+function house({w=2.6, d=2.2, h=1.7, roof=[18,62,46], roofH=1.4}){
+  const g = new THREE.Group();
+  const wallMat = matStone([42,38,84], 2, 1.2);
+  g.add(M(new THREE.BoxGeometry(w, h, d), wallMat, 0, h/2+.15, 0));
+  const s = new THREE.Shape();
+  s.moveTo(-w/2-.35, 0); s.lineTo(w/2+.35, 0); s.lineTo(0, roofH); s.closePath();
+  const roofGeo = new THREE.ExtrudeGeometry(s, { depth:d+.7, bevelEnabled:false });
+  const rm = M(roofGeo, matRoof(roof, 2, 1), 0, h+.15, -(d+.7)/2);
+  g.add(rm);
+  const door = new THREE.Mesh(new THREE.PlaneGeometry(.8,1.1), MAT.dark);
+  door.position.set(0, .72, d/2+.02); g.add(door);
+  addWin(g, 0, h-0.35, 0); g.children.at(-1).position.set(w/2+.03, h*.62, 0); g.children.at(-1).rotation.y = Math.PI/2;
+  g.userData.topY = h + roofH + .6;
+  return g;
+}
+
+/* ═══════════ 四、九座建筑 ═══════════ */
+
+const flags = [];
+
+function buildKeep(){
+  const g = new THREE.Group();
+  const wallMat = matStone([42,38,82], 4, 2.2);
+  g.userData.wallMat = wallMat;
+  g.add(M(new THREE.BoxGeometry(5.6, .6, 4.8), MAT.rock, 0, .3, 0));
+  g.add(M(new THREE.BoxGeometry(5, 4.4, 4.2), wallMat, 0, 2.7, 0));
+  g.add(M(new THREE.BoxGeometry(5.5, .45, 4.7), matStone([42,38,82],5,.5), 0, 5.05, 0));
+  crenels(g, 2.6, 2.2, 5.5);
+  [[-2.5,-2.1],[2.5,-2.1],[-2.5,2.1],[2.5,2.1]].forEach(([x,z])=>{
+    const t = new THREE.Group();
+    t.add(M(new THREE.CylinderGeometry(.62,.7,5.6,8), matStone([42,38,80],2,2.4), 0,2.8,0));
+    t.add(M(new THREE.ConeGeometry(.95,1.5,8), matRoof([200,42,46],2,1), 0,6.3,0));
+    t.position.set(x,0,z); g.add(t);
+  });
+  addWin(g, 2.13, 2.6, 0); addWin(g, 2.13, 3.8, 0);
+  addWin(g, 2.13, 3.2, Math.PI);
+  const dg = new THREE.Mesh(new THREE.PlaneGeometry(1.1,1.5), MAT.dark);
+  dg.position.set(0, .95, 2.13); g.add(dg);
+  g.userData.topY = 7.6;
+  return g;
+}
+function buildGoldHall(){
+  const g = new THREE.Group();
+  g.add(M(new THREE.BoxGeometry(2.3, 1.7, 1.9), matStone([42,52,72], 2, 1), 0, .85, 0));
+  g.add(M(new THREE.ConeGeometry(1.85, 1.5, 4), matRoof([40,55,52], 2, 1), 0, 2.45, 0));
+  g.children.at(-1).rotation.y = Math.PI/4;
+  addWin(g, .98, .9, 0);
+  flag(g, 0, 3.2, 0, 1.15);
+  g.userData.topY = 5.2;
+  return g;
+}
+function buildBellTower(){
+  const g = tower({ r:.95, h:6.4, roof:[200,42,46], roofH:2.0, wins:2 });
+  const dark = new THREE.Mesh(new THREE.CircleGeometry(.55, 16), MAT.dark);
+  dark.position.set(0, 5.9, .99); g.add(dark);
+  const bell = M(new THREE.SphereGeometry(.3, 10, 10), MAT.gold, 0, 5.85, 1.05);
+  bell.scale.set(1, 1.15, 1); g.add(bell);
+  return g;
+}
+function buildMechTower(){
+  const g = tower({ r:1.05, h:5.6, roof:[195,18,38], roofH:.6, wall:[40,10,72], wins:0 });
+  g.add(M(new THREE.TorusGeometry(1.32, .12, 8, 18), MAT.teal, 0, 5.6, 0));
+  g.children.at(-1).rotation.x = Math.PI/2;
+  g.add(M(new THREE.CylinderGeometry(.05,.05,1.6,6), MAT.dark, 0, 7.3, 0));
+  g.add(M(new THREE.SphereGeometry(.16,8,8), MAT.teal, 0, 8.1, 0));
+  addWin(g, 1.05, 2.0, .3, winTT); addWin(g, 1.05, 3.6, -.5, winTT);
+  g.userData.topY = 8.7;
+  return g;
+}
+function buildArena(){
+  const g = new THREE.Group();
+  g.add(M(new THREE.CylinderGeometry(2.6, 2.7, .3, 18), MAT.path, 0, .15, 0));
+  const wallMat = matStone([42,38,80], 1, .8);
+  for(let i=0;i<14;i++){
+    const a = i/14*Math.PI*2;
+    const seg = M(new THREE.BoxGeometry(1.15, i%2? 1.3 : .95, .5), wallMat,
+      Math.sin(a)*2.35, (i%2? .95 : .77), Math.cos(a)*2.35);
+    seg.rotation.y = a; g.add(seg);
+  }
+  flag(g, -2.35, 1.5, 0, .85); flag(g, 2.35, 1.5, 0, .85);
+  g.userData.topY = 3.6;
+  return g;
+}
+function buildStageGate(){
+  const g = new THREE.Group();
+  g.add(M(new THREE.CylinderGeometry(1.55, 1.7, .5, 12), MAT.wood, 0, .25, -.4));
+  [[-1.5,1.6],[1.5,1.6]].forEach(([x])=>{
+    const t = new THREE.Group();
+    t.add(M(new THREE.CylinderGeometry(.55,.62,2.7,8), matStone([42,38,80],2,1.4), 0,1.35,0));
+    t.add(M(new THREE.ConeGeometry(.82,1.2,8), matRoof([18,62,46],2,1), 0,3.25,0));
+    t.position.set(x,0,1.7); g.add(t);
+  });
+  g.add(M(new THREE.BoxGeometry(2.2, 2.1, .7), matStone([42,38,82],2,1), 0, 1.2, 1.7));
+  const arch = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 1.5), MAT.dark);
+  arch.position.set(0, .9, 2.07); g.add(arch);
+  flag(g, 0, 2.4, 1.7, .8);
+  g.userData.topY = 4.4;
+  return g;
+}
+
+/* ═══════════ 五、场景组装 ═══════════ */
+
+const app = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+const isMobile = matchMedia('(max-width:680px)').matches || 'ontouchstart' in window;
+renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile?1.5:2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = !isMobile;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+app.appendChild(renderer.domElement);
+
+const labelRenderer = new CSS2DRenderer({ element: document.getElementById('labels') });
+labelRenderer.setSize(innerWidth, innerHeight);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#F5EDD8');
+scene.fog = new THREE.Fog('#F5EDD8', 38, 76);
+
+const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, .1, 200);
+camera.position.set(0, isMobile?18:15, isMobile?33:28);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 2.4, 0);
+controls.enableDamping = true; controls.dampingFactor = .06;
+controls.enablePan = false;
+controls.minDistance = 16; controls.maxDistance = 44;
+controls.minPolarAngle = .5; controls.maxPolarAngle = 1.25;
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+controls.autoRotate = !reduceMotion; controls.autoRotateSpeed = .35;
+let idleTimer;
+controls.addEventListener('start', ()=>{ controls.autoRotate = false; clearTimeout(idleTimer); });
+controls.addEventListener('end', ()=>{ if(!reduceMotion) idleTimer = setTimeout(()=>controls.autoRotate=true, 6000); });
+
+// 光照
+scene.add(new THREE.HemisphereLight('#FFE8C0', '#C9A06A', 1.0));
+const sun = new THREE.DirectionalLight('#FFD9A0', 2.0);
+sun.position.set(22, 24, -24);
+sun.castShadow = !isMobile;
+sun.shadow.mapSize.set(1024, 1024);
+sun.shadow.camera.left = -24; sun.shadow.camera.right = 24;
+sun.shadow.camera.top = 24; sun.shadow.camera.bottom = -24;
+sun.shadow.bias = -0.0005;
+scene.add(sun);
+
+// 小太阳
+const sun3D = new THREE.Group();
+sun3D.add(new THREE.Mesh(new THREE.SphereGeometry(2.2, 20, 20),
+  new THREE.MeshBasicMaterial({ color:'#F7CE74', fog:false })));
+const haloT = canvasTex(128,128,(ctx,w,h)=>{
+  const g = ctx.createRadialGradient(64,64,8,64,64,62);
+  g.addColorStop(0,'rgba(255,238,176,.95)');
+  g.addColorStop(.45,'rgba(255,220,140,.35)');
+  g.addColorStop(1,'rgba(255,220,140,0)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+});
+const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map:haloT, transparent:true, depthWrite:false, fog:false }));
+halo.scale.set(11,11,1);
+sun3D.add(halo);
+sun3D.position.copy(sun.position);
+scene.add(sun3D);
+
+// 浮岛
+const island = new THREE.Group();
+const top = new THREE.Mesh(new THREE.CylinderGeometry(16, 16.8, 1.2, 12),
+  [MAT.rock, MAT.grass, MAT.rock]);
+top.receiveShadow = true; top.position.y = -.6; island.add(top);
+island.add(M(new THREE.CylinderGeometry(16.8, 6, 8, 10), MAT.rock, 0, -5.2, 0));
+island.add(M(new THREE.ConeGeometry(6, 4.8, 10), MAT.rock, 0, -11.6, 0));
+island.children.at(-1).rotation.x = Math.PI;
+scene.add(island);
+
+// 漂浮碎石
+const debris = [];
+[[19.5,-3,6,.9],[-18.5,-5,8,1.2],[17.5,-7,-9.5,.7]].forEach(([x,y,z,s])=>{
+  const d = M(new THREE.DodecahedronGeometry(s,0), MAT.rock, x, y, z);
+  d.userData.y0 = y; d.userData.ph = Math.random()*6; debris.push(d); scene.add(d);
+});
+
+// 城门前小路
+const path = M(new THREE.BoxGeometry(2.2, .12, 7), MAT.path, 0, .06, 12);
+path.castShadow = false; scene.add(path);
+
+// 树
+[[11.6,5.6],[-12.2,4.6],[10.6,-9],[-10.2,-9.6],[3.9,10.6],[-4.1,10.9],[13.4,-1.8]].forEach(([x,z],i)=>{
+  const t = new THREE.Group();
+  const fol = new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(.24+(i%3)*.015,.45,.42), roughness:1, flatShading:true });
+  t.add(M(new THREE.CylinderGeometry(.16,.22,.9,6), MAT.wood.clone(), 0,.45,0));
+  t.add(M(new THREE.ConeGeometry(.95,1.6,7), fol, 0,1.7,0));
+  t.add(M(new THREE.ConeGeometry(.7,1.3,7), fol, 0,2.6,0));
+  const s = .8 + (i%4)*.13; t.scale.setScalar(s);
+  t.position.set(x,0,z); scene.add(t);
+});
+
+// 云
+const clouds = new THREE.Group();
+for(let i=0;i<5;i++){
+  const c = new THREE.Group();
+  for(let j=0;j<3+(i%2);j++)
+    c.add(M(new THREE.IcosahedronGeometry(.9+Math.random()*.8,0), MAT.cloud, j*1.2-1.5, Math.random()*.4, Math.random()*.8));
+  c.children.forEach(m=>{ m.castShadow=false; m.scale.y=.55; });
+  const a = i/5*Math.PI*2;
+  c.position.set(Math.sin(a)*24, 7+Math.random()*5, Math.cos(a)*24);
+  clouds.add(c);
+}
+scene.add(clouds);
+
+/* ═══ 建筑布点 ═══ */
+const BUILDINGS = [
+  { name:'智慧殿 · 阅读',   href:'reading_sentence.html', build:buildKeep,      pos:[0,0,-2.5] },
+  { name:'荣誉殿 · 大神榜', href:'weekly_stars.html',     build:buildGoldHall,  pos:[0,5.27,-2.5] },
+  { name:'藏书塔 · 单词',   href:'vocab.html',  build:()=>tower({r:1.15,h:8.2,roofH:2.6,wins:4}), pos:[8.2,0,-4.8] },
+  { name:'钟楼 · 听力',     href:'listening.html',        build:buildBellTower, pos:[-8,0,-5.4] },
+  { name:'缮写阁 · 写作',   href:'writing.html', build:()=>tower({r:.92,h:5.2,roof:[18,62,46],roofH:2.0}), pos:[9.4,0,2.4] },
+  { name:'机械塔 · 程序员', href:'programmer.html',       build:buildMechTower, pos:[-10.4,0,1.8] },
+  { name:'工坊 · 语法',     href:'grammar_hub.html',      build:()=>house({}),  pos:[6,0,7.4] },
+  { name:'试炼场 · 真题',   href:'exam.html',             build:buildArena,     pos:[-6.4,0,7.2] },
+  { name:'庭院舞台 · 口语', href:'speaking.html',         build:buildStageGate, pos:[0,0,6.8] },
+];
+const clickables = [];
+BUILDINGS.forEach(b=>{
+  const g = b.build();
+  g.position.set(...b.pos);
+  g.userData.href = b.href; g.userData.name = b.name; g.userData.targetS = 1;
+  const wrap = document.createElement('div');
+  const div = document.createElement('div');
+  div.className = 'b-label'; div.textContent = b.name;
+  wrap.appendChild(div);
+  const lab = new CSS2DObject(wrap);
+  lab.position.set(0, g.userData.topY || 5, 0);
+  g.add(lab);
+  g.userData.label = div;
+  scene.add(g); clickables.push(g);
+});
+
+/* ═══════════ 六、交互 ═══════════ */
+
+const overlay = document.getElementById('overlay');
+function navigate(href){
+  overlay.classList.add('show');
+  setTimeout(()=>location.href = href, 280);
+}
+
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+let hotG = null, selG = null, downXY = null;
+function pick(e){
+  const x = e.clientX ?? e.changedTouches?.[0]?.clientX;
+  const y = e.clientY ?? e.changedTouches?.[0]?.clientY;
+  ptr.x = (x/innerWidth)*2-1; ptr.y = -(y/innerHeight)*2+1;
+  ray.setFromCamera(ptr, camera);
+  const hit = ray.intersectObjects(clickables, true)[0];
+  if(!hit) return null;
+  let o = hit.object;
+  while(o && !o.userData.href) o = o.parent;
+  return o;
+}
+function setHot(g){
+  if(hotG === g) return;
+  if(hotG){ hotG.userData.targetS = 1; hotG.userData.label.classList.remove('hot'); }
+  hotG = g;
+  if(g){ g.userData.targetS = 1.07; g.userData.label.classList.add('hot');
+    document.body.style.cursor = 'pointer'; }
+  else document.body.style.cursor = '';
+}
+if(matchMedia('(hover:hover)').matches)
+  addEventListener('pointermove', e=>setHot(pick(e)));
+
+addEventListener('pointerdown', e=>{ downXY = [e.clientX, e.clientY]; });
+addEventListener('pointerup', e=>{
+  if(!downXY) return;
+  const moved = Math.hypot(e.clientX-downXY[0], e.clientY-downXY[1]);
+  downXY = null;
+  if(moved > 7) return;
+  const g = pick(e);
+  if(!g){ if(selG){ selG.userData.label.textContent = selG.userData.name;
+            selG.userData.label.classList.remove('hot'); selG.userData.targetS=1; selG=null; } return; }
+  if(matchMedia('(hover:hover)').matches){ navigate(g.userData.href); return; }
+  if(selG === g){ navigate(g.userData.href); return; }
+  if(selG){ selG.userData.label.textContent = selG.userData.name;
+    selG.userData.label.classList.remove('hot'); selG.userData.targetS = 1; }
+  selG = g;
+  g.userData.label.textContent = g.userData.name + ' · 再点进入';
+  g.userData.label.classList.add('hot');
+  g.userData.targetS = 1.1;
+});
+
+// 底部快捷导航
+document.getElementById('quickNav').innerHTML = BUILDINGS
+  .map(b=>`<a class="qbtn" href="${b.href}">${b.name.split(' · ')[1]}</a>`).join('');
+document.querySelectorAll('.qbtn').forEach((a,i)=>{
+  a.style.animationDelay = (i*.28)+'s';
+  a.addEventListener('click', e=>{
+    e.preventDefault(); navigate(a.getAttribute('href'));
+  });
+});
+
+/* ═══════════ 七、渲染循环（含静止省电） ═══════════ */
+
+const clock = new THREE.Clock();
+let lastInteraction = performance.now();
+['pointermove','pointerdown','wheel','touchstart'].forEach(evt =>
+  addEventListener(evt, ()=>{ lastInteraction = performance.now(); }, {passive:true}));
+
+function loop(){
+  requestAnimationFrame(loop);
+  const t = clock.getElapsedTime();
+  const idle = performance.now() - lastInteraction > 3000;
+
+  if(!idle){
+    controls.update();
+    clickables.forEach(g=>{
+      const s = g.scale.x + (g.userData.targetS - g.scale.x)*.14;
+      g.scale.setScalar(s);
+    });
+    if(!reduceMotion){
+      clouds.rotation.y = t*.01;
+      flags.forEach((f,i)=>{ f.rotation.y = Math.sin(t*2.4+i)*.22; });
+      debris.forEach(d=>{ d.position.y = d.userData.y0 + Math.sin(t*.6+d.userData.ph)*.4; d.rotation.y = t*.08; });
+      const hp = 11 + Math.sin(t*.7)*.9;
+      halo.scale.set(hp, hp, 1);
+    }
+    renderer.render(scene, camera);
+    labelRenderer.render(scene, camera);
+  }
+}
+loop();
+setTimeout(()=>{ const l=document.getElementById('loading');
+  l.style.opacity=0; setTimeout(()=>l.remove(), 500); }, 400);
+
+addEventListener('resize', ()=>{
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  labelRenderer.setSize(innerWidth, innerHeight);
 });
 </script>
-  <script src="audio.js"></script>
-  <script src="bgm-cross.js"></script>
+
+<script src="audio.js"></script>
+<script src="bgm-cross.js"></script>
 </body>
 </html>
