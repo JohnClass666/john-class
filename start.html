@@ -46,6 +46,7 @@ function enter(){
   var name = document.getElementById('nameInp').value.trim();
   if(!name){ alert('请输入你的名字'); return; }
   localStorage.setItem('jc_username', name);
+  if(!localStorage.getItem('jc_victory_msg')){ localStorage.setItem('jc_victory_msg',''); }
   window.location.href = 'index.html';
 }
 
