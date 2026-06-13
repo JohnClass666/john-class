@@ -12,6 +12,21 @@ html,body{height:100%;background:#F5EDD8;color:#2A1E08;font-family:-apple-system
 .pane{display:none;position:fixed;inset:0;flex-direction:column}
 .pane.on{display:flex}
 
+/* Leaderboard popup */
+.board-overlay{display:none;position:fixed;inset:0;background:rgba(42,30,8,.4);z-index:300;align-items:center;justify-content:center;padding:24px}
+.board-overlay.on{display:flex}
+.board-popup{background:#FFFDF6;border-radius:18px;padding:28px 24px;width:90%;max-width:360px;text-align:center}
+.board-title{font-size:18px;font-weight:700;color:#2A1E08;margin-bottom:4px}
+.board-sub{font-size:12px;color:#9A8060;margin-bottom:16px}
+.board-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(245,237,216,.5);border-radius:10px;margin-bottom:6px;text-align:left}
+.board-rank-num{font-size:20px;font-weight:700;width:30px;flex-shrink:0;text-align:center}
+.board-rank-1{color:#C9A96E}.board-rank-2{color:#B0B0B0}.board-rank-3{color:#C8A050}
+.board-item-name{flex:1;font-size:14px;font-weight:600;color:#2A1E08}
+.board-item-pts{font-size:13px;font-weight:700;color:#C85A2A}
+.board-item-you{background:rgba(184,149,106,.12);border:1px solid rgba(184,149,106,.3)}
+@keyframes boardPop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+.board-popup{animation:boardPop .3s cubic-bezier(.22,1,.36,1)}
+
 /* ── Entry (Timeline) ── */
 .entry-scroll{flex:1;overflow-y:auto;padding:28px 20px 100px}
 .entry-inner{max-width:480px;margin:0 auto}
@@ -160,8 +175,19 @@ html,body{height:100%;background:#F5EDD8;color:#2A1E08;font-family:-apple-system
           <span class="score-bar-val" id="entryPts">0 分</span>
         </div>
       </div>
+      <button class="btn-ghost" onclick="showSurvivalBoard()" style="width:100%;margin-bottom:12px">🏆 生存英语排行榜</button>
       <div class="sec-label">旅程路线</div>
       <div class="timeline" id="timeline"></div>
+
+      <!-- Leaderboard popup -->
+      <div class="board-overlay" id="boardOverlay" onclick="hideSurvivalBoard()">
+        <div class="board-popup" onclick="event.stopPropagation()">
+          <div class="board-title">🏆 生存英语排行榜</div>
+          <div class="board-sub">本周积分排名</div>
+          <div id="boardList"></div>
+          <button class="btn" onclick="hideSurvivalBoard()" style="margin-top:16px">关闭</button>
+        </div>
+      </div>
     </div>
   </div>
   <div class="safari-note" id="safariNote"></div>
@@ -538,6 +564,35 @@ function getSceneAvg(id){var sp=getProgress()[id];return sp?sp.avg:null;}
 function getTotalPts(){var p=getProgress(),t=0;Object.keys(p).forEach(function(k){if(p[k].done)t+=SCENE_PTS;});return t;}
 function getDoneCount(){var p=getProgress(),c=0;Object.keys(p).forEach(function(k){if(p[k].done)c++;});return c;}
 
+// ── Progress sync & Leaderboard ──
+async function syncProgressToCloud(){
+  if(!userName||userName==='guest')return;
+  try{var p=getProgress();var payload={user_name:userName,progress_data:JSON.stringify(p),updated_at:new Date().toISOString()};
+  await fetch(SB_URL+'/rest/v1/vocab_progress',{method:'POST',headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates','Content-Type':'application/json'}),body:JSON.stringify(payload)});}catch(e){}
+}
+async function restoreProgressFromCloud(){
+  if(!userName||userName==='guest')return false;
+  try{var r=await fetch(SB_URL+'/rest/v1/vocab_progress?user_name=eq.'+encodeURIComponent(userName)+'&select=progress_data&limit=1',{headers:sbHeaders()});
+  if(!r.ok)return false;var rows=await r.json();if(!rows[0]||!rows[0].progress_data)return false;
+  var cloud=JSON.parse(rows[0].progress_data);var local=getProgress(),merged=false;
+  for(var k in cloud){if(!local[k]||(cloud[k].done&&!local[k].done)){local[k]=cloud[k];merged=true;}}
+  if(merged)saveProgress(local);return merged;}catch(e){return false;}
+}
+function showSurvivalBoard(){document.getElementById('boardOverlay').classList.add('on');loadSurvivalBoard();}
+function hideSurvivalBoard(){document.getElementById('boardOverlay').classList.remove('on');}
+async function loadSurvivalBoard(){
+  var el=document.getElementById('boardList');el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:16px">加载中...</div>';
+  try{var ws=getWeekStart();
+  var r=await fetch(SB_URL+'/rest/v1/weekly_scores?week_start=eq.'+ws+'&select=user_name,survival_score&order=survival_score.desc&limit=10',{headers:sbHeaders()});
+  if(!r.ok)throw new Error();var rows=await r.json();
+  if(!rows||!rows.length){el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:16px">本周还没有人上榜</div>';return;}
+  var medals=['🥇','🥈','🥉'];
+  el.innerHTML=rows.filter(function(r){return(r.survival_score||0)>0;}).map(function(r,i){
+    var isMe=r.user_name===userName;
+    return '<div class="board-item'+(isMe?' board-item-you':'')+'"><div class="board-rank-num '+(i<3?'board-rank-'+(i+1):'')+'">'+(i<3?medals[i]:(i+1))+'</div><div class="board-item-name">'+escHTML(r.user_name)+(isMe?' (你)':'')+'</div><div class="board-item-pts">'+(r.survival_score||0)+'分</div></div>';
+  }).join('');}catch(e){el.innerHTML='<div style="font-size:13px;color:#C0392B;padding:16px">加载失败</div>';}
+}
+
 // ═══════════════════════════════════════
 // ENTRY: Timeline
 // ═══════════════════════════════════════
@@ -884,6 +939,7 @@ function finishScene(){
     p[currentScene.id]={scores:scores,avg:avg,done:true};
     saveProgress(p);
     sbUpsertScore(userName,SCENE_PTS);
+    syncProgressToCloud();
   }else if(!alreadyDone){
     if(!prev||avg>prev.avg){p[currentScene.id]={scores:scores,avg:avg,done:false};saveProgress(p);}
   }
@@ -975,7 +1031,7 @@ function init(){
     document.getElementById('chatSafariNote').innerHTML='⚠️ 你的浏览器不支持语音识别，请使用 <strong>Safari</strong> 或 <strong>Chrome</strong> 打开';
   }
 
-  buildTimeline();
+  restoreProgressFromCloud().then(function(){buildTimeline();});
 
   document.getElementById('backToEntry').addEventListener('click',function(e){
     e.preventDefault();stopRecognition();showPane('p-entry');buildTimeline();

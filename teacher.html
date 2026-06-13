@@ -161,10 +161,6 @@ html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Helvetica Neu
         </div>
 
         <div class="s-input-area">
-          <div class="name-row">
-            <input class="name-input" id="msgName" placeholder="你的名字" maxlength="20">
-            <input class="name-input" id="msgGrade" placeholder="年级（选填）" maxlength="10" style="flex:.8;min-width:0;max-width:120px">
-          </div>
           <textarea class="msg-input" id="msgInput" placeholder="说点什么…" maxlength="300"></textarea>
           <div class="char-count" id="charCount">0 / 300</div>
         </div>
@@ -307,26 +303,17 @@ document.getElementById('msgInput').addEventListener('input',function(){
   document.getElementById('charCount').textContent=this.value.length+' / 300';
 });
 
-/* 读取学生名字预填 */
+/* 读取学生名字 */
 const savedName=localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name');
 if(savedName){
-  document.getElementById('msgName').value=savedName;
   document.getElementById('jBubble').innerHTML=`${esc(savedName)}，有什么想说的？<br>提问、炫耀成绩、说说反馈——<br>都欢迎。<b>我会看的。</b>`;
 }
 
 /* 发送留言 */
 async function sendMsg(){
-  const name=document.getElementById('msgName').value.trim();
-  const grade=document.getElementById('msgGrade').value.trim();
+  const name=savedName||'同学';
   const content=document.getElementById('msgInput').value.trim();
   const btn=document.getElementById('sendBtn');
-
-  if(!name){
-    document.getElementById('msgName').style.borderColor='#C0392B';
-    document.getElementById('msgName').focus();
-    setTimeout(()=>{document.getElementById('msgName').style.borderColor='';},1200);
-    return;
-  }
   if(!content){
     document.getElementById('msgInput').style.borderColor='#C0392B';
     document.getElementById('msgInput').focus();
@@ -346,18 +333,9 @@ async function sendMsg(){
         'Content-Type':'application/json',
         'Prefer':'return=minimal'
       },
-      body:JSON.stringify({name,grade,content})
+      body:JSON.stringify({name,content})
     });
     if(!res.ok)throw new Error(res.status);
-
-    // 保存名字供下次使用
-    localStorage.setItem('jc_student_name',name);
-
-    // 锁定名字（发送后不可修改）
-    const nameEl=document.getElementById('msgName');
-    nameEl.readOnly=true;
-    nameEl.style.background='rgba(245,237,216,.5)';
-    nameEl.style.color='#9A8060';
 
     btn.classList.remove('sending');
     btn.classList.add('sent');
