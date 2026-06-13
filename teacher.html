@@ -24,6 +24,27 @@ html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Helvetica Neu
 .page-title{font-family:'Noto Serif SC',Georgia,serif;font-size:clamp(26px,3vw,34px);font-weight:700;color:#2A1E08;letter-spacing:-.2px;margin-bottom:8px}
 .page-sub{font-size:13px;color:#9A8060;margin-bottom:32px;line-height:1.6}
 
+/* ── 公告栏 ── */
+.bulletin-card{background:rgba(255,255,255,.7);border:1.5px solid rgba(184,149,106,.25);border-radius:16px;padding:16px 20px;margin-bottom:16px;cursor:default;transition:border-color .2s}
+.bulletin-card:hover{border-color:rgba(184,149,106,.4)}
+.bulletin-label{font-size:10px;font-weight:700;letter-spacing:.12em;color:#B8956A;text-transform:uppercase;margin-bottom:8px}
+.bulletin-text{font-size:14px;line-height:1.8;color:#2A1E08;white-space:pre-wrap}
+.bulletin-edit-area{display:none;width:100%}
+.bulletin-edit-area.on{display:block}
+.bulletin-textarea{width:100%;padding:12px 14px;font-family:inherit;font-size:14px;color:#2A1E08;background:rgba(255,255,255,.9);border:1.5px solid rgba(184,149,106,.3);border-radius:12px;outline:none;resize:vertical;min-height:100px;line-height:1.7;margin-bottom:10px}
+.bulletin-textarea:focus{border-color:#B8956A}
+.bulletin-save-row{display:flex;gap:8px;justify-content:flex-end}
+.bulletin-save-btn{padding:8px 18px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.bulletin-cancel-btn{padding:8px 14px;background:transparent;color:#9A8060;border:1px solid rgba(184,149,106,.3);border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit}
+.bulletin-pwd-overlay{display:none;position:fixed;inset:0;background:rgba(42,30,8,.4);z-index:200;align-items:center;justify-content:center}
+.bulletin-pwd-overlay.on{display:flex}
+.bulletin-pwd-box{background:#FFFDF6;border-radius:16px;padding:24px;width:90%;max-width:320px;text-align:center}
+.bulletin-pwd-box input{width:100%;padding:12px 14px;font-size:16px;text-align:center;border:1.5px solid rgba(184,149,106,.3);border-radius:10px;outline:none;margin-bottom:12px;font-family:inherit;letter-spacing:.1em}
+.bulletin-pwd-box input:focus{border-color:#B8956A}
+.bulletin-pwd-box .pwd-btn{padding:10px 24px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-right:6px}
+.bulletin-pwd-box .pwd-cancel{background:transparent;color:#9A8060;border:none;font-size:13px;cursor:pointer}
+.bulletin-pwd-error{color:#C0392B;font-size:12px;margin-top:4px;display:none}
+
 /* 对话框区域 */
 .chat-card{background:rgba(255,255,255,.6);border:1px solid rgba(184,149,106,.2);border-radius:20px;padding:20px;margin-bottom:16px;backdrop-filter:blur(4px)}
 
@@ -120,6 +141,19 @@ html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Helvetica Neu
       <div class="page-title">和 John 说说</div>
       <div class="page-sub">提问、炫耀成绩、说说反馈——都可以，John 会看到的。</div>
 
+      <!-- 公告栏 -->
+      <div class="bulletin-card" id="bulletinCard" ondblclick="openBulletinEditor()">
+        <div class="bulletin-label">📌 John 的公告</div>
+        <div class="bulletin-text" id="bulletinText">加载中...</div>
+        <div class="bulletin-edit-area" id="bulletinEdit">
+          <textarea class="bulletin-textarea" id="bulletinTextarea" maxlength="500"></textarea>
+          <div class="bulletin-save-row">
+            <button class="bulletin-cancel-btn" onclick="event.stopPropagation();cancelBulletinEdit()">取消</button>
+            <button class="bulletin-save-btn" onclick="event.stopPropagation();saveBulletin()">保存</button>
+          </div>
+        </div>
+      </div>
+
       <div class="chat-card">
         <div class="j-bubble-row">
           <div class="j-avatar">J</div>
@@ -192,6 +226,81 @@ const REPLIES = [
 ];
 
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* ═══════ 公告栏系统 ═══════ */
+const BULLETIN_PWD='sw745896';
+
+async function loadBulletin(){
+  try{
+    const res=await fetch(`${SB_URL}/rest/v1/bulletin?id=eq.1`,{
+      headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`}
+    });
+    if(res.ok){
+      const data=await res.json();
+      if(data&&data.length>0){
+        document.getElementById('bulletinText').textContent=data[0].content||'';
+        return;
+      }
+    }
+    document.getElementById('bulletinText').textContent='暂无公告';
+  }catch(e){
+    document.getElementById('bulletinText').textContent='暂无公告';
+  }
+}
+
+function openBulletinEditor(){
+  document.getElementById('bulletinPwdOverlay').classList.add('on');
+  document.getElementById('bulletinPwdInput').value='';
+  document.getElementById('bulletinPwdError').style.display='none';
+  setTimeout(function(){document.getElementById('bulletinPwdInput').focus();},200);
+}
+
+function closeBulletinPwd(){
+  document.getElementById('bulletinPwdOverlay').classList.remove('on');
+}
+
+function verifyBulletinPwd(){
+  if(document.getElementById('bulletinPwdInput').value===BULLETIN_PWD){
+    closeBulletinPwd();
+    document.getElementById('bulletinText').style.display='none';
+    document.getElementById('bulletinEdit').classList.add('on');
+    var cur=document.getElementById('bulletinText').textContent;
+    document.getElementById('bulletinTextarea').value=cur==='暂无公告'?'':cur;
+    document.getElementById('bulletinTextarea').focus();
+  }else{
+    document.getElementById('bulletinPwdError').style.display='block';
+    document.getElementById('bulletinPwdInput').value='';
+    document.getElementById('bulletinPwdInput').focus();
+  }
+}
+
+function cancelBulletinEdit(){
+  document.getElementById('bulletinEdit').classList.remove('on');
+  document.getElementById('bulletinText').style.display='';
+}
+
+async function saveBulletin(){
+  var content=document.getElementById('bulletinTextarea').value.trim();
+  if(!content)return;
+  try{
+    await fetch(`${SB_URL}/rest/v1/bulletin`,{
+      method:'POST',
+      headers:{
+        'apikey':SB_KEY,
+        'Authorization':`Bearer ${SB_KEY}`,
+        'Content-Type':'application/json',
+        'Prefer':'resolution=merge-duplicates'
+      },
+      body:JSON.stringify({id:1,content:content,updated_at:new Date().toISOString()})
+    });
+    document.getElementById('bulletinText').textContent=content;
+    cancelBulletinEdit();
+  }catch(e){
+    alert('保存失败，请重试');
+  }
+}
+
+loadBulletin();
 
 /* 字数统计 */
 document.getElementById('msgInput').addEventListener('input',function(){
@@ -386,5 +495,18 @@ loadMsgs();
 </script>
   <script src="audio.js"></script>
   <script src="bgm-cross.js"></script>
+
+<!-- 公告栏密码弹窗 -->
+<div class="bulletin-pwd-overlay" id="bulletinPwdOverlay" onclick="closeBulletinPwd()">
+  <div class="bulletin-pwd-box" onclick="event.stopPropagation()">
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px">🔐 验证身份</div>
+    <div style="font-size:12px;color:#9A8060;margin-bottom:14px">输入密码以编辑公告</div>
+    <input type="password" id="bulletinPwdInput" placeholder="输入密码" onkeydown="if(event.key==='Enter')verifyBulletinPwd()">
+    <div class="bulletin-pwd-error" id="bulletinPwdError">密码错误</div>
+    <button class="pwd-btn" onclick="verifyBulletinPwd()">确认</button>
+    <button class="pwd-cancel" onclick="closeBulletinPwd()">取消</button>
+  </div>
+</div>
+
 </body>
 </html>
