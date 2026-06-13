@@ -3182,39 +3182,6 @@ const _sb = {
  }
 };
 
-/* ═══ 跨浏览器进度同步 ═══ */
-async function syncVocabProgress(){
-  if(!S||!S.name) return;
-  try{
-    await fetch(SUPABASE_URL+'/rest/v1/vocab_progress',{
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
-      body:JSON.stringify({user_name:S.name,progress_data:S.gd,updated_at:new Date().toISOString()})
-    });
-  }catch(e){}
-}
-async function restoreVocabProgress(name){
-  if(!LB_ONLINE) return false;
-  try{
-    const res=await fetch(SUPABASE_URL+'/rest/v1/vocab_progress?user_name=eq.'+encodeURIComponent(name)+'&select=progress_data&limit=1',{
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
-    });
-    if(!res.ok) return false;
-    const rows=await res.json();
-    if(!rows[0]||!rows[0].progress_data) return false;
-    const cloud=rows[0].progress_data;
-    for(const gid in cloud){
-      if(!S.gd[gid]){S.gd[gid]=cloud[gid];continue;}
-      var cp=(cloud[gid].prog||{});
-      var lp=(S.gd[gid].prog||{});
-      for(var wid in cp){if(!lp[wid])lp[wid]=cp[wid];}
-      if((cloud[gid].points||0)>(S.gd[gid].points||0))S.gd[gid].points=cloud[gid].points;
-    }
-    save();
-    return true;
-  }catch(e){return false;}
-}
-
 /* ---- 本地缓存（离线备用） ---- */
 const LB_KEY="john_eng_lb_v1";
 function lbCacheSave(rows){try{localStorage.setItem(LB_KEY,JSON.stringify({rows,ts:Date.now()}));}catch(e){}}
@@ -3229,7 +3196,6 @@ function lbUpdate(){
   const myScore=totalPoints(); // 跨年级累计总分
   const myGrade=S.grade?((gradeById(S.grade)||{}).label||S.grade):"";
   await _sb.upsert(S.name, myScore, myGrade);
-  syncVocabProgress(); // 同步进度到云端
  }, 3000);
 }
 /* S：全局信息 + 各年级独立存档
@@ -3487,9 +3453,8 @@ SCREENS.welcome=function(){clear();const d=document.createElement("div");d.class
   S.name=v;localStorage.setItem('jc_username',v);save();sfx.tap();
   btn.disabled=true;btn.textContent="连接云端...";
   try{
-    const restored=await restoreVocabProgress(v);
     const cloud=await _sb.fetchMine(v);
-    let isReturning=restored;
+    let isReturning=false;
     let totalPts=0;
     if(cloud){
       if(cloud.data){
@@ -3663,7 +3628,10 @@ SCREENS.home=function(){clear();checkStreak();
   <div class="homebtn-row" style="margin-top:8px">
     <button class="btn line" id="lb" style="flex:1;border-color:var(--accent);color:var(--accent)">🏆 班级排行榜</button>
   </div>
-  <div class="foot">ENGLISH ADVENTURE · 进度云端同步</div>`;
+  <div style="text-align:center;margin-top:14px">
+    <button id="switchaccount" style="background:none;border:none;font-size:12px;color:var(--soft);cursor:pointer;padding:4px 8px;text-decoration:underline">👤 不是我？切换账号</button>
+  </div>
+  <div class="foot">ENGLISH ADVENTURE · 进度已存本设备</div>`;
  app.appendChild(d);
  d.querySelectorAll("#units .row[data-u]").forEach(r=>r.onclick=()=>{sfx.tap();go({name:"unit",arg:+r.dataset.u});});
  d.querySelector("#mute").onclick=function(){S.muted=!S.muted;save();this.textContent=S.muted?"○":"♪";if(!S.muted)sfx.tap();};
@@ -3675,6 +3643,11 @@ SCREENS.home=function(){clear();checkStreak();
  d.querySelector("#ms").onclick=()=>{sfx.tap();go("milestones");};
  d.querySelector("#card").onclick=()=>{sfx.tap();go("card");};
  d.querySelector("#lb").onclick=()=>{sfx.tap();go("leaderboard");};
+ d.querySelector("#switchaccount").onclick=()=>{
+   sfx.tap();
+   S.name="";S.grade="";save(); // 只清名字，进度保留
+   go("welcome");
+ };
 };
 
 SCREENS.unit=function(n){clear();const u=UNITS.find(x=>x.n===n);const st=unitStage(n);
@@ -4557,32 +4530,15 @@ SCREENS.leaderboard=function(){
  d.querySelector("#refresh").onclick=()=>{sfx.tap();render();};
 };
 load();initTTS();
+// ★ 词汇舞台(vocab-stage.html)直达：接收 ?grade= 参数，仅在年级有效且已上线时生效
+(function(){try{var _g=new URLSearchParams(location.search).get('grade');
+ if(_g&&gradeById(_g)&&gradeById(_g).ready){S.grade=_g;save();}}catch(e){}})();
 // 恢复年级
 if(S.grade&&gradeById(S.grade)&&gradeById(S.grade).ready){applyGrade(S.grade);}
 _prevLv=levelOf(points()).name;
-
-// ═══ 云端进度恢复（换浏览器自动同步）═══
-(async function(){
-  if(S.name&&LB_ONLINE){
-    // 先试新表 vocab_progress
-    var ok=await restoreVocabProgress(S.name);
-    if(!ok){
-      // 回退到旧 leaderboard.data
-      var cloud=await _sb.fetchMine(S.name);
-      if(cloud&&cloud.data){
-        for(var gid in cloud.data){
-          if(!S.gd[gid]||((cloud.data[gid].points||0)>(S.gd[gid].points||0))){
-            S.gd[gid]=cloud.data[gid];ok=true;
-          }
-        }
-        if(ok){save();syncVocabProgress();}
-      }
-    }
-  }
-  if(!S.name)go("welcome");
-  else if(!S.grade||!gradeById(S.grade)||!gradeById(S.grade).ready)go("grade");
-  else go("home");
-})();
+if(!S.name)go("welcome");
+else if(!S.grade||!gradeById(S.grade)||!gradeById(S.grade).ready)go("grade");
+else go("home");
 </script>
 </body>
 </html>

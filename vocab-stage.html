@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.bootcdn.net">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>词汇舞台 · John Class</title>
+<!--
+══════════════════════════════════════════════════════════════
+ John Class「词汇舞台」3D 场景页（设计/建模/工程：Claude）
+ 第一视角 RPG 风格：城门走入 → 词汇庭院 → 四学段卡通角色选择年级
+ → 白云从天上拉下班级大神榜（Supabase 实时数据）
+
+ ▶ 部署：与 study-castle.html 一同上传仓库根目录即可。
+ ▶ 年级按钮带 ?grade= 参数直达，需配合打过三行补丁的 vocab.html
+   （本次一并交付）；未打补丁也能正常进入 vocab.html，只是要再选一次年级。
+ ▶ WebGL 不可用 / 引擎加载失败时自动落到 vocab.html。
+══════════════════════════════════════════════════════════════
+-->
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#F5EDD8;
+  font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;color:#2A1E08;
+  -webkit-font-smoothing:antialiased}
+#scene{position:fixed;inset:0}
+#labels{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.b-label{background:rgba(255,252,245,.9);border:1px solid rgba(184,149,106,.45);
+  color:#5A4420;font-size:12px;font-weight:600;padding:3px 11px;border-radius:11px;
+  white-space:nowrap;pointer-events:none;transition:transform .2s,border-color .2s,color .2s;
+  box-shadow:0 2px 8px rgba(42,30,8,.08)}
+.b-label.hot{border-color:#C85A2A;color:#2A1E08;transform:scale(1.14)}
+.hud-top{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;
+  justify-content:space-between;padding:20px 26px;z-index:10;pointer-events:none}
+.hud-top a{pointer-events:auto;text-decoration:none}
+.brand{font-size:13px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8956A}
+.back{font-size:12px;color:#9A8060;display:flex;align-items:center;gap:5px;transition:color .2s}
+.back:hover{color:#2A1E08}
+.hud-title{position:fixed;left:26px;bottom:86px;z-index:10;pointer-events:none}
+.hud-title h1{font-size:clamp(20px,2.6vw,28px);font-weight:600;letter-spacing:-.3px;
+  font-family:"Noto Serif SC",Georgia,serif}
+.hud-title p{font-size:12px;color:#9A8060;margin-top:4px}
+.foot{font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(184,149,106,.55);margin-top:10px;pointer-events:auto}
+.foot #nameTag{color:rgba(160,120,70,.45);cursor:pointer;font-size:9px;text-transform:none;letter-spacing:.04em}
+/* 云朵快捷按钮（与城堡页同款） */
+.quick-nav{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;gap:12px;
+  padding:28px 16px calc(14px + env(safe-area-inset-bottom));overflow-x:auto;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  background:linear-gradient(to top,rgba(245,237,216,.95),rgba(245,237,216,0))}
+.quick-nav::-webkit-scrollbar{display:none}
+.qbtn{position:relative;flex-shrink:0;font-size:12px;font-weight:600;color:#5A4420;
+  background:#FFFDF6;padding:9px 18px;border-radius:18px;border:none;cursor:pointer;
+  font-family:inherit;box-shadow:0 7px 16px rgba(42,30,8,.16);
+  animation:cloudFloat 3.2s ease-in-out infinite alternate;
+  transition:box-shadow .25s,color .2s,transform .25s}
+.qbtn::before,.qbtn::after{content:'';position:absolute;background:#FFFDF6;border-radius:50%}
+.qbtn::before{width:16px;height:16px;top:-7px;left:14px}
+.qbtn::after{width:22px;height:22px;top:-10px;left:32px}
+.qbtn:hover{color:#C85A2A;animation-play-state:paused;
+  transform:translateY(-6px) scale(1.05);box-shadow:0 14px 24px rgba(42,30,8,.22)}
+.qbtn:active{transform:translateY(-2px) scale(.97)}
+@keyframes cloudFloat{from{transform:translateY(0)}to{transform:translateY(-5px)}}
+@media (prefers-reduced-motion:reduce){.qbtn{animation:none}}
+/* RPG 对话框 */
+#dlg{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;justify-content:center;
+  padding:0 14px calc(86px + env(safe-area-inset-bottom));pointer-events:none}
+.dlg-card{width:min(560px,100%);background:rgba(253,248,240,.96);border:2px solid #B8956A;
+  border-radius:20px;padding:18px 20px 16px;box-shadow:0 18px 50px rgba(42,30,8,.25);
+  transform:translateY(130%);transition:transform .38s cubic-bezier(.34,1.4,.5,1);
+  pointer-events:auto;position:relative}
+#dlg.show .dlg-card{transform:none}
+.dlg-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.dlg-head .dlg-ava{width:38px;height:38px;border-radius:50%;background:rgba(201,169,110,.18);
+  border:1.5px solid rgba(201,169,110,.4);display:flex;align-items:center;justify-content:center;font-size:20px}
+.dlg-head b{font-size:16px;color:#2A1E08}
+.dlg-head span{font-size:10px;color:#B8956A;letter-spacing:.1em;text-transform:uppercase}
+.dlg-line{font-size:13px;color:#6A5030;line-height:1.7;margin-bottom:12px;min-height:22px}
+.dlg-btns{display:flex;flex-direction:column;gap:8px}
+.dlg-btns a{display:flex;align-items:center;justify-content:space-between;text-decoration:none;
+  background:#FFFDF6;border:1.5px solid rgba(184,149,106,.35);border-radius:13px;
+  padding:11px 16px;font-size:14px;font-weight:600;color:#3A2A10;transition:.2s}
+.dlg-btns a:hover{border-color:#C85A2A;color:#C85A2A;transform:translateX(4px)}
+.dlg-btns a small{font-size:10px;font-weight:500;color:#B8956A}
+.dlg-btns a em{font-style:normal;font-size:9px;font-weight:700;color:#FDF4E0;background:#C85A2A;border-radius:8px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+.dlg-btns .soon{display:flex;align-items:center;justify-content:space-between;background:#FFFDF6;border:1.5px dashed rgba(184,149,106,.45);border-radius:13px;padding:11px 16px;font-size:14px;font-weight:600;color:#B0A088;opacity:.8}
+.dlg-btns .soon small{font-size:10px;color:#C8B89A}
+.dlg-close{position:absolute;top:10px;right:12px;width:28px;height:28px;border-radius:50%;
+  border:1px solid rgba(184,149,106,.35);background:none;color:#9A8060;font-size:15px;
+  cursor:pointer;line-height:1}
+.dlg-close:hover{color:#C85A2A;border-color:#C85A2A}
+#overlay{position:fixed;inset:0;background:#F5EDD8;z-index:999;opacity:0;
+  pointer-events:none;transition:opacity .28s ease}
+#overlay.show{opacity:1;pointer-events:all}
+#enterFx{position:fixed;inset:0;background:#F5EDD8;z-index:900;opacity:1;
+  pointer-events:none;transition:opacity .9s ease}
+#loading{position:fixed;inset:0;background:#F5EDD8;z-index:998;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:opacity .5s}
+#loading .lb{font-size:13px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8956A}
+#loading .ls{font-size:11px;color:#9A8060}
+@media (max-width:680px){
+  .hud-title{bottom:96px;left:20px}
+  .hud-top{padding:16px 20px}
+}
+</style>
+</head>
+<body>
+
+<div id="overlay"></div>
+<div id="enterFx"></div>
+<div id="loading"><div class="lb">John Class</div><div class="ls">推开城门，踏上训练之路…</div></div>
+
+<div class="hud-top">
+  <a class="brand" href="index.html">John Class</a>
+  <a class="back" href="study.html">← 回到城堡</a>
+</div>
+<div class="hud-title">
+  <h1>词汇舞台</h1>
+  <p>选择你的角色，开始今天的词汇闯关</p>
+  <div class="foot">Growing Skills · Shaping Futures　<span id="nameTag" onclick="changeName()"></span></div>
+</div>
+
+<div id="scene"></div>
+<div id="labels"></div>
+
+<!-- RPG 对话框 -->
+<div id="dlg">
+  <div class="dlg-card">
+    <button class="dlg-close" id="dlgClose">✕</button>
+    <div class="dlg-head"><div class="dlg-ava" id="dlgAva"></div>
+      <div><b id="dlgName"></b><br><span id="dlgEn"></span></div></div>
+    <div class="dlg-line" id="dlgLine"></div>
+    <div class="dlg-btns" id="dlgBtns"></div>
+  </div>
+</div>
+
+<nav class="quick-nav" id="quickNav"></nav>
+
+<script>
+// ── 守卫脚本（不依赖 3D 引擎）──
+(function(){
+  try{
+    var c = document.createElement('canvas');
+    if(!(window.WebGLRenderingContext && (c.getContext('webgl')||c.getContext('experimental-webgl'))))
+      throw 0;
+  }catch(e){ location.replace('vocab.html'); return; }   // 经典版口语页保底
+  setTimeout(function(){
+    if(!window.__stageReady) location.replace('vocab.html');
+  }, 22000);
+})();
+(function(){
+  var n = localStorage.getItem('jc_username')||'';
+  if(n) document.getElementById('nameTag').textContent = '当前：'+n+' · 切换';
+})();
+function changeName(){
+  if(confirm('要切换名字吗？进度和分数不会丢失。')){
+    localStorage.removeItem('jc_username');
+    window.location.href = 'start.html';
+  }
+}
+</script>
+
+<script>
+"use strict";
+window.__bootStage = function(){
+const THREE = window.THREE;
+
+/* ── 内置兼容层：颜色空间 / 轨道控制 / 标签投射（零插件依赖，任意 three 版本可用）── */
+const SRGB = t => { if('colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace;
+  else t.encoding = THREE.sRGBEncoding; return t; };
+function OrbitLite(camera, dom){
+  const self = this;
+  this.target = new THREE.Vector3();
+  this.enabled = true; this.enablePan = false;
+  this.enableDamping = true; this.dampingFactor = .08;
+  this.minDistance = 1; this.maxDistance = 100;
+  this.minPolarAngle = .05; this.maxPolarAngle = Math.PI - .05;
+  this.minAzimuthAngle = -Infinity; this.maxAzimuthAngle = Infinity;
+  this.autoRotate = false; this.autoRotateSpeed = .4;
+  this.onStart = null; this.onEnd = null;
+  let drag = false, pinching = false, px = 0, py = 0, pd = 0;
+  let pdx = 0, pdy = 0, lz = 0;
+  dom.addEventListener('pointerdown', e => { if(!self.enabled) return;
+    drag = true; px = e.clientX; py = e.clientY; if(self.onStart) self.onStart(); });
+  addEventListener('pointermove', e => { if(!drag || !self.enabled || pinching) return;
+    pdx += e.clientX - px; pdy += e.clientY - py; px = e.clientX; py = e.clientY; });
+  addEventListener('pointerup', () => { if(drag){ drag = false; if(self.onEnd) self.onEnd(); } });
+  dom.addEventListener('wheel', e => { if(!self.enabled) return; e.preventDefault();
+    lz += e.deltaY > 0 ? .25 : -.25; }, { passive:false });
+  dom.addEventListener('touchstart', e => { if(e.touches.length === 2){ pinching = true;
+    pd = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); } }, { passive:true });
+  dom.addEventListener('touchmove', e => { if(!self.enabled || !pinching) return;
+    if(e.touches.length === 2){ e.preventDefault();
+      const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      if(pd) lz += (pd - d) * .01; pd = d; } }, { passive:false });
+  dom.addEventListener('touchend', e => { if(e.touches.length < 2) pinching = false; }, { passive:true });
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  this.update = function(){
+    if(!self.enabled) return;
+    const o = camera.position.clone().sub(self.target);
+    let r = o.length() || 1;
+    let th = Math.atan2(o.x, o.z);
+    let ph = Math.acos(clamp(o.y / r, -1, 1));
+    if(self.autoRotate && !drag) th += self.autoRotateSpeed * .00175;
+    const ux = pdx * .2, uy = pdy * .2, uz = lz * .18;
+    pdx -= ux; pdy -= uy; lz -= uz;
+    th -= ux * .005; ph -= uy * .005; r *= Math.exp(uz * .35);
+    th = clamp(th, self.minAzimuthAngle, self.maxAzimuthAngle);
+    ph = clamp(ph, self.minPolarAngle, self.maxPolarAngle);
+    r = clamp(r, self.minDistance, self.maxDistance);
+    camera.position.set(
+      self.target.x + r * Math.sin(ph) * Math.sin(th),
+      self.target.y + r * Math.cos(ph),
+      self.target.z + r * Math.sin(ph) * Math.cos(th));
+    camera.lookAt(self.target);
+  };
+}
+function LabelLayer(container){
+  const items = [], v = new THREE.Vector3();
+  this.add = function(host, x, y, z, el){
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute;left:0;top:0;will-change:transform';
+    wrap.appendChild(el); container.appendChild(wrap);
+    items.push({ host, off:new THREE.Vector3(x, y, z), wrap });
+    return wrap;
+  };
+  this.render = function(camera){
+    for(const it of items){
+      v.copy(it.off).applyMatrix4(it.host.matrixWorld).project(camera);
+      if(v.z >= 1){ it.wrap.style.visibility = 'hidden'; continue; }
+      it.wrap.style.visibility = 'visible';
+      it.wrap.style.transform = 'translate(-50%,-50%) translate('
+        + ((v.x * .5 + .5) * innerWidth).toFixed(1) + 'px,'
+        + ((-v.y * .5 + .5) * innerHeight).toFixed(1) + 'px)';
+    }
+  };
+}
+
+/* ═══════════ 配置区（John 可改）═══════════
+   各学段的年级清单，与 vocab.html 的 GRADES 注册表保持一致。
+   ready:true 的年级可点（vocab.html?grade=id 直达），其余显示"制作中"。 */
+const STAGE_DEST = {
+  primary: [
+    { id:'g4',  label:'四年级下册', ready:true },
+    { id:'g5u', label:'五年级上册' }, { id:'g5d', label:'五年级下册' },
+    { id:'g6u', label:'六年级上册' }, { id:'g6d', label:'六年级下册' },
+  ],
+  middle: [
+    { id:'g7u', label:'七年级上册', ready:true }, { id:'g7',  label:'七年级下册', ready:true },
+    { id:'g8u', label:'八年级上册', ready:true }, { id:'g8',  label:'八年级下册', ready:true },
+    { id:'g9u', label:'九年级上册', ready:true, tag:'NEW' },
+    { id:'g9d', label:'九年级下册' },
+  ],
+  high: [
+    { id:'g10u', label:'高一上册' }, { id:'g10d', label:'高一下册' },
+    { id:'g11u', label:'高二上册' }, { id:'g11d', label:'高二下册' },
+    { id:'g12u', label:'高三上册' }, { id:'g12d', label:'高三下册' },
+  ],
+  college: [
+    { id:'cet4', label:'大学四级' }, { id:'cet6', label:'大学六级' }, { id:'kaoyan', label:'考研' },
+  ],
+};
+// Supabase 排行榜（与 vocab.html 同一数据源）
+const SUPABASE_URL = "https://ghunrrtrdgicbmixsqrc.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs";
+
+/* ═══════════ 程序化贴图（与城堡页同一套画笔）═══════════ */
+function canvasTex(w, h, painter){
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  painter(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c);
+  SRGB(t);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+function jitter(base, amt){
+  const [h,s,l] = base;
+  return `hsl(${h + (Math.random()-.5)*amt*2},${s + (Math.random()-.5)*8}%,${l + (Math.random()-.5)*amt}%)`;
+}
+function speckle(ctx,w,h,n,col,a){
+  ctx.globalAlpha = a;
+  for(let i=0;i<n;i++){ ctx.fillStyle = col;
+    ctx.beginPath();
+    ctx.ellipse(Math.random()*w, Math.random()*h, 1+Math.random()*2.5, 1+Math.random()*1.5, Math.random()*3, 0, 7);
+    ctx.fill(); }
+  ctx.globalAlpha = 1;
+}
+function stoneTexture(hsl=[42,38,82]){
+  return canvasTex(256,256,(ctx,w,h)=>{
+    ctx.fillStyle = `hsl(${hsl[0]},${hsl[1]}%,${hsl[2]}%)`; ctx.fillRect(0,0,w,h);
+    const bh = 26;
+    for(let row=0; row*bh<h+bh; row++){
+      const off = row%2 ? 34 : 0;
+      for(let x=-68+off; x<w; x+=68){
+        const bw = 60 + Math.random()*8;
+        ctx.fillStyle = jitter(hsl, 5);
+        ctx.beginPath(); ctx.roundRect(x+2, row*bh+2, bw, bh-4, 4); ctx.fill();
+        ctx.strokeStyle = `hsla(${hsl[0]},30%,40%,.28)`; ctx.lineWidth = 1.6; ctx.stroke();
+      }
+    }
+    speckle(ctx,w,h,140,'#8a7448',.10);
+    speckle(ctx,w,h,90,'#fffbe8',.14);
+    const g = ctx.createLinearGradient(0,h*.55,0,h);
+    g.addColorStop(0,'rgba(90,60,28,0)'); g.addColorStop(1,'rgba(90,60,28,.30)');
+    ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+  });
+}
+function grassTexture(){
+  return canvasTex(256,256,(ctx,w,h)=>{
+    ctx.fillStyle = 'hsl(82,42%,56%)'; ctx.fillRect(0,0,w,h);
+    for(let i=0;i<46;i++){ ctx.globalAlpha=.16; ctx.fillStyle = jitter([82,46,52],14);
+      ctx.beginPath(); ctx.ellipse(Math.random()*w,Math.random()*h,14+Math.random()*30,10+Math.random()*18,Math.random()*3,0,7); ctx.fill(); }
+    ctx.globalAlpha=1;
+    speckle(ctx,w,h,260,'hsl(75,55%,70%)',.30);
+    speckle(ctx,w,h,140,'hsl(95,40%,38%)',.22);
+  });
+}
+function woodTexture(){
+  return canvasTex(256,256,(ctx,w,h)=>{
+    ctx.fillStyle = 'hsl(28,42%,46%)'; ctx.fillRect(0,0,w,h);
+    for(let y=0;y<h;y+=32){
+      ctx.fillStyle = jitter([28,42,44],6);
+      ctx.fillRect(0,y+1,w,30);
+      ctx.strokeStyle='rgba(70,40,14,.5)'; ctx.lineWidth=2;
+      ctx.strokeRect(-2,y+1,w+4,30);
+      for(let i=0;i<4;i++){ ctx.strokeStyle='rgba(70,40,14,.25)'; ctx.lineWidth=1;
+        const yy=y+6+Math.random()*20; ctx.beginPath(); ctx.moveTo(0,yy);
+        ctx.bezierCurveTo(w*.3,yy+3,w*.6,yy-3,w,yy); ctx.stroke(); }
+    }
+  });
+}
+
+/* ═══════════ 基础设施 ═══════════ */
+const app = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+const isMobile = matchMedia('(max-width:680px)').matches || 'ontouchstart' in window;
+renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile?1.5:2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = !isMobile;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+if('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
+else renderer.outputEncoding = THREE.sRGBEncoding;
+if('useLegacyLights' in renderer) renderer.useLegacyLights = false;
+else if('physicallyCorrectLights' in renderer) renderer.physicallyCorrectLights = true;
+app.appendChild(renderer.domElement);
+const labelLayer = new LabelLayer(document.getElementById('labels'));
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#F5EDD8');
+scene.fog = new THREE.Fog('#F5EDD8', 20, 44);
+
+const camera = new THREE.PerspectiveCamera(46, innerWidth/innerHeight, .1, 100);
+camera.position.set(0, 1.7, 14.5);                       // 起点：刚穿过城门
+
+const controls = new OrbitLite(camera, renderer.domElement);
+controls.target.set(0, 1.5, -.5);
+controls.enableDamping = true; controls.dampingFactor = .07;
+controls.enablePan = false;
+controls.minDistance = 6.5; controls.maxDistance = 12.5;
+controls.minPolarAngle = .95; controls.maxPolarAngle = 1.6;
+controls.minAzimuthAngle = -.65; controls.maxAzimuthAngle = .65;
+controls.enabled = false;                                 // 走入动画结束后启用
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// 黄昏光 + 灯笼暖光（第一视角的氛围核心）
+scene.add(new THREE.HemisphereLight('#FFE8C0', '#C9A06A', .9));
+const sun = new THREE.DirectionalLight('#FFD9A0', 1.5);
+sun.position.set(10, 14, -12);
+sun.castShadow = !isMobile;
+sun.shadow.mapSize.set(1024,1024);
+sun.shadow.camera.left=-14; sun.shadow.camera.right=14;
+sun.shadow.camera.top=14; sun.shadow.camera.bottom=-14;
+scene.add(sun);
+
+const mat = (c,r=.9)=>new THREE.MeshStandardMaterial({ color:c, roughness:r });
+function texMat(tex, rx, ry){ const t=tex(); t.repeat.set(rx,ry);
+  return new THREE.MeshStandardMaterial({ map:t, roughness:.95 }); }
+function M(geo, m, x=0,y=0,z=0){
+  const o = new THREE.Mesh(geo, m);
+  o.position.set(x,y,z); o.castShadow = true; o.receiveShadow = true;
+  return o;
+}
+
+/* ═══════════ 庭院场景 ═══════════ */
+// 地面 + 石板路
+const ground = M(new THREE.CircleGeometry(22, 36), texMat(grassTexture,6,6));
+ground.rotation.x = -Math.PI/2; ground.castShadow=false; scene.add(ground);
+scene.add(M(new THREE.BoxGeometry(2.6,.08,9), mat('#E2D2A8'), 0,.04,8));
+// 舞台
+const stage = M(new THREE.CylinderGeometry(4.5, 4.7, .55, 18), texMat(woodTexture,4,1), 0,.27,-1);
+scene.add(stage);
+scene.add(M(new THREE.BoxGeometry(3,.3,.7), texMat(woodTexture,2,.4), 0,.15,3.0));
+scene.add(M(new THREE.BoxGeometry(3,.15,.6), texMat(woodTexture,2,.3), 0,.45,2.6));
+// 背景横幅
+[[-3.8],[3.8]].forEach(([x])=>{
+  scene.add(M(new THREE.CylinderGeometry(.09,.11,3.8,8), texMat(woodTexture,1,2), x,1.9,-4.3));
+  scene.add(M(new THREE.SphereGeometry(.13,8,8), mat('#D9B878',.5), x,3.85,-4.3));
+});
+const bannerTex = canvasTex(1024,200,(ctx,w,h)=>{
+  ctx.fillStyle = '#C85A2A'; ctx.beginPath(); ctx.roundRect(0,0,w,h,26); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,240,210,.5)'; ctx.lineWidth = 8;
+  ctx.beginPath(); ctx.roundRect(12,12,w-24,h-24,18); ctx.stroke();
+  ctx.fillStyle = '#FDF4E0'; ctx.textAlign = 'center';
+  ctx.font = '700 76px "Noto Serif SC", Georgia, serif';
+  ctx.fillText('John Class 词汇舞台', w/2, 96);
+  ctx.font = '600 38px Georgia, serif';
+  ctx.fillStyle = 'rgba(253,244,224,.78)';
+  ctx.fillText('VOCABULARY STAGE · WORDS BUILD WORLDS', w/2, 158);
+});
+bannerTex.wrapS = bannerTex.wrapT = THREE.ClampToEdgeWrapping;
+const banner = M(new THREE.PlaneGeometry(6.6,1.3), new THREE.MeshBasicMaterial({ map:bannerTex }), 0,3.0,-4.22);
+banner.castShadow=false; scene.add(banner);
+// 灯笼 + 串灯
+const glowMats = [];
+[[-5.4],[5.4]].forEach(([x])=>{
+  scene.add(M(new THREE.CylinderGeometry(.07,.1,3.3,8), texMat(woodTexture,1,2), x,1.65,1.4));
+  const lm = new THREE.MeshStandardMaterial({ color:'#FBE3A0', emissive:'#F7CE74', emissiveIntensity:1, roughness:.6 });
+  glowMats.push(lm);
+  scene.add(M(new THREE.SphereGeometry(.3,12,12), lm, x,3.35,1.4));
+  const pl = new THREE.PointLight('#FFC97A', 7, 13, 2);
+  pl.position.set(x,3.3,1.4); scene.add(pl);
+});
+const bulbMat = new THREE.MeshStandardMaterial({ color:'#FFEFC0', emissive:'#FFDF9E', emissiveIntensity:.9 });
+for(let i=0;i<=12;i++){
+  const x = -5.4 + i*(10.8/12);
+  const y = 3.35 - Math.sin(Math.PI*i/12)*.85;
+  const b = M(new THREE.SphereGeometry(.07,8,8), bulbMat, x, y, 1.4);
+  b.castShadow = false; scene.add(b);
+}
+// 围墙 + 角楼 + 远处主堡剪影
+const wallMat = texMat(stoneTexture, 8, 1.6);
+scene.add(M(new THREE.BoxGeometry(23,3,1), wallMat, 0,1.5,-8.4));
+scene.add(M(new THREE.BoxGeometry(1,3,18), wallMat, -11,1.5,-.5));
+scene.add(M(new THREE.BoxGeometry(1,3,18), wallMat, 11,1.5,-.5));
+const cren = new THREE.BoxGeometry(.55,.55,.55);
+for(let x=-11; x<=11; x+=1.4) scene.add(M(cren, wallMat, x, 3.25, -8.4));
+for(let z=-7.6; z<=8; z+=1.4){ scene.add(M(cren, wallMat, -11, 3.25, z)); scene.add(M(cren, wallMat, 11, 3.25, z)); }
+[[-11,-8.4],[11,-8.4]].forEach(([x,z])=>{
+  scene.add(M(new THREE.CylinderGeometry(1,1.15,4.4,9), texMat(stoneTexture,2,2), x,2.2,z));
+  scene.add(M(new THREE.ConeGeometry(1.45,1.7,9), mat('#4A8FA8',.8), x,5.2,z));
+});
+scene.add(M(new THREE.BoxGeometry(6,5.5,4), texMat(stoneTexture,3,2.4), 0,2.7,-13.5));
+scene.add(M(new THREE.ConeGeometry(1.2,1.6,8), mat('#4A8FA8',.8), -2.4,6.4,-13));
+scene.add(M(new THREE.ConeGeometry(1.2,1.6,8), mat('#4A8FA8',.8), 2.4,6.4,-13));
+
+/* ═══════════ 四学段卡通角色（精修版）═══════════ */
+const CHARS = [
+ { id:'primary', label:'小学', en:'PRIMARY SCHOOL', icon:'🏫', x:-2.7, z:-.7, s:.74,
+   skin:'#F8D2AC', shirt:'#F2C04A', pants:'#4A6FA8', hair:'#4A3318', shoes:'#C85A2A', kit:'primary',
+   line:'嗨！我是小豆丁！四年级的单词我都快通关啦，你也快来一起闯关呀！' },
+ { id:'middle', label:'初中', en:'JUNIOR HIGH', icon:'📚', x:-.9, z:-1.25, s:.92,
+   skin:'#F6CDA6', shirt:'#FBF6EA', pants:'#2E3A55', hair:'#3A2616', shoes:'#2E3A55', kit:'middle',
+   line:'七到九年级的词库全都就位啦。中考词汇，咱们一册一册稳稳拿下！' },
+ { id:'high', label:'高中', en:'SENIOR HIGH', icon:'🎓', x:.9, z:-1.25, s:1.02,
+   skin:'#F2C9A0', shirt:'#4A7C3F', pants:'#3A4458', hair:'#241A0C', shoes:'#5A4A38', kit:'high',
+   line:'高中词库正在加紧打造。先去初中区热热身？我很快就开张！' },
+ { id:'college', label:'大学 · 职场', en:'COLLEGE & PRO', icon:'🏛️', x:2.7, z:-.7, s:1.08,
+   skin:'#EFC9A4', shirt:'#3A4048', pants:'#55504A', hair:'#2A2018', shoes:'#E8E2D4', kit:'college',
+   line:'四六级、考研和程序员词库都在筹备中。技术人的词汇量，交给我。' },
+];
+function makeChar(c){
+  const g = new THREE.Group();
+  const skin=mat(c.skin), shirt=mat(c.shirt), pants=mat(c.pants), hair=mat(c.hair,.85);
+  // —— 腿与鞋 ——
+  [[-1],[1]].forEach(([d])=>{
+    g.add(M(new THREE.CylinderGeometry(.088,.098,.4,10), pants, d*.115,.22,0));
+    const shoe=M(new THREE.SphereGeometry(.105,10,8), mat(c.shoes,.7), d*.115,.055,.05);
+    shoe.scale.set(1.05,.5,1.55); g.add(shoe);
+  });
+  // —— 身体（胶囊）+ 脖子 ——
+  g.add(M(new THREE.CapsuleGeometry(.27,.36,6,14), shirt, 0,.86,0));
+  g.add(M(new THREE.CylinderGeometry(.085,.095,.14,10), skin, 0,1.22,0));
+  // —— 手臂：袖管 + 小臂 + 手 ——
+  const arms=[[-1],[1]].map(([d])=>{
+    const p=new THREE.Group(); p.position.set(d*.32,1.07,0);
+    p.add(M(new THREE.CylinderGeometry(.07,.078,.24,9), shirt, 0,-.11,0));
+    p.add(M(new THREE.CylinderGeometry(.057,.064,.2,9), skin, 0,-.32,0));
+    p.add(M(new THREE.SphereGeometry(.072,9,8), skin, 0,-.45,0));
+    p.rotation.z=d*-.1; g.add(p); return p;
+  });
+  // —— 头 + 后发 + 三瓣刘海 ——
+  g.add(M(new THREE.SphereGeometry(.35,20,16), skin, 0,1.62,0));
+  g.add(M(new THREE.SphereGeometry(.37,18,14), hair, 0,1.7,-.07));
+  [[-.18,1.88,.2],[0,1.92,.24],[.18,1.88,.2]].forEach(([x,y,z])=>{
+    const f=M(new THREE.SphereGeometry(.13,10,8), hair, x,y,z);
+    f.scale.set(1,.72,.72); g.add(f);
+  });
+  // —— 眼睛（眼白+棕瞳+高光）+ 眉毛 ——
+  [[-1],[1]].forEach(([d])=>{
+    const w=M(new THREE.SphereGeometry(.062,10,10), mat('#FFFEFA',.4), d*.132,1.65,.295);
+    w.scale.set(1,1.18,.55); w.castShadow=false; g.add(w);
+    const pu=M(new THREE.SphereGeometry(.034,8,8), mat('#3A2412',.3), d*.128,1.655,.328);
+    pu.castShadow=false; g.add(pu);
+    const hi=M(new THREE.SphereGeometry(.013,6,6), mat('#FFFFFF',.2), d*.118,1.672,.352);
+    hi.castShadow=false; g.add(hi);
+    const br=M(new THREE.BoxGeometry(.095,.02,.022), hair, d*.135,1.77,.305);
+    br.rotation.z=d*-.14; br.castShadow=false; g.add(br);
+  });
+  // —— 微笑（下弯圆弧）+ 腮红 ——
+  const smile=M(new THREE.TorusGeometry(.07,.014,6,14,Math.PI*.85), mat('#A45A40',.6), 0,1.535,.315);
+  smile.rotation.z=Math.PI+(Math.PI-Math.PI*.85)/2; smile.castShadow=false; g.add(smile);
+  [[-1],[1]].forEach(([d])=>{
+    const bl=M(new THREE.SphereGeometry(.045,8,8), mat('#F2AC9C',.9), d*.215,1.565,.255);
+    bl.scale.set(1,.55,.4); bl.castShadow=false; g.add(bl);
+  });
+  // —— 学段专属装扮 ——
+  if(c.kit==='primary'){                       // 小豆丁：棒球帽+背带裤+小书包
+    const dome=M(new THREE.SphereGeometry(.33,14,10), mat('#C85A2A',.8), 0,1.9,0);
+    dome.scale.y=.55; g.add(dome);
+    const brim=M(new THREE.CircleGeometry(.27,14), mat('#C85A2A',.8), 0,1.88,.33);
+    brim.rotation.x=-Math.PI/2+.18; brim.material.side=THREE.DoubleSide; g.add(brim);
+    g.add(M(new THREE.SphereGeometry(.05,8,8), mat('#D9B878',.5), 0,2.09,0));
+    g.add(M(new THREE.BoxGeometry(.3,.24,.06), pants, 0,1.0,.27));
+    [[-1],[1]].forEach(([d])=>{
+      const st=M(new THREE.BoxGeometry(.06,.28,.05), pants, d*.13,1.14,.2);
+      st.rotation.x=.4; g.add(st);
+    });
+    g.add(M(new THREE.BoxGeometry(.36,.42,.16), mat('#C85A2A',.8), 0,.95,-.36));
+  }
+  if(c.kit==='middle'){                        // 初中女生：水手服+红领巾+双马尾+百褶裙
+    g.add(M(new THREE.ConeGeometry(.37,.34,16), pants, 0,.53,0));
+    g.add(M(new THREE.BoxGeometry(.44,.05,.36), pants, 0,1.2,-.08));
+    [[-1],[1]].forEach(([d])=>{
+      const v=M(new THREE.BoxGeometry(.05,.2,.04), pants, d*.09,1.1,.26);
+      v.rotation.z=d*.45; g.add(v);
+    });
+    const tie=M(new THREE.ConeGeometry(.085,.2,4), mat('#C85A2A',.7), 0,1.0,.27);
+    tie.rotation.x=Math.PI; g.add(tie);
+    g.add(M(new THREE.SphereGeometry(.05,8,8), mat('#C85A2A',.7), 0,1.13,.27));
+    [[-1],[1]].forEach(([d])=>{
+      g.add(M(new THREE.SphereGeometry(.062,8,8), mat('#C85A2A',.7), d*.34,1.76,-.04));
+      const tail=M(new THREE.CapsuleGeometry(.095,.3,4,10), hair, d*.42,1.5,-.07);
+      tail.rotation.z=d*-.4; g.add(tail);
+    });
+  }
+  if(c.kit==='high'){                          // 高中男生：毛衣白领+课本+蓬松发顶
+    const col=M(new THREE.TorusGeometry(.19,.045,8,16), mat('#FBF6EA',.7), 0,1.21,0);
+    col.rotation.x=Math.PI/2; g.add(col);
+    const tuft=M(new THREE.SphereGeometry(.17,10,8), hair, .04,2.0,.02);
+    tuft.scale.set(1.15,.8,1); g.add(tuft);
+    const book=M(new THREE.BoxGeometry(.32,.06,.24), mat('#C85A2A',.7), .5,.62,.14);
+    book.rotation.z=.35; g.add(book);
+    const pages=M(new THREE.BoxGeometry(.3,.035,.22), mat('#FBF6EA',.6), .505,.645,.14);
+    pages.rotation.z=.35; pages.castShadow=false; g.add(pages);
+  }
+  if(c.kit==='college'){                       // 大学·职场：连帽衫+圆框眼镜+笔记本电脑
+    const hood=M(new THREE.TorusGeometry(.23,.085,8,16), mat('#2E343C',.85), 0,1.3,-.16);
+    hood.rotation.x=.55; g.add(hood);
+    [[-1],[1]].forEach(([d])=>{
+      g.add(M(new THREE.CylinderGeometry(.012,.012,.18,6), mat('#E8E2D4',.6), d*.08,1.02,.29));
+      const ring=M(new THREE.TorusGeometry(.088,.013,6,14), mat('#2A2018',.5), d*.13,1.65,.31);
+      ring.castShadow=false; g.add(ring);
+      const leg=M(new THREE.BoxGeometry(.16,.012,.012), mat('#2A2018',.5), d*.24,1.66,.2);
+      leg.rotation.y=d*-.9; leg.castShadow=false; g.add(leg);
+    });
+    g.add(M(new THREE.BoxGeometry(.07,.014,.014), mat('#2A2018',.5), 0,1.65,.32));
+    const lap=M(new THREE.BoxGeometry(.42,.045,.3), mat('#2A9696',.5), -.5,.9,.1);
+    lap.rotation.z=-.42; g.add(lap);
+    g.add(M(new THREE.SphereGeometry(.028,8,8), mat('#D9B878',.4), -.5,.93,.1));
+  }
+  // —— 名牌 ——
+  const div = document.createElement('div');
+  div.className='b-label'; div.textContent = `${c.icon} ${c.label}`;
+  const wrap = labelLayer.add(g, 0, 2.55, 0, div);
+  g.scale.setScalar(c.s);
+  g.position.set(c.x, .55, c.z);
+  g.userData = { kind:'char', char:c, label:div, labelWrap:wrap, armR:arms[1], armL:arms[0],
+    baseY:.55, homeZ:c.z, tz:c.z, ph:Math.random()*6, jumpT:-99 };
+  scene.add(g); return g;
+}
+const charGroups = CHARS.map(makeChar);
+function setCharLabels(v){ charGroups.forEach(g=>{ g.userData.labelWrap.style.display = v?'':'none'; }); }
+
+/* ═══════════ 班级大神榜：白云从天上拉下来 ═══════════ */
+const lbCanvas = document.createElement('canvas'); lbCanvas.width=512; lbCanvas.height=640;
+const lbTex = SRGB(new THREE.CanvasTexture(lbCanvas));
+function drawBoard(rows){
+  const ctx = lbCanvas.getContext('2d'), w=512, h=640;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#FBF4E2'; ctx.beginPath(); ctx.roundRect(6,6,w-12,h-12,26); ctx.fill();
+  ctx.strokeStyle='#B8956A'; ctx.lineWidth=7; ctx.stroke();
+  ctx.textAlign='center'; ctx.fillStyle='#7A5C2E';
+  ctx.font='700 44px "Noto Serif SC", Georgia, serif';
+  ctx.fillText('🏆 班级大神榜', w/2, 72);
+  ctx.strokeStyle='rgba(184,149,106,.4)'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(46,100); ctx.lineTo(w-46,100); ctx.stroke();
+  const medals=['🥇','🥈','🥉'], cols=['#B8860B','#7A7A84','#A2683A'];
+  rows.slice(0,8).forEach((r,i)=>{
+    const y = 152 + i*56;
+    ctx.fillStyle = cols[i] || '#5A4420';
+    ctx.textAlign='left'; ctx.font='600 30px "PingFang SC", sans-serif';
+    ctx.fillText(`${medals[i]||(i+1)+'.'} ${String(r[0]).slice(0,7)}`, 48, y);
+    ctx.textAlign='right'; ctx.font='700 30px Georgia, serif';
+    ctx.fillText(String(r[1]), w-48, y);
+  });
+  ctx.textAlign='center'; ctx.fillStyle='#B8956A'; ctx.font='500 19px Georgia, serif';
+  ctx.fillText('Keep Going · John Class', w/2, h-30);
+  lbTex.needsUpdate = true;
+}
+drawBoard([['加载中…','']]);
+const board = new THREE.Group();
+// 拉榜的白云（与城堡同款低多边形云）
+const cloudMat2 = new THREE.MeshStandardMaterial({ color:'#FFFDF4', roughness:1, flatShading:true });
+[[-1.35,5.65,0,.85],[-.45,5.95,.22,1.05],[.5,5.9,-.12,1.0],[1.35,5.6,.1,.8],[0,5.5,.38,.9]].forEach(([x,y,z,r])=>{
+  const p = M(new THREE.IcosahedronGeometry(r,0), cloudMat2, x,y,z);
+  p.scale.y=.6; p.castShadow=false; board.add(p);
+});
+// 吊绳 + 木板 + 榜面
+[[-1.0],[1.0]].forEach(([x])=> board.add(M(new THREE.CylinderGeometry(.024,.024,2.2,6), mat('#7A5C2E'), x,4.6,0)));
+board.add(M(new THREE.BoxGeometry(3.3,3.9,.16), texMat(woodTexture,2,2), 0,1.6,0));
+const face = M(new THREE.PlaneGeometry(3.0,3.6), new THREE.MeshBasicMaterial({ map:lbTex }), 0,1.6,.09);
+face.castShadow=false; board.add(face);
+board.position.set(3.4, 12, 2.4);
+board.rotation.y = -.42;
+board.userData = { kind:'lbboard' };
+scene.add(board);
+let lbState = { mode:'up', t0:0, loaded:false };       // up=收在云上 down=展示
+const easeBack = p => { const c1=1.70158, c3=c1+1;
+  return 1 + c3*Math.pow(p-1,3) + c1*Math.pow(p-1,2); };
+async function loadLB(){
+  if(lbState.loaded) return; lbState.loaded = true;
+  try{
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard?select=name,score&order=score.desc,updated_at.asc&limit=8`,
+      { headers:{ apikey:SUPABASE_KEY, Authorization:`Bearer ${SUPABASE_KEY}` } });
+    const d = await r.json();
+    drawBoard(d.length ? d.map(x=>[x.name, x.score]) : [['虚位以待','0']]);
+  }catch(e){ drawBoard([['虚位以待','0'],['等你来战','0']]); }
+}
+function toggleBoard(){
+  const t = clock.getElapsedTime();
+  if(lbState.mode==='up'){ lbState = {...lbState, mode:'drop', t0:t};
+    setCharLabels(false); loadLB(); }                  // 展示时收起角色名牌防遮挡
+  else if(lbState.mode==='down'){ lbState = {...lbState, mode:'rise', t0:t}; }
+}
+// 大神榜召唤木牌
+const sign = new THREE.Group();
+sign.add(M(new THREE.CylinderGeometry(.06,.08,1.5,8), texMat(woodTexture,1,1), 0,.75,0));
+const signTex = canvasTex(256,128,(ctx,w,h)=>{
+  ctx.fillStyle='#8A6038'; ctx.beginPath(); ctx.roundRect(0,0,w,h,16); ctx.fill();
+  ctx.strokeStyle='rgba(255,240,210,.45)'; ctx.lineWidth=5;
+  ctx.beginPath(); ctx.roundRect(7,7,w-14,h-14,11); ctx.stroke();
+  ctx.fillStyle='#FDF4E0'; ctx.textAlign='center';
+  ctx.font='700 44px "PingFang SC", sans-serif';
+  ctx.fillText('🏆 大神榜', w/2, 80);
+});
+signTex.wrapS = signTex.wrapT = THREE.ClampToEdgeWrapping;
+const signFace = M(new THREE.PlaneGeometry(1.15,.58), new THREE.MeshBasicMaterial({ map:signTex }), 0,1.45,.05);
+signFace.castShadow=false;
+sign.add(M(new THREE.BoxGeometry(1.25,.66,.08), texMat(woodTexture,1,.5), 0,1.45,0));
+sign.add(signFace);
+sign.position.set(4.4,0,4.2); sign.rotation.y = -.45;
+sign.userData = { kind:'lbsign' };
+scene.add(sign);
+
+/* ═══════════ RPG 对话框 ═══════════ */
+const dlg = document.getElementById('dlg');
+let selChar = null;
+function openDialog(g){
+  const c = g.userData.char;
+  if(selChar && selChar!==g){ selChar.userData.tz = selChar.userData.char.z; }
+  selChar = g;
+  g.userData.tz = g.userData.char.z + .55;               // 角色上前一步
+  g.userData.jumpT = clock.getElapsedTime();             // 开心一跳
+  document.getElementById('dlgAva').textContent = c.icon;
+  document.getElementById('dlgName').textContent = c.label;
+  document.getElementById('dlgEn').textContent = c.en;
+  document.getElementById('dlgLine').textContent = c.line;
+  document.getElementById('dlgBtns').innerHTML = STAGE_DEST[c.id]
+    .map(d=> d.ready
+      ? `<a href="vocab.html?grade=${d.id}">📖 ${d.label}${d.tag?` <em>${d.tag}</em>`:''}<small>开始闯关 →</small></a>`
+      : `<span class="soon">🔒 ${d.label}<small>制作中 · 敬请期待</small></span>`).join('');
+  document.querySelectorAll('#dlgBtns a').forEach(a=>a.addEventListener('click', e=>{
+    e.preventDefault(); navigate(a.getAttribute('href'));
+  }));
+  dlg.classList.add('show');
+}
+function closeDialog(){
+  dlg.classList.remove('show');
+  if(selChar){ selChar.userData.tz = selChar.userData.char.z; selChar = null; }
+}
+document.getElementById('dlgClose').addEventListener('click', closeDialog);
+function navigate(href){
+  document.getElementById('overlay').classList.add('show');
+  setTimeout(()=>location.href = href, 280);
+}
+
+/* ═══════════ 交互 ═══════════ */
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+const clickables = [...charGroups, sign, board];
+let hotG = null, downXY = null;
+function pick(e){
+  const x = e.clientX ?? e.changedTouches?.[0]?.clientX;
+  const y = e.clientY ?? e.changedTouches?.[0]?.clientY;
+  ptr.x = (x/innerWidth)*2-1; ptr.y = -(y/innerHeight)*2+1;
+  ray.setFromCamera(ptr, camera);
+  const hit = ray.intersectObjects(clickables, true)[0];
+  if(!hit) return null;
+  let o = hit.object;
+  while(o && !o.userData.kind) o = o.parent;
+  return o;
+}
+function setHot(g){
+  if(hotG === g) return;
+  if(hotG && hotG.userData.label) hotG.userData.label.classList.remove('hot');
+  hotG = g;
+  if(g && g.userData.label) g.userData.label.classList.add('hot');
+  document.body.style.cursor = g ? 'pointer' : '';
+}
+if(matchMedia('(hover:hover)').matches)
+  addEventListener('pointermove', e=>setHot(pick(e)));
+addEventListener('pointerdown', e=>{ downXY=[e.clientX,e.clientY]; });
+addEventListener('pointerup', e=>{
+  if(!downXY) return;
+  const moved = Math.hypot(e.clientX-downXY[0], e.clientY-downXY[1]);
+  downXY = null;
+  if(moved > 7) return;
+  if(e.target.closest('.dlg-card,.quick-nav,.hud-top')) return;
+  const g = pick(e);
+  if(!g){ closeDialog(); return; }
+  if(g.userData.kind==='char') openDialog(g);
+  else toggleBoard();
+});
+
+// 云朵快捷按钮（保底导航）
+const QN = [
+  ...CHARS.map(c=>({ t:`${c.icon} ${c.label}`, f:()=>openDialog(charGroups[CHARS.indexOf(c)]) })),
+  { t:'🏆 大神榜', f:toggleBoard },
+  { t:'📖 直接进训练', f:()=>navigate('vocab.html') },
+];
+document.getElementById('quickNav').innerHTML = QN.map(q=>`<button class="qbtn">${q.t}</button>`).join('');
+document.querySelectorAll('.qbtn').forEach((b,i)=>{
+  b.style.animationDelay = (i*.28)+'s';
+  b.addEventListener('click', ()=>QN[i].f());
+});
+
+/* ═══════════ 走入动画 + 渲染循环 ═══════════ */
+const clock = new THREE.Clock();
+const easeIO = t => t*t*(3-2*t);
+let intro = { done:reduceMotion, t0:0 };
+if(reduceMotion){ camera.position.set(0, 1.7, 9.2); controls.enabled = true; }
+let fr = 0;
+function loop(){
+  requestAnimationFrame(loop);
+  const t = clock.getElapsedTime();
+  if(!intro.done){
+    if(!intro.t0) intro.t0 = t;
+    const k = Math.min((t-intro.t0)/1.9, 1);
+    const e = easeIO(k);
+    camera.position.set(Math.sin(t*5.6)*.04*(1-e), 1.7 + Math.sin(t*5.6)*.035*(1-e), 14.5 - 5.3*e);
+    camera.lookAt(0, 1.5, -.5);
+    if(k>=1){ intro.done = true; controls.enabled = true; }
+  } else controls.update();
+  // 角色：呼吸、上前、开心跳、挥手
+  charGroups.forEach(g=>{
+    const u = g.userData;
+    const jump = Math.max(0, Math.sin(Math.min((t-u.jumpT)*5.5, Math.PI))) * .38;
+    g.position.y = u.baseY + Math.sin(t*1.8+u.ph)*.03 + jump;
+    g.position.z += (u.tz - g.position.z)*.1;
+    const waving = (hotG===g || selChar===g);
+    const target = waving ? (-2.3 + Math.sin(t*9)*.3) : -0.08;
+    u.armR.rotation.z += (target - u.armR.rotation.z)*.18;
+    u.armL.rotation.x = Math.sin(t*1.8+u.ph)*.07;
+  });
+  // 大神榜升降 + 悬挂摇摆
+  if(lbState.mode==='drop'){
+    const p = Math.min((t-lbState.t0)/1.15, 1);
+    board.position.y = 14 - 14*easeBack(p);
+    if(p>=1) lbState.mode='down';
+  } else if(lbState.mode==='rise'){
+    const p = Math.min((t-lbState.t0)/.8, 1);
+    board.position.y = 14*easeIO(p);
+    if(p>=1){ lbState.mode='up'; setCharLabels(true); }
+  } else if(lbState.mode==='down'){
+    board.position.y = Math.sin(t*.9)*.06;
+    board.rotation.z = Math.sin(t*1.3)*.03;
+  }
+  // 灯笼烛光摇曳
+  if(!reduceMotion) glowMats.forEach((m,i)=>{ m.emissiveIntensity = .95 + Math.sin(t*6.5+i*2)*.12; });
+  if(isMobile && (fr++ & 1)) return;
+  renderer.render(scene, camera);
+  labelLayer.render(camera);
+}
+loop();
+window.__stageReady = true;
+setTimeout(()=>{
+  const l = document.getElementById('loading');
+  l.style.opacity = 0; setTimeout(()=>l.remove(), 500);
+  const fx = document.getElementById('enterFx');           // 推门而入的光感渐显
+  fx.style.opacity = 0; setTimeout(()=>fx.remove(), 1000);
+}, 350);
+
+addEventListener('resize', ()=>{
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+};
+</script>
+<script>
+// ── 引擎加载器 v3：本地优先 → 实测验证过的 CDN；全程可视进度 + 逃生入口 ──
+(function(){
+  var urls = [
+    'libs/three/three.min.js',
+    'https://registry.npmmirror.com/three/0.149.0/files/build/three.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js',
+    'https://cdn.bootcdn.net/ajax/libs/three.js/0.149.0/three.min.js',
+    'https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js',
+    'https://unpkg.com/three@0.149.0/build/three.min.js'
+  ];
+  var i = 0, st = document.querySelector('#loading .ls');
+  function fail(){ location.replace('vocab.html'); }
+  function boot(){ try{ window.__bootStage(); }catch(e){ console.error(e); fail(); } }
+  function next(){
+    if(window.THREE){ boot(); return; }
+    if(i >= urls.length){ fail(); return; }
+    var u = urls[i++];
+    if(st) st.textContent = '正在搭建舞台 · 线路 ' + i + '/' + urls.length + ' · v3';
+    var s = document.createElement('script'), done = false;
+    var tm = setTimeout(function(){ if(done) return; done = true; next(); }, 4000);
+    s.onload = function(){ if(done) return; done = true; clearTimeout(tm);
+      window.THREE ? boot() : next(); };
+    s.onerror = function(){ if(done) return; done = true; clearTimeout(tm); next(); };
+    s.src = u; document.head.appendChild(s);
+  }
+  setTimeout(function(){
+    if(!window.THREE && st && !document.getElementById('escGo')){
+      var a = document.createElement('div'); a.style.marginTop = '10px';
+      a.innerHTML = '<a id="escGo" href="vocab.html" style="color:#C85A2A;font-weight:600;font-size:12px;text-decoration:none">加载偏慢？点此直接进入 →</a>';
+      st.parentNode.appendChild(a);
+    }
+  }, 6000);
+  next();
+})();
+</script>
+<script src="audio.js"></script>
+<script src="bgm-cross.js"></script>
+</body>
+</html>
