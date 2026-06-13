@@ -28,7 +28,7 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
   <div class="title">你是 John 的亲学生吗？</div>
   <div class="sub">请输入你的名字</div>
   <input class="inp" id="nameInp" type="text" placeholder="输入你的名字" maxlength="20" autocomplete="off">
-  <button class="btn-ghost" onclick="enter()">我爱英语，路过看看 👋</button>
+  <button class="btn" onclick="enter()">开始学习 →</button>
 </div>
 
 <script>
@@ -46,7 +46,7 @@ function enter(){
   var name = document.getElementById('nameInp').value.trim();
   if(!name){ alert('请输入你的名字'); return; }
   localStorage.setItem('jc_username', name);
-  window.location.href = 'study.html';
+  window.location.href = 'index.html';
 }
 
 document.getElementById('nameInp').addEventListener('keydown',function(e){
