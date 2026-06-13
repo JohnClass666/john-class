@@ -524,14 +524,14 @@ scene.add(clouds);
 const BUILDINGS = [
   { name:'智慧殿 · 阅读',   href:'reading_sentence.html', build:buildKeep,      pos:[0,0,-2.5] },
   { name:'荣誉殿 · 大神榜', href:'weekly_stars.html',     build:buildGoldHall,  pos:[0,5.27,-2.5] },
-  { name:'藏书塔 · 单词',   href:'vocab.html',  build:()=>tower({r:1.15,h:8.2,roofH:2.6,wins:4}), pos:[8.2,0,-4.8] },
+  { name:'藏书塔 · 生存英语', href:'survival-english.html', build:()=>tower({r:1.15,h:8.2,roofH:2.6,wins:4}), pos:[8.2,0,-4.8] },
   { name:'钟楼 · 听力',     href:'listening.html',        build:buildBellTower, pos:[-8,0,-5.4] },
   { name:'缮写阁 · 写作',   href:'writing.html', build:()=>tower({r:.92,h:5.2,roof:[18,62,46],roofH:2.0}), pos:[9.4,0,2.4] },
   { name:'机械塔 · 程序员', href:'programmer.html',       build:buildMechTower, pos:[-10.4,0,1.8] },
   { name:'工坊 · 语法',     href:'grammar_hub.html',      build:()=>house({}),  pos:[6,0,7.4] },
   { name:'试炼场 · 真题',   href:'exam.html',             build:buildArena,     pos:[-6.4,0,7.2] },
-  { name:'庭院舞台 · 口语', href:'speaking-hub.html',     build:buildStageGate, pos:[0,0,6.8] },
-  { name:'驿站 · 生存英语', href:'survival-english.html', build:()=>house({}),  pos:[4.2,0,-5.2] },
+  { name:'庭院舞台 · 词汇', href:'vocab.html',            build:buildStageGate, pos:[0,0,6.8] },
+  { name:'驿站 · 口语',     href:'speaking-hub.html',     build:()=>house({}),  pos:[4.2,0,-5.2] },
 ];
 const clickables = [];
 BUILDINGS.forEach(b=>{
