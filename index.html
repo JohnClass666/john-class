@@ -280,11 +280,6 @@ function init() {
   if(!saved) saved = localStorage.getItem('jc_reading_name');
   if (saved && saved!=='同学') {
     localStorage.setItem(NAME_KEY, saved);
-    // 老用户没宣言 → 跳一次补宣言
-    if(!localStorage.getItem('jc_victory_msg')){
-      window.location.href = 'start.html';
-      return;
-    }
     showMain(saved, false);
   } else {
     // 没名字 → 跳到门卫页统一走三问流程
