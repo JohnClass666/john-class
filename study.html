@@ -557,7 +557,25 @@ function navigate(href){
 }
 
 const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
-let hotG = null, selG = null, downXY = null;
+let hotG = null, selG = null, downXY = null, cine = null;
+const easeIO = t => t*t*(3-2*t);
+function startCine(g){
+  if(reduceMotion){ navigate(g.userData.href); return; }
+  controls.enabled = false; controls.autoRotate = false;
+  setHot(null);
+  const wp = new THREE.Vector3();
+  g.getWorldPosition(wp);
+  cine = {
+    href: g.userData.href,
+    t0: clock.getElapsedTime(),
+    fading: false,
+    done: false,
+    fromP: camera.position.clone(),
+    fromT: controls.target.clone(),
+    toP: new THREE.Vector3(wp.x + 2, wp.y + 4, wp.z + 6),
+    toLook: wp.clone(),
+  };
+}
 function pick(e){
   const x = e.clientX ?? e.changedTouches?.[0]?.clientX;
   const y = e.clientY ?? e.changedTouches?.[0]?.clientY;
@@ -589,8 +607,8 @@ addEventListener('pointerup', e=>{
   const g = pick(e);
   if(!g){ if(selG){ selG.userData.label.textContent = selG.userData.name;
             selG.userData.label.classList.remove('hot'); selG.userData.targetS=1; selG=null; } return; }
-  if(matchMedia('(hover:hover)').matches){ navigate(g.userData.href); return; }
-  if(selG === g){ navigate(g.userData.href); return; }
+  if(matchMedia('(hover:hover)').matches){ startCine(g); return; }
+  if(selG === g){ startCine(g); return; }
   if(selG){ selG.userData.label.textContent = selG.userData.name;
     selG.userData.label.classList.remove('hot'); selG.userData.targetS = 1; }
   selG = g;
@@ -621,8 +639,8 @@ function loop(){
   const t = clock.getElapsedTime();
   const idle = performance.now() - lastInteraction > 3000;
 
-  if(!idle){
-    controls.update();
+  if(!idle || cine){
+    if(!cine) controls.update();
     clickables.forEach(g=>{
       const s = g.scale.x + (g.userData.targetS - g.scale.x)*.14;
       g.scale.setScalar(s);
@@ -633,6 +651,21 @@ function loop(){
       debris.forEach(d=>{ d.position.y = d.userData.y0 + Math.sin(t*.6+d.userData.ph)*.4; d.rotation.y = t*.08; });
       const hp = 11 + Math.sin(t*.7)*.9;
       halo.scale.set(hp, hp, 1);
+    }
+    if(cine){
+      const e = clock.getElapsedTime() - cine.t0;
+      const k = easeIO(Math.min(e/1.2, 1));
+      camera.position.lerpVectors(cine.fromP, cine.toP, k);
+      controls.target.lerpVectors(cine.fromT, cine.toLook, k);
+      camera.lookAt(controls.target);
+      if(k>.65 && !cine.fading){
+        cine.fading = true;
+        overlay.classList.add('show');
+      }
+      if(e>1.35 && !cine.done){
+        cine.done = true;
+        setTimeout(()=>location.href=cine.href, 50);
+      }
     }
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
