@@ -152,9 +152,11 @@ html, body {
 </div>
 <script>
 function go(e, href) {
-  e.preventDefault();
-  document.getElementById('ov').classList.add('show');
-  setTimeout(function(){ window.location.href = href; }, 280);
+  if(e)e.preventDefault();
+  var ov=document.getElementById('ov')||document.getElementById('overlay');
+  if(!ov){window.location.href=href;return;}
+  ov.classList.add('show');
+  setTimeout(function(){window.location.href=href;},280);
 }
 document.getElementById('copyBtn').addEventListener('click', function(){
   var wx = document.getElementById('wxId').textContent;

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>口语填空 · 码神训练营</title>
+<title>口语 · 码神训练营</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:#F5EDD8;color:#2A1E08;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
@@ -88,12 +88,16 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
 </head>
 <body>
 
+<div style="background:rgba(201,169,110,.1);border-bottom:1px solid rgba(201,169,110,.25);padding:8px 16px;text-align:center;font-size:12px;color:#7A5A20;position:sticky;top:0;z-index:100">
+  📋 请<strong>复制网址</strong>使用 <strong>Safari</strong> 打开，目前不支持其它浏览器
+</div>
+
 <!-- ENTRY -->
 <div id="p-entry" class="pane on">
   <a class="back-link" href="programmer.html">← 程序员专区</a>
-  <div class="logo">JOHN CLASS · 口语填空</div>
+  <div class="logo">JOHN CLASS · 口语</div>
   <div style="font-size:44px;margin-bottom:16px">💬</div>
-  <div style="font-size:22px;font-weight:700;margin-bottom:8px">口语填空训练</div>
+  <div style="font-size:22px;font-weight:700;margin-bottom:8px">口语训练</div>
   <div style="font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:28px;text-align:center">看中文提示，说出对应英文<br>挖空 70%+，朗读后对比答案<br>每句 <strong>25 分</strong> · 共 100 句 · 满分 2500</div>
   <div style="width:100%;background:rgba(255,252,245,.9);border:1.5px solid rgba(184,149,106,.2);border-radius:14px;padding:16px 18px;margin-bottom:24px;text-align:left">
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#B5A080;text-transform:uppercase;margin-bottom:10px">本周进度</div>
@@ -111,7 +115,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
 <!-- PRACTICE -->
 <div id="p-practice" class="pane">
   <a class="back-link" href="#" id="backToEntry">← 返回</a>
-  <div class="logo">JOHN CLASS · 口语填空</div>
+  <div class="logo">JOHN CLASS · 口语</div>
   <div class="prog-row" style="width:100%"><span>本周进度</span><span id="progText">0 / 100</span></div>
   <div class="prog-track" style="width:100%"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
 
@@ -159,7 +163,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
 
 <!-- DONE -->
 <div id="p-done" class="pane">
-  <div class="logo">JOHN CLASS · 口语填空</div>
+  <div class="logo">JOHN CLASS · 口语</div>
   <div class="done-emoji">🏆</div>
   <div class="done-title">全部完成！</div>
   <div class="done-sub">100 句口语训练全部搞定！</div>
@@ -175,7 +179,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
 <script>
 var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.P5ixZCEYtAkEtFjnHDweVHClLIrFcE2CxHt1eTMyNuQ';
-var POINTS=25, PASS_SCORE=70, MAX_ATTEMPTS=3;
+var POINTS=25, PASS_SCORE=80, MAX_ATTEMPTS=3;
 
 // ── SENTENCE BANK with Chinese translations ──
 var SENTENCES=[
@@ -401,7 +405,7 @@ function updateProgUI(){
 
 function renderSentence(){
   var s=orderedSents[currentIdx];
-  document.getElementById('sentNum').textContent='句子 '+s.id+' / 100';
+  document.getElementById('sentNum').textContent='句子 '+s.dispId+' / 100';
   var sc=document.getElementById('sentScene');
   sc.textContent=SCENE_LABELS[s.scene]||s.scene;
   sc.className='sent-scene '+(SCENE_CSS[s.scene]||'');
@@ -622,7 +626,7 @@ function init(){
   if(!name||name==='同学'){window.location.href='start.html';return;}
   userName=name;
   // Seed 2 = different order from speaking (seed 1)
-  orderedSents=shuffle(SENTENCES,2);
+  orderedSents=shuffle(SENTENCES,2);for(var i=0;i<orderedSents.length;i++)orderedSents[i].dispId=i+1;
   updateEntryUI();
   updateProgUI();
   document.getElementById('btnStart').addEventListener('click',function(){

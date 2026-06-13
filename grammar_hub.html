@@ -221,10 +221,11 @@ html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Helvetica Neu
 const WECHAT = 'JiahaoLee6666';
 
 function pg(e, href) {
-  if (e) e.preventDefault();
-  const ov = document.getElementById('ov');
+  if(e)e.preventDefault();
+  var ov=document.getElementById('ov')||document.getElementById('overlay');
+  if(!ov){window.location.href=href;return;}
   ov.classList.add('show');
-  setTimeout(() => { window.location.href = href; }, 280);
+  setTimeout(function(){window.location.href=href;},280);
 }
 
 function showFeedback(grade) {

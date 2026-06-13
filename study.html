@@ -105,9 +105,11 @@ function changeName(){
   }
 }
 function go(e, href) {
-  e.preventDefault();
-  document.getElementById('overlay').classList.add('show');
-  setTimeout(function(){ window.location.href = href; }, 280);
+  if(e)e.preventDefault();
+  var ov=document.getElementById('overlay')||document.getElementById('ov');
+  if(!ov){window.location.href=href;return;}
+  ov.classList.add('show');
+  setTimeout(function(){window.location.href=href;},280);
 }
 function hasWebGL(){
   try { var c=document.createElement('canvas');

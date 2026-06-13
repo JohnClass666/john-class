@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>生存英语 · John Class</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#F5EDD8;color:#2A1E08;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+
+/* ── Panes ── */
+.pane{display:none;position:fixed;inset:0;flex-direction:column}
+.pane.on{display:flex}
+
+/* ── Entry (Timeline) ── */
+.entry-scroll{flex:1;overflow-y:auto;padding:28px 20px 100px}
+.entry-inner{max-width:480px;margin:0 auto}
+.logo{font-size:11px;letter-spacing:.18em;color:#B5A080;font-weight:600;margin-bottom:8px;text-align:center}
+.hero-icon{font-size:44px;margin-bottom:6px;text-align:center}
+.hero-title{font-size:24px;font-weight:700;text-align:center;margin-bottom:2px}
+.hero-sub{font-size:13px;color:#8A7050;line-height:1.7;text-align:center;margin-bottom:12px}
+.score-bar{background:rgba(255,252,245,.9);border:1.5px solid rgba(184,149,106,.2);border-radius:14px;padding:14px 18px;margin-bottom:12px}
+.score-bar-title{font-size:10px;font-weight:700;letter-spacing:.1em;color:#B5A080;text-transform:uppercase;margin-bottom:6px}
+.score-bar-row{display:flex;justify-content:space-between;align-items:center}
+.score-bar-label{font-size:13px;color:#6A5040}
+.score-bar-val{font-size:22px;font-weight:700;color:#C85A2A}
+.sec-label{font-size:10px;font-weight:700;letter-spacing:.14em;color:#B8956A;text-transform:uppercase;margin-bottom:6px}
+
+/* Timeline */
+.timeline{position:relative;padding-left:36px}
+.timeline::before{content:'';position:absolute;left:19px;top:8px;bottom:8px;width:2px;background:rgba(184,149,106,.2);border-radius:1px}
+.tl-item{position:relative;display:flex;align-items:center;gap:14px;padding:11px 0;cursor:pointer;transition:transform .15s}
+.tl-item:hover{transform:translateX(3px)}
+.tl-item:active{opacity:.7}
+.tl-dot{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;position:relative;z-index:1;transition:all .2s}
+.tl-dot.locked{background:rgba(184,149,106,.08);border:2px solid rgba(184,149,106,.15)}
+.tl-dot.available{background:rgba(255,252,245,.9);border:2px solid rgba(42,30,8,.25)}
+.tl-dot.done{background:#2A1E08;border:2px solid #2A1E08;color:#F5EDD8}
+.tl-dot.done::after{content:'✓';position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:50%;background:#3D7A30;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.tl-info{flex:1;min-width:0}
+.tl-name{font-size:15px;font-weight:700;color:#2A1E08;line-height:1.3}
+.tl-name .tl-sub{font-size:11px;font-weight:400;color:#9A8060;display:block}
+.tl-meta{font-size:11px;color:#B5A080;margin-top:3px}
+.tl-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;flex-shrink:0}
+.tl-badge.done-badge{background:rgba(60,150,90,.12);color:#1A4A28;border:1px solid rgba(60,150,90,.2)}
+.tl-badge.available-badge{background:rgba(184,149,106,.1);color:#B8956A;border:1px solid rgba(184,149,106,.2)}
+.tl-badge.locked-badge{background:rgba(184,149,106,.05);color:rgba(184,149,106,.5);border:1px solid rgba(184,149,106,.1)}
+
+/* ── Chat Pane ── */
+.chat-header{display:flex;align-items:center;gap:12px;padding:14px 18px;background:rgba(255,252,245,.95);border-bottom:1px solid rgba(184,149,106,.15);flex-shrink:0;z-index:2}
+.chat-back{font-size:12px;color:#9A8060;text-decoration:none;flex-shrink:0;transition:color .2s}
+.chat-back:hover{color:#2A1E08}
+.chat-scene-info{flex:1;text-align:center}
+.chat-scene-title{font-size:14px;font-weight:700;color:#2A1E08}
+.chat-scene-prog{font-size:10px;color:#B5A080}
+.chat-scroll{flex:1;overflow-y:auto;padding:16px 16px 8px;-webkit-overflow-scrolling:touch}
+.chat-inner{max-width:480px;margin:0 auto}
+
+/* Chat bubbles */
+.msg-row{display:flex;margin-bottom:14px;animation:msgIn .35s cubic-bezier(.22,1,.36,1) both}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.msg-row.other{justify-content:flex-start}
+.msg-row.student{justify-content:flex-end}
+.msg-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;margin-top:2px}
+.msg-row.other .msg-avatar{background:rgba(184,149,106,.12);margin-right:8px}
+.msg-row.student .msg-avatar{background:rgba(42,30,8,.08);margin-left:8px;order:2}
+.msg-bubble{max-width:75%;padding:12px 14px;border-radius:16px;font-size:15px;line-height:1.6;word-break:break-word}
+.msg-row.other .msg-bubble{background:#fff;border:1px solid rgba(184,149,106,.15);border-bottom-left-radius:4px;font-family:Georgia,serif}
+.msg-row.student .msg-bubble{background:#2A1E08;color:#F5EDD8;border-bottom-right-radius:4px;font-family:Georgia,serif;order:1}
+.msg-score{font-size:10px;margin-top:4px;opacity:.7}
+.msg-row.student .msg-score{text-align:right}
+
+/* Prompt card (student turn) */
+.prompt-card{background:rgba(255,252,245,.95);border:2px dashed rgba(184,149,106,.3);border-radius:16px;padding:16px 18px;margin-bottom:14px;text-align:center;animation:msgIn .35s both}
+.prompt-label{font-size:10px;font-weight:700;letter-spacing:.12em;color:#B8956A;text-transform:uppercase;margin-bottom:8px}
+.prompt-cn{font-size:17px;font-weight:700;color:#2A1E08;line-height:1.6;margin-bottom:10px}
+.prompt-hint{font-size:12px;color:#9A8060}
+
+/* Recording bar */
+.rec-bar{display:flex;align-items:center;gap:10px;padding:12px 18px;background:rgba(255,252,245,.98);border-top:1px solid rgba(184,149,106,.15);flex-shrink:0;z-index:2}
+.rec-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none;transition:background .15s}
+.rec-btn:active{opacity:.8}
+.rec-btn:disabled{opacity:.35;pointer-events:none}
+.rec-btn.recording{background:#A03020}
+.rec-dot{width:9px;height:9px;border-radius:50%;background:#F5EDD8;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.action-row{display:none;gap:10px;width:100%}
+.action-row.on{display:flex}
+.btn-retry{flex:1;padding:14px;background:transparent;color:#7A6040;border:1.5px solid rgba(42,30,8,.2);border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-retry:active{opacity:.7}
+.btn-continue{flex:1;padding:14px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-continue:active{opacity:.8}
+
+/* Ref toggle in student bubble */
+.ref-toggle-inline{display:inline-block;font-size:11px;color:rgba(255,255,255,.6);margin-top:6px;cursor:pointer;border-bottom:1px dashed rgba(255,255,255,.3);padding-bottom:1px}
+.ref-toggle-inline:hover{color:rgba(255,255,255,.85)}
+.ref-answer-inline{display:none;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.2);font-size:12px;line-height:1.7;opacity:.8}
+.ref-answer-inline.show{display:block}
+
+/* Inline score on student bubble */
+.score-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;margin-left:6px}
+.score-tag.good{background:rgba(60,150,90,.15);color:#1A4A28}
+.score-tag.ok{background:rgba(200,140,50,.12);color:#7A4000}
+.score-tag.low{background:rgba(200,70,60,.1);color:#8A1A10}
+
+/* Word diff inline */
+.diff-inline{font-size:12px;line-height:1.8;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.15)}
+.diff-inline .w-ok{color:#8CD790}
+.diff-inline .w-shift{color:#F0C060;border-bottom:1px dotted rgba(240,192,96,.5)}
+.diff-inline .w-miss{color:#E08070;text-decoration:line-through}
+.diff-inline .w-extra{color:rgba(255,255,255,.35);font-style:italic}
+
+/* ── Review pane ── */
+.review-scroll{flex:1;overflow-y:auto;padding:20px 16px 40px}
+.review-inner{max-width:480px;margin:0 auto}
+.review-title{font-size:20px;font-weight:700;text-align:center;margin-bottom:4px}
+.review-sub{font-size:12px;color:#9A8060;text-align:center;margin-bottom:16px}
+.review-summary{display:flex;gap:10px;margin-bottom:20px}
+.review-stat{flex:1;padding:14px 10px;background:rgba(255,252,245,.9);border:1.5px solid rgba(184,149,106,.2);border-radius:14px;text-align:center}
+.review-stat-num{font-size:24px;font-weight:700;color:#2A1E08}
+.review-stat-lbl{font-size:10px;color:#8A7050;margin-top:2px}
+.review-pts{text-align:center;font-size:26px;font-weight:700;color:#C85A2A;margin-bottom:18px}
+.review-bubble{max-width:80%;padding:12px 14px;border-radius:16px;font-size:14px;line-height:1.6;margin-bottom:10px;font-family:Georgia,serif}
+.review-bubble.other{background:#fff;border:1px solid rgba(184,149,106,.15);border-bottom-left-radius:4px;margin-right:auto}
+.review-bubble.student{background:#2A1E08;color:#F5EDD8;border-bottom-right-radius:4px;margin-left:auto}
+.review-bubble-label{font-size:10px;font-weight:700;letter-spacing:.08em;margin-bottom:4px;opacity:.6}
+.review-divider{text-align:center;font-size:11px;color:#B5A080;margin:16px 0}
+.review-bar{display:flex;gap:10px;padding:14px 18px;background:rgba(255,252,245,.98);border-top:1px solid rgba(184,149,106,.15);flex-shrink:0}
+.review-bar .btn-ghost{flex:1;padding:14px;background:transparent;color:#7A6040;border:1.5px solid rgba(42,30,8,.2);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+.review-bar .btn-solid{flex:1;padding:14px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:#2A1E08;color:#F5EDD8;padding:12px 24px;border-radius:20px;font-size:14px;font-weight:600;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Safari notice */
+.safari-note{display:none;text-align:center;padding:14px 18px;background:rgba(201,169,110,.1);border:1px solid rgba(201,169,110,.25);border-radius:10px;font-size:12px;color:#7A5A20;flex-shrink:0}
+.safari-note.show{display:block}
+</style>
+</head>
+<body>
+
+<!-- ════ ENTRY: Timeline ════ -->
+<div id="p-entry" class="pane on">
+  <div class="entry-scroll">
+    <div class="entry-inner">
+      <div style="text-align:center;margin-bottom:20px">
+        <div class="logo">JOHN CLASS · 生存英语</div>
+        <div class="hero-icon">🌍</div>
+        <div class="hero-title">生存英语</div>
+        <div class="hero-sub">从登机到离开 · 13 个真实场景对话<br>场景通关 +500 分</div>
+      </div>
+      <div class="score-bar">
+        <div class="score-bar-title">本周积分</div>
+        <div class="score-bar-row">
+          <span class="score-bar-label">生存英语</span>
+          <span class="score-bar-val" id="entryPts">0 分</span>
+        </div>
+      </div>
+      <div class="sec-label">旅程路线</div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+  </div>
+  <div class="safari-note" id="safariNote"></div>
+</div>
+
+<!-- ════ CHAT: Conversation ════ -->
+<div id="p-chat" class="pane">
+  <div class="chat-header">
+    <a class="chat-back" href="#" id="backToEntry">← 返回</a>
+    <div class="chat-scene-info">
+      <div class="chat-scene-title" id="chatTitle"></div>
+      <div class="chat-scene-prog" id="chatProg"></div>
+    </div>
+    <div style="width:40px"></div>
+  </div>
+  <div class="safari-note" id="chatSafariNote"></div>
+  <div class="chat-scroll" id="chatScroll">
+    <div class="chat-inner" id="chatInner"></div>
+  </div>
+  <div class="rec-bar" id="recBar">
+    <div id="recMode" style="display:flex;gap:10px;width:100%;align-items:center">
+      <button class="btn-skip" onclick="skipCurrent()">跳过</button>
+      <button class="rec-btn" id="recBtn" onclick="handleRec()">🎤 按下开始录音</button>
+    </div>
+    <div id="actionMode" class="action-row">
+      <button class="btn-retry" onclick="retryCurrent()">🔄 再来一次</button>
+      <button class="btn-continue" onclick="continueCurrent()">继续 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ REVIEW: Full dialogue ════ -->
+<div id="p-review" class="pane">
+  <div class="review-scroll" id="reviewScroll">
+    <div class="review-inner" id="reviewInner"></div>
+  </div>
+  <div class="review-bar">
+    <button class="btn-ghost" onclick="retryScene()">再练一次 🔄</button>
+    <button class="btn-solid" onclick="backToEntry()">完成 ✓</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// SUPABASE
+// ═══════════════════════════════════════
+var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.P5ixZCEYtAkEtFjnHDweVHClLIrFcE2CxHt1eTMyNuQ';
+function sbHeaders(){return{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};}
+function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.toISOString().split('T')[0];}
+async function sbUpsertScore(name,addPts){
+  if(!name)return;
+  var ws=getWeekStart();
+  var url=SB_URL+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+ws+'&select=id,survival_score';
+  try{var r=await fetch(url,{headers:sbHeaders()});var rows=r.ok?await r.json():[];}catch(e){return;}
+  var cur=0,eid=null;
+  if(rows&&rows.length){cur=rows[0].survival_score||0;eid=rows[0].id;}
+  var payload={user_name:name,week_start:ws,survival_score:cur+addPts,updated_at:new Date().toISOString()};
+  if(eid)payload.id=eid;
+  try{await fetch(SB_URL+'/rest/v1/weekly_scores',{method:'POST',headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),body:JSON.stringify(payload)});}catch(e){}
+}
+
+// ═══════════════════════════════════════
+// TTS (same voice selection as vocab.html)
+// ═══════════════════════════════════════
+var TTS={ok:false,voice:null};
+var PREFERRED_VOICES=[
+  'Samantha','Alex','Fred','Victoria','Daniel','Karen','Moira','Tessa',
+  'Google US English','Google UK English Female','Google UK English Male',
+  'Microsoft Aria Online','Microsoft Guy Online','Microsoft Jenny Online',
+  'Microsoft Zira','Microsoft David','Microsoft Mark',
+  'en-us-x-sfg','en-us-x-tpd','en-us-x-tpf',
+];
+var BAD_VOICE_KEYWORDS=['espeak','festival','mbrola','pico','flite'];
+
+function pickBestVoice(vs){
+  var filtered=vs.filter(function(v){return !BAD_VOICE_KEYWORDS.some(function(bad){return v.name.toLowerCase().includes(bad);});});
+  if(!filtered.length)return vs[0];
+  for(var i=0;i<PREFERRED_VOICES.length;i++){
+    var found=filtered.find(function(v){return v.name.toLowerCase().includes(PREFERRED_VOICES[i].toLowerCase());});
+    if(found)return found;
+  }
+  var local=filtered.filter(function(v){return v.localService;});
+  if(local.length){var usLocal=local.find(function(v){return /en[-_]US/i.test(v.lang);});return usLocal||local[0];}
+  var usVoice=filtered.find(function(v){return /en[-_]US/i.test(v.lang);});
+  return usVoice||filtered[0];
+}
+
+function initTTS(){
+  if(!('speechSynthesis' in window))return;
+  function pick(){
+    var vs=speechSynthesis.getVoices().filter(function(v){return /^en(-|_|$)/i.test(v.lang);});
+    if(!vs.length)return;
+    TTS.voice=pickBestVoice(vs);
+    TTS.ok=true;
+  }
+  pick();
+  if(!TTS.ok)speechSynthesis.onvoiceschanged=pick;
+  setTimeout(function(){if(!TTS.ok){var vs=speechSynthesis.getVoices().filter(function(v){return /^en(-|_|$)/i.test(v.lang);});if(vs.length){TTS.voice=pickBestVoice(vs);TTS.ok=true;}}},500);
+}
+
+function speak(text){
+  if(!text||!TTS.ok)return;
+  speechSynthesis.cancel();
+  var u=new SpeechSynthesisUtterance(text);
+  if(TTS.voice)u.voice=TTS.voice;
+  u.lang=(TTS.voice&&TTS.voice.lang)||'en-US';
+  u.rate=1;
+  u.pitch=1;
+  speechSynthesis.speak(u);
+}
+
+// ═══════════════════════════════════════
+// CORPUS: 13 scenes, full dialogues
+// ═══════════════════════════════════════
+var SCENES=[
+{id:'check-in',icon:'🛫',name:'值机',sub:'Check-in',other:'地勤',avatar:'🧑‍✈️',dialogues:[
+  {role:'other',en:"Good morning. May I see your passport and ticket, please?"},
+  {role:'student',cn:'早上好。当然，这是我的护照和电子机票。',en:"Good morning. Sure, here's my passport and e-ticket."},
+  {role:'other',en:"Thank you. Do you have any luggage to check in?"},
+  {role:'student',cn:'是的，我有一个28寸的行李箱要托运，没有超重。',en:"Yes, I have one 28-inch suitcase to check in. It's under the weight limit."},
+  {role:'other',en:"Any other bags with you?"},
+  {role:'student',cn:'还有一个背包，里面有一台笔记本和两个充电宝。',en:"I also have a backpack, with a laptop and two power banks inside."},
+  {role:'other',en:"Got it. Do you have a seating preference?"},
+  {role:'student',cn:'我想要靠窗的座位，如果能靠前一点就更好了。',en:"I'd like a window seat, please. Closer to the front if possible."},
+  {role:'other',en:"Alright, I've put you in 22A, window seat near the front. Here's your boarding pass. Gate C8, boarding at 9:50, departure 10:30."},
+  {role:'student',cn:'谢谢。登机口C8，10:30起飞，9:50开始登机，对吗？',en:"Thanks. So gate C8, departing at 10:30, and boarding starts at 9:50 — right?"},
+  {role:'other',en:"That's correct. Have a nice flight!"},
+  {role:'student',cn:'谢谢。顺便问一下，能多给我一个行李标签吗？',en:"Thanks. By the way, could I get one more luggage tag?"}
+]},
+{id:'boarding',icon:'✈️',name:'登机',sub:'Boarding',other:'登机口工作人员',avatar:'🧑‍✈️',dialogues:[
+  {role:'other',en:"Good morning. May I see your boarding pass and ID?"},
+  {role:'student',cn:'好的，这是我的登机牌和身份证。',en:"Here you go — my boarding pass and ID."},
+  {role:'other',en:"Thank you. You're in Group 3."},
+  {role:'student',cn:'第三组，好的。请问航班准点吗？',en:"Group 3, OK. Excuse me, is the flight on time?"},
+  {role:'other',en:"Yes, right on schedule. We'll start boarding shortly."},
+  {role:'student',cn:'太好了。登机口旁边的插座能用吗？我手机快没电了。',en:"Great. Are the outlets near the gate working? My phone's almost dead."},
+  {role:'other',en:"Yes, they should be working. Also, I need to check your carry-on size quickly."},
+  {role:'student',cn:'谢谢。能帮我看一下登机箱尺寸合不合适吗？感觉有点重。',en:"Thanks. Also, could you check if my carry-on is the right size? It feels a bit heavy."},
+  {role:'other',en:"It fits perfectly. We're now boarding Group 3 — you can go ahead."},
+  {role:'student',cn:'谢谢。现在可以登机了吗？我看到很多人开始排队了。',en:"Thanks. Can I board now? I see a lot of people lining up."},
+  {role:'other',en:"Yes. What's your seat number?"},
+  {role:'student',cn:'好的，我靠窗，22A。需要扫我的二维码吗？',en:"Sure, window seat 22A. Do you need to scan my QR code?"}
+]},
+{id:'inflight',icon:'💺',name:'机舱服务',sub:'In-flight Service',other:'空乘',avatar:'👩‍✈️',dialogues:[
+  {role:'other',en:"Welcome aboard! Your seat is 22A, just past the wing on the left."},
+  {role:'student',cn:'谢谢，找到了。22A，靠窗，就在机翼旁边。',en:"Thanks, got it. 22A, window seat, right by the wing."},
+  {role:'other',en:"The overhead bin above you looks quite full."},
+  {role:'student',cn:'这个行李架好像满了，我能放到对面那个吗？',en:"This overhead bin looks full. Can I put my bag in the one across the aisle?"},
+  {role:'other',en:"Of course, go ahead. Let me know if you need anything."},
+  {role:'student',cn:'搞定了。请问起飞后多久可以解开安全带？',en:"All set. How long after takeoff can I unbuckle my seatbelt?"},
+  {role:'other',en:"About 15 minutes after takeoff, once we reach cruising altitude. Can I get you something to drink?"},
+  {role:'student',cn:'请给我一杯热茶加柠檬，再来一小包饼干。',en:"Could I get a hot tea with lemon, and a small pack of cookies?"},
+  {role:'other',en:"Here you go. Anything else?"},
+  {role:'student',cn:'暂时不用。对了，你们有毛毯吗？空调有点冷。',en:"Not right now. Actually, do you have blankets? The AC is a bit cold."},
+  {role:'other',en:"Yes, here's a blanket. We also have a duty-free catalog if you'd like to shop."},
+  {role:'student',cn:'太感谢了。另外我想买一瓶免税香水，有目录吗？',en:"Thank you so much. Also, I'd like to buy a duty-free perfume. Do you have a catalog?"},
+  {role:'other',en:"I'll bring it right over. Oh, and the restrooms are located at both ends of the cabin."},
+  {role:'student',cn:'好的。洗手间在机舱前部还是后部？',en:"OK. Is the restroom at the front or the back?"}
+]},
+{id:'directions',icon:'🗺️',name:'问路',sub:'Asking for Directions',other:'路人',avatar:'🚶',dialogues:[
+  {role:'other',en:"Hi there! You look a bit lost — can I help?"},
+  {role:'student',cn:'你好，是的。我在找最近的公交站，要去海洋博物馆。',en:"Hi, yes. I'm looking for the nearest bus stop — I'm trying to get to the Ocean Museum."},
+  {role:'other',en:"Sure! Go two blocks east, and take bus 42. The museum closes at 5:30."},
+  {role:'student',cn:'往东两个街区，坐42路。博物馆几点关门？',en:"Two blocks east, bus 42. What time does the museum close?"},
+  {role:'other',en:"5:30 PM. What time is it now?"},
+  {role:'student',cn:'现在下午四点半，应该来得及。但我只有现金没有公交卡，怎么办？',en:"It's 4:30 now, so I should be OK. But I only have cash, no bus card. What should I do?"},
+  {role:'other',en:"The bus takes cash — you just need exact change. Do you have smaller bills?"},
+  {role:'student',cn:'太好了。我有一张五美元纸币，能帮我换成两个一块钱硬币吗？',en:"Great. I have a five-dollar bill. Could you break it into two singles?"},
+  {role:'other',en:"No problem, here you go. By the way, there's a great Chinese place near the museum if you're hungry."},
+  {role:'student',cn:'好的。另外博物馆附近有好吃的中国餐厅吗？',en:"OK. Also, is there a good Chinese restaurant near the museum?"},
+  {role:'other',en:"Yeah, Golden Dragon, two doors down from the museum. The subway back is easy too — museum station is right there."},
+  {role:'student',cn:'谢谢。最后问一下，从博物馆坐地铁回我的酒店方便吗？我住中央酒店。',en:"Thanks. One last thing — is the subway convenient from the museum back to my hotel? I'm staying at the Central Hotel."},
+  {role:'other',en:"Very convenient — just three stops. Enjoy your visit!"},
+  {role:'student',cn:'太感谢了，你真的帮了大忙。祝你今天愉快。',en:"Thank you so much, you've been really helpful. Have a nice day!"}
+]},
+{id:'taxi',icon:'🚕',name:'打车',sub:'Taking a Taxi',other:'司机',avatar:'🚖',dialogues:[
+  {role:'other',en:"Good afternoon! Where would you like to go?"},
+  {role:'student',cn:'师傅你好，请送我去中央火车站，我要赶下午三点的火车。',en:"Hello! Please take me to Central Station — I'm catching a 3 PM train."},
+  {role:'other',en:"Central Station, got it. The main road might be jammed at this hour. Should I take the tunnel instead?"},
+  {role:'student',cn:'如果堵车的话，走隧道会不会更快？',en:"If there's traffic, would going through the tunnel be faster?"},
+  {role:'other',en:"Yeah, about 10 minutes faster. The fare will be around 25 dollars."},
+  {role:'student',cn:'没问题。大概多少钱？我只有三十美元现金。',en:"No problem. About how much will the fare be? I only have thirty dollars in cash."},
+  {role:'other',en:"That's fine. Let me turn on the AC for you — it's really hot today."},
+  {role:'student',cn:'可以接受。对了，能帮我开一下空调吗？外面很热。',en:"That works. By the way, could you turn on the AC? It's really hot out."},
+  {role:'other',en:"Sure. Is that your suitcase in the back?"},
+  {role:'student',cn:'我的大行李箱放后备箱了，到了能提醒我拿吗？',en:"I put my big suitcase in the trunk. Could you remind me when we get there?"},
+  {role:'other',en:"Will do. Which entrance do you want — east or west?"},
+  {role:'student',cn:'东门入口，靠近售票处。谢谢。',en:"The east entrance, near the ticket office. Thanks."},
+  {role:'other',en:"Here we are — Central Station, east entrance. That'll be 25 dollars."},
+  {role:'student',cn:'给你三十美元，不用找了。能给我一张收据吗？',en:"Here's thirty dollars. Keep the change. Could I get a receipt?"}
+]},
+{id:'bus',icon:'🚌',name:'坐大巴',sub:'Taking a Bus',other:'公交司机',avatar:'🚌',dialogues:[
+  {role:'other',en:"Good morning! Where are you headed?"},
+  {role:'student',cn:'你好，我要去奥特莱斯购物中心，这辆车到吗？',en:"Hi, I'm going to the Outlet Mall. Does this bus go there?"},
+  {role:'other',en:"Not directly — you'll need to transfer at City Hall to bus 12."},
+  {role:'student',cn:'需要换乘啊。在市政厅下车后，12路车站牌在哪里？',en:"I need to transfer? After getting off at City Hall, where's the bus 12 stop?"},
+  {role:'other',en:"Right across the street. You can't miss it. The total fare is two fifty."},
+  {role:'student',cn:'明白了。车票多少钱？我只有一张二十块纸币。',en:"Got it. How much is the fare? I only have a twenty."},
+  {role:'other',en:"The fare machine is right there — it gives change."},
+  {role:'student',cn:'机器在哪？我不太会用。能帮我换两个一块钱硬币吗？',en:"Where's the machine? I'm not great with these. Could you give me two singles for this?"},
+  {role:'other',en:"No problem. Just insert the bill, and the machine will give you change. Try it."},
+  {role:'student',cn:'看到了，我试试。好了，给你两块五。',en:"I see it. Let me try. OK, here's two fifty."},
+  {role:'other',en:"Thanks. We'll announce each stop, and there's a display screen up front."},
+  {role:'student',cn:'谢谢。我怎么知道到站了？车上有显示屏吗？',en:"Thanks. How will I know when we get there? Is there a display on board?"},
+  {role:'other',en:"Yes, and I'll call out City Hall. One more thing — no need to tap off, just get off."},
+  {role:'student',cn:'太好了。最后问一下：在市政厅下车需要刷卡吗？还是直接下车就行？',en:"Great. Last question — do I need to tap my card when I get off at City Hall?"},
+  {role:'other',en:"Nope, just walk off. Have a good one!"},
+  {role:'student',cn:'好的。谢谢师傅，你人真好。',en:"OK. Thanks, driver. You've been really nice."}
+]},
+{id:'hotel-checkin',icon:'🏨',name:'酒店入住',sub:'Hotel Check-in',other:'前台',avatar:'🧑‍💼',dialogues:[
+  {role:'other',en:"Good evening. Do you have a reservation?"},
+  {role:'student',cn:'晚上好。是的，我用李华的名字预订了房间。',en:"Good evening. Yes, I have a reservation under Li Hua."},
+  {role:'other',en:"I see it. Do you have any room preferences?"},
+  {role:'student',cn:'我想要一间高层的安静房间，尽量远离电梯。',en:"I'd like a quiet room on a high floor, away from the elevator if possible."},
+  {role:'other',en:"No problem — I've put you on the 12th floor, end of the hallway. Here's your key card. Breakfast is on the 2nd floor from 6:30 AM."},
+  {role:'student',cn:'谢谢。请问早餐在哪里吃？几点开始？',en:"Thanks. Where is breakfast served, and what time does it start?"},
+  {role:'other',en:"Second floor, 6:30 to 10:00 AM. Are you a member of our loyalty program?"},
+  {role:'student',cn:'我是会员，可以延迟退房到下午两点吗？',en:"I'm a member. Would it be possible to get a late checkout, say 2 PM?"},
+  {role:'other',en:"Of course, I've noted late checkout at 2 PM. The gym is on the 3rd floor, open until 11 PM."},
+  {role:'student',cn:'好的。你们有健身房吗？开到几点？',en:"Great. Do you have a gym? What time does it close?"},
+  {role:'other',en:"11 PM. Anything else I can help with?"},
+  {role:'student',cn:'太好了。能多给我两个枕头吗？一个硬的，一个软的。',en:"Perfect. Could I get two extra pillows? One firm, one soft."}
+]},
+{id:'room-service',icon:'🔧',name:'客房服务',sub:'Room Service',other:'前台',avatar:'🧑‍💼',dialogues:[
+  {role:'other',en:"Front desk, how can I help you?"},
+  {role:'student',cn:'你好，我房间里没有吹风机，而且浴室的灯坏了。',en:"Hi, there's no hairdryer in my room, and the bathroom light is out."},
+  {role:'other',en:"I'm sorry about that. I'll send up a hairdryer right away. Is there anything else?"},
+  {role:'student',cn:'谢谢。另外浴缸下水很慢，水一直排不掉。',en:"Thanks. Also, the bathtub is draining really slowly — the water just sits there."},
+  {role:'other',en:"I'll have maintenance take a look. Have you tried the light switch by the door and the one next to the mirror?"},
+  {role:'student',cn:'我试了所有开关，还是不行。能尽快派人来修吗？',en:"I've tried every switch, still nothing. Could you send someone up soon?"},
+  {role:'other',en:"Someone will be up within 20 minutes. Will you be in the room?"},
+  {role:'student',cn:'谢谢。我大概半小时后要出门，能在那之前修好吗？',en:"Thanks. I need to head out in about half an hour — can it be fixed by then?"},
+  {role:'other',en:"We'll make it a priority. Anything else you need?"},
+  {role:'student',cn:'对了，洗手间也没有洗手液，能送一小瓶过来吗？',en:"Oh, and there's no hand soap in the bathroom either. Could you send up a small bottle?"}
+]},
+{id:'checkout',icon:'🔑',name:'退房',sub:'Check-out',other:'前台',avatar:'🧑‍💼',dialogues:[
+  {role:'other',en:"Good morning. How can I help you?"},
+  {role:'student',cn:'早上好。我要退房，405房间。请给我账单。',en:"Good morning. I'm checking out — room 405. Could I get the bill?"},
+  {role:'other',en:"Of course. Here's the bill. There's a 5-dollar minibar charge — can you confirm?"},
+  {role:'student',cn:'我没有用过迷你吧，这个五美元收费可能搞错了。',en:"I didn't use the minibar. This five-dollar charge might be a mistake."},
+  {role:'other',en:"Let me check... You're right, I've removed it. How would you like to pay?"},
+  {role:'student',cn:'好的，谢谢。可以分开付吗？房费刷信用卡，其他用现金。',en:"OK, thanks. Can I split the payment? Room on my credit card, the rest in cash."},
+  {role:'other',en:"No problem. May I have your card? And would you like us to store your luggage?"},
+  {role:'student',cn:'这是我的信用卡。另外能帮我把行李存到下午三点吗？',en:"Here's my card. Also, could you hold my luggage until 3 PM?"},
+  {role:'other',en:"Certainly. The pool is still available if you'd like to use it before you leave."},
+  {role:'student',cn:'谢谢。退房后我还能用酒店的游泳池吗？',en:"Thanks. Can I still use the pool after I check out?"}
+]},
+{id:'shopping',icon:'🛍️',name:'购物',sub:'Shopping',other:'店员',avatar:'🧑‍💼',dialogues:[
+  {role:'other',en:"Hi there! What can I help you find today?"},
+  {role:'student',cn:'你好，我在找一件纯棉的白色T恤，中号。',en:"Hi, I'm looking for a plain white cotton T-shirt, size medium."},
+  {role:'other',en:"Right here. This one is 45 dollars."},
+  {role:'student',cn:'有点贵。附近有折扣店吗？或者你们有学生折扣吗？',en:"That's a bit pricey. Is there a discount store nearby? Or do you offer a student discount?"},
+  {role:'other',en:"We do have a student discount — 15% off. Are you a member of our rewards program?"},
+  {role:'student',cn:'我不是会员，今天可以注册吗？能马上生效吗？',en:"I'm not a member — can I sign up today? Would it work right away?"},
+  {role:'other',en:"Yes, it takes effect immediately. Let me sign you up. You can try it on — fitting rooms are in the back."},
+  {role:'student',cn:'好的，我注册。另外这件可以试穿吗？试衣间在哪里？',en:"OK, I'll sign up. Also, can I try this on? Where are the fitting rooms?"},
+  {role:'other',en:"How did it go?"},
+  {role:'student',cn:'试好了，很喜欢。能帮我用礼品盒包起来吗？是送人的。',en:"It fits great, I really like it. Could you gift-wrap it? It's a present."},
+  {role:'other',en:"Sure, I'll wrap it nicely. That'll be 38 dollars with the student discount. Cash or card?"},
+  {role:'student',cn:'我刷卡支付。需要看我的身份证吗？',en:"I'll pay by card. Do you need to see my ID?"}
+]},
+{id:'restaurant',icon:'🍽️',name:'餐馆就餐',sub:'Restaurant',other:'服务员',avatar:'🧑‍🍳',dialogues:[
+  {role:'other',en:"Good evening! How many in your party tonight?"},
+  {role:'student',cn:'你好，一位。我想要非吸烟区，靠窗的位置。',en:"Hi, just one. I'd prefer non-smoking, by the window if possible."},
+  {role:'other',en:"Right this way. Here's the menu. Tonight's special is grilled salmon with asparagus."},
+  {role:'student',cn:'谢谢。请给我菜单。今天有什么特色菜？',en:"Thanks. Could I see the menu? What's the special today?"},
+  {role:'other',en:"Grilled salmon with asparagus. Are you ready to order?"},
+  {role:'student',cn:'我准备点餐了。一份三分熟牛排，配薯条和蘑菇酱。',en:"I'm ready to order. I'll have the steak, rare, with fries and mushroom sauce."},
+  {role:'other',en:"Excellent choice. Anything to drink?"},
+  {role:'student',cn:'再来一杯赤霞珠红酒，一份凯撒沙拉，酱汁单放。',en:"And a glass of Cabernet, plus a Caesar salad with dressing on the side."},
+  {role:'other',en:"How was everything?"},
+  {role:'student',cn:'你好，买单。分开付，我和我朋友各付各的。',en:"Excuse me, could we get the check? Separate bills for me and my friend."},
+  {role:'other',en:"Of course. Would you like me to wrap up the leftovers?"},
+  {role:'student',cn:'能帮我把剩菜打包吗？给我一个打包盒。',en:"Can I get this to go? Could you bring me a takeout box?"}
+]},
+{id:'sightseeing',icon:'📸',name:'观光拍照',sub:'Sightseeing & Photos',other:'游客',avatar:'🧳',dialogues:[
+  {role:'other',en:"Excuse me, would you mind taking a photo of us?"},
+  {role:'student',cn:'你好，能帮我们拍张合影吗？就用我的手机。',en:"Excuse me, could you take a picture of us? Just use my phone."},
+  {role:'other',en:"Sure! How do I use it?"},
+  {role:'student',cn:'按这个圆形的按钮。好，再拍一张横版的。',en:"Just press this round button. Great — could you take one more in landscape?"},
+  {role:'other',en:"Got it. Here you go. The castle looks amazing in the background. Would you like me to take one of you?"},
+  {role:'student',cn:'谢谢！要我也帮你拍一张吗？背景的城堡很漂亮。',en:"Thank you! Would you like me to take one of you? The castle in the background looks beautiful."},
+  {role:'other',en:"Oh yes please! Just stand over there a bit."},
+  {role:'student',cn:'好的，往旁边站一点。微笑，一、二、三——好了！',en:"OK, step a little to the side. Smile — one, two, three. Got it!"},
+  {role:'other',en:"Thanks! But it came out a little blurry — could you try one more with my camera?"},
+  {role:'student',cn:'不好意思，能用我的相机再拍一张吗？刚才那张有点模糊。',en:"Sorry, could you take one more with my camera? The last one came out a bit blurry."}
+]},
+{id:'smalltalk',icon:'💬',name:'闲聊',sub:'Small Talk',other:'当地人',avatar:'🙋',dialogues:[
+  {role:'other',en:"Beautiful day, isn't it? Are you here on vacation?"},
+  {role:'student',cn:'是的，我来度假的。我来自中国上海。这里天气真好。',en:"Yes, I'm here on vacation. I'm from Shanghai, China. The weather here is lovely."},
+  {role:'other',en:"Shanghai — wow! How long are you staying?"},
+  {role:'student',cn:'我在这待五天。已经去过博物馆和海滩了。',en:"I'm here for five days. I've already visited the museum and the beach."},
+  {role:'other',en:"Nice! If you're into seafood, you should try the fish market on Harbor Street — super fresh and affordable."},
+  {role:'student',cn:'你们本地人推荐去哪里吃海鲜？要平价又新鲜的。',en:"Where do locals go for seafood? I'm looking for something affordable but fresh."},
+  {role:'other',en:"Harbor Street fish market. It's a blue building right on the corner."},
+  {role:'student',cn:'谢谢推荐。街角那栋蓝色的房子对吧？我会去看看的。',en:"Thanks for the tip. That blue building on the corner, right? I'll check it out."},
+  {role:'other',en:"Yeah! Oh, and for getting around, most people here use Uber or Lyft."},
+  {role:'student',cn:'你人真好。你们这里用什么打车软件？Uber能用吗？',en:"You're so kind. What ride-hailing app do people use here? Does Uber work?"},
+  {role:'other',en:"Yes, Uber works great. Well, enjoy the rest of your trip!"},
+  {role:'student',cn:'好的，记住了。很高兴认识你，再见！',en:"Got it, I'll keep that in mind. Nice meeting you — goodbye!"}
+]}
+];
+
+// ═══════════════════════════════════════
+// SCORING ENGINE
+// ═══════════════════════════════════════
+function normalize(text){
+  return text.toLowerCase().replace(/[^\w\s']/g,'').replace(/\s+/g,' ').trim().split(' ').filter(Boolean);
+}
+
+var CONTRACTIONS={
+  "i'm":["i","am"],"you're":["you","are"],"he's":["he","is"],"she's":["she","is"],
+  "it's":["it","is"],"we're":["we","are"],"they're":["they","are"],"that's":["that","is"],
+  "here's":["here","is"],"there's":["there","is"],"what's":["what","is"],"who's":["who","is"],
+  "how's":["how","is"],"where's":["where","is"],"let's":["let","us"],
+  "can't":["cannot"],"don't":["do","not"],"won't":["will","not"],"isn't":["is","not"],
+  "aren't":["are","not"],"wasn't":["was","not"],"weren't":["were","not"],
+  "didn't":["did","not"],"haven't":["have","not"],"hasn't":["has","not"],
+  "hadn't":["had","not"],"couldn't":["could","not"],"wouldn't":["would","not"],
+  "shouldn't":["should","not"],"doesn't":["does","not"],"i'll":["i","will"],
+  "i'd":["i","would"],"i've":["i","have"],"you'll":["you","will"],"you've":["you","have"],
+  "you'd":["you","would"],"we'll":["we","will"],"we've":["we","have"],
+  "we'd":["we","would"],"they'll":["they","will"],"they've":["they","have"],
+  "they'd":["they","would"],"he'll":["he","will"],"she'll":["she","will"],"it'll":["it","will"]
+};
+
+var FILLERS={um:1,uh:1,er:1,ah:1,hmm:1,mm:1};
+
+function expandWords(words){
+  var r=[];
+  for(var i=0;i<words.length;i++){
+    if(CONTRACTIONS[words[i]]){r=r.concat(CONTRACTIONS[words[i]]);}
+    else{r.push(words[i]);}
+  }
+  return r.filter(function(w){return !FILLERS[w]&&w.length>0;});
+}
+
+function scoreSentence(answerText,userText){
+  var ans=expandWords(normalize(answerText));
+  var usr=expandWords(normalize(userText));
+  if(ans.length===0)return usr.length===0?100:0;
+
+  // F1 bag-of-words
+  var ansCopy=ans.slice(),matchCount=0;
+  for(var i=0;i<usr.length;i++){var idx=ansCopy.indexOf(usr[i]);if(idx!==-1){matchCount++;ansCopy.splice(idx,1);}}
+  var recall=matchCount/ans.length;
+  var precision=usr.length>0?matchCount/usr.length:0;
+  var f1=(recall+precision>0)?2*recall*precision/(recall+precision):0;
+
+  // LCS
+  var m=ans.length,n=usr.length,dp=[];
+  for(var i=0;i<=m;i++){dp[i]=[];for(var j=0;j<=n;j++)dp[i][j]=0;}
+  for(var i=1;i<=m;i++){for(var j=1;j<=n;j++){if(ans[i-1]===usr[j-1])dp[i][j]=dp[i-1][j-1]+1;else dp[i][j]=Math.max(dp[i-1][j],dp[i][j-1]);}}
+  var orderScore=m>0?dp[m][n]/m:0;
+
+  return Math.min(100,Math.max(0,Math.round((f1*0.7+orderScore*0.3)*100)));
+}
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+var userName='',currentScene=null,currentDialogueIdx=0;
+var dialogueResults=[],isRecording=false,recognition=null,recTimer=null;
+var pendingFinal='',PASS_THRESHOLD=80,SCENE_PTS=500;
+
+function getProgKey(){return 'jc_survival_prog_'+getWeekStart();}
+function getProgress(){try{var r=localStorage.getItem(getProgKey());return r?JSON.parse(r):{};}catch(e){return{};}}
+function saveProgress(p){try{localStorage.setItem(getProgKey(),JSON.stringify(p));}catch(e){}}
+function isSceneDone(id){var sp=getProgress()[id];return sp&&sp.done;}
+function getSceneAvg(id){var sp=getProgress()[id];return sp?sp.avg:null;}
+function getTotalPts(){var p=getProgress(),t=0;Object.keys(p).forEach(function(k){if(p[k].done)t+=SCENE_PTS;});return t;}
+function getDoneCount(){var p=getProgress(),c=0;Object.keys(p).forEach(function(k){if(p[k].done)c++;});return c;}
+
+// ═══════════════════════════════════════
+// ENTRY: Timeline
+// ═══════════════════════════════════════
+function buildTimeline(){
+  var doneCount=getDoneCount(),html='';
+  SCENES.forEach(function(sc,i){
+    var done=isSceneDone(sc.id),avg=getSceneAvg(sc.id);
+    var status=done?'done':(i===0||i<=doneCount)?'available':'locked';
+    html+='<div class="tl-item" onclick="openScene('+i+')">';
+    html+='<div class="tl-dot '+status+'">'+sc.icon+'</div>';
+    html+='<div class="tl-info"><div class="tl-name">'+sc.name+'<span class="tl-sub">'+sc.sub+'</span></div>';
+    html+='<div class="tl-meta">'+sc.dialogues.filter(function(d){return d.role==='student';}).length+' 句'+(done?' · 均分 '+avg+' 分':'')+'</div></div>';
+    if(done){html+='<span class="tl-badge done-badge">已完成</span>';}
+    else if(status==='available'){html+='<span class="tl-badge available-badge">可挑战</span>';}
+    else{html+='<span class="tl-badge locked-badge">未解锁</span>';}
+    html+='</div>';
+  });
+  document.getElementById('timeline').innerHTML=html;
+  document.getElementById('entryPts').textContent=getTotalPts()+' 分';
+}
+
+function openScene(idx){
+  var doneCount=getDoneCount();
+  if(idx>doneCount&&idx!==0&&!isSceneDone(SCENES[idx-1].id)){showToast('请先完成前面的场景 🔒');return;}
+  currentScene=SCENES[idx];
+  currentDialogueIdx=0;
+  dialogueResults=[];
+  stopRecognition();
+  buildChatUI();
+  showPane('p-chat');
+  // Start: auto-show first other line + TTS
+  setTimeout(function(){advanceDialogue();},400);
+}
+
+// ═══════════════════════════════════════
+// CHAT UI
+// ═══════════════════════════════════════
+var renderedCount=0;
+
+function buildChatUI(){
+  document.getElementById('chatTitle').textContent=currentScene.icon+' '+currentScene.name+' · '+currentScene.sub;
+  document.getElementById('chatProg').textContent='对话中...';
+  document.getElementById('chatInner').innerHTML='';
+  renderedCount=0;
+  document.getElementById('recBtn').disabled=true;
+  document.getElementById('recBtn').className='rec-btn';
+  document.getElementById('recBtn').innerHTML='🎤 准备中...';
+  showRecMode();
+}
+
+function advanceDialogue(){
+  if(!currentScene)return;
+  var dgs=currentScene.dialogues;
+  if(currentDialogueIdx>=dgs.length){finishScene();return;}
+
+  var dg=dgs[currentDialogueIdx];
+
+  if(dg.role==='other'){
+    // Show other's message bubble
+    appendOtherBubble(dg);
+    // Update progress
+    document.getElementById('chatProg').textContent='对方正在说话...';
+    // TTS read
+    speak(dg.en);
+    // Wait a bit then move to student turn
+    var delay=Math.max(1500,dg.en.split(' ').length*300);
+    setTimeout(function(){
+      currentDialogueIdx++;
+      advanceDialogue();
+    },delay);
+  }else{
+    // Student turn — show prompt
+    appendPromptCard(dg);
+    document.getElementById('chatProg').textContent='轮到你说了 ('+(getStudentDialogueCount()+1)+'/'+getTotalStudentCount()+')';
+    enableRecording();
+    scrollToBottom();
+  }
+}
+
+function getStudentDialogueCount(){
+  var count=0;
+  for(var i=0;i<currentDialogueIdx;i++){if(currentScene.dialogues[i].role==='student')count++;}
+  return count;
+}
+function getTotalStudentCount(){
+  return currentScene.dialogues.filter(function(d){return d.role==='student';}).length;
+}
+
+function appendOtherBubble(dg){
+  var html='<div class="msg-row other" style="animation-delay:0s">';
+  html+='<div class="msg-avatar">'+currentScene.avatar+'</div>';
+  html+='<div class="msg-bubble">'+escHTML(dg.en)+'</div>';
+  html+='</div>';
+  document.getElementById('chatInner').insertAdjacentHTML('beforeend',html);
+  renderedCount++;
+}
+
+var currentPromptCard=null;
+
+function appendPromptCard(dg){
+  var html='<div class="prompt-card" id="promptCard">';
+  html+='<div class="prompt-label">💬 请用英文说出</div>';
+  html+='<div class="prompt-cn">'+escHTML(dg.cn)+'</div>';
+  html+='<div class="prompt-hint">按下方录音按钮，说完停顿自动结束</div>';
+  html+='</div>';
+  document.getElementById('chatInner').insertAdjacentHTML('beforeend',html);
+  currentPromptCard=document.getElementById('promptCard');
+  renderedCount++;
+}
+
+function removePromptCard(){
+  if(currentPromptCard){currentPromptCard.remove();currentPromptCard=null;}
+}
+
+var pendingSpoken='';
+var lastStudentBubble=null;
+
+function appendStudentBubble(spoken,answerRef){
+  removePromptCard();
+  pendingSpoken=spoken;
+  var html='<div class="msg-row student" id="lastStudentMsg">';
+  html+='<div class="msg-avatar">🙋</div>';
+  html+='<div class="msg-bubble">'+escHTML(spoken);
+  html+='<div class="ref-toggle-inline" onclick="toggleRefInline()">📝 查看参考答案</div>';
+  html+='<div class="ref-answer-inline" id="refAnswerInline">'+escHTML(answerRef)+'</div>';
+  html+='</div></div>';
+  document.getElementById('chatInner').insertAdjacentHTML('beforeend',html);
+  lastStudentBubble=document.getElementById('lastStudentMsg');
+  renderedCount++;
+}
+
+function toggleRefInline(){
+  var el=document.getElementById('refAnswerInline');
+  if(el)el.classList.toggle('show');
+}
+
+function showActionMode(){
+  document.getElementById('recMode').style.display='none';
+  document.getElementById('actionMode').classList.add('on');
+}
+
+function showRecMode(){
+  document.getElementById('recMode').style.display='flex';
+  document.getElementById('actionMode').classList.remove('on');
+}
+
+function scrollToBottom(){
+  setTimeout(function(){
+    var el=document.getElementById('chatScroll');
+    el.scrollTop=el.scrollHeight;
+  },100);
+}
+
+// ═══════════════════════════════════════
+// RECORDING
+// ═══════════════════════════════════════
+function enableRecording(){
+  showRecMode();
+  document.getElementById('recBtn').disabled=false;
+  document.getElementById('recBtn').className='rec-btn';
+  document.getElementById('recBtn').innerHTML='🎤 按下开始录音';
+}
+
+function handleRec(){
+  if(isRecording){stopRec();return;}
+  startRec();
+}
+
+function startRec(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){showToast('请用 Safari 或 Chrome 打开');return;}
+  speechSynthesis.cancel(); // Stop TTS when user starts recording
+  stopRecognition();
+
+  if(recTimer){clearTimeout(recTimer);recTimer=null;}
+  pendingFinal='';
+
+  document.getElementById('recBtn').disabled=true;
+  document.getElementById('recBtn').innerHTML='<span class="rec-dot"></span> 停止录音';
+  document.getElementById('recBtn').className='rec-btn recording';
+  if(currentPromptCard){currentPromptCard.querySelector('.prompt-hint').textContent='🔴 正在录音，说完后停顿即自动结束...';}
+
+  setTimeout(function(){
+    var SR2=window.SpeechRecognition||window.webkitSpeechRecognition;
+    recognition=new SR2();
+    recognition.lang='en-US';
+    recognition.continuous=false;
+    recognition.interimResults=true;
+    recognition.maxAlternatives=1;
+
+    recognition.onresult=function(e){
+      var interim='',final='';
+      for(var i=0;i<e.results.length;i++){
+        if(e.results[i].isFinal)final+=e.results[i][0].transcript;
+        else interim+=e.results[i][0].transcript;
+      }
+      if(final)pendingFinal=final;
+      if(interim&&currentPromptCard){
+        currentPromptCard.querySelector('.prompt-hint').textContent='🎤 听到: '+interim;
+      }
+    };
+
+    recognition.onend=function(){
+      if(recTimer){clearTimeout(recTimer);recTimer=null;}
+      recognition=null;isRecording=false;
+      updateRecUI(false);
+      if(pendingFinal.trim()){
+        processSpoken(pendingFinal.trim());
+      }else{
+        if(currentPromptCard){currentPromptCard.querySelector('.prompt-hint').textContent='未识别到内容，请重试';}
+        enableRecording();
+      }
+    };
+
+    recognition.onerror=function(e){
+      if(recTimer){clearTimeout(recTimer);recTimer=null;}
+      recognition=null;isRecording=false;
+      updateRecUI(false);
+      var msg='识别出错，请重试';
+      if(e.error==='not-allowed')msg='请允许麦克风权限';
+      else if(e.error==='no-speech')msg='没有检测到说话，请再试';
+      else if(e.error==='network')msg='网络错误，请检查连接';
+      if(currentPromptCard){currentPromptCard.querySelector('.prompt-hint').textContent=msg;}
+      enableRecording();
+    };
+
+    try{
+      recognition.start();
+      isRecording=true;
+      recTimer=setTimeout(function(){if(recognition){try{recognition.abort();}catch(e){}}},15000);
+    }catch(err){
+      recognition=null;
+      updateRecUI(false);
+      if(currentPromptCard){currentPromptCard.querySelector('.prompt-hint').textContent='启动失败，请重试';}
+      enableRecording();
+    }
+  },300);
+}
+
+function stopRec(){
+  if(recTimer){clearTimeout(recTimer);recTimer=null;}
+  if(recognition){
+    recognition.onend=null;recognition.onresult=null;recognition.onerror=null;
+    try{recognition.abort();}catch(e){}
+    recognition=null;
+  }
+  isRecording=false;
+  updateRecUI(false);
+}
+
+function stopRecognition(){stopRec();}
+
+function updateRecUI(rec){
+  var btn=document.getElementById('recBtn');
+  if(!btn)return;
+  if(rec){btn.innerHTML='<span class="rec-dot"></span> 停止录音';btn.className='rec-btn recording';}
+  else{btn.innerHTML='🎤 按下开始录音';btn.className='rec-btn';}
+}
+
+// ═══════════════════════════════════════
+// PROCESS SPOKEN RESULT
+// ═══════════════════════════════════════
+function processSpoken(spoken){
+  var dg=currentScene.dialogues[currentDialogueIdx];
+  if(!dg||dg.role!=='student')return;
+
+  // Show transcript in bubble (no score yet)
+  appendStudentBubble(spoken,dg.en);
+  showActionMode();
+  scrollToBottom();
+}
+
+function continueCurrent(){
+  var dg=currentScene.dialogues[currentDialogueIdx];
+  if(!dg||dg.role!=='student')return;
+
+  var score=scoreSentence(dg.en,pendingSpoken);
+  dialogueResults.push({en:dg.en,cn:dg.cn,spoken:pendingSpoken,score:score});
+
+  // Update bubble with score
+  if(lastStudentBubble){
+    var bubble=lastStudentBubble.querySelector('.msg-bubble');
+    var grade=score>=90?'good':score>=70?'ok':'low';
+    // Remove ref toggle and answer, add score
+    var refToggle=bubble.querySelector('.ref-toggle-inline');
+    var refAnswer=bubble.querySelector('.ref-answer-inline');
+    if(refToggle)refToggle.remove();
+    if(refAnswer)refAnswer.remove();
+    bubble.insertAdjacentHTML('beforeend','<span class="score-tag '+grade+'" style="margin-left:6px">'+score+'分</span>');
+  }
+  lastStudentBubble=null;
+  pendingSpoken='';
+
+  currentDialogueIdx++;
+  showRecMode();
+  document.getElementById('recBtn').disabled=true;
+  document.getElementById('recBtn').innerHTML='🎤 请稍候...';
+  scrollToBottom();
+  setTimeout(function(){advanceDialogue();},600);
+}
+
+function skipCurrent(){
+  if(!currentScene)return;
+  var dg=currentScene.dialogues[currentDialogueIdx];
+  if(!dg||dg.role!=='student')return;
+  stopRecognition();
+  pendingSpoken='';
+  dialogueResults.push({en:dg.en,cn:dg.cn,spoken:'(跳过)',score:0});
+  removePromptCard();
+  var html='<div class="msg-row student"><div class="msg-avatar">🙋</div><div class="msg-bubble" style="opacity:.5;font-style:italic">(跳过)<span class="score-tag low">0分</span></div></div>';
+  document.getElementById('chatInner').insertAdjacentHTML('beforeend',html);
+  lastStudentBubble=null;
+  currentDialogueIdx++;
+  showRecMode();
+  scrollToBottom();
+  setTimeout(function(){advanceDialogue();},600);
+}
+
+function retryCurrent(){
+  if(lastStudentBubble){lastStudentBubble.remove();lastStudentBubble=null;}
+  pendingSpoken='';
+  // Re-show prompt
+  var dg=currentScene.dialogues[currentDialogueIdx];
+  appendPromptCard(dg);
+  enableRecording();
+  scrollToBottom();
+}
+
+// ═══════════════════════════════════════
+// FINISH SCENE → REVIEW
+// ═══════════════════════════════════════
+function finishScene(){
+  stopRecognition();
+  var scores=dialogueResults.map(function(r){return r.score;});
+  var sum=scores.reduce(function(a,b){return a+b;},0);
+  var avg=Math.round(sum/scores.length);
+  var passed=avg>=PASS_THRESHOLD;
+
+  var p=getProgress();
+  var prev=p[currentScene.id];
+  var alreadyDone=prev&&prev.done;
+
+  if(passed&&!alreadyDone){
+    p[currentScene.id]={scores:scores,avg:avg,done:true};
+    saveProgress(p);
+    sbUpsertScore(userName,SCENE_PTS);
+  }else if(!alreadyDone){
+    if(!prev||avg>prev.avg){p[currentScene.id]={scores:scores,avg:avg,done:false};saveProgress(p);}
+  }
+
+  // Build review UI
+  var html='<div class="review-title">'+currentScene.icon+' '+currentScene.name+'</div>';
+  html+='<div class="review-sub">'+currentScene.sub+' · 完整对话回顾</div>';
+  html+='<div class="review-summary">';
+  html+='<div class="review-stat"><div class="review-stat-num">'+avg+'分</div><div class="review-stat-lbl">均分</div></div>';
+  html+='<div class="review-stat"><div class="review-stat-num">'+scores.length+'句</div><div class="review-stat-lbl">对话轮次</div></div>';
+  html+='<div class="review-stat"><div class="review-stat-num">'+(passed?'✓ 通关':'—')+'</div><div class="review-stat-lbl">状态</div></div>';
+  html+='</div>';
+  if(passed&&!alreadyDone){html+='<div class="review-pts">+500 分 🎯</div>';}
+  else if(passed){html+='<div class="review-pts" style="font-size:14px;color:#9A8060">已领取过奖励</div>';}
+
+  html+='<div class="review-divider">———— 对话记录 ————</div>';
+
+  var allDgs=currentScene.dialogues;
+  var resultIdx=0;
+  for(var i=0;i<allDgs.length;i++){
+    var dg=allDgs[i];
+    if(dg.role==='other'){
+      html+='<div class="review-bubble other"><div class="review-bubble-label">'+currentScene.avatar+' '+currentScene.other+'</div>'+escHTML(dg.en)+'</div>';
+    }else{
+      var r=dialogueResults[resultIdx];
+      var spokenText=r?r.spoken:'(未作答)';
+      var s=r?r.score:0;
+      var grade=s>=90?'good':s>=70?'ok':'low';
+      html+='<div class="review-bubble student"><div class="review-bubble-label">🙋 你 <span class="score-tag '+grade+'" style="margin-left:4px">'+s+'分</span></div>'+escHTML(spokenText);
+      if(r&&r.spoken!=='(跳过)'){
+        html+='<div style="font-size:12px;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.15);opacity:.7">📝 参考: '+escHTML(r.en)+'</div>';
+      }
+      html+='</div>';
+      resultIdx++;
+    }
+  }
+
+  document.getElementById('reviewInner').innerHTML=html;
+  document.getElementById('reviewScroll').scrollTop=0;
+  showPane('p-review');
+  buildTimeline();
+}
+
+function retryScene(){
+  stopRecognition();
+  dialogueResults=[];
+  currentDialogueIdx=0;
+  buildChatUI();
+  showPane('p-chat');
+  setTimeout(function(){advanceDialogue();},400);
+}
+
+function backToEntry(){
+  stopRecognition();
+  showPane('p-entry');
+  buildTimeline();
+}
+
+// ═══════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════
+function showPane(id){
+  document.querySelectorAll('.pane').forEach(function(p){p.classList.remove('on');});
+  document.getElementById(id).classList.add('on');
+}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2200);
+}
+
+function escHTML(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+function init(){
+  var name=localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name');
+  userName=(name&&name!=='同学')?name:'guest';
+
+  initTTS();
+
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    document.getElementById('safariNote').className='safari-note show';
+    document.getElementById('safariNote').innerHTML='⚠️ 你的浏览器不支持语音识别，请使用 <strong>Safari</strong> 或 <strong>Chrome</strong> 打开';
+    document.getElementById('chatSafariNote').className='safari-note show';
+    document.getElementById('chatSafariNote').innerHTML='⚠️ 你的浏览器不支持语音识别，请使用 <strong>Safari</strong> 或 <strong>Chrome</strong> 打开';
+  }
+
+  buildTimeline();
+
+  document.getElementById('backToEntry').addEventListener('click',function(e){
+    e.preventDefault();stopRecognition();showPane('p-entry');buildTimeline();
+  });
+}
+
+init();
+</script>
+</body>
+</html>

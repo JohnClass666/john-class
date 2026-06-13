@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>发音 · 码神训练营</title>
+<title>发音跟读 · 码神训练营</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:#F5EDD8;color:#2A1E08;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
@@ -91,9 +91,9 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
 
 <div id="p-entry" class="pane on">
   <a class="back-link" href="programmer.html">← 程序员专区</a>
-  <div class="logo">JOHN CLASS · 发音</div>
+  <div class="logo">JOHN CLASS · 发音跟读</div>
   <div style="font-size:44px;margin-bottom:16px">🎤</div>
-  <div style="font-size:22px;font-weight:700;margin-bottom:8px">发音训练</div>
+  <div style="font-size:22px;font-weight:700;margin-bottom:8px">发音跟读训练</div>
   <div style="font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:28px;text-align:center">朗读职场英语句子<br>系统识别并给出词级评分<br>每句 <strong>25 分</strong> · 共 100 句 · 满分 2500</div>
   <div style="width:100%;background:rgba(255,252,245,.9);border:1.5px solid rgba(184,149,106,.2);border-radius:14px;padding:16px 18px;margin-bottom:24px;text-align:left">
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#B5A080;text-transform:uppercase;margin-bottom:10px">本周进度</div>
@@ -111,7 +111,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
 <!-- PRACTICE -->
 <div id="p-practice" class="pane">
   <a class="back-link" href="#" id="backToEntry">← 返回</a>
-  <div class="logo">JOHN CLASS · 发音</div>
+  <div class="logo">JOHN CLASS · 发音跟读</div>
   <div class="prog-row" style="width:100%"><span>今日进度</span><span id="progText">0 / 100</span></div>
   <div class="prog-track" style="width:100%"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
   <div class="sent-card">
@@ -145,7 +145,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
 
 <!-- DONE -->
 <div id="p-done" class="pane">
-  <div class="logo">JOHN CLASS · 发音</div>
+  <div class="logo">JOHN CLASS · 发音跟读</div>
   <div class="done-emoji">🏆</div>
   <div class="done-title">全部完成！</div>
   <div class="done-sub">100 句发音训练全部搞定<br>你已经是码神了！</div>
@@ -162,7 +162,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
 var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.P5ixZCEYtAkEtFjnHDweVHClLIrFcE2CxHt1eTMyNuQ';
 var POINTS=25;
-var PASS_SCORE=80;
+var PASS_SCORE=70;
 var MAX_ATTEMPTS=3;
 
 var SENTENCES=[
@@ -361,7 +361,7 @@ function updateEntryUI(){
 
 function renderSentence(){
   var s=orderedSents[currentIdx];
-  document.getElementById('sentNum').textContent='句子 '+s.dispId+' / 100';
+  document.getElementById('sentNum').textContent='句子 '+s.id+' / 100';
   document.getElementById('sentText').textContent=s.text;
   var sc=document.getElementById('sentScene');
   sc.textContent=SCENE_LABELS[s.scene]||s.scene;
@@ -604,7 +604,7 @@ function init(){
   userName=name;
 
   // Seed 1 for speaking (different from oral which uses seed 2)
-  orderedSents=shuffle(SENTENCES,1);for(var i=0;i<orderedSents.length;i++)orderedSents[i].dispId=i+1;
+  orderedSents=shuffle(SENTENCES,1);
 
   updateEntryUI();
   updateProgUI();

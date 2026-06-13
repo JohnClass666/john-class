@@ -375,8 +375,10 @@ async function sendReply(parentId){
 
 function pg(e,href){
   if(e)e.preventDefault();
-  document.getElementById('ov').classList.add('show');
-  setTimeout(()=>{window.location.href=href;},280);
+  var ov=document.getElementById('ov')||document.getElementById('overlay');
+  if(!ov){window.location.href=href;return;}
+  ov.classList.add('show');
+  setTimeout(function(){window.location.href=href;},280);
 }
 
 /* 页面加载时拉取留言 */
