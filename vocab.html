@@ -4560,9 +4560,29 @@ load();initTTS();
 // 恢复年级
 if(S.grade&&gradeById(S.grade)&&gradeById(S.grade).ready){applyGrade(S.grade);}
 _prevLv=levelOf(points()).name;
-if(!S.name)go("welcome");
-else if(!S.grade||!gradeById(S.grade)||!gradeById(S.grade).ready)go("grade");
-else go("home");
+
+// ═══ 云端进度恢复（换浏览器自动同步）═══
+(async function(){
+  if(S.name&&LB_ONLINE){
+    // 先试新表 vocab_progress
+    var ok=await restoreVocabProgress(S.name);
+    if(!ok){
+      // 回退到旧 leaderboard.data
+      var cloud=await _sb.fetchMine(S.name);
+      if(cloud&&cloud.data){
+        for(var gid in cloud.data){
+          if(!S.gd[gid]||((cloud.data[gid].points||0)>(S.gd[gid].points||0))){
+            S.gd[gid]=cloud.data[gid];ok=true;
+          }
+        }
+        if(ok){save();syncVocabProgress();}
+      }
+    }
+  }
+  if(!S.name)go("welcome");
+  else if(!S.grade||!gradeById(S.grade)||!gradeById(S.grade).ready)go("grade");
+  else go("home");
+})();
 </script>
 </body>
 </html>
