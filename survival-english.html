@@ -99,9 +99,12 @@ html,body{height:100%;background:#F5EDD8;color:#2A1E08;font-family:-apple-system
 
 /* Inline score on student bubble */
 .score-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;margin-left:6px}
-.score-tag.good{background:rgba(60,150,90,.15);color:#1A4A28}
-.score-tag.ok{background:rgba(200,140,50,.12);color:#7A4000}
-.score-tag.low{background:rgba(200,70,60,.1);color:#8A1A10}
+.msg-row.other .score-tag.good{background:rgba(60,150,90,.15);color:#1A4A28}
+.msg-row.other .score-tag.ok{background:rgba(200,140,50,.12);color:#7A4000}
+.msg-row.other .score-tag.low{background:rgba(200,70,60,.1);color:#8A1A10}
+.msg-row.student .score-tag.good{background:rgba(140,210,150,.25);color:#8CD790}
+.msg-row.student .score-tag.ok{background:rgba(240,192,96,.22);color:#F0C060}
+.msg-row.student .score-tag.low{background:rgba(240,112,100,.22);color:#E08070}
 
 /* Word diff inline */
 .diff-inline{font-size:12px;line-height:1.8;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.15)}
@@ -651,23 +654,25 @@ function removePromptCard(){
 
 var pendingSpoken='';
 var lastStudentBubble=null;
+var studentBubbleSeq=0;
 
 function appendStudentBubble(spoken,answerRef){
   removePromptCard();
   pendingSpoken=spoken;
-  var html='<div class="msg-row student" id="lastStudentMsg">';
+  var bid='stub'+ (++studentBubbleSeq);
+  var html='<div class="msg-row student" id="'+bid+'">';
   html+='<div class="msg-avatar">🙋</div>';
   html+='<div class="msg-bubble">'+escHTML(spoken);
-  html+='<div class="ref-toggle-inline" onclick="toggleRefInline()">📝 查看参考答案</div>';
-  html+='<div class="ref-answer-inline" id="refAnswerInline">'+escHTML(answerRef)+'</div>';
+  html+='<div class="ref-toggle-inline" onclick="toggleRefInline(\''+bid+'\')">📝 查看参考答案</div>';
+  html+='<div class="ref-answer-inline" id="ref-'+bid+'">'+escHTML(answerRef)+'</div>';
   html+='</div></div>';
   document.getElementById('chatInner').insertAdjacentHTML('beforeend',html);
-  lastStudentBubble=document.getElementById('lastStudentMsg');
+  lastStudentBubble=document.getElementById(bid);
   renderedCount++;
 }
 
-function toggleRefInline(){
-  var el=document.getElementById('refAnswerInline');
+function toggleRefInline(bid){
+  var el=document.getElementById('ref-'+bid);
   if(el)el.classList.toggle('show');
 }
 
@@ -814,16 +819,14 @@ function continueCurrent(){
   var score=scoreSentence(dg.en,pendingSpoken);
   dialogueResults.push({en:dg.en,cn:dg.cn,spoken:pendingSpoken,score:score});
 
-  // Update bubble with score
   if(lastStudentBubble){
     var bubble=lastStudentBubble.querySelector('.msg-bubble');
     var grade=score>=90?'good':score>=70?'ok':'low';
-    // Remove ref toggle and answer, add score
-    var refToggle=bubble.querySelector('.ref-toggle-inline');
-    var refAnswer=bubble.querySelector('.ref-answer-inline');
-    if(refToggle)refToggle.remove();
-    if(refAnswer)refAnswer.remove();
-    bubble.insertAdjacentHTML('beforeend','<span class="score-tag '+grade+'" style="margin-left:6px">'+score+'分</span>');
+    var rt=bubble.querySelector('.ref-toggle-inline');
+    var ra=bubble.querySelector('.ref-answer-inline');
+    if(rt)rt.remove();
+    if(ra)ra.remove();
+    bubble.insertAdjacentHTML('beforeend','<span class="score-tag '+grade+'">'+score+'分</span>');
   }
   lastStudentBubble=null;
   pendingSpoken='';
@@ -856,7 +859,7 @@ function skipCurrent(){
 function retryCurrent(){
   if(lastStudentBubble){lastStudentBubble.remove();lastStudentBubble=null;}
   pendingSpoken='';
-  // Re-show prompt
+  showRecMode();
   var dg=currentScene.dialogues[currentDialogueIdx];
   appendPromptCard(dg);
   enableRecording();
