@@ -57,20 +57,33 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
     <div class="hero-sub">针对 EveryMatrix 职场英语<br>发音 · 口语 · 闯关拿分</div>
   </div>
 
-  <!-- 个人积分 -->
+  <!-- 浏览器提醒 -->
+	  <div style="background:rgba(255,240,210,.85);border:1.5px solid rgba(200,140,50,.25);border-radius:12px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:flex-start;gap:10px">
+	    <span style="font-size:18px;flex-shrink:0;line-height:1.4">⚠️</span>
+	    <div>
+	      <div style="font-size:13px;font-weight:700;color:#8A5A10;margin-bottom:4px">浏览器提示</div>
+	      <div style="font-size:12px;color:#8A6A30;line-height:1.6">发音和口语模块需要用到语音识别功能，请使用 <strong>Safari 浏览器</strong>打开才能正常使用。安卓用户敬请期待！</div>
+	    </div>
+	  </div>
+
+	  <!-- 个人积分 -->
   <div class="score-card" id="scoreCard">
     <div class="score-card-title">⚡ 我的码神积分</div>
     <div class="score-row">
-      <span class="score-name">🎤 发音跟读</span>
+      <span class="score-name">🎤 发音</span>
       <span class="score-val" id="speakScore">—</span>
     </div>
     <div class="score-row">
-      <span class="score-name">💬 口语填空</span>
+      <span class="score-name">💬 口语</span>
       <span class="score-val" id="oralScore">—</span>
     </div>
     <div class="score-total">
       <span class="score-total-lbl">本周总分</span>
-      <span class="score-total-val" id="totalScore">—</span>
+      <span class="score-total-val" id="weekTotal">—</span>
+    </div>
+    <div class="score-total" style="border-top:1px dashed rgba(184,149,106,.12);margin-top:6px;padding-top:8px">
+      <span class="score-total-lbl" style="font-size:11px">🏆 累积总分</span>
+      <span class="score-total-val" style="font-size:18px;color:#2A1E08" id="cumTotal">—</span>
     </div>
   </div>
 
@@ -79,8 +92,8 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
     <a class="tool-item" href="programmer-pronunciation.html">
       <div class="tool-circle c-green">🎤</div>
       <div class="tool-info">
-        <div class="tool-name">发音跟读</div>
-        <div class="tool-desc">朗读职场句子 · 词级评分 · 闯关100句</div>
+        <div class="tool-name">发音</div>
+        <div class="tool-desc">朗读职场句子 · 词级评分 · 80分过关 · 闯关100句</div>
       </div>
       <span class="tool-badge badge-live">已上线</span>
       <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -88,8 +101,8 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
     <a class="tool-item" href="programmer-oral.html">
       <div class="tool-circle c-blue">💬</div>
       <div class="tool-info">
-        <div class="tool-name">口语填空</div>
-        <div class="tool-desc">看中文说英文 · 挖空70%+ · 闯关100句</div>
+        <div class="tool-name">口语</div>
+        <div class="tool-desc">看中文说英文 · 挖空70%+ · 80分过关 · 闯关100句</div>
       </div>
       <span class="tool-badge badge-live">已上线</span>
       <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -97,32 +110,26 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
     <div class="tool-item disabled">
       <div class="tool-circle c-gold">📚</div>
       <div class="tool-info">
-        <div class="tool-name">词汇训练</div>
+        <div class="tool-name">词汇</div>
         <div class="tool-desc">程序员高频词 · 分级闯关</div>
       </div>
       <span class="tool-badge badge-soon">即将上线</span>
     </div>
-    <a class="tool-item" href="#" onclick="showBoard();return false">
+    <a class="tool-item" href="weekly_stars.html">
       <div class="tool-circle c-orange">🏆</div>
       <div class="tool-info">
-        <div class="tool-name">码神排行榜</div>
-        <div class="tool-desc">本周码神 · 联动学神总榜</div>
+        <div class="tool-name">每周大神榜</div>
+        <div class="tool-desc">全站综合排行 · 周日重置</div>
       </div>
-      <span class="tool-badge badge-live">本周榜</span>
+      <span class="tool-badge badge-live">本周</span>
       <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
   </div>
-</div>
 
-<!-- 排行榜 overlay -->
-<div id="boardOverlay" style="display:none;position:fixed;inset:0;background:#F5EDD8;z-index:50;overflow-y:auto;padding:28px 20px">
-  <div style="max-width:480px;margin:0 auto">
-    <a href="#" onclick="hideBoard();return false" style="font-size:12px;color:#B5A080;text-decoration:none;display:block;margin-bottom:24px">← 返回</a>
-    <div style="font-size:11px;letter-spacing:.18em;color:#B5A080;font-weight:600;margin-bottom:28px">JOHN CLASS · 码神排行榜</div>
-    <div style="font-size:22px;font-weight:700;margin-bottom:4px">🏆 本周码神</div>
-    <div style="font-size:12px;color:#B5A080;margin-bottom:20px">发音 + 口语 · 每句 25 分 · 满分 5000</div>
-    <div id="boardList"><div style="font-size:13px;color:#B5A080;padding:20px;text-align:center">加载中...</div></div>
-  </div>
+  <!-- 码神累积榜（永久） -->
+  <div class="sec-label" style="margin-top:28px">🏆 码神累积榜</div>
+  <div style="font-size:11px;color:#B5A080;margin-bottom:12px">发音 15分/句 + 口语 20分/句 · 永久累积</div>
+  <div id="boardList"><div style="font-size:13px;color:#B5A080;padding:20px;text-align:center">加载中...</div></div>
 </div>
 
 <script>
@@ -139,37 +146,57 @@ async function sbGet(table,qs){
 async function loadMyScore(){
   var name = localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name');
   if(!name) return;
-  var rows = await sbGet('weekly_scores','user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+getWeekStart()+'&select=programmer_score');
-  var ps = rows&&rows.length ? (rows[0].programmer_score||0) : 0;
-  // speaking and oral each tracked via separate localStorage keys for display
   var spk = parseInt(localStorage.getItem('jc_prog_speak_pts')||'0');
   var oral = parseInt(localStorage.getItem('jc_prog_oral_pts')||'0');
   document.getElementById('speakScore').textContent = spk + ' 分';
   document.getElementById('oralScore').textContent = oral + ' 分';
-  document.getElementById('totalScore').textContent = ps + ' 分';
+  // Try Supabase first, fallback to localStorage total
+  var rows = await sbGet('weekly_scores','user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+getWeekStart()+'&select=programmer_score');
+  var ps = rows&&rows.length ? (rows[0].programmer_score||0) : (spk + oral);
+  document.getElementById('weekTotal').textContent = ps + ' 分';
+  // cumulative total
+  var cRows = await sbGet('programmer_scores','user_name=eq.'+encodeURIComponent(name)+'&select=score');
+  var cs = cRows&&cRows.length ? (cRows[0].score||0) : (spk + oral);
+  document.getElementById('cumTotal').textContent = cs + ' 分';
 }
 
 async function loadBoard(){
-  var rows = await sbGet('weekly_scores','week_start=eq.'+getWeekStart()+'&select=user_name,programmer_score&order=programmer_score.desc&limit=15');
   var el = document.getElementById('boardList');
-  var valid = (rows||[]).filter(function(r){ return (r.programmer_score||0)>0; });
-  if(!valid.length){ el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:20px;text-align:center">本周还没有人上榜，快去练习！</div>'; return; }
+  var name = localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name')||'';
+  var rows = await sbGet('programmer_scores','select=user_name,score&order=score.desc&limit=15');
+  var valid = (rows||[]).filter(function(r){ return (r.score||0)>0; });
+  var maxScore = valid.length>0 ? Math.max.apply(null,valid.map(function(r){return r.score||0;})) : 3500;
+  if(!valid.length){
+    var spk = parseInt(localStorage.getItem('jc_prog_speak_pts')||'0');
+    var oral = parseInt(localStorage.getItem('jc_prog_oral_pts')||'0');
+    var myTotal = spk + oral;
+    if(myTotal > 0 && name){
+      el.innerHTML = '<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,252,245,.88);border-radius:10px;margin-bottom:8px">'
+        +'<div style="font-size:16px;width:28px;text-align:center;flex-shrink:0">🥇</div>'
+        +'<div style="flex:1"><div style="font-size:15px;font-weight:600">'+name+'（你）</div>'
+        +'<div style="margin-top:4px;height:4px;background:rgba(42,30,8,.08);border-radius:2px;overflow:hidden"><div style="height:4px;background:#C85A2A;border-radius:2px;width:'+Math.round(myTotal/3500*100)+'%"></div></div></div>'
+        +'<div style="font-size:14px;font-weight:700;color:#C85A2A;flex-shrink:0">'+myTotal+'</div>'
+        +'</div>';
+    } else {
+      el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:20px;text-align:center">还没有人上榜，快去练习！</div>';
+    }
+    return;
+  }
   el.innerHTML = valid.map(function(r,i){
     var medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
-    var pct = Math.round((r.programmer_score||0)/5000*100);
-    return '<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,252,245,.88);border-radius:10px;margin-bottom:8px">'
+    var pct = Math.round((r.score||0)/Math.max(maxScore,3500)*100);
+    var isMe = r.user_name === name;
+    return '<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,252,245,.88);border-radius:10px;margin-bottom:8px'+(isMe?';border:2px solid rgba(201,169,110,.5)':'')+'">'
       +'<div style="font-size:16px;width:28px;text-align:center;flex-shrink:0">'+medal+'</div>'
-      +'<div style="flex:1"><div style="font-size:15px;font-weight:600">'+r.user_name+'</div>'
+      +'<div style="flex:1"><div style="font-size:15px;font-weight:600">'+r.user_name+(isMe?' （你）':'')+'</div>'
       +'<div style="margin-top:4px;height:4px;background:rgba(42,30,8,.08);border-radius:2px;overflow:hidden"><div style="height:4px;background:#C85A2A;border-radius:2px;width:'+pct+'%"></div></div></div>'
-      +'<div style="font-size:14px;font-weight:700;color:#C85A2A;flex-shrink:0">'+(r.programmer_score||0)+'</div>'
+      +'<div style="font-size:14px;font-weight:700;color:#C85A2A;flex-shrink:0">'+(r.score||0)+'</div>'
       +'</div>';
   }).join('');
 }
 
-function showBoard(){ document.getElementById('boardOverlay').style.display='block'; loadBoard(); }
-function hideBoard(){ document.getElementById('boardOverlay').style.display='none'; }
-
 loadMyScore();
+loadBoard();
 </script>
 </body>
 </html>

@@ -72,9 +72,36 @@ html,body{background:#F5EDD8;color:#2A1E08;font-family:-apple-system,"PingFang S
     <div id="board-reading"><div class="empty">加载中...</div></div>
   </div>
 
+  <div class="divider"></div>
+
+  <!-- 口语榜 -->
+  <div class="board-section">
+    <div class="board-title"><span class="bt-icon">&#127897;</span>口语榜 TOP 6</div>
+    <div id="board-speaking"><div class="empty">加载中...</div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 码神榜 -->
+  <div class="board-section">
+    <div class="board-title"><span class="bt-icon">&#128187;</span>码神榜 TOP 6</div>
+    <div id="board-programmer"><div class="empty">加载中...</div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 语法榜 -->
+  <div class="board-section">
+    <div class="board-title"><span class="bt-icon">&#128220;</span>语法榜 TOP 6</div>
+    <div id="board-grammar"><div class="empty">加载中...</div></div>
+  </div>
+
   <div class="legend">
-    <div class="legend-item"><div class="dot-read"></div>阅读得分（上限 1000/周）</div>
-    <div class="legend-item"><div class="dot-vocab"></div>词汇得分</div>
+    <div class="legend-item"><div class="dot-read"></div>阅读 上限1000</div>
+    <div class="legend-item"><div class="dot-vocab"></div>词汇</div>
+    <div class="legend-item"><div style="width:8px;height:8px;border-radius:50%;background:rgba(200,140,50,.6);flex-shrink:0"></div>口语</div>
+    <div class="legend-item"><div style="width:8px;height:8px;border-radius:50%;background:rgba(180,80,40,.6);flex-shrink:0"></div>码神</div>
+    <div class="legend-item"><div style="width:8px;height:8px;border-radius:50%;background:rgba(74,124,63,.5);flex-shrink:0"></div>语法</div>
   </div>
 
   <span class="edit-trigger" id="editTrigger" style="display:none" onclick="showEdit()">&#9998; 修改我的胜利宣言</span>
@@ -116,7 +143,7 @@ function renderBoard(el, rows, scoreKey, isTotal){
                    : '<span class="rank">'+(i+1)+'</span>';
     var sc;
     if(isTotal){
-      var t = (r.reading_score||0) + (r.vocab_score||0);
+      var t = (r.reading_score||0) + (r.vocab_score||0) + (r.survival_score||0) + (r.programmer_score||0) + (r.grammar_score||0);
       sc = t+' <span class="score-sm">分</span>';
     } else {
       var v = r[scoreKey]||0;
@@ -175,21 +202,21 @@ async function load(){
 
   try{
     // Fetch ALL entries for this week
-    var r = await fetch(SB_URL+'/rest/v1/weekly_scores?week_start=eq.'+ws+'&select=user_name,reading_score,vocab_score,victory_msg&limit=100',
+    var r = await fetch(SB_URL+'/rest/v1/weekly_scores?week_start=eq.'+ws+'&select=user_name,reading_score,vocab_score,survival_score,programmer_score,grammar_score,victory_msg&limit=100',
       {headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}});
     if(!r.ok) throw new Error('HTTP '+r.status);
     var data = await r.json();
 
     if(!data||data.length===0){
-      ['board-total','board-vocab','board-reading'].forEach(function(id){
+      ['board-total','board-vocab','board-reading','board-speaking','board-programmer','board-grammar'].forEach(function(id){
         document.getElementById(id).innerHTML='<div class="empty">本周还没有人上榜！快去练习吧 &#128170;</div>';
       });
       return;
     }
 
-    // Total board: sort by reading+vacab desc
+    // Total board: sort by all scores desc
     var byTotal = data.slice().sort(function(a,b){
-      return ((b.reading_score||0)+(b.vocab_score||0)) - ((a.reading_score||0)+(a.vocab_score||0));
+      return ((b.reading_score||0)+(b.vocab_score||0)+(b.survival_score||0)+(b.programmer_score||0)+(b.grammar_score||0)) - ((a.reading_score||0)+(a.vocab_score||0)+(a.survival_score||0)+(a.programmer_score||0)+(a.grammar_score||0));
     });
     renderBoard(document.getElementById('board-total'), byTotal, null, true);
 
@@ -203,9 +230,24 @@ async function load(){
                      .sort(function(a,b){return (b.reading_score||0)-(a.reading_score||0);});
     renderBoard(document.getElementById('board-reading'), byReading, 'reading_score', false);
 
+    // Speaking board: survival_score desc
+    var bySpeaking = data.slice().filter(function(r){return (r.survival_score||0)>0;})
+                       .sort(function(a,b){return (b.survival_score||0)-(a.survival_score||0);});
+    renderBoard(document.getElementById('board-speaking'), bySpeaking, 'survival_score', false);
+
+    // Programmer board: programmer_score desc
+    var byProgrammer = data.slice().filter(function(r){return (r.programmer_score||0)>0;})
+                          .sort(function(a,b){return (b.programmer_score||0)-(a.programmer_score||0);});
+    renderBoard(document.getElementById('board-programmer'), byProgrammer, 'programmer_score', false);
+
+    // Grammar board: grammar_score desc
+    var byGrammar = data.slice().filter(function(r){return (r.grammar_score||0)>0;})
+                       .sort(function(a,b){return (b.grammar_score||0)-(a.grammar_score||0);});
+    renderBoard(document.getElementById('board-grammar'), byGrammar, 'grammar_score', false);
+
   }catch(e){
     console.error('weekly_stars 加载失败:', e);
-    ['board-total','board-vocab','board-reading'].forEach(function(id){
+    ['board-total','board-vocab','board-reading','board-speaking','board-programmer','board-grammar'].forEach(function(id){
       document.getElementById(id).innerHTML='<div class="empty">加载失败，请检查网络</div>';
     });
   }

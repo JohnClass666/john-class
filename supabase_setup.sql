@@ -1,5 +1,5 @@
 -- ════════════════════════════════════
--- John Class · 长难句训练 Supabase 建表
+-- John Class · Supabase 建表（全量）
 -- 在 Supabase > SQL Editor 中运行以下 SQL
 -- ════════════════════════════════════
 
@@ -88,3 +88,48 @@ ALTER TABLE vocab_progress ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "allow_all_messages"       ON messages       FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "allow_all_leaderboard"    ON leaderboard    FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "allow_all_vocab_progress" ON vocab_progress FOR ALL USING (true) WITH CHECK (true);
+
+-- ════════════════════════════════════════
+-- 7. weekly_scores 加列（如尚未添加）
+-- ════════════════════════════════════════
+ALTER TABLE weekly_scores ADD COLUMN IF NOT EXISTS programmer_score INTEGER DEFAULT 0;
+ALTER TABLE weekly_scores ADD COLUMN IF NOT EXISTS grammar_score    INTEGER DEFAULT 0;
+ALTER TABLE weekly_scores ADD COLUMN IF NOT EXISTS victory_msg     TEXT;
+
+-- ════════════════════════════════════════
+-- 8. 口语累积榜（生存英语，永久不清零）
+-- ════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS speaking_scores (
+  user_name  TEXT PRIMARY KEY,
+  score      INTEGER DEFAULT 0,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ════════════════════════════════════════
+-- 9. 码神累积榜（发音+口语，永久不清零）
+-- ════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS programmer_scores (
+  user_name  TEXT PRIMARY KEY,
+  score      INTEGER DEFAULT 0,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ════════════════════════════════════════
+-- 10. 语法累积榜（永久不清零）
+-- ════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS grammar_scores (
+  user_name  TEXT PRIMARY KEY,
+  score      INTEGER DEFAULT 0,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ════════════════════════════════════════
+-- RLS 策略
+-- ════════════════════════════════════════
+ALTER TABLE speaking_scores    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE programmer_scores  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE grammar_scores     ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "allow_all_speaking_scores"    ON speaking_scores    FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "allow_all_programmer_scores"  ON programmer_scores  FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "allow_all_grammar_scores"     ON grammar_scores     FOR ALL USING (true) WITH CHECK (true);

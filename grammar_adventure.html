@@ -314,6 +314,21 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,"PingFang SC","H
         <span class="mode-card-tag tag-forest">闯关体验</span>
       </div>
     </div>
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn" style="background:rgba(74,124,63,.12);color:#2A5A1E;border:1.5px solid rgba(74,124,63,.3);padding:10px 24px;font-size:13px;cursor:pointer;border-radius:20px;font-family:inherit;font-weight:600" onclick="showGrammarBoard()">🏆 语法排行榜</button>
+    </div>
+  </div>
+</div>
+
+<!-- 语法排行榜 overlay -->
+<div id="grammarBoardOverlay" style="display:none;position:fixed;inset:0;z-index:300;background:#F5EDD8;overflow-y:auto;padding:28px 20px">
+  <div style="max-width:480px;margin:0 auto">
+    <a href="#" onclick="hideGrammarBoard();return false" style="font-size:12px;color:#B5A080;text-decoration:none;display:block;margin-bottom:24px">← 返回</a>
+    <div style="font-size:11px;letter-spacing:.18em;color:#B5A080;font-weight:600;margin-bottom:28px">JOHN CLASS · 语法排行榜</div>
+    <div style="font-size:22px;font-weight:700;margin-bottom:4px">🏆 语法累积榜</div>
+    <div style="font-size:12px;color:#B5A080;margin-bottom:20px">32关闯关 · 普通训练 20分/关 · 综合挑战 500分 · 永久累积</div>
+    <div id="grammarBoardList"><div style="font-size:13px;color:#B5A080;padding:20px;text-align:center">加载中...</div></div>
+    <a href="weekly_stars.html" style="display:inline-block;margin-top:16px;font-size:12px;color:#B8956A;text-decoration:none;font-weight:600">→ 查看每周大神榜</a>
   </div>
 </div>
 
@@ -598,7 +613,6 @@ let forestCurrentId = 1;
 
 function loadProg() {
   try { const r = localStorage.getItem(SK); if (r) { const p = JSON.parse(r); progress = { ...progress, ...p }; } } catch(e) {}
-  // 确保 completed 只包含已完成的
   if (!progress.completed) progress.completed = [];
   forestCurrentId = 1;
   while (progress.completed.includes(forestCurrentId) && forestCurrentId < LEVELS.length) forestCurrentId++;
@@ -606,6 +620,45 @@ function loadProg() {
 function saveProg() { localStorage.setItem(SK, JSON.stringify(progress)); }
 function isDone(id) { return progress.completed.includes(id); }
 function allDone() { return LEVELS.every(l => isDone(l.id)); }
+
+// ══════════════════════════════════════════════════════════
+//  Supabase — grammar scoring
+// ══════════════════════════════════════════════════════════
+var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.P5ixZCEYtAkEtFjnHDweVHClLIrFcE2CxHt1eTMyNuQ';
+function sbH(){return{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};}
+function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.toISOString().split('T')[0];}
+async function sbGet(t,q){try{var r=await fetch(SB_URL+'/rest/v1/'+t+'?'+q,{headers:sbH()});return r.ok?await r.json():[];}catch(e){return[];}}
+async function sbUpsert(t,data){try{await fetch(SB_URL+'/rest/v1/'+t,{method:'POST',headers:Object.assign({},sbH(),{'Prefer':'resolution=merge-duplicates'}),body:JSON.stringify(data)});}catch(e){}}
+function getGrammarWeek(){try{return JSON.parse(localStorage.getItem('jc_grammar_week_'+getWeekStart())||'[]');}catch(e){return[];}}
+function saveGrammarWeek(a){localStorage.setItem('jc_grammar_week_'+getWeekStart(),JSON.stringify(a));}
+function getGrammarCumu(){try{return JSON.parse(localStorage.getItem('jc_grammar_cumulative')||'[]');}catch(e){return[];}}
+function saveGrammarCumu(a){localStorage.setItem('jc_grammar_cumulative',JSON.stringify(a));}
+function isGrammarWeekDone(id){return getGrammarWeek().indexOf(id)!==-1;}
+function isGrammarCumuDone(id){return getGrammarCumu().indexOf(id)!==-1;}
+
+async function awardGrammarScore(levelId,pts){
+  var name=localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name');
+  if(!name||name==='同学')return;
+  // weekly score
+  if(!isGrammarWeekDone(levelId)){
+    var ws=getWeekStart();
+    var wRows=await sbGet('weekly_scores','user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+ws+'&select=id,grammar_score');
+    var wCur=0,weid=null;
+    if(wRows&&wRows.length){wCur=wRows[0].grammar_score||0;weid=wRows[0].id;}
+    var wPayload={user_name:name,week_start:ws,grammar_score:wCur+pts,updated_at:new Date().toISOString()};
+    if(weid)wPayload.id=weid;
+    await sbUpsert('weekly_scores',wPayload);
+    var gw=getGrammarWeek();gw.push(levelId);saveGrammarWeek(gw);
+  }
+  // cumulative score
+  if(!isGrammarCumuDone(levelId)){
+    var cRows=await sbGet('grammar_scores','user_name=eq.'+encodeURIComponent(name)+'&select=score');
+    var cCur=cRows&&cRows.length?cRows[0].score||0:0;
+    await sbUpsert('grammar_scores',{user_name:name,score:cCur+pts,updated_at:new Date().toISOString()});
+    var gc=getGrammarCumu();gc.push(levelId);saveGrammarCumu(gc);
+  }
+}
 
 // ══════════════════════════════════════════════════════════
 //  入口
@@ -676,6 +729,8 @@ function normalOpen(id) {
   const c = document.getElementById('nContent');
   c.style.display = 'block';
   c.innerHTML = buildLvlContent(lvl, id);
+  // 如果之前通过，恢复
+  if (isDone(id) && progress.quizResults[id]) restoreDoneState(lvl);
   c.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -691,12 +746,13 @@ function buildLvlContent(lvl, id) {
         <p>${c.text}</p>
         ${c.examples.map(e => `<div class="kp-eg"><div class="en">📝 ${e.en}</div>${e.zh ? `<div class="zh">${e.zh}</div>` : ''}</div>`).join('')}
       </div>`).join('')}
-    <div class="qz-area">
-      <div class="qz-title">${isDone(id) ? '📖 复习测验（已通关，再练一遍）' : `⚔️ 闯关测验（答对 ${need}/${lvl.quiz.length} 题通关）`}</div>
-      ${lvl.quiz.map((q, qi) => buildQuizItem(q, qi)).join('')}
-    </div>
+    ${!isDone(id) ? `
+      <div class="qz-area">
+        <div class="qz-title">⚔️ 闯关测验（答对 ${need}/${lvl.quiz.length} 题通关）</div>
+        ${lvl.quiz.map((q, qi) => buildQuizItem(q, qi)).join('')}
+      </div>` : `<p style="font-size:12px;color:#4A7C3F;margin-top:12px">✅ 此关已通关</p>`}
     <div class="act-row">
-      <button class="btn btn-p" id="nSubmitBtn${id}" onclick="submitNormalQuiz(${id})">${isDone(id) ? '✓ 查看答案' : '✓ 提交批改'}</button>
+      ${!isDone(id) ? `<button class="btn btn-p" onclick="submitNormalQuiz(${id})">✓ 提交批改</button>` : ''}
       <button class="btn btn-o" onclick="normalUndo()">← 返回列表</button>
     </div>
     <div class="r-block" id="normalResult"></div>`;
@@ -744,12 +800,13 @@ function buildLvlContentPopup(lvl, id) {
         <p>${c.text}</p>
         ${c.examples.map(e => `<div class="kp-eg"><div class="en">📝 ${e.en}</div>${e.zh ? `<div class="zh">${e.zh}</div>` : ''}</div>`).join('')}
       </div>`).join('')}
-    <div class="qz-area">
-      <div class="qz-title">${isDone(id) ? '📖 复习测验（已通关，再练一遍）' : `⚔️ 闯关测验（答对 ${need}/${lvl.quiz.length} 题通关）`}</div>
-      ${lvl.quiz.map((q, qi) => buildPopupQuizItem(q, qi)).join('')}
-    </div>
+    ${!isDone(id) ? `
+      <div class="qz-area">
+        <div class="qz-title">⚔️ 闯关测验（答对 ${need}/${lvl.quiz.length} 题通关）</div>
+        ${lvl.quiz.map((q, qi) => buildPopupQuizItem(q, qi)).join('')}
+      </div>` : `<p style="font-size:12px;color:#4A7C3F;margin-top:12px">✅ 此关已通关</p>`}
     <div class="act-row">
-      <button class="btn btn-p" id="fSubmitBtn${id}" onclick="submitForestQuiz(${id})">${isDone(id) ? '✓ 查看答案' : '✓ 提交批改'}</button>
+      ${!isDone(id) ? `<button class="btn btn-p" onclick="submitForestQuiz(${id})">✓ 提交批改</button>` : ''}
       <button class="btn btn-o" onclick="closeLvlOverlay()">← 返回森林</button>
     </div>
     <div class="r-block" id="forestResult"></div>`;
@@ -777,25 +834,14 @@ function submitQuiz(levelId) {
 
 function submitNormalQuiz(levelId) {
   const lvl = LEVELS.find(l => l.id === levelId);
-  if (!lvl) return;
-  const alreadyDone = isDone(levelId);
+  if (!lvl || isDone(levelId)) return;
   const result = gradeQuiz(lvl, 'n');
-  if (alreadyDone) {
-    // 已通关：只展示对错，不修改进度
-    const res = document.getElementById('normalResult');
-    if (res) {
-      res.classList.add('show');
-      res.innerHTML = '<b style="color:#4A7C3F">✅ 已通关 · 本次复习：答对 '+result.correct+'/'+result.total+' 题</b>';
-    }
-    return;
-  }
   if (result.passed) onLevelPassed(levelId, 'normal');
 }
 
 function submitForestQuiz(levelId) {
   const lvl = LEVELS.find(l => l.id === levelId);
-  if (!lvl) return;
-  const alreadyDone = isDone(levelId);
+  if (!lvl || isDone(levelId)) return;
 
   let correct = 0;
   lvl.quiz.forEach((q, qi) => {
@@ -828,26 +874,25 @@ function submitForestQuiz(levelId) {
   const total = lvl.quiz.length;
   const pct = Math.round(correct / total * 100);
   const passed = pct >= 60;
-  // 已通关时不修改进度，只展示对错
-  if (!alreadyDone) {
-    progress.quizResults[levelId] = { correct, total, passed };
-    if (passed && !progress.completed.includes(levelId)) progress.completed.push(levelId);
-    saveProg();
-  }
+  progress.quizResults[levelId] = { correct, total, passed };
+  if (passed && !progress.completed.includes(levelId)) progress.completed.push(levelId);
+  saveProg();
   quizAnswers = {};
 
   const block = document.getElementById('forestResult');
   if (block) {
-    const reviewHint = alreadyDone ? ' · 复习模式，进度不变' : '';
-    block.innerHTML = '<div class="r-stars">'+(pct===100?'🌟🌟🌟':pct>=80?'🌟🌟':pct>=60?'🌟':'💪')+'</div>'
-      +'<div class="r-score">'+correct+'<span>/'+total+'</span></div>'
-      +'<div style="font-size:11px;color:#9A8060">得分率 '+pct+'% · '+(passed?'✅ 通关':'❌ 未通过（需≥60%）')+reviewHint+'</div>'
-      +'<div class="r-msg">'+(passed?(pct===100?'满分！✨':(alreadyDone?'复习完成！🏮':'恭喜通关！🏮')):'再试一次吧📚')+'</div>';
+    block.innerHTML = `<div class="r-stars">${pct===100?'🌟🌟🌟':pct>=80?'🌟🌟':pct>=60?'🌟':'💪'}</div>
+      <div class="r-score">${correct}<span>/${total}</span></div>
+      <div style="font-size:11px;color:#9A8060">得分率 ${pct}% · ${passed?'✅ 通关':'❌ 未通过（需≥60%）'}</div>
+      <div class="r-msg">${passed?(pct===100?'满分通关！✨':'恭喜通关！🏮'):'再试一次吧📚'}</div>`;
     block.classList.add('show');
     block.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  if (passed && !alreadyDone) {
+  if (passed) {
+    // award grammar score
+    var pts = levelId === 32 ? 500 : 20;
+    awardGrammarScore(levelId, pts);
     // 推进 forestCurrentId 到下一个未完成的关卡
     forestCurrentId = 1;
     while (progress.completed.includes(forestCurrentId) && forestCurrentId < LEVELS.length) forestCurrentId++;
@@ -911,6 +956,9 @@ function gradeQuiz(lvl, prefix) {
 }
 
 function onLevelPassed(levelId, mode) {
+  // award grammar score: 20 for normal levels, 500 for comprehensive (level 32)
+  var pts = levelId === 32 ? 500 : 20;
+  awardGrammarScore(levelId, pts);
   if (allDone()) {
     document.getElementById('nChallengeBtn').classList.add('show');
     document.getElementById('fInfo').textContent = '🏆 全部通关！点击首页终极挑战';
@@ -1132,6 +1180,27 @@ function forestOpen(id) {
   quizAnswers = {};
   document.getElementById('lvlCard').innerHTML = buildLvlContentPopup(lvl, id);
   document.getElementById('lvlOverlay').classList.add('show');
+  if (isDone(id) && progress.quizResults[id]) {
+    const r = progress.quizResults[id];
+    if (r && r.passed) {
+      lvl.quiz.forEach((q, qi) => {
+        const item = document.getElementById('fqItem' + qi);
+        if (!item) return;
+        const explain = document.getElementById('fexplain' + qi);
+        if (q.type === 'choice') {
+          item.querySelectorAll('.qo').forEach((o, oi) => {
+            o.disabled = true;
+            if (oi === q.ans) o.classList.add('correct');
+          });
+        } else {
+          const inp = document.getElementById('ffill' + qi);
+          if (inp) { inp.value = q.ans; inp.disabled = true; inp.style.borderColor = '#4A7C3F'; inp.style.background = 'rgba(74,124,63,.1)'; }
+        }
+        item.classList.add('graded');
+        if (explain) explain.classList.add('show');
+      });
+    }
+  }
 }
 
 function forestCelebrate() {
@@ -1239,6 +1308,9 @@ function checkChallenge() {
   const transPct = Math.round(transCorrect / total * 100);
   const overallPct = Math.round((structCorrect + transCorrect) / (total * 2) * 100);
 
+  // award 500 pts for completing comprehensive challenge
+  awardGrammarScore(32, 500);
+
   const block = document.getElementById('chResult');
   block.innerHTML = `
     <div class="r-stars">${overallPct>=90?'🌟🌟🌟':overallPct>=70?'🌟🌟':overallPct>=50?'🌟':'💪'}</div>
@@ -1276,6 +1348,35 @@ function resetAll() {
 window.addEventListener('resize', () => {
   if (currentMode === 'forest') buildForestScene();
 });
+
+// ══════════════════════════════════════════════════════════
+//  语法排行榜
+// ══════════════════════════════════════════════════════════
+function showGrammarBoard(){
+  document.getElementById('grammarBoardOverlay').style.display='block';
+  loadGrammarBoard();
+}
+function hideGrammarBoard(){
+  document.getElementById('grammarBoardOverlay').style.display='none';
+}
+async function loadGrammarBoard(){
+  var el=document.getElementById('grammarBoardList');
+  var name=localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name')||'';
+  try{
+    var rows=await sbGet('grammar_scores','select=user_name,score&order=score.desc&limit=15');
+    var valid=(rows||[]).filter(function(r){return (r.score||0)>0;});
+    if(!valid.length){el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:20px;text-align:center">还没有人上榜</div>';return;}
+    el.innerHTML=valid.map(function(r,i){
+      var m=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+      var isMe=r.user_name===name;
+      return '<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,252,245,.88);border-radius:10px;margin-bottom:8px'+(isMe?';border:2px solid rgba(201,169,110,.5)':'')+'">'
+        +'<div style="font-size:16px;width:28px;text-align:center;flex-shrink:0">'+m+'</div>'
+        +'<div style="flex:1;font-size:15px;font-weight:600">'+r.user_name+(isMe?' （你）':'')+'</div>'
+        +'<div style="font-size:14px;font-weight:700;color:#2A1E08;flex-shrink:0">'+(r.score||0)+'</div>'
+        +'</div>';
+    }).join('');
+  }catch(e){el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:20px;text-align:center">加载失败</div>';}
+}
 
 // ══════════════════════════════════════════════════════════
 //  初始化

@@ -94,7 +94,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
   <div class="logo">JOHN CLASS · 口语 <span style="font-size:10px">(请用Safari打开)</span></div>
   <div style="font-size:44px;margin-bottom:16px">💬</div>
   <div style="font-size:22px;font-weight:700;margin-bottom:8px">口语训练</div>
-  <div style="font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:28px;text-align:center">看中文提示，说出对应英文<br>挖空 70%+，朗读后对比答案<br>每句 <strong>25 分</strong> · 共 100 句 · 满分 2500</div>
+  <div style="font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:28px;text-align:center">看中文提示，说出对应英文<br>挖空 70%+，朗读后对比答案<br>每句 <strong>20 分</strong> · 共 100 句 · 满分 2000</div>
   <div style="width:100%;background:rgba(255,252,245,.9);border:1.5px solid rgba(184,149,106,.2);border-radius:14px;padding:16px 18px;margin-bottom:24px;text-align:left">
     <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#B5A080;text-transform:uppercase;margin-bottom:10px">本周进度</div>
     <div class="prog-row"><span>已完成</span><span id="entrySentDone">0 / 100 句</span></div>
@@ -164,18 +164,18 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
   <div class="done-title">全部完成！</div>
   <div class="done-sub">100 句口语训练全部搞定！</div>
   <div class="stat-row">
-    <div class="stat-item"><div class="stat-num" id="doneTotal">2500</div><div class="stat-lbl">本周总分</div></div>
+    <div class="stat-item"><div class="stat-num" id="doneTotal">2000</div><div class="stat-lbl">本周总分</div></div>
     <div class="stat-item"><div class="stat-num" id="doneAvg">—</div><div class="stat-lbl">平均得分</div></div>
   </div>
   <button class="btn" onclick="window.location.href='programmer.html'">返回专区</button>
 </div>
 
-<div class="pts-toast" id="ptsToast">+25 分 🎯</div>
+<div class="pts-toast" id="ptsToast">+20 分 🎯</div>
 
 <script>
 var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.P5ixZCEYtAkEtFjnHDweVHClLIrFcE2CxHt1eTMyNuQ';
-var POINTS=25, PASS_SCORE=80, MAX_ATTEMPTS=3;
+var POINTS=20, PASS_SCORE=80, MAX_ATTEMPTS=3;
 
 // ── SENTENCE BANK with Chinese translations ──
 var SENTENCES=[
@@ -310,6 +310,10 @@ async function addPoints(){
   var payload={user_name:userName,week_start:ws,programmer_score:cur+POINTS,updated_at:new Date().toISOString()};
   if(eid)payload.id=eid;
   await sbUpsert('weekly_scores',payload);
+  // cumulative programmer_scores (permanent, never resets)
+  var cRows=await sbGet('programmer_scores','user_name=eq.'+encodeURIComponent(userName)+'&select=score');
+  var cCur=cRows&&cRows.length?cRows[0].score||0:0;
+  await sbUpsert('programmer_scores',{user_name:userName,score:cCur+POINTS,updated_at:new Date().toISOString()});
   var oral=parseInt(localStorage.getItem('jc_prog_oral_pts')||'0')+POINTS;
   localStorage.setItem('jc_prog_oral_pts',oral);
 }
@@ -584,7 +588,7 @@ function processResult(spoken){
       saveProgress(p);
       updateProgUI();
       addPoints();
-      showToast('+25 分 ✅');
+      showToast('+20 分 ✅');
       if(p.done.length>=100)setTimeout(function(){showDone(p);},1800);
     } else {
       document.getElementById('scoreMsg').textContent+=' （本句本周已计分）';

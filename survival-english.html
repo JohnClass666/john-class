@@ -250,6 +250,8 @@ async function sbUpsertScore(name,addPts){
   var payload={user_name:name,week_start:ws,survival_score:cur+addPts,updated_at:new Date().toISOString()};
   if(eid)payload.id=eid;
   try{await fetch(SB_URL+'/rest/v1/weekly_scores',{method:'POST',headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),body:JSON.stringify(payload)});}catch(e){}
+  // cumulative speaking_scores (permanent, never resets)
+  try{var spUrl=SB_URL+'/rest/v1/speaking_scores?user_name=eq.'+encodeURIComponent(name)+'&select=score';var spR=await fetch(spUrl,{headers:sbHeaders()});var spRows=spR.ok?await spR.json():[];var spCur=spRows&&spRows.length?spRows[0].score||0:0;await fetch(SB_URL+'/rest/v1/speaking_scores',{method:'POST',headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),body:JSON.stringify({user_name:name,score:spCur+addPts,updated_at:new Date().toISOString()})});}catch(e){}
 }
 
 // ═══════════════════════════════════════
