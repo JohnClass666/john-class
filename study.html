@@ -69,6 +69,10 @@ html,body{height:100%;overflow:hidden;background:#F5EDD8;
 </style>
 </head>
 <body>
+<!-- 默认简洁版，仅手动选3D才加载Three.js -->
+<script>
+if(localStorage.getItem('jc_ui_mode')!=='3d')location.replace('study-classic.html');
+</script>
 
 <div id="overlay"></div>
 <div id="loading"><div class="lb">John Class</div><div class="ls">城堡正在升起…</div></div>
@@ -92,13 +96,7 @@ html,body{height:100%;overflow:hidden;background:#F5EDD8;
 
 <nav class="quick-nav" id="quickNav"></nav>
 
-<!-- WebGL 检测 & 用户逻辑 -->
 <script>
-// 默认简洁版，除非用户手动选了3D
-var _uiMode = localStorage.getItem('jc_ui_mode');
-if(_uiMode !== '3d'){
-  window.location.replace('study-classic.html');
-}
 
 (function(){
   var n = localStorage.getItem('jc_username')||'';
