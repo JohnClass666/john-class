@@ -32,7 +32,11 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
 </div>
 
 <script>
-(function(){
+var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.P5ixZCEYtAkEtFjnHDweVHClLIrFcE2CxHt1eTMyNuQ';
+function sbH(){return{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};}
+
+(async function(){
   var prefill = '';
   var oldKeys = ['jc_reading_name','jc_username','vocab_name','jc_name'];
   for(var i=0; i<oldKeys.length; i++){
@@ -42,11 +46,48 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
   if(prefill){ document.getElementById('nameInp').value = prefill; }
 })();
 
-function enter(){
+async function checkAndSync(name){
+  // 已经同步过或本地已有学习进度 → 跳过
+  if(localStorage.getItem('jc_synced')===name) return;
+  var hasLocal = localStorage.getItem('grammar_dual_mode') || localStorage.getItem('jc_daily_state');
+  if(hasLocal){ localStorage.setItem('jc_synced', name); return; }
+
+  try{
+    var results = await Promise.all([
+      fetch(SB_URL+'/rest/v1/leaderboard?name=eq.'+encodeURIComponent(name)+'&select=score&limit=1', {headers:sbH()}),
+      fetch(SB_URL+'/rest/v1/reading_progress?user_name=eq.'+encodeURIComponent(name)+'&select=total_completed,saved_ids&limit=1', {headers:sbH()}),
+      fetch(SB_URL+'/rest/v1/vocab_progress?user_name=eq.'+encodeURIComponent(name)+'&select=progress_data&limit=1', {headers:sbH()})
+    ]);
+
+    var data = await Promise.all(results.map(function(r){ return r.ok ? r.json() : Promise.resolve([]); }));
+
+    var hasData = (data[0].length>0 && data[0][0].score>0) ||
+                   (data[1].length>0 && data[1][0].total_completed>0) ||
+                   (data[2].length>0 && data[2][0].progress_data);
+
+    if(hasData && confirm(name+'，检测到你在其他设备上有学习记录。\n\n要同步到这个设备吗？')){
+      // 恢复阅读进度
+      if(data[1].length>0){
+        var rp = data[1][0];
+        if(rp.saved_ids && rp.saved_ids.length>0) localStorage.setItem('jc_reading_saved', JSON.stringify(rp.saved_ids));
+        if(rp.total_completed) localStorage.setItem('jc_reading_total', rp.total_completed);
+      }
+      // 恢复词汇/生存英语进度
+      if(data[2].length>0 && data[2][0].progress_data){
+        localStorage.setItem('jc_vocab_progress_sync', JSON.stringify(data[2][0].progress_data));
+      }
+      localStorage.setItem('jc_synced', name);
+      alert('同步完成！欢迎回来 🎉');
+    }
+    localStorage.setItem('jc_synced', name);
+  }catch(e){}
+}
+
+async function enter(){
   var name = document.getElementById('nameInp').value.trim();
   if(!name){ alert('请输入你的名字'); return; }
   localStorage.setItem('jc_username', name);
-  if(!localStorage.getItem('jc_victory_msg')){ localStorage.setItem('jc_victory_msg','1'); }
+  await checkAndSync(name);
   window.location.href = 'index.html';
 }
 
