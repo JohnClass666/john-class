@@ -53,11 +53,16 @@ async function checkAndSync(name){
   if(hasLocal){ localStorage.setItem('jc_synced', name); return; }
 
   try{
-    var results = await Promise.all([
-      fetch(SB_URL+'/rest/v1/leaderboard?name=eq.'+encodeURIComponent(name)+'&select=score&limit=1', {headers:sbH()}),
-      fetch(SB_URL+'/rest/v1/reading_progress?user_name=eq.'+encodeURIComponent(name)+'&select=total_completed,saved_ids&limit=1', {headers:sbH()}),
-      fetch(SB_URL+'/rest/v1/vocab_progress?user_name=eq.'+encodeURIComponent(name)+'&select=progress_data&limit=1', {headers:sbH()})
+    // 5秒超时，防止网络问题卡住进入流程
+    var results = await Promise.race([
+      Promise.all([
+        fetch(SB_URL+'/rest/v1/leaderboard?name=eq.'+encodeURIComponent(name)+'&select=score&limit=1', {headers:sbH()}),
+        fetch(SB_URL+'/rest/v1/reading_progress?user_name=eq.'+encodeURIComponent(name)+'&select=total_completed,saved_ids&limit=1', {headers:sbH()}),
+        fetch(SB_URL+'/rest/v1/vocab_progress?user_name=eq.'+encodeURIComponent(name)+'&select=progress_data&limit=1', {headers:sbH()})
+      ]),
+      new Promise(function(_, reject){ setTimeout(function(){ reject(new Error('timeout')); }, 5000); })
     ]);
+    if(!results) return;
 
     var data = await Promise.all(results.map(function(r){ return r.ok ? r.json() : Promise.resolve([]); }));
 
