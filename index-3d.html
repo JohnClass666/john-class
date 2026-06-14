@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.bootcdn.net">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>John Class</title>
+<!-- Google Fonts 已移除 -->
+<!--
+══════════════════════════════════════════════════════════════
+ John Class 3D 主页「John 的书桌」（设计/建模/工程：Claude）
+ 暖灯书桌一角：城堡沙盘（→ study.html，镜头俯冲入模型世界）、
+ 火漆信件（→ teacher.html，信封起飞）、bg.png 立式相框、
+ 黄铜台灯、书堆、鹅毛笔、热气马克杯。
+
+ ▶ 部署：先把现有 index.html 改名 index.html 上传（降级保底），
+   再把本文件改名 index.html 上传覆盖。bg.png 保持在仓库根目录不动。
+ ▶ 名字逻辑与原版一致：无名字 → start.html；老用户无宣言 → start.html 补宣言。
+ ▶ WebGL 不可用 / 引擎加载失败 → 自动落回 index.html。
+══════════════════════════════════════════════════════════════
+-->
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#F5EDD8;
+  font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;color:#2A1E08;
+  -webkit-font-smoothing:antialiased}
+#scene{position:fixed;inset:0}
+#labels{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.b-label{background:rgba(255,252,245,.9);border:1px solid rgba(184,149,106,.45);
+  color:#5A4420;font-size:12px;font-weight:600;padding:3px 11px;border-radius:11px;
+  white-space:nowrap;pointer-events:none;transition:transform .2s,border-color .2s,color .2s;
+  box-shadow:0 2px 8px rgba(42,30,8,.08);font-family:Georgia, "PingFang SC", serif}
+.b-label.hot{border-color:#C85A2A;color:#2A1E08;transform:scale(1.14)}
+.brand{position:fixed;top:38px;left:34px;z-index:10;
+  font-family:Georgia, "PingFang SC", serif;font-size:15px;
+  letter-spacing:.06em;color:rgba(160,120,70,.55)}
+.greeting{position:fixed;top:38px;right:34px;z-index:10;
+  font-family:Georgia, "PingFang SC", serif;font-size:13px;
+  color:rgba(160,120,70,.6);letter-spacing:.04em}
+/* 左侧衬线大字入口（与原主页同款气质） */
+.entries{position:fixed;left:34px;bottom:108px;z-index:10}
+.entries .divider{width:32px;height:1px;background:rgba(160,120,70,.35);margin-bottom:26px}
+.entry{display:block;text-decoration:none;margin-bottom:24px;cursor:pointer;position:relative}
+.entry-title{font-family:Georgia, "PingFang SC", serif;font-weight:700;color:#FFFDF6;
+  font-size:clamp(26px,3vw,38px);line-height:1.15;letter-spacing:.01em;
+  text-shadow:0 2px 10px rgba(42,30,8,.55),0 1px 3px rgba(42,30,8,.6);
+  transition:color .2s,transform .2s;display:inline-block}
+.entry-sub{font-family:Georgia, "PingFang SC", serif;font-size:clamp(12px,1.4vw,15px);
+  color:rgba(255,250,238,.85);margin-top:4px;letter-spacing:.02em;
+  text-shadow:0 1px 6px rgba(42,30,8,.6);transition:color .2s}
+.entry:hover .entry-title,.entry.hot .entry-title{color:#FFE3C0;transform:translateX(6px)}
+.entry:hover .entry-sub,.entry.hot .entry-sub{color:#FFF}
+.foot{position:fixed;bottom:36px;left:34px;z-index:10;
+  font-family:Georgia, "PingFang SC", serif;font-size:13px;
+  color:rgba(160,120,70,.4);letter-spacing:.06em}
+.foot span{color:rgba(160,120,70,.3);cursor:pointer}
+.classic-link{position:fixed;right:18px;bottom:18px;z-index:11;font-size:11px;
+  color:#9A8060;text-decoration:none;background:rgba(255,252,245,.7);
+  padding:5px 10px;border-radius:10px;border:1px solid rgba(184,149,106,.25);transition:.2s}
+.classic-link:hover{color:#2A1E08;border-color:#C85A2A}
+#overlay{position:fixed;inset:0;background:#F5EDD8;z-index:999;opacity:0;
+  pointer-events:none;transition:opacity .3s ease}
+#overlay.show{opacity:1;pointer-events:all}
+#loading{position:fixed;inset:0;background:#F5EDD8;z-index:998;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:opacity .5s}
+#loading .lb{font-family:Georgia, "PingFang SC", serif;font-size:13px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;color:#B8956A}
+#loading .ls{font-size:11px;color:#9A8060}
+@media (max-width:680px){
+  .brand{top:24px;left:22px}
+  .greeting{top:24px;right:22px}
+  .entries{left:22px;bottom:96px}
+  .entry{margin-bottom:18px}
+  .foot{left:22px;bottom:26px}
+}
+</style>
+</head>
+<body>
+<!-- 默认简洁版，仅手动选3D才加载 -->
+<script>
+if(localStorage.getItem('jc_home_mode')!=='3d')location.replace('index.html');
+</script>
+
+<div id="overlay"></div>
+<div id="loading"><div class="lb">John Class</div><div class="ls">台灯亮起，书桌就绪…</div></div>
+
+<div class="brand">John Class</div>
+<div class="greeting" id="greeting"></div>
+
+<div class="entries">
+  <div class="divider"></div>
+  <a class="entry" id="entryStudy" href="study.html">
+    <div class="entry-title">英语学习提升</div>
+    <div class="entry-sub">单词训练 · 语法冒险</div>
+  </a>
+  <a class="entry" id="entryTalk" href="teacher.html">
+    <div class="entry-title">和 John 说说</div>
+    <div class="entry-sub">提问 · 炫耀 · 反馈 · 了解</div>
+  </a>
+</div>
+
+<div class="foot">Changsha · 2026　<span onclick="changeName()" title="切换名字">|</span></div>
+<a class="classic-link" href="index.html" id="classicLink">切换简洁版</a>
+
+<div id="scene"></div>
+<div id="labels"></div>
+
+<script>
+// ── 守卫脚本（不依赖 3D 引擎）──
+(function(){
+  if(localStorage.getItem('jc_home_mode')==='classic'){ location.replace('index.html'); return; }
+  try{
+    var c = document.createElement('canvas');
+    if(!(window.WebGLRenderingContext && (c.getContext('webgl')||c.getContext('experimental-webgl'))))
+      throw 0;
+  }catch(e){ location.replace('index.html'); return; }
+  setTimeout(function(){
+    if(!window.__deskReady) location.replace('index.html');
+  }, 22000);
+})();
+document.getElementById('classicLink').addEventListener('click', function(){
+  localStorage.setItem('jc_home_mode','classic');
+});
+// ── 名字门卫（与原 index.html 逻辑一致；命名/三问流程由 start.html 负责）──
+(function(){
+  var isLocal = location.protocol === 'file:';   // 本地双击调试：跳过门卫，直接进书桌
+  var saved = localStorage.getItem('jc_username')
+    || localStorage.getItem('jc_student_name')
+    || localStorage.getItem('jc_reading_name');
+  if(saved && saved !== '同学'){
+    localStorage.setItem('jc_username', saved);
+    if(!localStorage.getItem('jc_victory_msg') && !isLocal){ location.href = 'start.html'; return; }
+    document.getElementById('greeting').textContent = saved + ' 欢迎 👋';
+  } else if(isLocal){
+    document.getElementById('greeting').textContent = '调试模式 🔧';
+  } else {
+    location.href = 'start.html';
+  }
+})();
+function changeName(){
+  if(confirm('要切换成另一个名字吗？\n\n进度和分数不会丢失——换设备输入同一个名字就能找回来。')){
+    localStorage.removeItem('jc_username');
+    window.location.href = 'start.html';
+  }
+}
+</script>
+
+<script>
+"use strict";
+window.__bootDesk = function(){
+const THREE = window.THREE;
+
+/* ── 内置兼容层：颜色空间 / 轨道控制 / 标签投射（零插件依赖，任意 three 版本可用）── */
+const SRGB = t => { if('colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace;
+  else t.encoding = THREE.sRGBEncoding; return t; };
+function OrbitLite(camera, dom){
+  const self = this;
+  this.target = new THREE.Vector3();
+  this.enabled = true; this.enablePan = false;
+  this.enableDamping = true; this.dampingFactor = .08;
+  this.minDistance = 1; this.maxDistance = 100;
+  this.minPolarAngle = .05; this.maxPolarAngle = Math.PI - .05;
+  this.minAzimuthAngle = -Infinity; this.maxAzimuthAngle = Infinity;
+  this.autoRotate = false; this.autoRotateSpeed = .4;
+  this.onStart = null; this.onEnd = null;
+  let drag = false, pinching = false, px = 0, py = 0, pd = 0;
+  let pdx = 0, pdy = 0, lz = 0;
+  dom.addEventListener('pointerdown', e => { if(!self.enabled) return;
+    drag = true; px = e.clientX; py = e.clientY; if(self.onStart) self.onStart(); });
+  addEventListener('pointermove', e => { if(!drag || !self.enabled || pinching) return;
+    pdx += e.clientX - px; pdy += e.clientY - py; px = e.clientX; py = e.clientY; });
+  addEventListener('pointerup', () => { if(drag){ drag = false; if(self.onEnd) self.onEnd(); } });
+  dom.addEventListener('wheel', e => { if(!self.enabled) return; e.preventDefault();
+    lz += e.deltaY > 0 ? .25 : -.25; }, { passive:false });
+  dom.addEventListener('touchstart', e => { if(e.touches.length === 2){ pinching = true;
+    pd = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); } }, { passive:true });
+  dom.addEventListener('touchmove', e => { if(!self.enabled || !pinching) return;
+    if(e.touches.length === 2){ e.preventDefault();
+      const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      if(pd) lz += (pd - d) * .01; pd = d; } }, { passive:false });
+  dom.addEventListener('touchend', e => { if(e.touches.length < 2) pinching = false; }, { passive:true });
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  this.update = function(){
+    if(!self.enabled) return;
+    const o = camera.position.clone().sub(self.target);
+    let r = o.length() || 1;
+    let th = Math.atan2(o.x, o.z);
+    let ph = Math.acos(clamp(o.y / r, -1, 1));
+    if(self.autoRotate && !drag) th += self.autoRotateSpeed * .00175;
+    const ux = pdx * .2, uy = pdy * .2, uz = lz * .18;
+    pdx -= ux; pdy -= uy; lz -= uz;
+    th -= ux * .005; ph -= uy * .005; r *= Math.exp(uz * .35);
+    th = clamp(th, self.minAzimuthAngle, self.maxAzimuthAngle);
+    ph = clamp(ph, self.minPolarAngle, self.maxPolarAngle);
+    r = clamp(r, self.minDistance, self.maxDistance);
+    camera.position.set(
+      self.target.x + r * Math.sin(ph) * Math.sin(th),
+      self.target.y + r * Math.cos(ph),
+      self.target.z + r * Math.sin(ph) * Math.cos(th));
+    camera.lookAt(self.target);
+  };
+}
+function LabelLayer(container){
+  const items = [], v = new THREE.Vector3();
+  this.add = function(host, x, y, z, el){
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute;left:0;top:0;will-change:transform';
+    wrap.appendChild(el); container.appendChild(wrap);
+    items.push({ host, off:new THREE.Vector3(x, y, z), wrap });
+    return wrap;
+  };
+  this.render = function(camera){
+    for(const it of items){
+      v.copy(it.off).applyMatrix4(it.host.matrixWorld).project(camera);
+      if(v.z >= 1){ it.wrap.style.visibility = 'hidden'; continue; }
+      it.wrap.style.visibility = 'visible';
+      it.wrap.style.transform = 'translate(-50%,-50%) translate('
+        + ((v.x * .5 + .5) * innerWidth).toFixed(1) + 'px,'
+        + ((-v.y * .5 + .5) * innerHeight).toFixed(1) + 'px)';
+    }
+  };
+}
+
+/* ═══════════ 程序化贴图（John Class 同一套画笔）═══════════ */
+function canvasTex(w, h, painter){
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  painter(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c);
+  SRGB(t);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+function jitter(base, amt){
+  const [h,s,l] = base;
+  return `hsl(${h + (Math.random()-.5)*amt*2},${s + (Math.random()-.5)*8}%,${l + (Math.random()-.5)*amt}%)`;
+}
+function speckle(ctx,w,h,n,col,a){
+  ctx.globalAlpha = a;
+  for(let i=0;i<n;i++){ ctx.fillStyle = col;
+    ctx.beginPath();
+    ctx.ellipse(Math.random()*w, Math.random()*h, 1+Math.random()*2.5, 1+Math.random()*1.5, Math.random()*3, 0, 7);
+    ctx.fill(); }
+  ctx.globalAlpha = 1;
+}
+// 桌面原木：宽板拼接 + 木纹曲线 + 暖色压光
+function deskWoodTexture(){
+  return canvasTex(512,512,(ctx,w,h)=>{
+    ctx.fillStyle = 'hsl(30,40%,52%)'; ctx.fillRect(0,0,w,h);
+    for(let y=0;y<h;y+=86){
+      ctx.fillStyle = jitter([30,40,50],5);
+      ctx.fillRect(0,y+2,w,82);
+      ctx.strokeStyle='rgba(70,42,16,.45)'; ctx.lineWidth=3;
+      ctx.strokeRect(-4,y+2,w+8,82);
+      for(let i=0;i<7;i++){
+        ctx.strokeStyle='rgba(70,42,16,.18)'; ctx.lineWidth=1.4;
+        const yy=y+12+Math.random()*64;
+        ctx.beginPath(); ctx.moveTo(0,yy);
+        ctx.bezierCurveTo(w*.25,yy+5,w*.55,yy-5,w,yy+2); ctx.stroke();
+      }
+      if(Math.random()<.7){                                  // 木节
+        const kx=Math.random()*w, ky=y+20+Math.random()*46;
+        ctx.strokeStyle='rgba(70,42,16,.35)';
+        for(let r=3;r<11;r+=3.5){ ctx.beginPath(); ctx.ellipse(kx,ky,r*1.5,r,0,0,7); ctx.stroke(); }
+      }
+    }
+    speckle(ctx,w,h,160,'#FFE8C0',.07);
+    const g = ctx.createRadialGradient(w*.4,h*.35,60,w*.5,h*.5,w*.75);
+    g.addColorStop(0,'rgba(255,220,160,.10)'); g.addColorStop(1,'rgba(60,36,12,.16)');
+    ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+  });
+}
+// 深色底座木
+function darkWoodTexture(){
+  return canvasTex(256,256,(ctx,w,h)=>{
+    ctx.fillStyle = 'hsl(26,38%,30%)'; ctx.fillRect(0,0,w,h);
+    for(let i=0;i<10;i++){
+      ctx.strokeStyle='rgba(20,10,2,.3)'; ctx.lineWidth=1.5;
+      const yy=Math.random()*h;
+      ctx.beginPath(); ctx.moveTo(0,yy);
+      ctx.bezierCurveTo(w*.3,yy+4,w*.6,yy-4,w,yy); ctx.stroke();
+    }
+    speckle(ctx,w,h,90,'#D9A86A',.06);
+  });
+}
+// 迷你岛草地 / 岩石（沙盘用）
+function grassTexture(){
+  return canvasTex(128,128,(ctx,w,h)=>{
+    ctx.fillStyle = 'hsl(82,42%,56%)'; ctx.fillRect(0,0,w,h);
+    for(let i=0;i<24;i++){ ctx.globalAlpha=.18; ctx.fillStyle = jitter([82,46,52],14);
+      ctx.beginPath(); ctx.ellipse(Math.random()*w,Math.random()*h,8+Math.random()*16,6+Math.random()*10,Math.random()*3,0,7); ctx.fill(); }
+    ctx.globalAlpha=1;
+    speckle(ctx,w,h,90,'hsl(75,55%,70%)',.3);
+  });
+}
+function rockTexture(){
+  return canvasTex(128,128,(ctx,w,h)=>{
+    ctx.fillStyle = 'hsl(33,30%,52%)'; ctx.fillRect(0,0,w,h);
+    for(let i=0;i<26;i++){ ctx.globalAlpha=.22; ctx.fillStyle = jitter([33,28,46],12);
+      ctx.beginPath();
+      const x=Math.random()*w, y=Math.random()*h, r=6+Math.random()*14;
+      ctx.moveTo(x+r,y);
+      for(let a=0;a<6.3;a+=1.05) ctx.lineTo(x+Math.cos(a)*r*(0.7+Math.random()*.5), y+Math.sin(a)*r*(0.7+Math.random()*.5));
+      ctx.closePath(); ctx.fill(); }
+    ctx.globalAlpha=1;
+  });
+}
+// 迷你城堡石墙（沙盘比例的细密砖）
+function miniStoneTexture(){
+  return canvasTex(128,128,(ctx,w,h)=>{
+    ctx.fillStyle = 'hsl(42,38%,82%)'; ctx.fillRect(0,0,w,h);
+    const bh=14;
+    for(let row=0; row*bh<h+bh; row++){
+      const off = row%2 ? 17 : 0;
+      for(let x=-34+off; x<w; x+=34){
+        ctx.fillStyle = jitter([42,38,82],5);
+        ctx.beginPath(); ctx.roundRect(x+1,row*bh+1,30,bh-2,2); ctx.fill();
+        ctx.strokeStyle='hsla(42,30%,40%,.3)'; ctx.lineWidth=1; ctx.stroke();
+      }
+    }
+  });
+}
+// 信封表面：折线 + 邮票 + 火漆位
+function envelopeTexture(stamp){
+  return canvasTex(256,170,(ctx,w,h)=>{
+    ctx.fillStyle='#FBF3E0'; ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle='rgba(184,149,106,.55)'; ctx.lineWidth=3;
+    ctx.strokeRect(4,4,w-8,h-8);
+    ctx.beginPath(); ctx.moveTo(6,6); ctx.lineTo(w/2,h*.56); ctx.lineTo(w-6,6); ctx.stroke();
+    if(stamp){
+      ctx.fillStyle='#E8D8B8'; ctx.fillRect(w-58,14,42,32);
+      ctx.strokeStyle='#B8956A'; ctx.lineWidth=2; ctx.strokeRect(w-58,14,42,32);
+      ctx.fillStyle='#C85A2A'; ctx.font='700 20px Georgia';
+      ctx.textAlign='center'; ctx.fillText('J', w-37, 37);
+    }
+    speckle(ctx,w,h,30,'#C8A870',.12);
+  });
+}
+
+/* ═══════════ 基础设施 ═══════════ */
+const app = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+const isMobile = matchMedia('(max-width:680px)').matches || 'ontouchstart' in window;
+renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile?1.5:2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = !isMobile;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.18;
+if('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
+else renderer.outputEncoding = THREE.sRGBEncoding;
+if('useLegacyLights' in renderer) renderer.useLegacyLights = false;
+else if('physicallyCorrectLights' in renderer) renderer.physicallyCorrectLights = true;
+app.appendChild(renderer.domElement);
+const labelLayer = new LabelLayer(document.getElementById('labels'));
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#F5EDD8');
+scene.fog = new THREE.Fog('#F5EDD8', 22, 48);
+
+const camera = new THREE.PerspectiveCamera(44, innerWidth/innerHeight, .1, 80);
+camera.position.set(0, isMobile?6.4:5.3, isMobile?12.6:10.2);
+
+const controls = new OrbitLite(camera, renderer.domElement);
+controls.target.set(0, 1.4, -.8);
+controls.enableDamping = true; controls.dampingFactor = .07;
+controls.enablePan = false;
+controls.minDistance = 7.5; controls.maxDistance = 13.5;
+controls.minPolarAngle = .85; controls.maxPolarAngle = 1.32;
+controls.minAzimuthAngle = -.55; controls.maxAzimuthAngle = .55;
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// 暖光：环境 + 黄昏侧光 + 台灯光池
+scene.add(new THREE.HemisphereLight('#FFF1D6', '#B89A6A', 1.05));
+const dirL = new THREE.DirectionalLight('#FFE6B8', 1.9);   // 晨光：从窗户上方斜射，正面洒在桌面
+dirL.position.set(-4, 12, 8);
+dirL.target.position.set(0, 0, -1); scene.add(dirL.target);
+dirL.castShadow = !isMobile;
+dirL.shadow.mapSize.set(1024,1024);
+dirL.shadow.camera.left=-14; dirL.shadow.camera.right=14;
+dirL.shadow.camera.top=14; dirL.shadow.camera.bottom=-14;
+dirL.shadow.bias=-0.0004;
+scene.add(dirL);
+
+const mat = (c,r=.9,m=0)=>new THREE.MeshStandardMaterial({ color:c, roughness:r, metalness:m });
+const brass = mat('#B8915A', .38, .5);
+function texMat(tex, rx, ry){ const t=tex(); t.repeat.set(rx,ry);
+  return new THREE.MeshStandardMaterial({ map:t, roughness:.92 }); }
+function M(geo, m, x=0,y=0,z=0){
+  const o = new THREE.Mesh(geo, m);
+  o.position.set(x,y,z); o.castShadow = true; o.receiveShadow = true;
+  return o;
+}
+function addLabel(g, text, y){
+  const div = document.createElement('div');
+  div.className='b-label'; div.textContent = text;
+  g.userData.label = div;
+  g.userData.labelWrap = labelLayer.add(g, 0, y, 0, div);
+}
+
+/* ═══════════ 书桌 ═══════════ */
+const deskTop = M(new THREE.BoxGeometry(17, .5, 10), texMat(deskWoodTexture, 2, 1.2));
+deskTop.position.y = 0; scene.add(deskTop);
+scene.add(M(new THREE.BoxGeometry(17, .7, .4), texMat(darkWoodTexture,3,.4), 0, -.55, 4.85));
+[[-7.6],[7.6]].forEach(([x])=> scene.add(M(new THREE.BoxGeometry(.55,2.6,.55), texMat(darkWoodTexture,.6,1.6), x,-1.7,4.5)));
+
+/* ═══════════ 房间：背墙 · 大窗 · 窗帘 · 洒进来的阳光 ═══════════ */
+const backWall = M(new THREE.BoxGeometry(44, 24, .5), mat('#EFE3C8', 1), 0, 9, -7.3);
+backWall.castShadow = false;
+scene.add(backWall);
+scene.add(M(new THREE.BoxGeometry(44, .2, .56), mat('#D9C8A4', 1), 0, 3.1, -7.28)); // 护墙线
+// 大窗（窗外：暖阳天空）
+const win = new THREE.Group(); win.position.set(0, 4.8, -7.0);
+win.add(M(new THREE.BoxGeometry(14, 5.6, .35), texMat(darkWoodTexture, 3, 1.5), 0, 0, 0));
+const skyTex = canvasTex(512, 384, (ctx, w, h) => {
+  const g = ctx.createLinearGradient(0, 0, 0, h);
+  g.addColorStop(0, '#FFEFC8'); g.addColorStop(.6, '#FBDFA0'); g.addColorStop(1, '#F2C879');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  const sg = ctx.createRadialGradient(150, 120, 10, 150, 120, 130);
+  sg.addColorStop(0, 'rgba(255,250,225,.95)'); sg.addColorStop(1, 'rgba(255,250,225,0)');
+  ctx.fillStyle = sg; ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = '#FFF6DE';
+  ctx.beginPath(); ctx.arc(150, 120, 36, 0, 7); ctx.fill();
+  ctx.globalAlpha = .8; ctx.fillStyle = '#FFF8E8';
+  [[330,90,46,13],[395,140,58,15],[80,210,50,12]].forEach(([x,y,rx,ry])=>{
+    ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x+rx*.5, y-8, rx*.6, ry*.9, 0, 0, 7); ctx.fill();
+  });
+  ctx.globalAlpha = 1; ctx.fillStyle = '#E3C683';
+  ctx.beginPath(); ctx.moveTo(0, h);
+  ctx.quadraticCurveTo(w*.25, h-70, w*.5, h-38);
+  ctx.quadraticCurveTo(w*.75, h-10, w, h-46); ctx.lineTo(w, h); ctx.closePath(); ctx.fill();
+});
+skyTex.wrapS = skyTex.wrapT = THREE.ClampToEdgeWrapping; SRGB(skyTex);
+const sky = new THREE.Mesh(new THREE.PlaneGeometry(13.3, 5.0), new THREE.MeshBasicMaterial({ map: skyTex, fog: false }));
+sky.position.z = .2; win.add(sky);
+win.add(M(new THREE.BoxGeometry(.18, 5.0, .4), texMat(darkWoodTexture, .3, 2), 0, 0, .12));
+win.add(M(new THREE.BoxGeometry(.16, 5.0, .4), texMat(darkWoodTexture, .3, 2), -4.4, 0, .12));
+win.add(M(new THREE.BoxGeometry(.16, 5.0, .4), texMat(darkWoodTexture, .3, 2), 4.4, 0, .12));
+win.add(M(new THREE.BoxGeometry(13.3, .18, .4), texMat(darkWoodTexture, 3, .3), 0, 0, .12));
+win.add(M(new THREE.BoxGeometry(14.7, .26, .85), texMat(darkWoodTexture, 3, .3), 0, -2.92, .26)); // 窗台
+scene.add(win);
+// 窗帘杆 + 两幅垂帘（正弦褶皱）
+const rod = M(new THREE.CylinderGeometry(.06, .06, 15, 10), brass, 0, 8.15, -5.8);
+rod.rotation.z = Math.PI / 2; scene.add(rod);
+scene.add(M(new THREE.SphereGeometry(.15, 10, 10), brass, -7.3, 8.15, -5.8));
+scene.add(M(new THREE.SphereGeometry(.15, 10, 10), brass, 7.3, 8.15, -5.8));
+const curtainFabric = canvasTex(128, 256, (c, w, h) => {   // 共用织物纹理
+  c.fillStyle = '#C57A4A'; c.fillRect(0, 0, w, h);
+  for(let xx = 0; xx < w; xx += 6){
+    c.fillStyle = `rgba(${xx % 12 ? 150 : 90},80,48,.16)`;
+    c.fillRect(xx, 0, 3, h);
+  }
+  speckle(c, w, h, 220, '#E0A878', .07);
+});
+curtainFabric.wrapS = curtainFabric.wrapT = THREE.RepeatWrapping;
+curtainFabric.repeat.set(3, 2); SRGB(curtainFabric);
+const curtainMat = new THREE.MeshStandardMaterial({ map: curtainFabric, color:'#D98A55', roughness:.96 });
+// 用一圈竖直「圆柱褶」拼成有体积、不穿模的窗帘（每根半圆柱即一道褶）
+function curtain(x, side){
+  const grp = new THREE.Group();
+  const W = 2.6, H = 6.9, sx = 36, sy = 24;
+  const geo = new THREE.PlaneGeometry(W, H, sx, sy);
+  const pos = geo.attributes.position;
+  for(let i = 0; i < pos.count; i++){
+    const px = pos.getX(i), py = pos.getY(i);
+    const u = px / W + .5, v = py / H + .5;            // u:0左→1右  v:0底→1顶
+    const gather = .35 + .65 * v;                      // 顶部褶深、底部展开
+    // 竖向布褶（多频正弦）
+    let zz = (Math.sin(u * Math.PI * 8) * .14 + Math.sin(u * Math.PI * 19) * .04) * gather;
+    // 被风轻拂：整幅向内侧鼓出 + 底摆自然飘起，靠窗内侧吹得更开
+    const windDir = -side;                             // 朝画面中央(窗内)吹
+    zz += windDir * Math.pow(1 - v, 1.6) * .55 * (.5 + .5*u*windDir);
+    pos.setZ(i, zz);
+    // 底部边缘随风轻摆出弧线
+    pos.setX(i, px + windDir * Math.pow(1 - v, 2) * .35);
+  }
+  geo.computeVertexNormals();
+  const mt = curtainMat.clone(); mt.side = THREE.DoubleSide;
+  const cloth = new THREE.Mesh(geo, mt);
+  cloth.castShadow = true; cloth.receiveShadow = true;
+  grp.add(cloth);
+  // 顶帘头 + 黄铜挂环
+  grp.add(M(new THREE.BoxGeometry(W+.2, .5, .34), mt, 0, H/2+.2, .05));
+  for(let r = 0; r <= 8; r++)
+    grp.add(M(new THREE.TorusGeometry(.1, .032, 8, 14), brass, -W/2 + r*(W/8), H/2+.42, 0));
+  grp.position.set(x, 4.6, -5.8); grp.rotation.y = side * .03;  // z=-5.8 距窗框逾1米，绝无穿模
+  scene.add(grp);
+}
+curtain(-5.6, -1); curtain(5.6, 1);
+/* ═══════════ 城堡沙盘（→ 英语学习提升）═══════════ */
+const diorama = new THREE.Group();
+diorama.position.set(0, .25, -.6);
+diorama.userData = { kind:'study', targetS:1 };
+// 底座 + 黄铜包边 + 铭牌
+diorama.add(M(new THREE.CylinderGeometry(2.35, 2.55, .42, 28), texMat(darkWoodTexture,3,.5), 0,.21,0));
+const ring = M(new THREE.TorusGeometry(2.36, .045, 8, 48), brass, 0,.43,0);
+ring.rotation.x = Math.PI/2; diorama.add(ring);
+const plaqueTex = canvasTex(512,128,(ctx,w,h)=>{
+  ctx.fillStyle='#9A7440'; ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle='rgba(255,238,196,.65)'; ctx.lineWidth=6;
+  ctx.strokeRect(9,9,w-18,h-18);
+  ctx.fillStyle='#FDF2D8'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.font='700 52px Georgia, serif';
+  let txt='JOHN CLASS';
+  while(ctx.measureText(txt).width > w-56 && parseInt(ctx.font)>20)
+    ctx.font='700 '+(parseInt(ctx.font)-2)+'px Georgia, serif';
+  ctx.fillText(txt, w/2, h/2+3);
+});
+plaqueTex.wrapS = plaqueTex.wrapT = THREE.ClampToEdgeWrapping;
+const plaqueGrp = new THREE.Group();                       // 立体小木牌：牌身+正面
+const pbody = M(new THREE.BoxGeometry(1.85,.5,.08), texMat(darkWoodTexture,1.5,.4), 0,0,0);
+plaqueGrp.add(pbody);
+const pface = M(new THREE.PlaneGeometry(1.74,.44), new THREE.MeshBasicMaterial({ map:plaqueTex }), 0,0,.045);
+pface.castShadow=false; plaqueGrp.add(pface);
+[[-.82],[.82]].forEach(([x])=> plaqueGrp.add(M(new THREE.CylinderGeometry(.03,.03,.34,6), mat('#7A5C2E'), x,-.34,0)));
+plaqueGrp.position.set(0,.42,2.7); plaqueGrp.rotation.x=-.16;
+diorama.add(plaqueGrp);
+// 旋转的迷你天空之城（八音盒）
+const world = new THREE.Group(); world.position.y = .45;
+const mini = texMat(miniStoneTexture, 2, 1);
+const rockM = texMat(rockTexture, 2, 1);
+const islTop = new THREE.Mesh(new THREE.CylinderGeometry(1.35, 1.45, .26, 12),
+  [rockM, texMat(grassTexture,2,2), rockM]);
+islTop.castShadow = islTop.receiveShadow = true; islTop.position.y = .25; world.add(islTop);
+world.add(M(new THREE.CylinderGeometry(1.45, .45, .8, 9), rockM, 0,-.28,0));
+const tip = M(new THREE.ConeGeometry(.45,.5,9), rockM, 0,-.93,0); tip.rotation.x=Math.PI; world.add(tip);
+// 迷你主堡 + 金顶荣誉殿 + 小旗
+world.add(M(new THREE.BoxGeometry(.8,.6,.62), mini, 0,.68,0));
+world.add(M(new THREE.BoxGeometry(.36,.27,.3), mat('#DCBC7C',.6), 0,1.11,0));
+const jTex = canvasTex(64,64,(ctx,w,h)=>{ ctx.fillStyle='#C85A2A'; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='#FDF2D8'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.font='700 46px Georgia, serif'; ctx.fillText('J', w/2, h/2+2); });
+jTex.wrapS=jTex.wrapT=THREE.ClampToEdgeWrapping;
+const jSign = M(new THREE.PlaneGeometry(.2,.2), new THREE.MeshBasicMaterial({ map:jTex }), 0,1.12,.151);
+jSign.castShadow=false; world.add(jSign);
+const gr = M(new THREE.ConeGeometry(.3,.26,4), mat('#C9A96E',.7), 0,1.38,0);
+gr.rotation.y = Math.PI/4; world.add(gr);
+world.add(M(new THREE.CylinderGeometry(.012,.012,.3,5), mat('#4A3318'), 0,1.62,0));
+const fgeo = new THREE.PlaneGeometry(.22,.1); fgeo.translate(.11,0,0);
+const miniFlag = M(fgeo, mat('#C85A2A',.7), .01,1.7,0);
+miniFlag.material.side = THREE.DoubleSide; miniFlag.castShadow=false; world.add(miniFlag);
+// 双塔 + 城门 + 小树
+[[-.72,-.05],[.72,-.05]].forEach(([x,z])=>{
+  world.add(M(new THREE.CylinderGeometry(.17,.2,.9,8), mini, x,.83,z));
+  world.add(M(new THREE.ConeGeometry(.27,.34,8), mat('#4A8FA8',.8), x,1.45,z));
+  world.add(M(new THREE.SphereGeometry(.03,6,6), mat('#D9B878',.5), x,1.64,z));
+});
+world.add(M(new THREE.BoxGeometry(.3,.28,.12), mini, 0,.52,.42));
+const archMini = new THREE.Mesh(new THREE.PlaneGeometry(.13,.18), mat('#4A3318'));
+archMini.position.set(0,.49,.485); world.add(archMini);
+[[1.0,.55],[-1.05,.4],[.2,-.95]].forEach(([x,z],i)=>{
+  world.add(M(new THREE.CylinderGeometry(.03,.04,.12,5), mat('#7A5C2E'), x,.44,z));
+  world.add(M(new THREE.ConeGeometry(.15,.3,6), mat(['#5E8C46','#6B9A50','#557F40'][i],.9), x,.62,z));
+});
+// 环绕小云
+[[1.5,1.45,0],[-1.45,1.25,.3]].forEach(([x,y,z])=>{
+  const c = new THREE.Group();
+  [[0,.16],[.2,.11]].forEach(([dx,r])=>{
+    const p=M(new THREE.IcosahedronGeometry(r,0), mat('#FFFDF4',1), dx,0,0);
+    p.scale.y=.6; p.castShadow=false; c.add(p);
+  });
+  c.position.set(x,y,z); world.add(c);
+});
+diorama.add(world);
+addLabel(diorama, '🏰 英语学习提升', 2.7);
+scene.add(diorama);
+
+/* ═══════════ 火漆信件（→ 和 John 说说）═══════════ */
+const letters = new THREE.Group();
+letters.position.set(3.4, .25, 2.0);
+letters.scale.setScalar(1.45);
+letters.rotation.y = -.18;
+letters.userData = { kind:'talk', targetS:1 };
+const cream = mat('#FBF3E0',.85);
+function envelope(y, ry, stamp){
+  const t = envelopeTexture(stamp); t.wrapS=t.wrapT=THREE.ClampToEdgeWrapping;
+  const faceM = new THREE.MeshStandardMaterial({ map:t, roughness:.85 });
+  const e = new THREE.Mesh(new THREE.BoxGeometry(1.7,.085,1.12),
+    [cream,cream,faceM,cream,cream,cream]);
+  e.castShadow = e.receiveShadow = true;
+  e.position.y = y; e.rotation.y = ry; return e;
+}
+letters.add(envelope(.045, .12, false));
+letters.add(envelope(.135, -.1, false));
+const flyer = new THREE.Group();                       // 最上面那封会起飞
+flyer.add(envelope(.228, .05, true));
+flyer.add(M(new THREE.CylinderGeometry(.085,.085,.035,12), mat('#C85A2A',.55), .25,.29,.25));
+letters.add(flyer);
+letters.add(M(new THREE.BoxGeometry(1.85,.016,.03), mat('#7A5C2E'), 0,.282,0));
+letters.add(M(new THREE.BoxGeometry(.03,.016,1.26), mat('#7A5C2E'), 0,.288,0));
+letters.add(M(new THREE.SphereGeometry(.05,8,8), mat('#7A5C2E'), 0,.31,0));
+addLabel(letters, '✉️ 和 John 说说', 1.15);
+scene.add(letters);
+
+/* ═══════════ 黄铜台灯 ═══════════ */
+const lamp = new THREE.Group();
+lamp.position.set(-6.4, .25, -2.2);
+const lampM = mat('#C9954E', .45, .35);                // 暖金属，朴素经典
+// 圆盘底座（两层，圆润）
+lamp.add(M(new THREE.CylinderGeometry(.62,.72,.12,40), lampM, 0,.06,0));
+lamp.add(M(new THREE.CylinderGeometry(.5,.62,.1,40), lampM, 0,.16,0));
+// 笔直灯杆 + 颈部小球
+lamp.add(M(new THREE.CylinderGeometry(.07,.08,2.5,20), lampM, 0,1.4,0));
+lamp.add(M(new THREE.SphereGeometry(.1,18,18), lampM, 0,2.66,0));
+// 经典梯形喇叭灯罩（开口朝下），内壁暖白
+const shadeOuter = M(new THREE.CylinderGeometry(.34,.66,.66,40,1,true), lampM, 0,3.06,0);
+const shadeIn = new THREE.Mesh(new THREE.CylinderGeometry(.33,.65,.64,40,1,true),
+  new THREE.MeshStandardMaterial({ color:'#FBF0D8', roughness:.85, side:THREE.BackSide }));
+shadeIn.position.y = 3.06; lamp.add(shadeOuter); lamp.add(shadeIn);
+scene.add(lamp);
+
+/* ═══════════ bg.png 立式相框 ═══════════ */
+function buildFrame(tex){
+  const img = tex.image;
+  const aspect = img && img.width ? img.width/img.height : .72;
+  const H = 2.5, W = Math.min(Math.max(H*aspect, 1.5), 2.6);
+  const frame = new THREE.Group();
+  frame.position.set(4.6, .25, -2.8);
+  frame.rotation.y = -.5;
+  const body = M(new THREE.BoxGeometry(W+.26, H+.26, .1), texMat(darkWoodTexture,1.2,1.6), 0,(H+.26)/2,0);
+  body.rotation.x = -.09; frame.add(body);
+  const photo = new THREE.Mesh(new THREE.PlaneGeometry(W, H), new THREE.MeshBasicMaterial({ map:tex }));
+  photo.position.set(0,(H+.26)/2, .056); photo.rotation.x = -.09; frame.add(photo);
+  const stand = M(new THREE.BoxGeometry(.12, H*.75, .06), texMat(darkWoodTexture,.4,1), 0,H*.36,-.42);
+  stand.rotation.x = .42; frame.add(stand);
+  scene.add(frame);
+}
+new THREE.TextureLoader().load('bg.png',
+  tex=>{ SRGB(tex); buildFrame(tex); },
+  undefined,
+  ()=>{                                                 // 本地预览拿不到 bg.png 时的占位画
+    const t = canvasTex(360,500,(ctx,w,h)=>{
+      ctx.fillStyle='#EFE2C4'; ctx.fillRect(0,0,w,h);
+      ctx.strokeStyle='rgba(160,120,70,.5)'; ctx.lineWidth=6; ctx.strokeRect(14,14,w-28,h-28);
+      ctx.fillStyle='#8A6030'; ctx.textAlign='center';
+      ctx.font='700 64px Georgia, serif'; ctx.fillText('📷', w/2, h/2-60);
+      ctx.font='700 34px "PingFang SC", sans-serif'; ctx.fillText('你的照片 bg.png', w/2, h/2+10);
+      ctx.font='500 22px "PingFang SC", sans-serif'; ctx.fillStyle='#A08050';
+      ctx.fillText('本地预览暂不显示', w/2, h/2+56);
+      ctx.fillText('上线后自动出现', w/2, h/2+92);
+    });
+    t.wrapS=t.wrapT=THREE.ClampToEdgeWrapping; buildFrame(t);
+  });
+
+/* ═══════════ 书堆 · 鹅毛笔 · 马克杯 · 单词卡 ═══════════ */
+const books = new THREE.Group();
+books.position.set(-4.6, .25, 2.6); books.rotation.y = .35;
+books.scale.setScalar(1.65);
+[['#4A7C3F',1.45,.18,1.0,0,0],['#C85A2A',1.35,.16,.95,.18,.13],['#4A8FA8',1.25,.15,.9,.34,-.1]]
+.forEach(([c,w,hh,d,y,ry])=>{
+  const b=M(new THREE.BoxGeometry(w,hh,d), mat(c,.8), 0,y+hh/2,0);
+  b.rotation.y=ry; books.add(b);
+  const pg=M(new THREE.BoxGeometry(w-.08,hh-.05,d-.06), mat('#FBF6EA',.9), 0,y+hh/2,0);
+  pg.rotation.y=ry; pg.castShadow=false; books.add(pg);
+});
+scene.add(books);
+const ink = new THREE.Group();
+ink.position.set(4.9, .25, -.4);
+ink.rotation.y = .25;
+// 玻璃墨水瓶：瓶身 + 瓶肩 + 墨水液面 + 黄铜口 + 软木塞
+const glassM = new THREE.MeshStandardMaterial({ color:'#6E5A8A', roughness:.25, metalness:.1, transparent:true, opacity:.62 });
+ink.add(M(new THREE.CylinderGeometry(.26,.28,.32,16), glassM, 0,.16,0));
+ink.add(M(new THREE.CylinderGeometry(.16,.26,.12,16), glassM, 0,.38,0));
+const inkLiquid = M(new THREE.CylinderGeometry(.24,.26,.18,16), mat('#2A2440',.4), 0,.13,0);
+inkLiquid.castShadow=false; ink.add(inkLiquid);
+ink.add(M(new THREE.CylinderGeometry(.15,.15,.06,16), brass, 0,.46,0));
+// 羽毛笔：真实羽毛贴图（带透明通道的单片羽毛）+ 笔杆 + 削尖笔尖
+const featherTex = canvasTex(256, 512, (c, w, h) => {
+  c.clearRect(0,0,w,h);
+  const cx = w/2;
+  // 羽毛轮廓内逐行画羽枝（中间宽两端窄，纺锤形）
+  for(let y=20; y<h-30; y+=2){
+    const f = (y-20)/(h-50);
+    const half = Math.sin(f*Math.PI)*w*0.42 + 4;     // 羽毛宽度包络
+    const tone = 220 + Math.sin(f*9)*22;
+    for(let side of [-1,1]){
+      c.strokeStyle = `rgba(${tone|0},${(tone-30)|0},${(tone-90)|0},.9)`;
+      c.lineWidth = 1.1;
+      c.beginPath(); c.moveTo(cx, y);
+      // 羽枝斜向上扫出，末端略带分叉的蓬松感
+      const ex = cx + side*half, ey = y - half*0.5;
+      c.quadraticCurveTo(cx + side*half*0.5, y - half*0.18, ex, ey);
+      c.stroke();
+    }
+  }
+  // 中轴（羽根）
+  const g = c.createLinearGradient(cx-3,0,cx+3,0);
+  g.addColorStop(0,'#C9A86A'); g.addColorStop(.5,'#F3E6C4'); g.addColorStop(1,'#C9A86A');
+  c.strokeStyle = g; c.lineWidth = 5; c.lineCap='round';
+  c.beginPath(); c.moveTo(cx, 8); c.lineTo(cx, h-16); c.stroke();
+});
+SRGB(featherTex);
+const feather = new THREE.Group();
+feather.position.set(.05,.46,0); feather.rotation.z = -.5; feather.rotation.x = .14;
+// 透明笔杆下段（裸羽根，插进墨水）
+const shaft = M(new THREE.CylinderGeometry(.022,.04,.62,10), mat('#F3E6C4',.5), 0,.3,0);
+feather.add(shaft);
+const nib = M(new THREE.ConeGeometry(.035,.18,8), mat('#2A2018',.4), 0,-.05,0);
+feather.add(nib);                                  // 笔尖朝下入墨
+// 羽毛片（两面交叉，立体不像纸片）
+const fMat = new THREE.MeshStandardMaterial({ map:featherTex, transparent:true, alphaTest:.4,
+  side:THREE.DoubleSide, roughness:.9 });
+const blade1 = new THREE.Mesh(new THREE.PlaneGeometry(.62,1.5), fMat);
+blade1.position.set(0,1.05,0); blade1.castShadow=false;
+const blade2 = blade1.clone(); blade2.rotation.y = Math.PI/2.4;
+feather.add(blade1); feather.add(blade2);
+feather.userData.blades = [blade1, blade2];
+ink.add(feather); window.__feather = feather;
+scene.add(ink);
+const mug = new THREE.Group();
+mug.position.set(6.0, .25, 1.0);
+mug.scale.setScalar(1.55);
+mug.add(M(new THREE.CylinderGeometry(.24,.21,.36,14), mat('#E8DCC2',.8), 0,.18,0));
+const inner = M(new THREE.CylinderGeometry(.2,.2,.02,14), mat('#4A3318',.6), 0,.355,0);
+inner.castShadow=false; mug.add(inner);
+const handle = M(new THREE.TorusGeometry(.15,.032,10,20,Math.PI), mat('#E8DCC2',.8), .22,.18,0);
+handle.rotation.z = Math.PI/2;   // 开口(半环两端)朝向杯身，贴住杯壁
+mug.add(handle);
+const steam = [];
+for(let i=0;i<3;i++){
+  const s = new THREE.Mesh(new THREE.SphereGeometry(.05,8,8),
+    new THREE.MeshStandardMaterial({ color:'#FFFFFF', transparent:true, opacity:.4, roughness:1 }));
+  s.castShadow=false; s.userData.ph = i*.33; mug.add(s); steam.push(s);
+}
+scene.add(mug);
+function letterCard(ch){
+  return canvasTex(128,96,(ctx,w,h)=>{
+    ctx.fillStyle='#FFFDF6'; ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle='rgba(184,149,106,.5)'; ctx.lineWidth=4; ctx.strokeRect(5,5,w-10,h-10);
+    ctx.fillStyle='#C85A2A'; ctx.textAlign='center';
+    ctx.font='700 56px Georgia, serif'; ctx.fillText(ch, w/2, 70);
+  });
+}
+[['A',-1.5,3.3,.3],['B',-.7,3.5,-.22]].forEach(([ch,x,z,ry])=>{
+  const t = letterCard(ch); t.wrapS=t.wrapT=THREE.ClampToEdgeWrapping;
+  const fm = new THREE.MeshStandardMaterial({ map:t, roughness:.85 });
+  const card = new THREE.Mesh(new THREE.BoxGeometry(.55,.025,.4),
+    [cream,cream,fm,cream,cream,cream]);
+  card.castShadow=card.receiveShadow=true;
+  card.position.set(x,.265,z); card.rotation.y = ry;
+  scene.add(card);
+});
+
+/* ═══════════ 交互：物件 ↔ 左侧大字入口 双向联动 ═══════════ */
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+const clickables = [diorama, letters];
+const entryStudy = document.getElementById('entryStudy');
+const entryTalk = document.getElementById('entryTalk');
+let hotG = null, downXY = null, cine = null;
+function entryOf(g){ return g===diorama ? entryStudy : entryTalk; }
+function pick(e){
+  const x = e.clientX ?? e.changedTouches?.[0]?.clientX;
+  const y = e.clientY ?? e.changedTouches?.[0]?.clientY;
+  ptr.x = (x/innerWidth)*2-1; ptr.y = -(y/innerHeight)*2+1;
+  ray.setFromCamera(ptr, camera);
+  const hit = ray.intersectObjects(clickables, true)[0];
+  if(!hit) return null;
+  let o = hit.object;
+  while(o && !o.userData.kind) o = o.parent;
+  return o;
+}
+function setHot(g){
+  if(hotG === g) return;
+  if(hotG){ hotG.userData.targetS = 1; hotG.userData.label.classList.remove('hot');
+    entryOf(hotG).classList.remove('hot'); }
+  hotG = g;
+  if(g){ g.userData.targetS = 1.05; g.userData.label.classList.add('hot');
+    entryOf(g).classList.add('hot'); }
+  document.body.style.cursor = g ? 'pointer' : '';
+}
+if(matchMedia('(hover:hover)').matches)
+  addEventListener('pointermove', e=>{ if(!cine) setHot(pick(e)); });
+entryStudy.addEventListener('mouseenter', ()=>{ if(!cine) setHot(diorama); });
+entryTalk.addEventListener('mouseenter', ()=>{ if(!cine) setHot(letters); });
+entryStudy.addEventListener('mouseleave', ()=>{ if(!cine) setHot(null); });
+entryTalk.addEventListener('mouseleave', ()=>{ if(!cine) setHot(null); });
+function navigate(href){
+  document.getElementById('overlay').classList.add('show');
+  setTimeout(()=>location.href = href, 290);
+}
+const easeIO = t => t*t*(3-2*t);
+const tmpV = new THREE.Vector3();
+function startCine(kind){
+  if(reduceMotion){ navigate(kind==='study' ? 'study.html' : 'teacher.html'); return; }
+  controls.enabled = false; setHot(null);
+  cine = { kind, t0: clock.getElapsedTime(), fading:false, done:false,
+    fromP: camera.position.clone(), fromT: controls.target.clone() };
+}
+entryStudy.addEventListener('click', e=>{ e.preventDefault(); if(!cine) startCine('study'); });
+entryTalk.addEventListener('click', e=>{ e.preventDefault(); if(!cine) startCine('talk'); });
+addEventListener('pointerdown', e=>{ if(cine) return; downXY=[e.clientX,e.clientY]; });
+addEventListener('pointerup', e=>{
+  if(cine || !downXY) return;
+  const moved = Math.hypot(e.clientX-downXY[0], e.clientY-downXY[1]);
+  downXY = null;
+  if(moved > 7) return;
+  if(e.target.closest('.entries,.foot,.classic-link,.brand')) return;
+  const g = pick(e);
+  if(g) startCine(g.userData.kind);
+});
+
+/* ═══════════ 渲染循环 ═══════════ */
+const clock = new THREE.Clock();
+let fr = 0, spinBoost = 0;
+function loop(){
+  requestAnimationFrame(loop);
+  const t = clock.getElapsedTime();
+  if(!cine) controls.update();
+  // 八音盒自转 + 悬停物件呼吸
+  world.rotation.y = t*.14 + spinBoost;
+  if(!reduceMotion && window.__feather){ window.__feather.rotation.z = -.5 + Math.sin(t*1.3)*.03; }
+  clickables.forEach(g=>{
+    const s = g.scale.x + (g.userData.targetS - g.scale.x)*.14;
+    g.scale.setScalar(s);
+  });
+  // 热气
+  if(!reduceMotion) steam.forEach(s=>{
+    const p = (t*.35 + s.userData.ph) % 1;
+    s.position.set(Math.sin((t+s.userData.ph*9)*2)*.05, .42 + p*.55, 0);
+    s.material.opacity = .42*(1-p);
+    s.scale.setScalar(.7 + p*.9);
+  });
+  // 入口过场
+  if(cine){
+    const e = clock.getElapsedTime() - cine.t0;
+    if(cine.kind === 'study'){                          // 俯冲扎进沙盘世界
+      const k = easeIO(Math.min(e/1.35, 1));
+      spinBoost += .012*k;                              // 模型越转越快
+      camera.position.lerpVectors(cine.fromP, tmpV.set(-1.7, 2.0, 1.3), k);
+      camera.lookAt(-1.7, 1.0, -.7);
+      if(k>.7 && !cine.fading){ cine.fading=true;
+        document.getElementById('overlay').classList.add('show'); }
+      if(e>1.45 && !cine.done){ cine.done=true;
+        setTimeout(()=>location.href='study.html', 50); }
+    } else {                                            // 信封起飞
+      const k = easeIO(Math.min(e/1.05, 1));
+      flyer.position.y = k*2.0;
+      flyer.position.x = k*.4;
+      flyer.rotation.x = -k*.55;
+      flyer.rotation.z = k*.3;
+      if(k>.62 && !cine.fading){ cine.fading=true;
+        document.getElementById('overlay').classList.add('show'); }
+      if(e>1.15 && !cine.done){ cine.done=true;
+        setTimeout(()=>location.href='teacher.html', 50); }
+    }
+  }
+  if(isMobile && (fr++ & 1)) return;                    // 移动端 30fps
+  renderer.render(scene, camera);
+  labelLayer.render(camera);
+}
+loop();
+window.__deskReady = true;
+setTimeout(()=>{ const l=document.getElementById('loading');
+  l.style.opacity=0; setTimeout(()=>l.remove(), 500); }, 350);
+
+addEventListener('resize', ()=>{
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+};
+</script>
+<script>
+// ── 引擎加载器 v3：本地优先 → 实测验证过的 CDN；全程可视进度 + 逃生入口 ──
+(function(){
+  var urls = [
+    'libs/three/three.min.js',
+    'https://registry.npmmirror.com/three/0.149.0/files/build/three.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js',
+    'https://cdn.bootcdn.net/ajax/libs/three.js/0.149.0/three.min.js',
+    'https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js',
+    'https://unpkg.com/three@0.149.0/build/three.min.js'
+  ];
+  var i = 0, st = document.querySelector('#loading .ls');
+  function fail(){ location.replace('index.html'); }
+  function boot(){ try{ window.__bootDesk(); }catch(e){ console.error(e); fail(); } }
+  function next(){
+    if(window.THREE){ boot(); return; }
+    if(i >= urls.length){ fail(); return; }
+    var u = urls[i++];
+    if(st) st.textContent = '正在点亮台灯 · 线路 ' + i + '/' + urls.length + ' · v3';
+    var s = document.createElement('script'), done = false;
+    var tm = setTimeout(function(){ if(done) return; done = true; next(); }, 4000);
+    s.onload = function(){ if(done) return; done = true; clearTimeout(tm);
+      window.THREE ? boot() : next(); };
+    s.onerror = function(){ if(done) return; done = true; clearTimeout(tm); next(); };
+    s.src = u; document.head.appendChild(s);
+  }
+  setTimeout(function(){
+    if(!window.THREE && st && !document.getElementById('escGo')){
+      var a = document.createElement('div'); a.style.marginTop = '10px';
+      a.innerHTML = '<a id="escGo" href="index.html" style="color:#C85A2A;font-weight:600;font-size:12px;text-decoration:none">加载偏慢？点此直接进入 →</a>';
+      st.parentNode.appendChild(a);
+    }
+  }, 6000);
+  next();
+})();
+</script>
+<script src="audio.js"></script>
+<script src="bgm-cross.js"></script>
+</body>
+</html>
