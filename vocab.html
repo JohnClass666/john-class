@@ -3345,7 +3345,7 @@ function dueWordsToday(){const P=gd().prog;return Object.keys(P).filter(id=>{con
 function points(){return gd().points;}
 // 总榜用跨年级累计积分
 function totalPoints(){return Object.values(S.gd||{}).reduce((s,g)=>s+(g.points||0),0);}
-function addPoints(n){gd().points+=n;S.weekPoints=(S.weekPoints||0)+n;save();lbUpdate();}
+function addPoints(n){var d=new Date();d.setDate(d.getDate()-d.getDay());var tw=d.toISOString().split('T')[0];if(S.weekStart!==tw){S.weekStart=tw;S.weekPoints=0;}gd().points+=n;S.weekPoints=(S.weekPoints||0)+n;save();lbUpdate();}
 function clear(){app.innerHTML="";}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function greetWord(){const h=new Date().getHours();return h<6?"凌晨好":h<11?"早上好":h<13?"中午好":h<18?"下午好":"晚上好";}
