@@ -75,8 +75,9 @@ function enter(){
   var name = document.getElementById('nameInp').value.trim();
   if(!name){ alert('请输入你的名字'); return; }
   localStorage.setItem('jc_username', name);
-  trySync(name); // fire and forget，不阻塞跳转
-  window.location.href = 'study.html';
+  trySync(name);
+  localStorage.setItem('jc_show_welcome', '1');
+  window.location.href = 'index.html';
 }
 
 document.getElementById('nameInp').addEventListener('keydown',function(e){
