@@ -42,45 +42,68 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
   if(prefill){ document.getElementById('nameInp').value = prefill; }
 })();
 
-function trySync(name){
-  if(localStorage.getItem('jc_synced')===name) return;
-  var hasLocal = localStorage.getItem('grammar_dual_mode')||localStorage.getItem('jc_daily_state');
-  if(hasLocal){localStorage.setItem('jc_synced',name);return;}
-  var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
-  var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.P5ixZCEYtAkEtFjnHDweVHClLIrFcE2CxHt1eTMyNuQ';
-  var sbH={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
-  setTimeout(async function(){
-    try{
-      var resp=await Promise.race([
-        Promise.all([
-          fetch(SB_URL+'/rest/v1/leaderboard?name=eq.'+encodeURIComponent(name)+'&select=score&limit=1',{headers:sbH}),
-          fetch(SB_URL+'/rest/v1/reading_progress?user_name=eq.'+encodeURIComponent(name)+'&select=total_completed,saved_ids&limit=1',{headers:sbH}),
-          fetch(SB_URL+'/rest/v1/vocab_progress?user_name=eq.'+encodeURIComponent(name)+'&select=progress_data&limit=1',{headers:sbH})
-        ]),
-        new Promise(function(_,reject){setTimeout(function(){reject(new Error('timeout'));},4000);})
-      ]);
-      var data=await Promise.all(resp.map(function(r){return r.ok?r.json():Promise.resolve([]);}));
-      var hasData=(data[0].length>0&&data[0][0].score>0)||(data[1].length>0&&data[1][0].total_completed>0)||(data[2].length>0&&data[2][0].progress_data);
-      if(hasData&&confirm(name+'，检测到你在其他设备上有学习记录。\n\n要同步到这个设备吗？')){
-        if(data[1].length>0){var rp=data[1][0];if(rp.saved_ids&&rp.saved_ids.length>0)localStorage.setItem('jc_reading_saved',JSON.stringify(rp.saved_ids));if(rp.total_completed)localStorage.setItem('jc_reading_total',rp.total_completed);}
-        if(data[2].length>0&&data[2][0].progress_data)localStorage.setItem('jc_vocab_progress_sync',JSON.stringify(data[2][0].progress_data));
-        localStorage.setItem('jc_synced',name);alert('同步完成！欢迎回来');
-      }
-      localStorage.setItem('jc_synced',name);
-    }catch(e){}
-  },200);
+var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.P5ixZCEYtAkEtFjnHDweVHClLIrFcE2CxHt1eTMyNuQ';
+function sbH(){return{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};}
+
+// 查 Supabase：是否老生（4秒超时，超时当新生）
+async function checkReturning(name){
+  try{
+    var resp = await Promise.race([
+      Promise.all([
+        fetch(SB_URL+'/rest/v1/leaderboard?name=eq.'+encodeURIComponent(name)+'&select=score&limit=1',{headers:sbH()}),
+        fetch(SB_URL+'/rest/v1/reading_progress?user_name=eq.'+encodeURIComponent(name)+'&select=total_completed&limit=1',{headers:sbH()}),
+        fetch(SB_URL+'/rest/v1/vocab_progress?user_name=eq.'+encodeURIComponent(name)+'&select=progress_data&limit=1',{headers:sbH()})
+      ]),
+      new Promise(function(_,reject){setTimeout(function(){reject(new Error('timeout'));},4000);})
+    ]);
+    var data = await Promise.all(resp.map(function(r){return r.ok?r.json():Promise.resolve([]);}));
+    return (data[0].length>0&&data[0][0].score>0)||(data[1].length>0&&data[1][0].total_completed>0)||(data[2].length>0&&data[2][0].progress_data);
+  }catch(e){return false;}
 }
 
-function enter(){
+// 从 Supabase 拉数据恢复到 localStorage
+async function pullAndRestore(name){
+  try{
+    var resp = await Promise.all([
+      fetch(SB_URL+'/rest/v1/reading_progress?user_name=eq.'+encodeURIComponent(name)+'&select=*&limit=1',{headers:sbH()}),
+      fetch(SB_URL+'/rest/v1/vocab_progress?user_name=eq.'+encodeURIComponent(name)+'&select=progress_data&limit=1',{headers:sbH()})
+    ]);
+    var data = await Promise.all(resp.map(function(r){return r.ok?r.json():Promise.resolve([]);}));
+    if(data[0].length>0){
+      var rp=data[0][0];
+      if(rp.saved_ids&&rp.saved_ids.length>0)localStorage.setItem('jc_reading_saved',JSON.stringify(rp.saved_ids));
+      if(rp.total_completed)localStorage.setItem('jc_reading_total',rp.total_completed);
+    }
+    if(data[1].length>0&&data[1][0].progress_data)localStorage.setItem('jc_vocab_progress_sync',JSON.stringify(data[1][0].progress_data));
+    localStorage.setItem('jc_synced',name);
+    return true;
+  }catch(e){return false;}
+}
+
+async function enter(){
   var name = document.getElementById('nameInp').value.trim();
   if(!name){ alert('请输入你的名字'); return; }
   localStorage.setItem('jc_username', name);
-  trySync(name);
+
+  // 已同步过的设备直接进
+  if(localStorage.getItem('jc_synced')!==name){
+    var isReturning = await checkReturning(name);
+    if(isReturning && confirm(name+'，检测到你在其他设备上有学习记录。\n\n要同步到这个设备吗？')){
+      await pullAndRestore(name);
+      alert('同步完成！欢迎回来');
+    }
+    localStorage.setItem('jc_synced', name);
+  }
+
   localStorage.setItem('jc_show_welcome', '1');
   window.location.href = 'index.html';
 }
 
 document.getElementById('nameInp').addEventListener('keydown',function(e){
+  if(e.key==='Enter') enter();
+});
+</script>
   if(e.key==='Enter') enter();
 });
 </script>
