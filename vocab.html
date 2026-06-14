@@ -4540,9 +4540,26 @@ load();initTTS();
 // 恢复年级
 if(S.grade&&gradeById(S.grade)&&gradeById(S.grade).ready){applyGrade(S.grade);}
 _prevLv=levelOf(points()).name;
-if(!S.name)go("welcome");
-else if(!S.grade||!gradeById(S.grade)||!gradeById(S.grade).ready)go("grade");
-else go("home");
+if(!S.name){
+  go("welcome");
+} else {
+  // 有历史登录记录，先从云端静默同步最新进度，再渲染页面
+  (async()=>{
+    try{
+      const cloud=await _sb.fetchMine(S.name);
+      if(cloud&&cloud.data){
+        for(const gid in cloud.data){
+          if(!S.gd[gid]||((cloud.data[gid].points||0)>(S.gd[gid].points||0))){
+            S.gd[gid]=cloud.data[gid];
+          }
+        }
+        save();
+      }
+    }catch(e){}
+    if(!S.grade||!gradeById(S.grade)||!gradeById(S.grade).ready)go("grade");
+    else go("home");
+  })();
+}
 </script>
 </body>
 </html>
