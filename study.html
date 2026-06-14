@@ -27,7 +27,7 @@ html,body{height:100%;overflow:hidden;background:#F5EDD8;
 .name-tag:hover{color:#2A1E08}
 .hud-title{position:fixed;left:26px;bottom:86px;z-index:10;pointer-events:none}
 .hud-title h1{font-size:clamp(20px,2.6vw,28px);font-weight:600;letter-spacing:-.3px;
-  font-family:"Noto Serif SC",Georgia,serif}
+  font-family:Georgia,"PingFang SC",serif}
 .hud-title p{font-size:12px;color:#9A8060;margin-top:4px}
 .quick-nav{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;gap:12px;
   padding:28px 16px calc(14px + env(safe-area-inset-bottom));overflow-x:auto;
@@ -534,7 +534,7 @@ const BUILDINGS = [
   { name:'机械塔 · 程序员', href:'programmer.html',       build:buildMechTower, pos:[-10.4,0,1.8] },
   { name:'工坊 · 语法',     href:'grammar_hub.html',      build:()=>house({}),  pos:[6,0,7.4] },
   { name:'试炼场 · 真题',   href:'exam.html',             build:buildArena,     pos:[-6.4,0,7.2] },
-  { name:'庭院舞台 · 词汇', href:'vocab-stage.html',      build:buildStageGate, pos:[0,0,6.8] },
+  { name:'庭院舞台 · 词汇', href:'vocab.html',            build:buildStageGate, pos:[0,0,6.8] },
 ];
 const clickables = [];
 BUILDINGS.forEach(b=>{
