@@ -3603,9 +3603,10 @@ SCREENS.home=function(){clear();checkStreak();
     <div class="bar" style="margin:0"><div class="sp"></div>
       ${streakCount()>0?`<div class="streak">🔥${streakCount()}</div>`:''}
       <button class="iconbtn" id="switch" title="换年级">⇄</button>
-      <button class="iconbtn" id="mute">${S.muted?"○":"♪"}</button></div>
+      <button class="iconbtn" id="mute">${S.muted?"○":"♪"}</button>
+      </div>
   </div>
-  <div class="gradechip" id="gradechip">${gradeById(S.grade)?gradeById(S.grade).label:""} · 点此换年级</div>
+  <div style="display:flex;align-items:center;gap:10px;margin:-26px 0 26px"><div class="gradechip" id="gradechip" style="margin:0">${gradeById(S.grade)?gradeById(S.grade).label:""} · 点此换年级</div><a href="study.html" class="gradechip" style="margin:0;text-decoration:none">← 返回学习中心</a></div>
   <div class="scoreblk"><div class="huge num">${points()}<small>分</small></div>
     <div class="tier">${dispLv.icon||""} ${dispLv.name}<span class="line"></span>
       <span class="nx">${god?"✨ 已达最高荣誉":(nx?`距 ${nx.icon||""} ${nx.name} ${nx.min-points()} 分`:"已达学霸")}</span></div>
