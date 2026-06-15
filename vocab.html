@@ -121,6 +121,89 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 /* 首页双按钮行 */
 .homebtn-row{display:flex;gap:10px;margin-top:20px}
 
+/* ===== 连续登录横幅 ===== */
+.streak-banner{display:flex;align-items:center;gap:10px;padding:11px 14px;
+  background:linear-gradient(135deg,#FFF8E0,#FDF0CC);border:1.5px solid #E8CC8A;
+  border-radius:14px;margin-bottom:14px}
+.streak-fire{font-size:22px;line-height:1;flex:0 0 auto}
+.streak-text{flex:1}
+.streak-text b{display:block;font-size:14px;font-weight:600;color:var(--ink)}
+.streak-text span{font-size:11px;color:var(--soft);margin-top:1px;display:block}
+.streak-bonus-tag{font-size:10px;font-weight:700;color:var(--ok);background:#EEF8E2;
+  border-radius:8px;padding:2px 7px;flex:0 0 auto}
+
+/* ===== 拼写挑战模式（二刷专属） ===== */
+.spell-toggle-row{display:flex;align-items:center;justify-content:space-between;
+  padding:13px 16px;background:var(--bg3);border:1.5px solid var(--hair);border-radius:16px;margin:0 0 14px}
+.spell-toggle-label{font-size:14px;font-weight:600;color:var(--ink);line-height:1.3}
+.spell-toggle-label span{display:block;font-size:11px;font-weight:400;color:var(--soft);margin-top:2px}
+.spell-toggle-pts{font-size:11px;font-weight:700;color:var(--ok);background:#EEF8E2;
+  border-radius:8px;padding:2px 8px;margin-top:4px;display:inline-block}
+.spell-switch{position:relative;width:46px;height:26px;flex:0 0 auto}
+.spell-switch input{opacity:0;width:0;height:0}
+.spell-track{position:absolute;inset:0;border-radius:13px;background:var(--hair);
+  cursor:pointer;transition:background .25s}
+.spell-track::before{content:'';position:absolute;left:3px;top:3px;width:20px;height:20px;
+  border-radius:50%;background:#fff;transition:transform .25s;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.spell-switch input:checked+.spell-track{background:var(--ok)}
+.spell-switch input:checked+.spell-track::before{transform:translateX(20px)}
+.spell-input-wrap{position:relative;margin-bottom:8px}
+.spell-input{width:100%;padding:14px 16px;border:2px solid var(--hair);border-radius:14px;
+  font-size:18px;font-family:var(--fnt);color:var(--ink);background:var(--bg3);
+  outline:none;transition:border-color .2s;-webkit-appearance:none}
+.spell-input:focus{border-color:var(--accent)}
+.spell-input.correct{border-color:var(--ok);background:#EEF8E2}
+.spell-input.wrong{border-color:var(--warn);background:var(--warn-soft)}
+.spell-answer{font-size:15px;color:var(--warn);text-align:center;margin:4px 0;font-weight:600;min-height:22px}
+.spell-submit{width:100%;padding:13px;border:none;border-radius:14px;
+  background:var(--accent);color:#FDF8F0;font-size:16px;font-weight:600;cursor:pointer;
+  font-family:var(--fnt);transition:transform .1s}
+.spell-submit:active{transform:scale(.97)}
+.spell-submit:disabled{opacity:.5;cursor:default}
+.spell-pts-badge{position:absolute;top:-6px;right:-6px;background:var(--ok);color:#fff;
+  font-size:10px;font-weight:700;padding:2px 6px;border-radius:99px}
+
+/* ===== 二刷模式横幅 ===== */
+.pass2-banner{display:flex;align-items:center;gap:10px;padding:11px 14px;
+  background:linear-gradient(135deg,#E8F0FF,#D8E8FF);border:1.5px solid #8AAAE0;
+  border-radius:14px;margin:0 0 14px;font-size:13px;font-weight:500;color:#2A4A9A}
+.pass2-banner b{font-size:14px}
+
+/* ===== 速度挑战·鲨鱼游戏 ===== */
+.sg-hud{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sg-timer-box,.sg-score-box{text-align:center;min-width:48px}
+.sg-timer-num,.sg-score-num{font-size:36px;font-weight:200;letter-spacing:-.04em;color:var(--ink);line-height:1}
+.sg-timer-num.warn{color:var(--warn)!important;animation:sgBlink .4s infinite}
+.sg-lbl{font-size:11px;color:var(--soft);font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+.sg-title{font-size:13px;font-weight:600;color:var(--soft);letter-spacing:.05em}
+.sg-qa{padding:4px 0 0}
+.sg-q{font-size:13px;color:var(--soft);margin-bottom:8px;min-height:18px;text-align:center}
+.sg-qword{font-size:24px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+.sg-qcn{font-size:14px;font-weight:500;color:var(--ink);line-height:1.4}
+.sg-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sg-opt{padding:10px 6px;border:1.5px solid var(--hair);border-radius:12px;
+  background:var(--bg3);color:var(--ink);font-size:13px;font-weight:500;font-family:var(--fnt);
+  cursor:pointer;text-align:center;transition:transform .08s;line-height:1.3;
+  min-height:44px;display:flex;align-items:center;justify-content:center}
+.sg-opt:active{transform:scale(.96)}
+.sg-right{border-color:var(--ok)!important;background:#EEF8E2!important;color:var(--ok)!important}
+.sg-wrong{border-color:var(--warn)!important;background:var(--warn-soft)!important;color:var(--warn)!important}
+.sg-dim{opacity:.28!important;pointer-events:none}
+@keyframes sgBlink{0%,100%{opacity:1}50%{opacity:.35}}
+.speed-lb{margin-top:18px}
+.speed-lb-title{font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--soft);
+  text-transform:uppercase;margin-bottom:10px}
+.speed-lb-row{display:flex;align-items:center;gap:12px;padding:10px 0;
+  border-bottom:1px solid var(--hair2)}
+.speed-lb-rank{width:28px;height:28px;border-radius:50%;background:var(--hair);
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:0 0 auto}
+.speed-lb-rank.r1{background:linear-gradient(135deg,#FFD700,#FFA500);color:#fff}
+.speed-lb-rank.r2{background:linear-gradient(135deg,#C0C0C0,#A0A0A0);color:#fff}
+.speed-lb-rank.r3{background:linear-gradient(135deg,#CD7F32,#A05010);color:#fff}
+.speed-lb-name{flex:1;font-size:15px;font-weight:500;color:var(--ink)}
+.speed-lb-score{font-size:18px;font-weight:300;color:var(--accent)}
+.speed-result-num{font-size:64px;font-weight:200;letter-spacing:-.05em;line-height:1;text-align:center;margin:12px 0 4px}
+
 /* 我的目标 / 里程碑 */
 .ms-cur{display:flex;align-items:center;gap:16px;background:var(--accent-soft);border-radius:20px;padding:20px 18px;margin-top:10px;border:1.5px solid var(--hair)}
 .ms-cur-icon{font-size:38px}
@@ -3345,7 +3428,7 @@ function dueWordsToday(){const P=gd().prog;return Object.keys(P).filter(id=>{con
 function points(){return gd().points;}
 // 总榜用跨年级累计积分
 function totalPoints(){return Object.values(S.gd||{}).reduce((s,g)=>s+(g.points||0),0);}
-function addPoints(n){var d=new Date();d.setDate(d.getDate()-d.getDay());var tw=d.toISOString().split('T')[0];if(S.weekStart!==tw){S.weekStart=tw;S.weekPoints=0;}gd().points+=n;S.weekPoints=(S.weekPoints||0)+n;save();lbUpdate();}
+function addPoints(n){var d=new Date();d.setDate(d.getDate()-d.getDay());var tw=d.toISOString().split('T')[0];if(S.weekStart!==tw){S.weekStart=tw;S.weekPoints=0;}const bonus=(streakCount()>=5)?2:0;gd().points+=n+bonus;S.weekPoints=(S.weekPoints||0)+n+bonus;save();lbUpdate();}
 function clear(){app.innerHTML="";}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function greetWord(){const h=new Date().getHours();return h<6?"凌晨好":h<11?"早上好":h<13?"中午好":h<18?"下午好":"晚上好";}
@@ -3433,12 +3516,323 @@ function allUnitsClearedForRevenge(){
  return UNITS.filter(u=>u.ready).every(u=>unitStage(u.n).R);
 }
 
+/* ===== 二刷模式 ===== */
+function allUnitsCleared(){return UNITS.length>0&&UNITS.every(u=>unitCleared(u));}
+function spellModeOn(){return localStorage.getItem('jc_spell_mode')==='1';}
+function setSpellMode(on){localStorage.setItem('jc_spell_mode',on?'1':'0');}
+
+const PT_SPELL={R:3,W:4,L:4};
+
+// 字符集重叠率（中文模糊匹配）
+function _charOverlap(a,b){if(!a||!b)return 0;const sa=new Set(a),sb=new Set(b);let c=0;for(const x of sa)if(sb.has(x))c++;return c/Math.min(sa.size,sb.size);}
+// 编辑距离
+function _levenshtein(a,b){const m=a.length,n=b.length,dp=[];for(let i=0;i<=m;i++){dp[i]=new Array(n+1);for(let j=0;j<=n;j++)dp[i][j]=i?j?0:i:j;}for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);return dp[m][n];}
+
+function runSpellingQuiz(u,pool,i,acc,mode){
+ if(i>=pool.length){
+   const key=mode;
+   return stageResult(u,key,mode==="R"?"第一关·拼写":mode==="W"?"第二关·拼写":"第三关·拼写",acc);
+ }
+ clear();const w=pool[i];
+ const isEn=(mode==="W");
+ const d=document.createElement("div");d.className="screen active";
+ const modeLabel=mode==="R"?"第一关 · 阅读拼写":mode==="W"?"第二关 · 写作拼写":"第三关 · 听力拼写";
+ const questionHTML=mode==="L"?
+  `<div style="text-align:center;padding:20px 0">
+    <div class="ql" style="font-size:12px;font-weight:600;letter-spacing:.16em;color:var(--faint);text-transform:uppercase;margin-bottom:18px">听发音 · 打出中文意思</div>
+    <button class="bigspk" id="bigspk">🔊</button><div style="font-size:12px;color:var(--soft);margin-top:8px">点喇叭重听</div></div>`:
+  mode==="W"?
+  `<div class="qcn"><div class="ql">看中文，打出对应的英文单词</div><div class="qt">${w.s.map(x=>`${x[0]?`<span class="qp">${x[0]}</span>`:""} ${x[1]}`).join("　")}</div></div>`:
+  `<div class="qcn"><div class="ql">看英文，打出中文意思</div><div class="qt en-q">${w.en}</div>${w.ph?`<div class="q-ph">${w.ph}</div>`:""}</div>`;
+ d.innerHTML=`
+  <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">${modeLabel}</div></div>
+  <div class="qhud"><div class="tk"><i style="width:${i/pool.length*100}%"></i></div><div class="ct">${i+1} / ${pool.length}</div></div>
+  ${questionHTML}
+  <div class="spell-input-wrap" style="margin:14px 0 10px">
+    <input class="spell-input" id="sinput" type="text" placeholder="${isEn?'输入英文单词…':'输入中文意思…'}"
+      autocomplete="off" autocorrect="off" autocapitalize="${isEn?'none':'off'}" spellcheck="false">
+    <div class="spell-pts-badge">+${PT_SPELL[mode]}</div>
+  </div>
+  <div class="spell-answer" id="sanswer"></div>
+  <button class="spell-submit" id="ssubmit">确认</button>`;
+ app.appendChild(d);
+ if(mode==="L"){const play=()=>speak(w.en);d.querySelector("#bigspk").onclick=play;setTimeout(play,300);}
+ d.querySelector("#bk").onclick=()=>{sfx.tap();go({name:mode==="R"?"reading":mode==="W"?"writing":"listening",arg:u.n});};
+ const inp=d.querySelector("#sinput");
+ const answerEl=d.querySelector("#sanswer");
+ const submitBtn=d.querySelector("#ssubmit");
+ let answered=false;
+ const normalize=(s)=>s.toLowerCase().trim().replace(/[·\s\-_]/g,'');
+ const checkAnswer=(val)=>{
+   const v=normalize(val);if(!v)return false;
+   if(isEn){const norm=normalize(w.en);if(norm===v)return true;if(norm.length>=5&&_levenshtein(norm,v)<=1)return true;return false;}
+   const cleanV=val.trim().replace(/\s+/g,'');if(!cleanV)return false;
+   return w.s.some(x=>{
+     const raw=x[1].trim();const core=raw.replace(/[（(][^）)]*[）)]/g,'').replace(/[；;]\s*$/,'').trim();
+     const nCore=normalize(core),nRaw=normalize(raw);
+     if(nCore===v||nRaw===v)return true;
+     if(cleanV.length>=2&&(core.includes(cleanV)||raw.includes(cleanV)))return true;
+     if(core.length>=2&&cleanV.includes(core))return true;
+     if(cleanV.length>=2&&core.length>=2&&_charOverlap(cleanV,core)>=0.60)return true;
+     if(nCore.length>=2&&nCore.length<=4&&_levenshtein(nCore,v)<=1)return true;
+     return false;
+   });
+ };
+ const doSubmit=()=>{
+   if(answered)return;const val=inp.value;if(!val.trim()){inp.focus();return;}
+   answered=true;inp.disabled=true;submitBtn.disabled=true;speak(w.en);
+   const correct=checkAnswer(val);
+   if(correct){
+     inp.classList.add('correct');answerEl.style.color='var(--ok)';answerEl.textContent='✓ 正确！';
+     markResult(w,true,mode);acc.got++;acc.combo++;acc.maxCombo=Math.max(acc.maxCombo||0,acc.combo);
+     const base=PT_SPELL[mode]+(acc.combo>=PT.comboFrom?PT.comboStep:0);
+     acc.gain+=base;addPoints(base);
+     if(acc.combo>=PT.comboFrom){showCombo(acc.combo);sfx.combo(acc.combo);}else sfx.correct();
+     afterPoint(()=>setTimeout(()=>runSpellingQuiz(u,pool,i+1,acc,mode),700));
+   }else{
+     inp.classList.add('wrong');
+     const correctStr=isEn?w.en:w.s.map(x=>`${x[0]?x[0]+" ":""}${x[1]}`).join("；");
+     answerEl.style.color='var(--warn)';answerEl.textContent=`✗ 正确答案：${correctStr}`;
+     markResult(w,false,mode);acc.combo=0;acc.wrong++;sfx.wrong();
+     setTimeout(()=>runSpellingQuiz(u,pool,i+1,acc,mode),1200);
+   }
+ };
+ submitBtn.onclick=doSubmit;inp.addEventListener('keydown',e=>{if(e.key==='Enter')doSubmit();});
+ setTimeout(()=>inp.focus(),300);
+}
+
+function confirmPass2(){
+ const m=document.getElementById("modal");
+ m.innerHTML=`<div class="box">
+   <div class="rk">二刷模式</div>
+   <div class="ring" style="font-size:32px;letter-spacing:0;animation:none">🔄</div>
+   <h2 style="font-size:19px;font-weight:600;margin:10px 0 6px;color:var(--ink)">第二遍比第一遍更重要</h2>
+   <p style="font-size:13px;color:var(--soft);line-height:1.7;text-align:left">
+     ✅ <b>全部单元</b>的闯关进度重置，重新开始<br>
+     ✅ 已获得的<b>积分全部保留</b><br>
+     ✅ 解锁<b>拼写挑战模式</b>，比一刷获得更多积分
+   </p>
+   <button class="btn accent" id="p2ok">继续，开始二刷！</button>
+   <button class="btn line" id="p2cancel" style="margin-top:8px">再想想</button>
+ </div>`;
+ m.classList.add("show");
+ m.querySelector("#p2cancel").onclick=()=>{m.classList.remove("show");sfx.tap();};
+ m.querySelector("#p2ok").onclick=()=>{
+   m.classList.remove("show");sfx.tap();
+   UNITS.forEach(u=>{const st=unitStage(u.n);st.R=false;st.W=false;st.L=false;st.Rn=0;st.Wn=0;st.Ln=0;});
+   gd().pass2=true;save();go("home");
+ };
+}
+
+/* ===== 速度挑战 ===== */
+let _sgRAF=null,_sgTimer=null;
+
+function build4cnFast(w){
+ const pos=w.s[0][0];const pool=WORDS.filter(x=>x.type!=='name'&&x.id!==w.id);
+ const same=shuffle(pool.filter(x=>x.s[0][0]===pos));const rest=shuffle(pool.filter(x=>x.s[0][0]!==pos));
+ const dis=[...same.slice(0,2),...rest.slice(0,1)].slice(0,3).map(x=>({cn:cnTextClean(x),correct:false}));
+ const extra=shuffle(pool.filter(x=>!dis.find(d=>d.cn===cnTextClean(x))));
+ while(dis.length<3&&extra.length)dis.push({cn:cnTextClean(extra.shift()),correct:false});
+ dis.push({cn:cnTextClean(w),correct:true});return shuffle(dis);
+}
+function build4enFast(w){
+ const pos=w.s[0][0];const pool=WORDS.filter(x=>x.type==='word'&&x.id!==w.id);
+ const same=shuffle(pool.filter(x=>x.s[0][0]===pos));const rest=shuffle(pool.filter(x=>x.s[0][0]!==pos));
+ const dis=[...same.slice(0,2),...rest.slice(0,1)].slice(0,3).map(x=>({en:x.en,correct:false}));
+ const extra=shuffle(pool.filter(x=>!dis.find(d=>d.en===x.en)));
+ while(dis.length<3&&extra.length)dis.push({en:extra.shift().en,correct:false});
+ dis.push({en:w.en,correct:true});return shuffle(dis);
+}
+
+async function speedSaveRemote(grade,name,score){
+ try{await fetch(`${SUPABASE_URL}/rest/v1/speed_scores`,{method:'POST',
+   headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json','Prefer':'return=minimal'},
+   body:JSON.stringify({grade,name,score})});}catch(e){}
+}
+async function speedGetLBRemote(grade){
+ try{
+   const r=await fetch(`${SUPABASE_URL}/rest/v1/speed_scores?grade=eq.${encodeURIComponent(grade)}&select=name,score&order=score.desc&limit=200`,
+     {headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}});
+   if(!r.ok)return[];const rows=await r.json();
+   const best={};rows.forEach(row=>{if(!best[row.name]||row.score>best[row.name])best[row.name]=row.score;});
+   return Object.entries(best).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([name,score])=>({name,score}));
+ }catch(e){return[];}
+}
+function speedRenderLB(lb){
+ if(!lb.length)return '<div style="text-align:center;color:var(--faint);font-size:13px;padding:12px">暂无记录，快来创造第一个！</div>';
+ return lb.map((r,i)=>`<div class="speed-lb-row">
+  <div class="speed-lb-rank r${i+1}">${['🥇','🥈','🥉'][i]}</div>
+  <div class="speed-lb-name">${r.name}</div>
+  <div class="speed-lb-score">${r.score} 题</div></div>`).join('');
+}
+
+function runSpeedChallenge(){
+ if(_sgRAF){cancelAnimationFrame(_sgRAF);_sgRAF=null;}
+ if(_sgTimer){clearInterval(_sgTimer);_sgTimer=null;}
+ clear();
+ const words=WORDS.filter(w=>w.type==='word'||w.type==='phrase');
+ if(words.length<4){go('home');return;}
+ const TOTAL_SECS=60,cW=428,cH=180;
+ let score=0,secsLeft=TOTAL_SECS,gap=155,visualSX=310;
+ let gameOver=false,escaped=false,answered=false;
+ const SWIMMER_Y=cH/2+5,SHARK_Y=cH/2+10;
+ const bubbles=Array.from({length:14},()=>({x:Math.random()*cW,y:cH*0.3+Math.random()*cH*0.7,r:Math.random()*1.8+0.6,speed:Math.random()*0.25+0.15}));
+ const getCurQ=()=>{const w=words[Math.floor(Math.random()*words.length)];const mode=Math.random()<0.5?'R':'W';return {w,mode,opts:mode==='R'?build4cnFast(w):build4enFast(w)};};
+ let curQ=getCurQ();
+ const d=document.createElement('div');d.className='screen active';
+ d.innerHTML=`
+  <div class="sg-hud">
+    <div class="sg-timer-box"><div class="sg-timer-num" id="sgtime">60</div><div class="sg-lbl">秒</div></div>
+    <div class="sg-title">🦈 速度挑战</div>
+    <div class="sg-score-box"><div class="sg-score-num" id="sgscore">0</div><div class="sg-lbl">答对</div></div>
+  </div>
+  <canvas id="sgc" width="${cW}" height="${cH}" style="display:block;width:100%;border-radius:14px;margin-bottom:10px"></canvas>
+  <div class="sg-qa"><div class="sg-q" id="sgq"></div><div class="sg-opts" id="sgopts"></div></div>`;
+ app.appendChild(d);
+ const canvas=d.querySelector('#sgc');const ctx=canvas.getContext('2d');
+ const drawOcean=(t)=>{
+   const g=ctx.createLinearGradient(0,0,0,cH);g.addColorStop(0,'#0880A8');g.addColorStop(.35,'#045E82');g.addColorStop(1,'#012040');
+   ctx.fillStyle=g;ctx.fillRect(0,0,cW,cH);
+   ctx.save();ctx.fillStyle='rgba(20,150,210,.38)';ctx.beginPath();ctx.moveTo(0,0);
+   for(let x=0;x<=cW;x++)ctx.lineTo(x,13+Math.sin(x*.032+t*.0018)*4+Math.sin(x*.068-t*.0011)*2);
+   ctx.lineTo(cW,0);ctx.closePath();ctx.fill();ctx.restore();
+   bubbles.forEach(b=>{b.y-=b.speed;if(b.y<0){b.y=cH;b.x=Math.random()*cW;}ctx.fillStyle='rgba(180,230,255,.30)';ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();});
+ };
+ const drawShark=(cx,cy,t,angry)=>{
+   ctx.save();const tw=Math.sin(t*.004)*10;
+   ctx.fillStyle=angry?'#7A8898':'#6A7888';ctx.beginPath();ctx.ellipse(cx,cy,62,17,0,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle='#B0C4D4';ctx.beginPath();ctx.ellipse(cx+8,cy+6,50,9,0,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle='#586878';ctx.beginPath();ctx.moveTo(cx-8,cy-17);ctx.lineTo(cx+12,cy-38);ctx.lineTo(cx+24,cy-17);ctx.closePath();ctx.fill();
+   ctx.beginPath();ctx.moveTo(cx+8,cy+6);ctx.lineTo(cx+22,cy+26);ctx.lineTo(cx-4,cy+10);ctx.closePath();ctx.fill();
+   ctx.beginPath();ctx.moveTo(cx-62,cy+tw*.4);ctx.lineTo(cx-84,cy-22+tw);ctx.lineTo(cx-70,cy+tw*.3);ctx.lineTo(cx-84,cy+22+tw);ctx.closePath();ctx.fill();
+   ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(cx+42,cy-6,6.5,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle=angry?'#CC0000':'#111';ctx.beginPath();ctx.arc(cx+44,cy-6,3,0,Math.PI*2);ctx.fill();
+   if(angry){ctx.strokeStyle='#800';ctx.lineWidth=2;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(cx+36,cy-13);ctx.lineTo(cx+48,cy-9);ctx.stroke();}
+   ctx.fillStyle='#E06060';ctx.beginPath();ctx.moveTo(cx+52,cy+2);ctx.bezierCurveTo(cx+64,cy-2,cx+68,cy+10,cx+56,cy+14);ctx.closePath();ctx.fill();
+   ctx.fillStyle='#fff';for(let i=0;i<5;i++){const tx=cx+52+i*3.5;ctx.beginPath();ctx.moveTo(tx,cy+2);ctx.lineTo(tx+1.6,cy+7);ctx.lineTo(tx+3.2,cy+2);ctx.fill();}
+   ctx.restore();
+ };
+ const drawSwimmer=(sx,sy,t,esc)=>{
+   const sp=Math.sin(t*.005);ctx.strokeStyle='#FDF8F0';ctx.lineWidth=2.5;ctx.lineCap='round';
+   ctx.fillStyle='#FDF8F0';ctx.beginPath();ctx.arc(sx+18,sy-2,8,0,Math.PI*2);ctx.fill();
+   ctx.beginPath();ctx.moveTo(sx+10,sy);ctx.lineTo(sx-14,sy+2);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(sx+6,sy-2);ctx.lineTo(sx+26+sp*8,sy-7+sp*8);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(sx+4,sy+2);ctx.lineTo(sx-16,sy+4+(1-sp)*6);ctx.stroke();
+   const kick=Math.sin(t*.007)*11;
+   ctx.beginPath();ctx.moveTo(sx-14,sy+2);ctx.lineTo(sx-30,sy-kick);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(sx-14,sy+2);ctx.lineTo(sx-28,sy+kick);ctx.stroke();
+   if(esc){ctx.strokeStyle='rgba(253,248,240,.3)';ctx.lineWidth=1;for(let i=0;i<4;i++){const dy=i*7-10;ctx.beginPath();ctx.moveTo(sx-20,sy+dy);ctx.lineTo(sx-40-i*5,sy+dy);ctx.stroke();}}
+ };
+ let lastTS=null;
+ const loop=(ts)=>{
+   if(!lastTS)lastTS=ts;const dt=Math.min((ts-lastTS)/1000,.05);lastTS=ts;
+   if(!gameOver&&!escaped){
+     gap-=(2.0+((TOTAL_SECS-secsLeft)*.018))*dt;
+     if(gap<=0){gameOver=true;setTimeout(()=>endSpeedGame(score,false),800);return;}
+   }else if(escaped){
+     visualSX+=10;if(visualSX>cW+90){gameOver=true;endSpeedGame(score,true);return;}
+   }
+   ctx.clearRect(0,0,cW,cH);drawOcean(ts);
+   const sharkCX=visualSX-gap-65;if(sharkCX+130>0)drawShark(sharkCX,SHARK_Y,ts,gap<80);
+   drawSwimmer(visualSX,SWIMMER_Y,ts,escaped);
+   if(gap<50&&!escaped){
+     const a=Math.max(0,(50-gap)/50)*.32;const dg=ctx.createLinearGradient(0,0,cW,0);
+     dg.addColorStop(0,`rgba(200,20,0,${a})`);dg.addColorStop(.3,'rgba(200,20,0,0)');
+     ctx.fillStyle=dg;ctx.fillRect(0,0,cW,cH);
+     ctx.fillStyle=`rgba(255,80,0,${a*Math.abs(Math.sin(Date.now()/180))})`;
+     ctx.font='bold 13px -apple-system,sans-serif';ctx.textAlign='center';
+     ctx.fillText('⚠️ 快回答！',cW/2,cH-10);
+   }
+   _sgRAF=requestAnimationFrame(loop);
+ };
+ _sgRAF=requestAnimationFrame(loop);
+ const timeEl=d.querySelector('#sgtime');
+ _sgTimer=setInterval(()=>{
+   if(gameOver)return;secsLeft--;
+   if(timeEl){timeEl.textContent=secsLeft;if(secsLeft<=10)timeEl.classList.add('warn');}
+   if(secsLeft<=0){clearInterval(_sgTimer);_sgTimer=null;if(!gameOver)escaped=true;}
+ },1000);
+ const renderQ=()=>{
+   if(gameOver||escaped)return;const q=curQ;
+   const qEl=d.querySelector('#sgq');if(!qEl)return;
+   qEl.innerHTML=q.mode==='R'?`<b class="sg-qword">${q.w.en}</b>`:`<span class="sg-qcn">${q.w.s.map(x=>x[1]).join('；')}</span>`;
+   const optsEl=d.querySelector('#sgopts');if(!optsEl)return;
+   optsEl.innerHTML=q.opts.map((o,k)=>`<button class="sg-opt" data-k="${k}">${q.mode==='R'?o.cn:o.en}</button>`).join('');
+   answered=false;
+   optsEl.querySelectorAll('.sg-opt').forEach(btn=>btn.onclick=()=>{
+     if(answered||gameOver||escaped)return;answered=true;
+     const o=q.opts[+btn.dataset.k];
+     optsEl.querySelectorAll('.sg-opt').forEach(b=>{const oo=q.opts[+b.dataset.k];
+       if(oo.correct)b.classList.add('sg-right');else if(b===btn)b.classList.add('sg-wrong');else b.classList.add('sg-dim');});
+     if(o.correct){
+       score++;const sc=d.querySelector('#sgscore');if(sc)sc.textContent=score;
+       gap+=55;sfx.correct();speak(q.w.en);setTimeout(()=>{curQ=getCurQ();renderQ();},360);
+     }else{gap-=28;sfx.wrong();setTimeout(()=>{curQ=getCurQ();renderQ();},420);}
+   });
+ };
+ renderQ();
+}
+
+async function endSpeedGame(score,survived){
+ if(_sgRAF){cancelAnimationFrame(_sgRAF);_sgRAF=null;}
+ if(_sgTimer){clearInterval(_sgTimer);_sgTimer=null;}
+ const grade=S.grade||'g7';const gradeLabel=gradeById(grade)?gradeById(grade).label:'本年级';
+ clear();const rd=document.createElement('div');rd.className='screen active';
+ rd.innerHTML=`
+  <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">⚡ 速度挑战</div></div>
+  <div style="text-align:center;padding:28px 0 18px">
+    <div style="font-size:30px;margin-bottom:8px">${survived?'🎉':'😵'}</div>
+    <div class="kicker" style="margin-bottom:8px">${survived?'成功逃脱！':'被鲨鱼咬到了！'}</div>
+    <div class="speed-result-num" style="color:${survived?'var(--ok)':'var(--warn)'}">${score}</div>
+    <div style="font-size:15px;color:var(--soft);margin:6px 0 6px">答对 ${score} 题</div>
+    <div id="topbadge"></div>
+    <button class="btn accent" id="again" style="max-width:200px;margin:12px auto 10px">再来一次</button>
+  </div>
+  <div class="speed-lb">
+    <div class="speed-lb-title">🏆 ${gradeLabel} · 班级榜 Top 3</div>
+    <div id="endlblist" style="text-align:center;color:var(--faint);font-size:13px;padding:14px">保存中…</div>
+  </div>
+  <button class="btn ghost" id="home" style="margin-top:16px">回到首页</button>`;
+ app.appendChild(rd);
+ rd.querySelector('#bk').onclick=()=>{sfx.tap();go('speed');};
+ rd.querySelector('#again').onclick=()=>{sfx.tap();runSpeedChallenge();};
+ rd.querySelector('#home').onclick=()=>{sfx.tap();go('home');};
+ if(survived)sfx.levelup();
+ await speedSaveRemote(grade,S.name,score);
+ const lb=await speedGetLBRemote(grade);
+ const lbEl=rd.querySelector('#endlblist');if(lbEl)lbEl.innerHTML=speedRenderLB(lb);
+ const badge=rd.querySelector('#topbadge');
+ if(badge&&score>0&&lb.length>0&&lb[0].name===S.name&&lb[0].score===score)
+   badge.innerHTML='<div style="color:var(--ok);font-weight:600;margin-bottom:6px">🏆 本年级新纪录！</div>';
+}
+
 function markResult(w,good,mode){const r=rec(w.id);if(mode==="R")r.seenR=1;else r.seenW=1;
  if(good){if(r.box>=0){r.box++;if(r.box>=INTERVALS.length){r.box=-1;r.due=0;addPoints(PT.graduate);}else r.due=now()+INTERVALS[r.box]*DAY;}r.last="good";}
  else{r.box=0;r.due=now();r.last="bad";}save();}
 
 /* ============ SCREENS ============ */
 const SCREENS={};
+
+SCREENS.speed=function(){
+ clear();const grade=S.grade||'g7';const gradeLabel=gradeById(grade)?gradeById(grade).label:'本年级';
+ const d=document.createElement('div');d.className='screen active';
+ d.innerHTML=`
+  <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">⚡ 速度挑战</div></div>
+  <div style="text-align:center;padding:24px 0 20px">
+    <div class="kicker" style="margin-bottom:10px">SPEED CHALLENGE</div>
+    <div style="font-size:72px;font-weight:200;letter-spacing:-.06em;color:var(--accent);line-height:1">60</div>
+    <div style="font-size:13px;color:var(--soft);margin:8px 0 20px">秒内答对尽量多的题目 · 鲨鱼在追你！</div>
+    <button class="btn accent" id="go" style="max-width:200px;margin:0 auto">开始挑战！</button>
+  </div>
+  <div class="speed-lb">
+    <div class="speed-lb-title">🏆 ${gradeLabel} · 班级榜 Top 3</div>
+    <div id="lblist" style="text-align:center;color:var(--faint);font-size:13px;padding:14px">加载中…</div>
+  </div>`;
+ app.appendChild(d);
+ d.querySelector('#bk').onclick=()=>{sfx.tap();go('home');};
+ d.querySelector('#go').onclick=()=>{sfx.tap();runSpeedChallenge();};
+ speedGetLBRemote(grade).then(lb=>{const el=d.querySelector('#lblist');if(el)el.innerHTML=speedRenderLB(lb);});
+};
 
 SCREENS.welcome=function(){clear();const d=document.createElement("div");d.className="screen active";
  d.innerHTML=`<div class="w">
@@ -3607,6 +4001,14 @@ SCREENS.home=function(){clear();checkStreak();
       </div>
   </div>
   <div style="display:flex;align-items:center;gap:10px;margin:-26px 0 26px"><div class="gradechip" id="gradechip" style="margin:0">${gradeById(S.grade)?gradeById(S.grade).label:""} · 点此换年级</div><a href="study.html" class="gradechip" style="margin:0;text-decoration:none">← 返回学习中心</a></div>
+  ${streakCount()>=1?`<div class="streak-banner">
+    <div class="streak-fire">🔥</div>
+    <div class="streak-text">
+      <b>已连续打卡 ${streakCount()} 天</b>
+      <span>${streakCount()>=5?'5天达成！每完成一个单词+2奖励积分 🎉':`再打卡 ${5-streakCount()} 天，每词+2积分奖励！`}</span>
+    </div>
+    ${streakCount()>=5?'<div class="streak-bonus-tag">+2 中</div>':''}
+  </div>`:''}
   <div class="scoreblk"><div class="huge num">${points()}<small>分</small></div>
     <div class="tier">${dispLv.icon||""} ${dispLv.name}<span class="line"></span>
       <span class="nx">${god?"✨ 已达最高荣誉":(nx?`距 ${nx.icon||""} ${nx.name} ${nx.min-points()} 分`:"已达学霸")}</span></div>
@@ -3631,6 +4033,10 @@ SCREENS.home=function(){clear();checkStreak();
     <button class="btn line" id="card" style="flex:1">📊 我的成绩卡</button>
   </div>
   <div class="homebtn-row" style="margin-top:8px">
+    <button class="btn line" id="speed" style="flex:1;border-color:#C85A2A;color:#C85A2A">⚡ 速度挑战</button>
+    <button class="btn line" id="pass2home" style="flex:1;${allUnitsCleared()&&!gd().pass2?'border-color:#5A8ACA;color:#2A5A9A':gd().pass2?'border-color:#6AAA6A;color:#2A6A2A':'border-color:var(--hair);color:var(--faint);cursor:not-allowed'}">${gd().pass2?'🔄 二刷进行中':allUnitsCleared()?'🔄 开始二刷':'🔒 二刷模式'}</button>
+  </div>
+  <div class="homebtn-row" style="margin-top:8px">
     <button class="btn line" id="lb" style="flex:1;border-color:var(--accent);color:var(--accent)">🏆 班级排行榜</button>
   </div>
   <div style="text-align:center;margin-top:14px">
@@ -3647,6 +4053,8 @@ SCREENS.home=function(){clear();checkStreak();
  d.querySelector("#daily").onclick=()=>{if(!dailyDone()){sfx.tap();monsterUnlocked()?go("monster"):go("daily");}};
  d.querySelector("#ms").onclick=()=>{sfx.tap();go("milestones");};
  d.querySelector("#card").onclick=()=>{sfx.tap();go("card");};
+ d.querySelector("#speed").onclick=()=>{sfx.tap();go("speed");};
+ d.querySelector("#pass2home").onclick=()=>{if(!allUnitsCleared()){sfx.wrong();return;}sfx.tap();confirmPass2();};
  d.querySelector("#lb").onclick=()=>{sfx.tap();go("leaderboard");};
  d.querySelector("#switchaccount").onclick=()=>{
    sfx.tap();
@@ -3679,10 +4087,23 @@ SCREENS.unit=function(n){clear();const u=UNITS.find(x=>x.n===n);const st=unitSta
     <div class="stage-stars">${stagesArr.map(s=>`<span class="star ${s.done?'lit':''}">●</span>`).join("")}</div>
     <div class="stage-cap">${allDone?"🏆 本单元已全部征服！":`闯过 ${stageCount(u)} / ${stageTotal()} 关`}</div>
   </div>
+  ${gd().pass2?`<div class="pass2-banner">🔄 <b>二刷模式</b> · 开启拼写挑战可获得比一刷更多积分</div>`:''}
+  ${gd().pass2?`<div class="spell-toggle-row">
+    <div class="spell-toggle-label">拼写挑战模式
+      <span>二刷专属 · 开启后改为键盘输入答案</span>
+      <div class="spell-toggle-pts">开启 = 阅读+3分 写作+4分 听力+4分</div>
+    </div>
+    <label class="spell-switch">
+      <input type="checkbox" id="spell-chk" ${spellModeOn()?'checked':''}>
+      <div class="spell-track"></div>
+    </label>
+  </div>`:''}
   <div class="lvls">${lvls}</div>
   <div class="foot">三关都通关，即可点亮本单元 · 攒满 ${EXEMPT_EVERY} 个单元有免考奖励</div>`;
  app.appendChild(d);
  d.querySelector("#bk").onclick=()=>{sfx.tap();go("home");};
+ const spellChk=d.querySelector("#spell-chk");
+ if(spellChk)spellChk.onchange=function(){setSpellMode(this.checked);sfx.tap();};
  d.querySelectorAll(".lvl").forEach(m=>{const mode=m.dataset.m;if(mode)m.onclick=()=>{sfx.tap();go({name:mode,arg:n});};
    else m.onclick=()=>{sfx.wrong();shakeEl(m);};});
 };
@@ -3722,6 +4143,9 @@ function unitOf(w){return UNITS.find(u=>w.id>=u.lo&&w.id<=u.hi);}
 /* ---------- 第一关 阅读：看英文选中文（含短语） ---------- */
 SCREENS.reading=function(n){
  const u=UNITS.find(x=>x.n===n);
+ if(spellModeOn()&&gd().pass2){
+   return runSpellingQuiz(u,shuffle(quizPool(u).slice()),0,{got:0,gain:0,combo:0,maxCombo:0,wrong:0},"R");
+ }
  const sv=loadQP(n,'R');
  if(sv&&sv.i<sv.pool.length){
    const pool=sv.pool.map(id=>WORDS.find(w=>w.id===id)).filter(Boolean);
@@ -3761,6 +4185,9 @@ function runReading(u,pool,i,acc){
 /* ---------- 第二关 写作：看中文选英文（仅单词） ---------- */
 SCREENS.writing=function(n){
  const u=UNITS.find(x=>x.n===n);
+ if(spellModeOn()&&gd().pass2){
+   return runSpellingQuiz(u,shuffle(writePool(u).slice()),0,{got:0,gain:0,combo:0,maxCombo:0,wrong:0},"W");
+ }
  const sv=loadQP(n,'W');
  if(sv&&sv.i<sv.pool.length){
    const pool=sv.pool.map(id=>WORDS.find(w=>w.id===id)).filter(Boolean);
@@ -3799,6 +4226,9 @@ function runWriting(u,pool,i,acc){
 /* ---------- 第三关 听力：听发音选中文（仅单词，6选1） ---------- */
 SCREENS.listening=function(n){
  const u=UNITS.find(x=>x.n===n);
+ if(spellModeOn()&&gd().pass2){
+   return runSpellingQuiz(u,shuffle(writePool(u).slice()),0,{got:0,gain:0,combo:0,maxCombo:0,wrong:0},"L");
+ }
  const sv=loadQP(n,'L');
  if(sv&&sv.i<sv.pool.length){
    const pool=sv.pool.map(id=>WORDS.find(w=>w.id===id)).filter(Boolean);
