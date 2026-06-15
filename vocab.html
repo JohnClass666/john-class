@@ -525,6 +525,482 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 @keyframes sparkle{0%,100%{opacity:.4;transform:scale(.9)}50%{opacity:1;transform:scale(1.15)}}
 .lb-no1-glow{animation:glow1 3s ease-in-out infinite}
 @keyframes glow1{0%,100%{box-shadow:0 4px 20px rgba(255,215,0,.3)}50%{box-shadow:0 6px 32px rgba(255,215,0,.6),0 0 0 3px rgba(255,215,0,.15)}}
+/* ═══════════════════════════════════════════
+   JC 设计系统 v2 · 书房暖色 + 3D 按键体系
+═══════════════════════════════════════════ */
+
+/* 3D 按键基础 */
+.jk{display:inline-flex;align-items:center;justify-content:center;
+  font-family:var(--fnt);cursor:pointer;font-size:11.5px;font-weight:600;
+  letter-spacing:-.01em;white-space:nowrap;-webkit-user-select:none;user-select:none;
+  background:linear-gradient(180deg,#EEB878 0%,#E89038 100%);
+  border:1px solid #C87828;border-bottom:3px solid #A05018;border-radius:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 5px rgba(40,20,5,.09),0 4px 12px rgba(40,20,5,.05);
+  color:#5A3000;transition:transform .08s,box-shadow .08s,border-bottom-width .08s,background .1s}
+.jk:active{transform:translateY(2px);border-bottom-width:1px;
+  box-shadow:inset 0 1px 3px rgba(40,20,5,.12),0 1px 2px rgba(40,20,5,.08);
+  background:linear-gradient(180deg,#E89038 0%,#EE8020 100%)}
+
+/* JC Header */
+.jc-hd{position:sticky;top:0;z-index:100;
+  padding:14px 20px;
+  padding-top:calc(14px + env(safe-area-inset-top))}
+.jc-logo{font-size:22px;font-weight:700;letter-spacing:-.04em;color:#3A2A10;
+  text-shadow:0 2px 4px rgba(40,20,5,.18),0 5px 14px rgba(40,20,5,.09);margin-bottom:10px}
+.jc-chips{display:flex;gap:8px}
+
+/* Score Block */
+.jc-score{padding:20px 20px 6px;display:flex;align-items:baseline;gap:0}
+.jc-num{font-size:44px;font-weight:200;letter-spacing:-.07em;color:#3A2A10;
+  text-shadow:0 3px 6px rgba(40,20,5,.12),0 6px 18px rgba(40,20,5,.07);line-height:1}
+.jc-unit{font-size:15px;color:#A08040;margin-left:4px;margin-bottom:2px}
+.jc-pills{margin-left:auto;display:flex;align-items:center;gap:7px;align-self:center}
+.jc-pill{font-size:11px;font-weight:700;letter-spacing:-.01em;padding:5px 11px;
+  border-radius:10px;white-space:nowrap;cursor:default;
+  background:linear-gradient(180deg,#EED870 0%,#E8C428 100%);
+  border:1px solid #C89010;border-bottom:2.5px solid #A07008;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.6),0 2px 4px rgba(40,20,5,.1);color:#5A3800}
+.jc-pill-red{background:linear-gradient(180deg,#E89878 0%,#E85848 100%);
+  border-color:#D04030;border-bottom-color:#B02818;color:#5A1008;
+  box-shadow:inset 0 1px 0 rgba(255,255,210,.4),0 2px 4px rgba(40,20,5,.1)}
+.jc-pw{padding:8px 20px 14px}
+.jc-pt{height:3px;background:rgba(58,42,16,.12);border-radius:99px;overflow:hidden}
+.jc-pf{height:100%;background:linear-gradient(90deg,#C89030,#E8A830);border-radius:99px}
+
+/* Dots */
+.jc-dots{display:flex;gap:7px;padding:0 20px;margin-bottom:20px;align-items:center;flex-wrap:wrap}
+.jc-d{width:8px;height:8px;border-radius:50%;background:rgba(58,42,16,.12);
+  cursor:pointer;transition:transform .12s;flex:0 0 auto}
+.jc-d:active{transform:scale(1.5)}
+.jcd-done{background:#C89030}
+.jcd-prog{background:#C85A2A}
+.jc-dlbl{font-size:9.5px;font-weight:700;letter-spacing:.18em;color:#C8A870;text-transform:uppercase;margin-left:4px}
+
+/* Shelf */
+.jc-shelf{margin-bottom:0}
+.jc-slbl{padding:0 20px 10px;font-size:9.5px;font-weight:700;letter-spacing:.2em;color:#C8A870;text-transform:uppercase}
+.jc-sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px}
+.jc-sbar{height:14px;background:linear-gradient(180deg,#B07030 0%,#8A4E18 100%);
+  box-shadow:0 5px 16px rgba(80,40,10,.25),0 2px 4px rgba(80,40,10,.15);position:relative}
+.jc-sbar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(255,220,120,.55) 30%,rgba(255,220,120,.7) 50%,rgba(255,220,120,.55) 70%,transparent)}
+.jc-sgap{height:28px}
+
+/* Cards */
+.jc-card{border-radius:20px;overflow:hidden;aspect-ratio:3/4;position:relative;cursor:pointer;
+  box-shadow:0 1px 2px rgba(40,20,5,.08),0 4px 10px rgba(40,20,5,.10),
+    0 12px 26px rgba(40,20,5,.08),0 20px 40px rgba(40,20,5,.05);
+  transition:transform .18s cubic-bezier(.34,1.4,.64,1),box-shadow .18s}
+.jc-card:active{transform:scale(.96) translateY(2px);
+  box-shadow:0 2px 6px rgba(40,20,5,.12),0 5px 14px rgba(40,20,5,.1)}
+.jc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(180deg,rgba(255,235,180,.16) 0%,transparent 100%);
+  border-radius:20px 20px 0 0;pointer-events:none;z-index:5}
+.jc-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:30%;
+  background:none;pointer-events:none;z-index:4}
+.jc-ci{position:absolute;inset:0;padding:16px 14px;display:flex;flex-direction:column;justify-content:space-between;z-index:6}
+.jc-eye{font-size:8.5px;font-weight:800;letter-spacing:.2em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:6px}
+.jc-ctitle{font-size:17px;font-weight:700;color:#fff;line-height:1.18;letter-spacing:-.03em;text-shadow:0 1px 4px rgba(0,0,0,.2)}
+.jc-cwords{font-size:10px;color:rgba(255,255,255,.5);margin-bottom:6px}
+.jc-cp{height:2px;background:rgba(255,255,255,.18);border-radius:2px;overflow:hidden;margin-bottom:5px}
+.jc-cpf{height:100%;background:rgba(255,255,255,.8);border-radius:2px}
+.jc-cpct{font-size:10px;font-weight:700;color:rgba(255,255,255,.7)}
+.jc-cbadge{position:absolute;top:11px;right:11px;z-index:8;
+  font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:4px 9px;border-radius:8px;
+  background:linear-gradient(180deg,#FDF8F0 0%,#E8D8B4 100%);
+  border:1px solid #C8A860;border-bottom:2px solid #9A7830;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 4px rgba(40,20,5,.12)}
+.jc-ghost{position:absolute;bottom:-14px;right:-4px;font-size:100px;font-weight:900;
+  letter-spacing:-.08em;color:rgba(255,255,255,.07);pointer-events:none;line-height:1;z-index:3;user-select:none}
+/* Card gradient palette */
+.jcg1{background:linear-gradient(145deg,#E89878,#E86248)}
+.jcg2{background:linear-gradient(145deg,#EED068,#E8A020)}
+.jcg3{background:linear-gradient(145deg,#EEC888,#E89040)}
+.jcg4{background:linear-gradient(145deg,#E8A870,#D07840)}
+.jcg5{background:linear-gradient(145deg,#EED870,#E8C428)}
+.jcg6{background:linear-gradient(145deg,#EE9280,#E85838)}
+.jcg7{background:linear-gradient(145deg,#EEB878,#E89038)}
+.jcg8{background:linear-gradient(145deg,#D09060,#B86838)}
+.jcgl{background:linear-gradient(145deg,#F5E4C8,#EED098);opacity:.55}
+
+/* Bottom Bar */
+.jc-btm{position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:saturate(160%) blur(20px);-webkit-backdrop-filter:saturate(160%) blur(20px);
+  border-top:.5px solid #D8C8A0;padding:12px 20px;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+.jc-keys{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:1px}
+.jc-keys::-webkit-scrollbar{display:none}
+.jc-key{flex:0 0 auto;font-family:var(--fnt);cursor:pointer;padding:9px 15px;border-radius:10px;
+  font-size:11.5px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;position:relative;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F5EDD8 100%);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 5px rgba(40,20,5,.08);
+  color:#3A2A10;transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.jc-key:active{transform:translateY(2px);border-bottom-width:1px;box-shadow:inset 0 1px 3px rgba(40,20,5,.1)}
+.jc-key-trophy{background:linear-gradient(180deg,#EED868 0%,#DCAA20 100%);border-color:#C09010;
+  border-bottom-color:#8A6808;color:#3A2000;font-weight:700;
+  box-shadow:inset 0 1px 0 rgba(255,250,200,.55),0 2px 6px rgba(40,20,5,.18),0 4px 14px rgba(160,100,0,.14)}
+.jc-key-trophy:active{background:linear-gradient(180deg,#EEAA28 0%,#DC9010 100%)}
+.jc-key-amber{background:linear-gradient(180deg,#EEB878 0%,#E89038 100%);border-color:#C87828;
+  border-bottom-color:#A05018;color:#5A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 5px rgba(40,20,5,.10)}
+.jc-key-amber:active{background:linear-gradient(180deg,#E89038 0%,#EE8020 100%)}
+.jc-key-red{background:linear-gradient(180deg,#E89878 0%,#E85848 100%);border-color:#D04030;
+  border-bottom-color:#B02818;color:#5A1008;
+  box-shadow:inset 0 1px 0 rgba(255,255,220,.4),0 2px 5px rgba(40,20,5,.10)}
+.jc-key-red:active{background:linear-gradient(180deg,#E85848 0%,#EE4030 100%)}
+.jc-key-blue{background:linear-gradient(180deg,#E8A870 0%,#D07840 100%);border-color:#D06080;
+  border-bottom-color:#B04060;color:#5A0828;
+  box-shadow:inset 0 1px 0 rgba(255,255,230,.4),0 2px 5px rgba(40,20,5,.10)}
+.jc-key-blue:active{background:linear-gradient(180deg,#D07840 0%,#EE5880 100%)}
+.jc-key-dim{background:linear-gradient(180deg,#EEE2C4 0%,#D8C8A0 100%);border-color:#C0A870;
+  border-bottom-color:#C0A870;color:rgba(58,42,16,.28);cursor:not-allowed;pointer-events:none;
+  box-shadow:inset 0 1px 2px rgba(40,20,5,.05)}
+.jc-key-badge{position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;
+  background:#9A3A10;color:#FDF8F0;font-size:9px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;border:1.5px solid #FDF8F0}
+
+/* ═══ 全站 UI 统一覆盖 ═══ */
+/* 顶栏 */
+.bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:0;
+  padding:10px 16px;min-height:52px}
+.back{width:36px;height:36px;border-radius:50%;flex:0 0 auto;
+  background:linear-gradient(180deg,#FDF8F0 0%,#E8D8B4 100%);
+  border:1px solid #C8A860;border-bottom:3px solid #9A7830;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 2px 5px rgba(40,20,5,.12);
+  font-size:20px;color:#3A2A10;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.back:active{transform:translateY(2px);border-bottom-width:1px;
+  box-shadow:inset 0 1px 3px rgba(40,20,5,.12)}
+.htitle{flex:1;text-align:center;font-size:15px;font-weight:600;
+  color:#3A2A10;letter-spacing:-.02em;margin:0 8px;
+  text-shadow:0 1px 3px rgba(40,20,5,.1)}
+.iconbtn{width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(180deg,#FDF8F0 0%,#E8D8B4 100%);
+  border:1px solid #C8A860;border-bottom:2.5px solid #9A7830;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 4px rgba(40,20,5,.1);
+  color:#A08040;font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.iconbtn:active{transform:translateY(2px);border-bottom-width:1px}
+.sp{flex:1}
+/* 进度条 HUD */
+.qhud{display:flex;align-items:center;gap:12px;padding:10px 20px;
+  border-bottom:.5px solid #E8DBBD;background:rgba(253,248,240,.5)}
+.qhud .tk{flex:1;height:3px;background:rgba(58,42,16,.1);border-radius:99px;overflow:hidden}
+.qhud .tk i{display:block;height:100%;background:linear-gradient(90deg,#C89030,#E8A830);
+  border-radius:99px;transition:width .3s}
+.qhud .ct{font-size:11px;font-weight:700;color:#A08040;letter-spacing:.04em;white-space:nowrap}
+/* 题目 */
+.qcn{padding:22px 20px 14px}
+.ql{font-size:10.5px;font-weight:700;letter-spacing:.18em;color:#C8A870;
+  text-transform:uppercase;margin-bottom:12px}
+.qt{font-size:26px;font-weight:700;color:#3A2A10;letter-spacing:-.04em;line-height:1.22}
+.en-q{font-size:30px;letter-spacing:-.06em}
+.q-ph{font-size:15px;color:#A08040;margin-top:6px;letter-spacing:.04em}
+.qp{font-size:12px;font-weight:500;color:#A08040;margin-right:4px}
+.q-spk{margin-top:12px}
+/* 选项 */
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:6px 20px 20px}
+.opt{padding:14px 12px;font-size:13.5px;font-weight:600;color:#3A2A10;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F8F0E0 100%);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;border-radius:14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 6px rgba(40,20,5,.07);
+  font-family:var(--fnt);cursor:pointer;text-align:center;line-height:1.35;
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s;
+  min-height:52px;display:flex;align-items:center;justify-content:center}
+.opt:active{transform:translateY(2px);border-bottom-width:1px;
+  box-shadow:inset 0 1px 3px rgba(40,20,5,.1)}
+.opt.right{background:linear-gradient(180deg,#EED870 0%,#E8C428 100%);
+  border-color:#C89010;border-bottom-color:#986808;color:#4A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.6),0 2px 6px rgba(40,20,5,.10)}
+.opt.wrong{background:linear-gradient(180deg,#CC5A28 0%,#9A3A10 100%);
+  border-color:#7A2808;border-bottom-color:#4A1000;color:#FDF8F0;
+  box-shadow:inset 0 1px 0 rgba(255,200,150,.18),0 2px 6px rgba(40,20,5,.14)}
+.opt.dim{opacity:.22;pointer-events:none}
+/* TTS 大按钮 */
+.listen-box{text-align:center;padding:28px 20px 18px}
+.bigspk{width:84px;height:84px;border-radius:50%;
+  background:linear-gradient(180deg,#FDF8F0 0%,#E8D8B4 100%);
+  border:1px solid #C8A860;border-bottom:5px solid #9A7830;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 4px 12px rgba(40,20,5,.14),
+    0 8px 24px rgba(40,20,5,.08);
+  font-size:30px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .1s,box-shadow .1s,border-bottom-width .1s;margin:0 auto}
+.bigspk:active{transform:scale(.93) translateY(3px);border-bottom-width:2px;
+  box-shadow:inset 0 2px 4px rgba(40,20,5,.12),0 2px 6px rgba(40,20,5,.1)}
+.replay{font-size:11px;color:#A08040;margin-top:10px;letter-spacing:.04em}
+/* 行内 TTS */
+.spk,.spk-btn{padding:6px 16px;border-radius:99px;font-size:12px;font-weight:600;
+  background:linear-gradient(180deg,#FDF8F0 0%,#E8D8B4 100%);
+  border:1px solid #C8A860;border-bottom:2.5px solid #9A7830;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 4px rgba(40,20,5,.1);
+  color:#A08040;cursor:pointer;font-family:var(--fnt);
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.spk:active,.spk-btn:active{transform:translateY(1px);border-bottom-width:1px}
+/* 单元三关卡 */
+.lvls{display:flex;flex-direction:column;gap:10px;margin:10px 0 16px}
+.lvl-link{height:14px;width:2px;background:rgba(58,42,16,.12);margin:0 auto;border-radius:2px}
+.lvl-link.lit{background:linear-gradient(180deg,#C89030,#9A7020)}
+.lvl{display:flex;align-items:center;gap:16px;padding:18px 16px;border-radius:18px;cursor:pointer;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F8F0E0 100%);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 6px rgba(40,20,5,.08),
+    0 6px 18px rgba(40,20,5,.04);
+  transition:transform .1s,box-shadow .1s,border-bottom-width .1s}
+.lvl:active{transform:translateY(2px);border-bottom-width:1px;
+  box-shadow:inset 0 1px 3px rgba(40,20,5,.1)}
+.lvl-open{}
+.lvl-done{background:linear-gradient(180deg,#FDF4E0 0%,#F0E0B0 100%);
+  border-color:#D4B060;border-bottom-color:#A88030;
+  box-shadow:inset 0 1px 0 rgba(255,255,220,.7),0 2px 6px rgba(40,30,5,.08)}
+.lvl-lock{opacity:.38;cursor:not-allowed;border-bottom-width:1px}
+.lvl-lock:active{transform:none}
+.lvl-dot{width:42px;height:42px;border-radius:50%;flex:0 0 auto;
+  background:linear-gradient(145deg,#D4A030,#9A6810);
+  border:1px solid #B88020;border-bottom:2px solid #7A4808;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:700;color:#FDF8F0;
+  box-shadow:0 2px 6px rgba(40,20,5,.18),inset 0 1px 0 rgba(255,240,160,.35)}
+.lvl-done .lvl-dot{background:linear-gradient(145deg,#F0B830,#C08818);
+  border-color:#C89828;border-bottom-color:#906808;
+  box-shadow:0 2px 6px rgba(40,20,5,.16),inset 0 1px 0 rgba(255,248,180,.5)}
+.lvl-lock .lvl-dot{background:linear-gradient(145deg,#C8A870,#A08040);
+  border-color:#906828;border-bottom-color:#706028}
+.lvl-tx{flex:1;min-width:0}
+.lvl-no{font-size:10px;font-weight:700;letter-spacing:.14em;color:#A08040;
+  text-transform:uppercase;display:block;margin-bottom:3px}
+.lvl-tx b{font-size:16px;font-weight:600;color:#3A2A10;letter-spacing:-.02em;display:block}
+.lvl-tx p{font-size:12px;color:#A08040;margin-top:3px;line-height:1.4}
+.lvl-tag{font-size:10px;font-weight:700;color:#7A5010;
+  background:linear-gradient(180deg,#FDF4E0,#F0E0B0);
+  border:1px solid #D4B060;border-bottom:2px solid #A88030;
+  padding:4px 10px;border-radius:8px;white-space:nowrap;
+  box-shadow:inset 0 1px 0 rgba(255,255,220,.7)}
+.locktag{color:#A08040;background:linear-gradient(180deg,#F0E8CC,#D8C8A0);
+  border-color:#B09850;border-bottom-color:#907830}
+.stage-head{padding:14px 20px;display:flex;flex-direction:column;align-items:center;
+  gap:6px;border-bottom:.5px solid #E8DBBD;margin-bottom:4px}
+.stage-stars{display:flex;gap:10px}
+.star{font-size:24px;color:rgba(58,42,16,.12);transition:color .3s}
+.star.lit{color:#C89030;text-shadow:0 2px 8px rgba(200,144,48,.45),0 0 12px rgba(200,144,48,.2)}
+.stage-cap{font-size:12px;color:#A08040;font-weight:600;letter-spacing:.04em}
+/* 通用按钮 */
+.btn{display:inline-flex;align-items:center;justify-content:center;
+  font-family:var(--fnt);cursor:pointer;font-size:15px;font-weight:600;
+  padding:14px 20px;border-radius:14px;width:100%;
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s;margin-bottom:8px}
+.btn.accent{background:linear-gradient(180deg,#EED068 0%,#EEAA28 100%);
+  border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 6px rgba(40,20,5,.12)}
+.btn.accent:active{transform:translateY(2px);border-bottom-width:1px}
+.btn.line{background:linear-gradient(180deg,#FFFFFF 0%,#F5EDD8 100%);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;color:#3A2A10;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 5px rgba(40,20,5,.07)}
+.btn.line:active{transform:translateY(2px);border-bottom-width:1px}
+.btn.ghost{background:none;border:1px solid #D8C8A0;border-bottom-width:1px;
+  color:#A08040;box-shadow:none}
+.btn.ghost:active{background:rgba(58,42,16,.05)}
+/* 脚注 */
+.foot{font-size:11px;color:#C8A870;text-align:center;padding:12px 20px 20px;letter-spacing:.04em}
+.resumetip{font-size:11px;color:#A08040;background:#F5EDD8;
+  border:1px solid #E8DBBD;border-radius:8px;
+  padding:6px 12px;margin:0 20px 8px;text-align:center}
+/* 结算页 */
+.res{padding:28px 20px}
+.stagebadge{width:72px;height:72px;border-radius:50%;margin:0 auto 16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:700;color:#FDF8F0;
+  animation:ringPop .5s cubic-bezier(.34,1.4,.64,1)}
+.stagebadge.pass{background:linear-gradient(145deg,#EED068,#EEAA28);
+  border:1px solid #C88808;border-bottom:4px solid #986008;
+  box-shadow:0 4px 14px rgba(40,20,5,.14),inset 0 1px 0 rgba(255,255,200,.6)}
+.stagebadge.fail{background:linear-gradient(145deg,#CC5A28,#9A3A10);
+  border:1px solid #7A2808;border-bottom:4px solid #4A1000;
+  box-shadow:0 4px 14px rgba(80,20,5,.18),inset 0 1px 0 rgba(255,200,150,.2)}
+@keyframes ringPop{from{transform:scale(.6) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.huge.big{font-size:52px;font-weight:200;letter-spacing:-.07em;color:#3A2A10;
+  text-align:center;text-shadow:0 3px 8px rgba(40,20,5,.12);line-height:1;margin:8px 0 2px}
+.rl{font-size:11px;color:#A08040;text-align:center;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:20px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.st{text-align:center;padding:12px 6px;
+  background:linear-gradient(180deg,#FDF8F0,#EEE2C4);
+  border:1px solid #C8A860;border-bottom:2px solid #9A7830;border-radius:12px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 4px rgba(40,20,5,.08)}
+.st b{display:block;font-size:22px;font-weight:300;letter-spacing:-.05em;color:#3A2A10}
+.st span{font-size:9px;color:#A08040;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;margin-top:3px;display:block}
+.passmsg{font-size:13px;font-weight:600;color:#7A5010;text-align:center;
+  padding:10px 14px;border-radius:12px;margin-bottom:14px;
+  background:linear-gradient(180deg,#F5EEC8,#EED868);
+  border:1px solid #C89010;border-bottom:2px solid #A07008;
+  box-shadow:inset 0 1px 0 rgba(255,255,220,.8)}
+.passmsg.warn{color:#9A3A10;
+  background:linear-gradient(180deg,#FAF0E8,#EEDAD8);
+  border-color:#D0A090;border-bottom-color:#A07060}
+/* 排行榜 */
+.lb-wrap{padding:0 20px 20px}
+.lb-tabs{display:flex;gap:8px;margin-bottom:16px}
+.lb-tab{flex:1;padding:9px 12px;text-align:center;
+  font-size:12px;font-weight:600;letter-spacing:-.01em;cursor:pointer;
+  background:linear-gradient(180deg,#FDF8F0 0%,#E8D8B4 100%);
+  border:1px solid #C8A860;border-bottom:3px solid #9A7830;border-radius:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 2px 4px rgba(40,20,5,.08);
+  color:#A08040;transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.lb-tab:active{transform:translateY(2px);border-bottom-width:1px}
+.lb-tab.active{background:linear-gradient(180deg,#D4A030 0%,#A87818 100%);
+  border-color:#906010;border-bottom-color:#5A3808;color:#FDF8F0;
+  box-shadow:inset 0 1px 0 rgba(255,240,160,.4),0 2px 5px rgba(40,20,5,.14)}
+.lb-sub{font-size:11px;color:#A08040;text-align:center;margin-bottom:12px;
+  font-weight:600;letter-spacing:.04em}
+.lb-row{display:flex;align-items:center;gap:12px;padding:12px 16px;
+  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
+  border:1px solid #E8DBBD;border-bottom:2px solid #C8A860;border-radius:14px;
+  margin-bottom:8px;box-shadow:0 2px 6px rgba(40,20,5,.06)}
+.lb-row.me{background:linear-gradient(180deg,#F5F0D8,#E8D8A0);
+  border-color:#C8A860;border-bottom-color:#9A7830;
+  box-shadow:0 2px 8px rgba(40,20,5,.12)}
+.lb-rank{width:32px;height:32px;border-radius:50%;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;
+  background:linear-gradient(145deg,#C8A870,#A08040);
+  border:1px solid #906828;color:#FDF8F0;
+  box-shadow:0 1px 4px rgba(40,20,5,.14)}
+.lb-rank.r1{background:linear-gradient(145deg,#F0C030,#C09010);border-color:#A07010}
+.lb-rank.r2{background:linear-gradient(145deg,#C0B0A0,#907060);border-color:#706050}
+.lb-rank.r3{background:linear-gradient(145deg,#C07830,#8A4810);border-color:#6A3010}
+.lb-name{flex:1;font-size:15px;font-weight:600;color:#3A2A10;letter-spacing:-.02em}
+.lb-pts{font-size:15px;font-weight:300;color:#C89030;letter-spacing:-.04em}
+.lb-grp{font-size:10px;font-weight:700;letter-spacing:.14em;color:#C8A870;
+  text-transform:uppercase;margin:16px 0 8px}
+.lb-note{font-size:11px;color:#A08040;text-align:center;margin-top:12px}
+/* 里程碑 */
+.ms-card{display:flex;align-items:center;gap:14px;padding:16px;
+  background:linear-gradient(180deg,#FDF8F0,#EEE2C4);
+  border:1px solid #C8A860;border-bottom:3px solid #9A7830;border-radius:16px;
+  margin-bottom:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 2px 6px rgba(40,20,5,.10)}
+.ms-card.done{background:linear-gradient(180deg,#EAF4D8,#C8E0A0);
+  border-color:#8AB050;border-bottom-color:#5A8020}
+.ms-card.cur{background:linear-gradient(180deg,#F5F0D8,#E8D8A0);
+  border-color:#C8A860;border-bottom-color:#9A7830}
+.ms-icon{font-size:28px;width:48px;text-align:center;flex:0 0 auto}
+.ms-tx b{font-size:16px;font-weight:600;color:#3A2A10;display:block;margin-bottom:3px}
+.ms-tx span{font-size:12px;color:#A08040}
+/* 错词本 / ebook卡片 */
+.ebook{display:flex;align-items:center;gap:14px;padding:16px 18px;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F8F0E0 100%);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;border-radius:18px;
+  margin-bottom:12px;cursor:pointer;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 2px 6px rgba(40,20,5,.10),
+    0 6px 18px rgba(40,20,5,.06);
+  transition:transform .1s,box-shadow .1s,border-bottom-width .1s}
+.ebook:active{transform:translateY(2px);border-bottom-width:1px}
+.ebook.empty{opacity:.45;cursor:default;border-bottom-width:1px}
+.ebook .rt b{font-size:16px;font-weight:600;color:#3A2A10;display:block;margin-bottom:3px}
+.ebook .rt span{font-size:12px;color:#A08040}
+.ebook .dot{width:30px;height:30px;border-radius:50%;
+  background:linear-gradient(145deg,#CC5A28,#9A3A10);
+  border:1px solid #7A2808;border-bottom:2px solid #4A1000;
+  color:#FDF8F0;font-size:12px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 5px rgba(40,20,5,.14),inset 0 1px 0 rgba(255,200,150,.2)}
+/* 弹窗 ring */
+.ring{width:72px;height:72px;border-radius:50%;margin:0 auto 14px;
+  background:linear-gradient(145deg,#F0B830,#C08818);
+  border:1px solid #C89828;border-bottom:4px solid #906808;
+  box-shadow:0 4px 14px rgba(40,20,5,.18),inset 0 1px 0 rgba(255,248,180,.5);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;animation:ringPop .5s cubic-bezier(.34,1.4,.64,1)}
+.rk{font-size:9.5px;font-weight:700;letter-spacing:.2em;color:#C8A870;
+  text-transform:uppercase;text-align:center;margin-bottom:10px}
+/* 拼写挑战 */
+.spell-toggle-row{border:1px solid #C8A860;border-bottom:3px solid #9A7830;
+  background:linear-gradient(180deg,#FDF8F0 0%,#EEE2C4 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 2px 5px rgba(40,20,5,.08)}
+.spell-toggle-pts{color:#A07018;background:linear-gradient(180deg,#F5F0D8,#E8D8A0);
+  border:1px solid #C8A860;border-bottom:1.5px solid #9A7830;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+.spell-submit{background:linear-gradient(180deg,#D4A030 0%,#A87818 100%);
+  border:1px solid #906010;border-bottom:3px solid #5A3808;
+  box-shadow:inset 0 1px 0 rgba(255,240,160,.4),0 2px 6px rgba(40,20,5,.14);color:#FDF8F0}
+.spell-submit:active{transform:translateY(2px);border-bottom-width:1px}
+.spell-input:focus{border-color:#C89030;box-shadow:0 0 0 3px rgba(200,144,48,.15)}
+/* Pass2 横幅 */
+.pass2-banner{background:linear-gradient(135deg,#E8F0FF,#D8E8FF);
+  border:1px solid #8AAAE0;border-bottom:2px solid #5A8ACA;
+  border-radius:14px;box-shadow:0 2px 6px rgba(40,60,120,.1)}
+
+/* ── 卡片：数字大、标题小 ── */
+.jc-ci{flex-direction:column;gap:0}
+.jc-csubtitle{font-size:9px;font-weight:700;letter-spacing:.18em;color:rgba(255,255,255,.85);
+  text-transform:uppercase;margin-bottom:2px}
+.jc-bignum{font-size:58px;font-weight:200;color:rgba(255,255,255,1);letter-spacing:-.06em;
+  line-height:1;text-shadow:0 4px 16px rgba(0,0,0,.18);flex:1;
+  display:flex;align-items:center}
+
+/* ── 年级选择卡片（复用jc-card风格） ── */
+.grd-card{border-radius:20px;overflow:hidden;aspect-ratio:3/4;position:relative;cursor:pointer;
+  box-shadow:0 1px 2px rgba(40,20,5,.08),0 4px 10px rgba(40,20,5,.10),
+    0 12px 26px rgba(40,20,5,.08),0 20px 40px rgba(40,20,5,.05);
+  transition:transform .18s cubic-bezier(.34,1.4,.64,1),box-shadow .18s}
+.grd-card:active{transform:scale(.96) translateY(2px);box-shadow:0 2px 6px rgba(40,20,5,.12)}
+.grd-card::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(180deg,rgba(255,235,180,.16) 0%,transparent 100%);
+  border-radius:20px 20px 0 0;pointer-events:none;z-index:3}
+.grd-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:25%;
+  background:none;
+  pointer-events:none;z-index:2}
+.grd-ci{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;gap:6px;padding:16px}
+
+/* ── 年级内列表 3D 按钮 ── */
+.grd-btn{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:18px;cursor:pointer;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F8F0E0 100%);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 6px rgba(40,20,5,.08),
+    0 6px 18px rgba(40,20,5,.04);
+  transition:transform .1s,box-shadow .1s,border-bottom-width .1s}
+.grd-btn:active{transform:translateY(2px);border-bottom-width:1px}
+.grd-btn.glock{opacity:.35;cursor:not-allowed;border-bottom-width:1px}
+.grd-btn.glock:active{transform:none}
+.grd-btn-label{font-size:17px;font-weight:600;color:#3A2A10;letter-spacing:-.02em;flex:1}
+
+/* ── 答题区精简（全部6选项一屏可见）── */
+.bar{padding:8px 16px;min-height:48px}
+.qcn{padding:14px 20px 8px}
+.qt{font-size:22px}
+.en-q{font-size:24px}
+.opts{gap:8px;padding:4px 16px 12px}
+.opt{min-height:44px;padding:9px 10px;font-size:13px}
+
+/* ── 标题居中阴影 3D ── */
+.htitle{text-align:center;font-size:16px;font-weight:700;color:#3A2A10;
+  text-shadow:0 1px 2px rgba(40,20,5,.14),0 3px 8px rgba(40,20,5,.08);
+  letter-spacing:-.02em}
+
+/* ── 排行榜 Top 3 炫 3D ── */
+.lb-top-1{background:linear-gradient(135deg,#F5C820,#C09010,#F0D060)!important;
+  border:1px solid #906008!important;border-bottom:4px solid #5A3808!important;
+  box-shadow:0 4px 14px rgba(160,100,0,.28),0 8px 28px rgba(160,100,0,.14),
+    inset 0 1px 0 rgba(255,250,180,.7)!important;border-radius:20px!important}
+.lb-top-2{background:linear-gradient(135deg,#D8D8D0,#909088,#E0E0D8)!important;
+  border:1px solid #606058!important;border-bottom:3px solid #404038!important;
+  box-shadow:0 3px 10px rgba(80,80,70,.2),inset 0 1px 0 rgba(255,255,255,.6)!important;
+  border-radius:18px!important}
+.lb-top-3{background:linear-gradient(135deg,#D08830,#8A4810,#E0A850)!important;
+  border:1px solid #7A3808!important;border-bottom:3px solid #4A2408!important;
+  box-shadow:0 3px 8px rgba(100,50,20,.2),inset 0 1px 0 rgba(255,210,150,.5)!important;
+  border-radius:18px!important}
+.lb-top-1 .lb-top-score{color:#4A2800!important;font-weight:900}
+.lb-top-1 .lb-top-name{color:#3A2000!important}
+.lb-top-2 .lb-top-name,.lb-top-3 .lb-top-name{color:#2A1808!important}
+.lb-no1-glow{animation:glow1 3s ease-in-out infinite,lbFloat 2.5s ease-in-out infinite}
+@keyframes lbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 </style>
 </head>
 <body>
@@ -3405,7 +3881,7 @@ function speak(text){
  }catch(e){}
 }
 // 朗读按钮 HTML（仅在有语音引擎时插入）
-function speakBtn(){return TTS.ok?`<button class="spk" id="spk" aria-label="朗读">🔊</button>`:"";}
+function speakBtn(){return TTS.ok?`<button class="spk" id="spk" aria-label="朗读">▶</button>`:"";}
 function bindSpeak(scope,text){const b=scope.querySelector("#spk");if(b)b.onclick=(e)=>{e.stopPropagation();speak(text);};}
 
 /* ============ ROUTER ============ */
@@ -3540,7 +4016,7 @@ function runSpellingQuiz(u,pool,i,acc,mode){
  const questionHTML=mode==="L"?
   `<div style="text-align:center;padding:20px 0">
     <div class="ql" style="font-size:12px;font-weight:600;letter-spacing:.16em;color:var(--faint);text-transform:uppercase;margin-bottom:18px">听发音 · 打出中文意思</div>
-    <button class="bigspk" id="bigspk">🔊</button><div style="font-size:12px;color:var(--soft);margin-top:8px">点喇叭重听</div></div>`:
+    <button class="bigspk" id="bigspk">▶</button><div style="font-size:12px;color:var(--soft);margin-top:8px">点喇叭重听</div></div>`:
   mode==="W"?
   `<div class="qcn"><div class="ql">看中文，打出对应的英文单词</div><div class="qt">${w.s.map(x=>`${x[0]?`<span class="qp">${x[0]}</span>`:""} ${x[1]}`).join("　")}</div></div>`:
   `<div class="qcn"><div class="ql">看英文，打出中文意思</div><div class="qt en-q">${w.en}</div>${w.ph?`<div class="q-ph">${w.ph}</div>`:""}</div>`;
@@ -3901,47 +4377,62 @@ SCREENS.welcome=function(){clear();const d=document.createElement("div");d.class
 
 /* ---------- GRADE SELECT — 阶段卡片 ---------- */
 SCREENS.grade=function(){clear();const d=document.createElement("div");d.className="screen active";
- const stageColor={primary:'s-primary',middle:'s-middle',high:'s-high',college:'s-college'};
- let cards="";
- STAGES.forEach(st=>{
-   cards+=`<div class="stage-card ${stageColor[st.id]||''}" data-st="${st.id}">
-     <div class="s-icon">${st.icon}</div>
-     <div class="s-name">${st.label}</div>
-   </div>`;
- });
+ const stageGrads={primary:'jcg2',middle:'jcg1',high:'jcg4',college:'jcg3'};
+ const stageDesc={primary:'小学英语词汇',middle:'初中英语词汇',high:'高中英语词汇',college:'大学英语词汇'};
+ let shelves='';
+ for(let i=0;i<STAGES.length;i+=2){
+   const pair=STAGES.slice(i,i+2);
+   let cards='';
+   pair.forEach(st=>{
+     const g=stageGrads[st.id]||'jcg1';
+     cards+=`<div class="grd-card ${g}" data-st="${st.id}">
+       <div class="grd-ci">
+         <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(255,255,255,.45);text-transform:uppercase">${stageDesc[st.id]||''}</div>
+         <div style="font-size:34px;font-weight:700;color:#fff;letter-spacing:-.04em;line-height:1;text-shadow:0 4px 16px rgba(0,0,0,.2)">${st.label}</div>
+       </div>
+     </div>`;
+   });
+   shelves+=`<div class="jc-sgrid">${cards}</div><div class="jc-sbar"></div>${i+2<STAGES.length?'<div class="jc-sgap"></div>':''}`;
+ }
  d.innerHTML=`
-  <div class="gradewrap">
-    <div class="ava sm2"></div>
-    <div class="kicker" style="margin:18px 0 8px">Choose Your Level</div>
-    <div class="q2">John 问你：<br>你在哪个阶段？</div>
-    <div class="stage-grid">${cards}</div>
-    ${S.name&&S.grade?`<button class="btn ghost" id="grade-back" style="margin-top:4px">← 返回首页</button>`:''}
-    <div class="foot">选错了也没关系，随时可以换</div>
-  </div>`;
+  <div class="jc-hd">
+    <div class="jc-logo">John Class</div>
+    <div style="font-size:11px;color:#A08040;margin-top:2px;letter-spacing:.04em">CHOOSE YOUR LEVEL</div>
+  </div>
+  <div style="padding:20px 20px 16px">
+    <div style="font-size:22px;font-weight:700;color:#3A2A10;letter-spacing:-.03em;margin-bottom:18px;text-shadow:0 2px 8px rgba(40,20,5,.12)">John 问你：<br>你在哪个阶段？</div>
+  </div>
+  ${shelves}
+  <div style="padding:16px 20px 4px">
+    ${S.name&&S.grade?`<button class="btn ghost" id="grade-back">← 返回首页</button>`:''}
+  </div>
+  <div class="foot">选错了也没关系，随时可以换</div>`;
  app.appendChild(d);
  const gradeBackBtn=d.querySelector("#grade-back");if(gradeBackBtn)gradeBackBtn.onclick=()=>{sfx.tap();go("home");};
- d.querySelectorAll(".stage-card").forEach(c=>c.onclick=()=>{sfx.tap();go({name:"stage",arg:c.dataset.st});});
+ d.querySelectorAll(".grd-card[data-st]").forEach(c=>c.onclick=()=>{sfx.tap();go({name:"stage",arg:c.dataset.st});});
 };
 
 /* ---------- STAGE DETAIL — 该阶段年级列表 ---------- */
 SCREENS.stage=function(stageId){clear();const d=document.createElement("div");d.className="screen active";
  const st=STAGES.find(s=>s.id===stageId)||{label:'',icon:''};
  const list=GRADES.filter(g=>g.stage===stageId);
- let rows="";
- list.forEach(g=>{
-   rows+=`<div class="grow ${g.ready?'':'glock'}" data-g="${g.id}">
-     <span class="gl">${g.label}${g.isNew?'<span class="newtag">新</span>':''}</span>
-     ${g.ready?'<span class="chev">›</span>':'<span class="gtag">🔒</span>'}</div>`;
+ let rows='';
+ list.forEach((g)=>{
+   rows+=`<div class="grd-btn ${g.ready?'':'glock'}" data-g="${g.id}">
+     <div class="grd-btn-label">${g.label}${g.isNew?'<span class="newtag">新</span>':''}</div>
+     ${g.ready?`<div style="font-size:20px;color:#C8A860;font-weight:200">›</div>`:`<div style="font-size:12px;color:rgba(58,42,16,.25);font-weight:600">锁定</div>`}
+   </div>`;
  });
  d.innerHTML=`
-  <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">${st.icon} ${st.label}</div></div>
-  <div class="gradewrap-inner">
-    <div class="glist">${rows}</div>
-    <div class="foot" style="text-align:center">🔒 尚未开放，请向 John 申请</div>
+  <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">${st.label}</div></div>
+  <div style="padding:16px 20px 20px">
+    <div style="font-size:9.5px;font-weight:700;letter-spacing:.2em;color:#C8A870;text-transform:uppercase;margin-bottom:14px">选择年级</div>
+    <div style="display:flex;flex-direction:column;gap:10px">${rows}</div>
+    <div class="foot" style="padding:16px 0 0;text-align:center">锁定年级请向 John 申请</div>
   </div>`;
  app.appendChild(d);
  d.querySelector("#bk").onclick=()=>{sfx.tap();go("grade");};
- d.querySelectorAll(".grow").forEach(r=>r.onclick=()=>{const id=r.dataset.g;const g=gradeById(id);sfx.tap();
+ d.querySelectorAll(".grd-btn[data-g]").forEach(r=>r.onclick=()=>{const id=r.dataset.g;const g=gradeById(id);sfx.tap();
    if(g&&g.ready){S.grade=id;applyGrade(id);
      if(S._cloudScore&&S._cloudScore>points()){if(!S.gd[id])S.gd[id]={points:0,prog:{},stages:{}};S.gd[id].points=S._cloudScore;delete S._cloudScore;}
      save();_prevLv=levelOf(points()).name;
@@ -3953,7 +4444,7 @@ SCREENS.noperm=function(id){clear();const g=gradeById(id);const d=document.creat
  d.innerHTML=`
   <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">${g?g.label:""}</div></div>
   <div class="noperm">
-    <div class="lockring">🔒</div>
+    <div class="lockring" style="font-size:48px;text-align:center;margin:0 auto 12px;filter:grayscale(1)">○</div>
     <div class="np-t">该年级暂未开放</div>
     <div class="np-p">「${g?g.label:""}」的内容还没解锁<br>想练这个年级，请向 <b>John</b> 申请开通</div>
     <button class="btn line" id="back2">换一个年级</button>
@@ -3983,84 +4474,101 @@ SCREENS.home=function(){clear();checkStreak();
  const lv=levelOf(points()),nx=god?null:nextLevel(points());
  const pct=god?100:(nx?Math.round((points()-lv.min)/(nx.min-lv.min)*100):100);
  const dispLv=god?GOD_LEVEL:lv;
- const due=dueWords().length;
- const dueT=dueWordsToday().length;
- let rows="";
- UNITS.forEach(u=>{if(u.ready){const sc=stageCount(u);const tot=stageTotal();const done=sc>=tot;const p=Math.round(sc/tot*100);
-   const unitHeader=u.title&&!u.title.startsWith("Unit")?`Unit ${u.n} · ${u.title}`:`Unit ${u.n}`;
-   rows+=`<div class="row ${done?'done':''}" data-u="${u.n}"><div class="rt"><b>${unitHeader}</b><span>${quizPool(u).length} 个词 · 闯过 ${sc}/${tot} 关</span></div><div class="meta">${done?'🏆 通关':p+'%'}</div><div class="chev">›</div></div>`;}
-  else rows+=`<div class="row lock"><div class="rt"><b>Unit ${u.n} · ${u.title}</b><span>敬请期待</span></div><div class="chev">›</div></div>`;});
- const d=document.createElement("div");d.className="screen active";
+ const due=dueWords().length,dueT=dueWordsToday().length;
+ const sk=streakCount();
+ const GRADS=['jcg1','jcg2','jcg3','jcg4','jcg5','jcg6','jcg7','jcg8'];
+ const inProg=UNITS.find(u=>u.ready&&!unitCleared(u)&&stageCount(u)>0);
+ // Build shelves – 2 cards per row
+ let shelves='';
+ for(let i=0;i<UNITS.length;i+=2){
+   const pair=UNITS.slice(i,i+2);
+   const rangeLabel='Unit '+pair[0].n+(pair[1]?' \u2013 '+pair[1].n:'');
+   let cards='';
+   pair.forEach((u,idx)=>{
+     const sc=stageCount(u),tot=stageTotal(),p=Math.round(sc/tot*100);
+     const done=unitCleared(u),active=(u===inProg);
+     const grad=u.ready?GRADS[(i+idx)%8]:'jcgl';
+     const shortTitle=u.title&&!u.title.startsWith('Unit')?u.title:'Vocabulary';
+     const wc=quizPool(u).length;
+     const badge=done?`<div class="jc-cbadge" style="color:var(--ok)">通关</div>`:
+       active?`<div class="jc-cbadge" style="color:var(--warn)">学习中</div>`:'';
+     cards+=`<div class="jc-card ${grad}" data-u="${u.n}">
+       ${badge}
+       <div class="jc-ci">
+         <div class="jc-csubtitle">${shortTitle}</div>
+         <div class="jc-bignum">${u.n}</div>
+         <div>
+           <div class="jc-cwords">${u.ready?wc+' 个词汇':'即将上线'}</div>
+           ${u.ready?`<div class="jc-cp"><div class="jc-cpf" style="width:${p}%"></div></div>
+           <div class="jc-cpct">${done?'✓ 通关':p+'%'}</div>`:`<div class="jc-cpct">待解锁</div>`}
+         </div>
+       </div>
+     </div>`;
+   });
+   shelves+=`<section class="jc-shelf">
+     <div class="jc-slbl">${rangeLabel}</div>
+     <div class="jc-sgrid">${cards}</div>
+     <div class="jc-sbar"></div>
+   </section>${i+2<UNITS.length?'<div class="jc-sgap"></div>':''}`;
+ }
+ // Dots
+ const dots=UNITS.map(u=>{
+   const done=unitCleared(u),prog=(u===inProg);
+   return `<div class="jc-d${done?' jcd-done':prog?' jcd-prog':''}" data-u="${u.n}"></div>`;
+ }).join('');
+ // Bottom bar state
+ const p2Cls='jc-key '+(allUnitsCleared()||gd().pass2?'jc-key-blue':'jc-key-dim');
+ const p2Txt=gd().pass2?'二刷进行中':(allUnitsCleared()?'开始二刷':'二刷模式');
+ const dailyCls='jc-key '+(dailyDone()?'':'monsterUnlocked()'?'jc-key-red':'jc-key-amber');
+ const d=document.createElement('div');d.className='screen active';
  d.innerHTML=`
-  <div class="hhead"><div class="ava"></div>
-    <div class="greet">${greetWord()}<b>${S.name}</b></div>
-    <div class="bar" style="margin:0"><div class="sp"></div>
-      ${streakCount()>0?`<div class="streak">🔥${streakCount()}</div>`:''}
-      <button class="iconbtn" id="switch" title="换年级">⇄</button>
-      <button class="iconbtn" id="mute">${S.muted?"○":"♪"}</button>
-      </div>
-  </div>
-  <div style="display:flex;align-items:center;gap:10px;margin:-26px 0 26px"><div class="gradechip" id="gradechip" style="margin:0">${gradeById(S.grade)?gradeById(S.grade).label:""} · 点此换年级</div><a href="study.html" class="gradechip" style="margin:0;text-decoration:none">← 返回学习中心</a></div>
-  ${streakCount()>=1?`<div class="streak-banner">
-    <div class="streak-fire">🔥</div>
-    <div class="streak-text">
-      <b>已连续打卡 ${streakCount()} 天</b>
-      <span>${streakCount()>=5?'5天达成！每完成一个单词+2奖励积分 🎉':`再打卡 ${5-streakCount()} 天，每词+2积分奖励！`}</span>
+  <div class="jc-hd">
+    <div class="jc-logo">John Class</div>
+    <div class="jc-chips">
+      <button class="jk" id="gradechip" style="padding:7px 13px">${gradeById(S.grade)?gradeById(S.grade).label:''}</button>
+      <a class="jk" href="study.html" style="padding:7px 13px;text-decoration:none">← 学习中心</a>
     </div>
-    ${streakCount()>=5?'<div class="streak-bonus-tag">+2 中</div>':''}
-  </div>`:''}
-  <div class="scoreblk"><div class="huge num">${points()}<small>分</small></div>
-    <div class="tier">${dispLv.icon||""} ${dispLv.name}<span class="line"></span>
-      <span class="nx">${god?"✨ 已达最高荣誉":(nx?`距 ${nx.icon||""} ${nx.name} ${nx.min-points()} 分`:"已达学霸")}</span></div>
-    <div class="track"><i style="width:${pct}%"></i></div>
   </div>
-  <div class="slabel">单元</div>
-  <div class="list" id="units">${rows}</div>
-  <div class="ebook ${due?'':'empty'}" id="ebook">
-    ${allUnitsClearedForRevenge()&&due?
-      `<div class="rt"><b style="color:var(--warn)">⚔️ 错词复仇</b><span>所有单元已通关！错词本 ${due} 个，今天到期 ${dueT} 个</span></div><div class="dot">${due}</div>` :
-      `<div class="rt"><b>错词本</b><span>${due?`共 ${due} 个错词${dueT>0?'，今天应复习 '+dueT+' 个':'，今天暂无需复习'}` :"暂无错词，保持得很好"}</span></div>${due?`<div class="dot">${due}</div>`:'<div class="chev" style="font-size:16px;color:var(--faint)">›</div>'}`
-    }
+  <div class="jc-score">
+    <div class="jc-num">${points()}</div>
+    <div class="jc-unit">分</div>
+    <div class="jc-pills">
+      <div class="jc-pill">${dispLv.name}</div>
+      ${sk>=1?`<div class="jc-pill${sk>=5?' jc-pill-red':''}">连续 ${sk} 天${sk>=5?' +2':''}</div>`:''}
+    </div>
   </div>
-  <div class="ebook ${dailyDone()?'empty':''}" id="daily" style="border-color:${dailyDone()?'var(--hair)':monsterUnlocked()?'var(--warn)':'#C89030'};background:${dailyDone()?'var(--bg)':monsterUnlocked()?'var(--warn-soft)':'var(--accent-soft)'}">
-    ${monsterUnlocked()?
-      `<div class="rt"><b style="color:${dailyDone()?'var(--soft)':'var(--warn)'}">👾 怪物副本</b><span>${dailyDone()?'今天已通关，明天再来！':'50题 · 8选1 · 阅读写作听力混合 · 全书随机'}</span></div>${dailyDone()?'<div style="font-size:14px;color:var(--faint)">✓</div>':'<div style="font-size:16px;color:var(--warn)">›</div>'}` :
-      `<div class="rt"><b style="color:${dailyDone()?'var(--soft)':'var(--accent)'}">📅 今日挑战</b><span>${dailyDone()?'今天已完成，明天再来！':'20题 · 6选1 · 阅读写作听力混合'}</span></div>${dailyDone()?'<div style="font-size:14px;color:var(--faint)">✓</div>':'<div style="font-size:16px;color:var(--accent)">›</div>'}`
-    }
-  </div>
-  <div class="homebtn-row">
-    <button class="btn line" id="ms" style="flex:1">🎯 我的目标</button>
-    <button class="btn line" id="card" style="flex:1">📊 我的成绩卡</button>
-  </div>
-  <div class="homebtn-row" style="margin-top:8px">
-    <button class="btn line" id="speed" style="flex:1;border-color:#C85A2A;color:#C85A2A">⚡ 速度挑战</button>
-    <button class="btn line" id="pass2home" style="flex:1;${allUnitsCleared()&&!gd().pass2?'border-color:#5A8ACA;color:#2A5A9A':gd().pass2?'border-color:#6AAA6A;color:#2A6A2A':'border-color:var(--hair);color:var(--faint);cursor:not-allowed'}">${gd().pass2?'🔄 二刷进行中':allUnitsCleared()?'🔄 开始二刷':'🔒 二刷模式'}</button>
-  </div>
-  <div class="homebtn-row" style="margin-top:8px">
-    <button class="btn line" id="lb" style="flex:1;border-color:var(--accent);color:var(--accent)">🏆 班级排行榜</button>
-  </div>
-  <div style="text-align:center;margin-top:14px">
-    <button id="switchaccount" style="background:none;border:none;font-size:12px;color:var(--soft);cursor:pointer;padding:4px 8px;text-decoration:underline">👤 不是我？切换账号</button>
-  </div>
-  <div class="foot">ENGLISH ADVENTURE · 进度已存本设备</div>`;
+  <div class="jc-pw"><div class="jc-pt"><div class="jc-pf" style="width:${pct}%"></div></div></div>
+  <div class="jc-dots">${dots}<span class="jc-dlbl">${UNITS.filter(u=>u.ready).length} Units</span></div>
+  ${shelves}
+  <div style="height:76px"></div>
+  <div class="jc-btm">
+    <div class="jc-keys">
+      <button class="jc-key jc-key-trophy" id="jk-lb">排行榜</button>
+      <button class="${p2Cls}" id="jk-p2">${p2Txt}</button>
+      <button class="jc-key jc-key-red" id="jk-eb" style="position:relative">错词本${due?`<div class="jc-key-badge">${due>9?'9+':due}</div>`:''}</button>
+      <button class="jc-key${dailyDone()?'':monsterUnlocked()?' jc-key-red':' jc-key-amber'}" id="jk-daily">${monsterUnlocked()?'怪物副本':'今日挑战'}</button>
+      <button class="jc-key jc-key-amber" id="jk-sp">速度挑战</button>
+      <button class="jc-key" id="jk-ms">我的目标</button>
+      <button class="jc-key" id="jk-card">成绩卡</button>
+    </div>
+  </div>`;
  app.appendChild(d);
- d.querySelectorAll("#units .row[data-u]").forEach(r=>r.onclick=()=>{sfx.tap();go({name:"unit",arg:+r.dataset.u});});
- d.querySelector("#mute").onclick=function(){S.muted=!S.muted;save();this.textContent=S.muted?"○":"♪";if(!S.muted)sfx.tap();};
- d.querySelector("#switch").onclick=()=>{sfx.tap();go("grade");};
- d.querySelector("#gradechip").onclick=()=>{sfx.tap();go("grade");};
-
- d.querySelector("#ebook").onclick=()=>{if(due){sfx.tap();go("review");}};
- d.querySelector("#daily").onclick=()=>{if(!dailyDone()){sfx.tap();monsterUnlocked()?go("monster"):go("daily");}};
- d.querySelector("#ms").onclick=()=>{sfx.tap();go("milestones");};
- d.querySelector("#card").onclick=()=>{sfx.tap();go("card");};
- d.querySelector("#speed").onclick=()=>{sfx.tap();go("speed");};
- d.querySelector("#pass2home").onclick=()=>{if(!allUnitsCleared()){sfx.wrong();return;}sfx.tap();confirmPass2();};
- d.querySelector("#lb").onclick=()=>{sfx.tap();go("leaderboard");};
- d.querySelector("#switchaccount").onclick=()=>{
-   sfx.tap();
-   S.name="";S.grade="";save(); // 只清名字，进度保留
-   go("welcome");
- };
+ d.querySelectorAll('.jc-card[data-u]').forEach(c=>{
+   const u=UNITS.find(x=>x.n===+c.dataset.u);
+   if(u&&u.ready)c.onclick=()=>{sfx.tap();go({name:'unit',arg:u.n});};
+ });
+ d.querySelectorAll('.jc-d[data-u]').forEach(dot=>{
+   const u=UNITS.find(x=>x.n===+dot.dataset.u);
+   if(u&&u.ready)dot.onclick=()=>{sfx.tap();go({name:'unit',arg:u.n});};
+ });
+ d.querySelector('#gradechip').onclick=()=>{sfx.tap();go('grade');};
+ d.querySelector('#jk-lb').onclick=()=>{sfx.tap();go('leaderboard');};
+ d.querySelector('#jk-p2').onclick=()=>{if(!allUnitsCleared()&&!gd().pass2){sfx.wrong();return;}sfx.tap();confirmPass2();};
+ d.querySelector('#jk-eb').onclick=()=>{if(due){sfx.tap();go('review');}};
+ d.querySelector('#jk-daily').onclick=()=>{if(!dailyDone()){sfx.tap();monsterUnlocked()?go('monster'):go('daily');}};
+ d.querySelector('#jk-sp').onclick=()=>{sfx.tap();go('speed');};
+ d.querySelector('#jk-ms').onclick=()=>{sfx.tap();go('milestones');};
+ d.querySelector('#jk-card').onclick=()=>{sfx.tap();go('card');};
 };
 
 SCREENS.unit=function(n){clear();const u=UNITS.find(x=>x.n===n);const st=unitStage(n);
@@ -4246,7 +4754,7 @@ function runListening(u,pool,i,acc){
   <div class="qhud"><div class="tk"><i style="width:${i/pool.length*100}%"></i></div><div class="ct">${i+1} / ${pool.length}</div></div>
   ${resumeMsg}
   <div class="listen-box"><div class="ql" style="font-size:12px;font-weight:600;letter-spacing:.16em;color:var(--faint);text-transform:uppercase;margin-bottom:18px">听发音 · 选意思</div>
-    <button class="bigspk" id="bigspk">🔊</button><div class="replay">点喇叭重听</div></div>
+    <button class="bigspk" id="bigspk">▶</button><div class="replay">点击重听</div></div>
   <div class="opts cn" id="opts">${opts.map((o,k)=>`<button class="opt" data-k="${k}">${o.cn}</button>`).join("")}</div>`;
  app.appendChild(d);
  if(i===0)clearQP(u.n,'L');
@@ -4414,7 +4922,7 @@ function runMixedQuiz(queue,i,acc,cfg){
   const opts=use8?build8cn(w):build6cn(unitOf(w)||UNITS[0],w);
   const cls=use8?"cn cn8":"cn";
   d.innerHTML=hud+`<div class="listen-box"><div class="ql" style="font-size:12px;font-weight:600;letter-spacing:.16em;color:var(--faint);text-transform:uppercase;margin-bottom:18px">听发音 · 选意思</div>
-    <button class="bigspk" id="bigspk">🔊</button><div class="replay">点喇叭重听</div></div>
+    <button class="bigspk" id="bigspk">▶</button><div class="replay">点击重听</div></div>
    <div class="opts ${cls}" id="opts">${opts.map((o,k)=>`<button class="opt" data-k="${k}">${o.cn}</button>`).join("")}</div>`;
   app.appendChild(d);
   const play=()=>speak(w.en);d.querySelector("#bigspk").onclick=play;setTimeout(play,300);
@@ -4474,7 +4982,7 @@ SCREENS.daily=function(){
  const pool=getDailyPool();
  const queue=buildMixedQueue(pool,false,true,77);
  runMixedQuiz(queue,0,{got:0,gain:0,combo:0,maxCombo:0,wrong:0},{
-  title:"📅 今日挑战",n_opts:6,backFn:()=>go("home"),
+  title:"今日挑战",n_opts:6,backFn:()=>go("home"),
   doneFn:(acc)=>{markDailyDone();showResult("今日挑战完成 📅",acc,()=>checkGodAfter(()=>go("home")));}
  });
 };
@@ -4605,7 +5113,7 @@ SCREENS.milestones=function(){clear();
  const doneCount=ms.filter(m=>m.done).length;
  const d=document.createElement("div");d.className="screen active";
  d.innerHTML=`
-  <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">🎯 我的目标</div></div>
+  <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">我的目标</div></div>
   <div class="ms-cur">
     <div class="ms-cur-icon">${curLv.icon||"⭐"}</div>
     <div class="ms-cur-tx"><div class="ms-cur-label">当前等级</div><b>${curLv.name}</b></div>
@@ -4839,7 +5347,7 @@ function renderGrade(ranking, myName){
   const list=groups[key];
   if(!list||!list.length)return;
   html+=`<div class="lb-grade-section">
-   <div class="lb-grade-title">📚 ${key} · ${list.length}人</div>`;
+   <div class="lb-grade-title">${key} · ${list.length}人</div>`;
   list.forEach((r,i)=>{
    const isMe=r.name===myName;
    const meTag=isMe?`<span class="lb-me-tag">我</span>`:"";
@@ -4885,14 +5393,14 @@ SCREENS.leaderboard=function(){
 
  const d=document.createElement("div");d.className="screen active";
  d.innerHTML=`
-  <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">🏆 班级排行榜</div>
+  <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">班级排行榜</div>
    <div class="sp"></div>
-   <button class="iconbtn" id="refresh" title="刷新">↻</button>
+   <button class="iconbtn" id="refresh">↻</button>
   </div>
   <div class="lb-wrap">
    <div class="lb-tabs">
-    <div class="lb-tab active" id="tab-total">🌍 总榜</div>
-    <div class="lb-tab" id="tab-grade">📚 年级榜</div>
+    <div class="lb-tab active" id="tab-total">总榜</div>
+    <div class="lb-tab" id="tab-grade">年级榜</div>
    </div>
    <div class="lb-sub" id="lb-sub">加载中…</div>
    <div class="lb-list" id="lb-list">${lbSkeleton()}</div>
