@@ -2,171 +2,1508 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>写作批改 · John Class</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>写作七宗醉 · John Class</title>
+<!--
+  Supabase SQL（首次部署执行）:
+  create table if not exists grammar_scores (
+    name text primary key, score integer not null default 0, updated_at timestamptz default now()
+  );
+  alter table grammar_scores enable row level security;
+  create policy "pa" on grammar_scores for all using(true) with check(true);
+-->
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-  min-height: 100%;
-  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  background: #F5EDD8; color: #2A1E08;
+:root{
+  --bg:#FDF8F0;--bg2:#F5EDD8;--ink:#3A2A10;--soft:#A08040;
+  --faint:#C8A870;--hair:#D8C8A0;--accent:#C89030;
+  --warn:#C85A2A;--fnt:-apple-system,"SF Pro Display","PingFang SC",sans-serif;
 }
-.layout { display: flex; min-height: 100vh; }
-.left {
-  position: fixed; top: 0; left: 0;
-  width: 52%; height: 100vh; overflow: hidden;
-}
-.left img {
-  width: 100%; height: 100%;
-  object-fit: cover; object-position: center top; display: block;
-}
-.left::after {
-  content: ''; position: absolute; top: 0; right: 0;
-  width: 80px; height: 100%;
-  background: linear-gradient(to right, transparent, #F5EDD8);
-}
-.right {
-  margin-left: 52%; flex: 1; background: #F5EDD8;
-  min-height: 100vh; padding: 52px 44px 64px 28px; position: relative;
-}
-.right::before {
-  content: ''; position: absolute; inset: 0;
-  background:
-    radial-gradient(circle at 80% 15%, rgba(201,169,110,.07) 0%, transparent 50%),
-    radial-gradient(circle at 20% 85%, rgba(120,160,80,.05) 0%, transparent 40%);
-  pointer-events: none;
-}
-.nav {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 44px; position: relative; z-index: 1;
-}
-.nav-brand {
-  font-size: 13px; font-weight: 600; letter-spacing: .18em;
-  text-transform: uppercase; color: #B8956A; text-decoration: none;
-}
-.nav-back {
-  font-size: 12px; color: #9A8060; text-decoration: none;
-  display: flex; align-items: center; gap: 5px; transition: color .2s;
-}
-.nav-back:hover { color: #2A1E08; }
-.page-title {
-  font-size: clamp(24px, 3vw, 32px); font-weight: 600; color: #2A1E08;
-  letter-spacing: -.4px; margin-bottom: 6px; position: relative; z-index: 1;
-}
-.page-sub {
-  font-size: 13px; color: #9A8060; margin-bottom: 32px; position: relative; z-index: 1;
-}
-.card {
-  background: rgba(255,252,245,.65); border: 1.5px solid rgba(184,149,106,.13);
-  border-radius: 20px; padding: 32px 24px; margin-bottom: 20px;
-  text-align: center; position: relative; z-index: 1;
-}
-.card-icon { font-size: 48px; margin-bottom: 16px; line-height: 1; }
-.card-title { font-size: 20px; font-weight: 700; color: #2A1E08; margin-bottom: 8px; }
-.card-desc { font-size: 14px; color: #6A5030; line-height: 1.8; margin-bottom: 24px; }
-.wechat-box {
-  background: rgba(74,124,63,.06); border: 1.5px solid rgba(74,124,63,.25);
-  border-radius: 14px; padding: 18px 20px; margin-bottom: 18px; text-align: center;
-}
-.wechat-label { font-size: 11px; color: #9A8060; letter-spacing: .06em; margin-bottom: 4px; }
-.wechat-id { font-size: 20px; font-weight: 700; color: #2A5A1E; letter-spacing: .04em; }
-.btn {
-  display: block; width: 100%; padding: 14px; background: #2A1E08; color: #F5EDD8;
-  border: none; border-radius: 12px; font-size: 16px; font-weight: 600;
-  cursor: pointer; font-family: inherit; margin-bottom: 8px;
-}
-.btn:active { opacity: .8; }
-.steps { text-align: left; margin-top: 8px; }
-.step-row {
-  display: flex; align-items: baseline; gap: 10px;
-  margin-bottom: 10px; font-size: 14px; color: #4A3A18; line-height: 1.6;
-}
-.step-num {
-  width: 24px; height: 24px; border-radius: 50%;
-  background: rgba(184,149,106,.12); color: #8A6A30;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700; flex-shrink: 0;
-}
-.foot {
-  margin-top: 40px; font-size: 10px; letter-spacing: .12em;
-  text-transform: uppercase; color: rgba(184,149,106,.4); position: relative; z-index: 1;
-}
-.overlay {
-  position: fixed; inset: 0; background: #F5EDD8; z-index: 999;
-  opacity: 0; pointer-events: none; transition: opacity .3s ease;
-}
-.overlay.show { opacity: 1; pointer-events: all; }
-.right > * { animation: fadeIn .6s cubic-bezier(.22,1,.36,1) both; }
-.nav        { animation-delay: .05s; }
-.page-title { animation-delay: .10s; }
-.page-sub   { animation-delay: .12s; }
-.card       { animation-delay: .16s; }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateX(12px); }
-  to   { opacity: 1; transform: none; }
-}
-@media (max-width: 680px) {
-  .layout { flex-direction: column; }
-  .left { position: relative; width: 100%; height: 56vw; min-height: 260px; max-height: 400px; }
-  .left::after {
-    top: auto; bottom: 0; left: 0; right: 0;
-    width: 100%; height: 60px;
-    background: linear-gradient(to bottom, transparent, #F5EDD8);
-  }
-  .right { margin-left: 0; padding: 32px 24px 56px; }
-}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);font-family:var(--fnt);
+  color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* ── 3D BUTTON SYSTEM ── */
+.jk{display:inline-flex;align-items:center;justify-content:center;
+  font-family:var(--fnt);cursor:pointer;font-size:11.5px;font-weight:600;
+  letter-spacing:-.01em;white-space:nowrap;-webkit-user-select:none;user-select:none;
+  background:linear-gradient(180deg,#EEB878 0%,#E89038 100%);
+  border:1px solid #C87828;border-bottom:3px solid #A05018;border-radius:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 5px rgba(40,20,5,.09);
+  color:#5A3000;transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.jk:active{transform:translateY(2px);border-bottom-width:1px;
+  box-shadow:inset 0 1px 3px rgba(40,20,5,.12),0 1px 2px rgba(40,20,5,.08);
+  background:linear-gradient(180deg,#E89038 0%,#EE8020 100%)}
+
+/* ── HEADER (transparent) ── */
+.hud{position:sticky;top:0;z-index:100;
+  padding:14px 20px;padding-top:calc(14px + env(safe-area-inset-top))}
+.hud-row{display:flex;align-items:center;justify-content:space-between}
+.brand{font-size:22px;font-weight:700;letter-spacing:-.04em;color:var(--ink);
+  text-shadow:0 2px 4px rgba(40,20,5,.18),0 5px 14px rgba(40,20,5,.09);
+  text-decoration:none}
+.back-lnk{padding:7px 13px;text-decoration:none;color:var(--ink)}
+
+/* ── SCORE STRIP ── */
+.score-block{padding:16px 20px 6px;display:flex;align-items:baseline;gap:0}
+.jc-num{font-size:44px;font-weight:200;letter-spacing:-.07em;color:var(--ink);
+  text-shadow:0 3px 6px rgba(40,20,5,.12),0 6px 18px rgba(40,20,5,.07);line-height:1}
+.jc-unit{font-size:15px;color:var(--soft);margin-left:4px;margin-bottom:2px}
+.jc-pills{margin-left:auto;display:flex;align-items:center;gap:7px;align-self:center}
+.jc-pill{font-size:11px;font-weight:700;padding:5px 11px;border-radius:10px;
+  white-space:nowrap;cursor:default;
+  background:linear-gradient(180deg,#EED870 0%,#E8C428 100%);
+  border:1px solid #C89010;border-bottom:2.5px solid #A07008;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.6),0 2px 4px rgba(40,20,5,.1);color:#5A3800}
+.jc-pill-red{
+  background:linear-gradient(180deg,#E89878 0%,#E85848 100%);
+  border-color:#D04030;border-bottom-color:#B02818;color:#5A1008;
+  box-shadow:inset 0 1px 0 rgba(255,255,210,.4),0 2px 4px rgba(40,20,5,.1)}
+.jc-pw{padding:8px 20px 14px}
+.jc-pt{height:3px;background:rgba(58,42,16,.12);border-radius:99px;overflow:hidden}
+.jc-pf{height:100%;background:linear-gradient(90deg,var(--accent),#E8A830);border-radius:99px}
+
+/* ── SHELF SYSTEM ── */
+.jc-shelf{margin-bottom:0}
+.jc-slbl{padding:0 20px 10px;font-size:9.5px;font-weight:700;letter-spacing:.2em;
+  color:var(--faint);text-transform:uppercase}
+.jc-sgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 16px}
+.jc-sbar{height:14px;background:linear-gradient(180deg,#B07030 0%,#8A4E18 100%);
+  box-shadow:0 5px 16px rgba(80,40,10,.25),0 2px 4px rgba(80,40,10,.15);position:relative}
+.jc-sbar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(255,220,120,.6) 30%,rgba(255,220,120,.75) 50%,rgba(255,220,120,.6) 70%,transparent)}
+.jc-sgap{height:20px}
+
+/* ── CARDS ── */
+.jc-card{border-radius:20px;overflow:hidden;aspect-ratio:3/4;position:relative;cursor:pointer;
+  box-shadow:0 1px 2px rgba(40,20,5,.08),0 3px 8px rgba(40,20,5,.09),
+    0 8px 18px rgba(40,20,5,.06),0 14px 28px rgba(40,20,5,.04);
+  transition:transform .18s cubic-bezier(.34,1.4,.64,1),box-shadow .18s}
+.jc-card:active{transform:scale(.96) translateY(2px);
+  box-shadow:0 2px 6px rgba(40,20,5,.08),0 5px 14px rgba(40,20,5,.07)}
+.jc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(180deg,rgba(255,235,180,.16) 0%,transparent 100%);
+  border-radius:20px 20px 0 0;pointer-events:none;z-index:5}
+.jc-ci{position:absolute;inset:0;padding:12px 10px;
+  display:flex;flex-direction:column;justify-content:space-between;z-index:6}
+.jc-csubtitle{font-size:7.5px;font-weight:700;letter-spacing:.1em;
+  color:rgba(255,255,255,.75);text-transform:uppercase;margin-bottom:2px}
+.jc-bignum{font-size:40px;font-weight:200;color:rgba(255,255,255,1);
+  letter-spacing:-.06em;line-height:1;text-shadow:0 4px 16px rgba(0,0,0,.18);
+  flex:1;display:flex;align-items:center}
+.jc-ctitle{font-size:12px;font-weight:700;color:#fff;line-height:1.2;letter-spacing:-.02em;
+  text-shadow:0 1px 4px rgba(0,0,0,.2)}
+.jc-cwords{font-size:9.5px;color:rgba(255,255,255,.85);margin-bottom:4px;font-weight:600;letter-spacing:-.01em}
+.jc-cp{height:2px;background:rgba(255,255,255,.2);border-radius:2px;overflow:hidden;margin-bottom:4px}
+.jc-cpf{height:100%;background:rgba(255,255,255,.85);border-radius:2px}
+.jc-cpct{font-size:9px;font-weight:700;color:rgba(255,255,255,.75)}
+.jc-cbadge{position:absolute;top:11px;right:11px;z-index:8;
+  font-size:7px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 7px;border-radius:6px;color:var(--warn);
+  background:linear-gradient(180deg,#FDF8F0 0%,#E8D8B4 100%);
+  border:1px solid #C8A860;border-bottom:2px solid #9A7830;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 4px rgba(40,20,5,.12)}
+
+/* Card palette (warm bright) */
+.jcg1{background:linear-gradient(145deg,#E89878,#E86248)}
+.jcg2{background:linear-gradient(145deg,#EED068,#E8A020)}
+.jcg3{background:linear-gradient(145deg,#EEC888,#E89040)}
+.jcg4{background:linear-gradient(145deg,#E8A870,#D07840)}
+.jcg5{background:linear-gradient(145deg,#EED870,#E8C428)}
+.jcg6{background:linear-gradient(145deg,#EE9280,#E85838)}
+.jcg7{background:linear-gradient(145deg,#EEB878,#E89038)}
+
+/* ── BOTTOM BAR ── */
+.jc-btm{position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(253,248,240,.95);
+  backdrop-filter:saturate(160%) blur(20px);-webkit-backdrop-filter:saturate(160%) blur(20px);
+  border-top:.5px solid var(--hair);padding:12px 20px;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+.jc-keys{display:flex;gap:8px}
+.jc-key{flex:1;font-family:var(--fnt);cursor:pointer;padding:10px 8px;border-radius:10px;
+  font-size:12px;font-weight:600;letter-spacing:-.01em;text-align:center;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F8F0E0 100%);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 5px rgba(40,20,5,.08);
+  color:var(--ink);transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.jc-key:active{transform:translateY(2px);border-bottom-width:1px;
+  box-shadow:inset 0 1px 3px rgba(40,20,5,.1)}
+.jc-key.on{background:linear-gradient(180deg,#EEB878 0%,#E89038 100%);
+  border-color:#C87828;border-bottom-color:#A05018;color:#5A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 5px rgba(40,20,5,.10)}
+.jc-key.on:active{background:linear-gradient(180deg,#E89038 0%,#EE8020 100%)}
+.jc-key-red{background:linear-gradient(180deg,#E89878 0%,#E85848 100%);
+  border-color:#D04030;border-bottom-color:#B02818;color:#5A1008;
+  box-shadow:inset 0 1px 0 rgba(255,255,220,.4),0 2px 5px rgba(40,20,5,.10)}
+.jc-key-red:active{background:linear-gradient(180deg,#E85848 0%,#EE4030 100%)}
+.jc-key-amber{background:linear-gradient(180deg,#EED068 0%,#E8A020 100%);
+  border-color:#C88808;border-bottom-color:#986008;color:#4A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 5px rgba(40,20,5,.10)}
+.jc-key-amber:active{background:linear-gradient(180deg,#E8A020 0%,#EE9018 100%)}
+.jc-key-dim{background:linear-gradient(180deg,#EEE2C4 0%,#D8C8A0 100%);
+  border-color:#C0A870;border-bottom-color:#C0A870;color:rgba(58,42,16,.3);
+  cursor:not-allowed;pointer-events:none;box-shadow:none}
+
+/* ── VIEWS ── */
+.main{padding-bottom:90px;min-height:100vh}
+.view{display:none}.view.on{display:block}
+
+/* ── BAR (二级页面顶栏，无背景) ── */
+.bar{position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;gap:0;padding:10px 16px;min-height:52px}
+.back-btn{width:36px;height:36px;border-radius:50%;flex:0 0 auto;cursor:pointer;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F8F0E0 100%);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 5px rgba(40,20,5,.09);
+  font-size:20px;color:var(--ink);display:flex;align-items:center;justify-content:center;
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s;font-family:var(--fnt)}
+.back-btn:active{transform:translateY(2px);border-bottom-width:1px}
+.bar-title{flex:1;text-align:center;font-size:16px;font-weight:700;color:var(--ink);
+  text-shadow:0 1px 2px rgba(40,20,5,.14),0 3px 8px rgba(40,20,5,.08);
+  letter-spacing:-.02em;margin:0 8px}
+.bar-right{width:36px;flex:0 0 auto;text-align:right;
+  font-size:13px;font-weight:700;color:var(--accent)}
+
+/* ── PROGRESS HUD (in bar area) ── */
+.drill-hud{padding:0 20px 10px;display:flex;align-items:center;gap:12px}
+.dhud-prog{flex:1;height:3px;background:rgba(58,42,16,.1);border-radius:99px;overflow:hidden}
+.dhud-fill{height:100%;background:linear-gradient(90deg,var(--accent),#E8A830);
+  border-radius:99px;transition:width .3s}
+.dhud-label{font-size:11px;font-weight:700;color:var(--soft);letter-spacing:.04em;white-space:nowrap}
+.dhud-score{font-size:14px;font-weight:700;color:var(--warn);white-space:nowrap}
+
+/* ── LEVEL CARDS (3-up in category view) ── */
+.lev-list{display:flex;flex-direction:column;gap:10px;padding:10px 20px 20px}
+.lev-card{display:flex;align-items:center;gap:16px;padding:18px 16px;border-radius:18px;cursor:pointer;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F8F0E0 100%);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 6px rgba(40,20,5,.08),0 6px 18px rgba(40,20,5,.04);
+  transition:transform .1s,box-shadow .1s,border-bottom-width .1s}
+.lev-card:active{transform:translateY(2px);border-bottom-width:1px;
+  box-shadow:inset 0 1px 3px rgba(40,20,5,.08)}
+.lev-dot{width:42px;height:42px;border-radius:50%;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:700;color:#FDF8F0;
+  box-shadow:0 2px 6px rgba(40,20,5,.16),inset 0 1px 0 rgba(255,240,160,.35)}
+.lev-tx{flex:1;min-width:0}
+.lev-name{font-size:16px;font-weight:600;color:var(--ink);display:block;letter-spacing:-.02em}
+.lev-sub{font-size:12px;color:var(--soft);margin-top:3px}
+.lev-arrow{font-size:20px;color:var(--faint);font-weight:200;flex:0 0 auto}
+.lev-done-tag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;
+  background:linear-gradient(180deg,#EED870,#E8C428);
+  border:1px solid #C89010;border-bottom:2px solid #A07008;color:#4A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5)}
+
+/* ── DRILL CARD ── */
+.dcard{margin:8px 20px;background:#FFFFFF;border:1px solid #D8C090;
+  border-bottom:3px solid #B09050;border-radius:20px;padding:20px 18px 16px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 8px rgba(40,20,5,.08),
+    0 8px 24px rgba(40,20,5,.05)}
+.dcat-label{font-size:9.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--faint);margin-bottom:10px}
+.dq-text{font-size:18px;line-height:1.9;color:var(--ink);
+  font-family:Georgia,"Times New Roman",serif;margin-bottom:16px}
+.dinrow{display:flex;gap:8px;align-items:stretch}
+.din{flex:1;font-size:16px;padding:11px 14px;
+  background:var(--bg2);border:1px solid var(--hair);
+  border-bottom:2.5px solid #C8A870;border-radius:12px;
+  color:var(--ink);font-family:var(--fnt);outline:none;
+  transition:border-color .2s,box-shadow .2s}
+.din:focus{border-color:var(--accent);border-bottom-color:var(--accent-dark,#A07018);
+  box-shadow:0 0 0 3px rgba(200,144,48,.12);background:#FFFBF0}
+.din:disabled{opacity:.55;cursor:default}
+.subbtn{padding:11px 18px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;
+  font-family:var(--fnt);white-space:nowrap;
+  background:linear-gradient(180deg,#EED068 0%,#E8A020 100%);
+  border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 5px rgba(40,20,5,.10);
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.subbtn:active{transform:translateY(2px);border-bottom-width:1px}
+.subbtn:disabled{background:linear-gradient(180deg,#EEE2C4,#D8C8A0);
+  border-color:#C0A870;border-bottom-color:#C0A870;color:rgba(58,42,16,.3);cursor:default}
+
+/* ── FEEDBACK ── */
+.fbk{margin-top:12px;border-radius:14px;padding:12px 14px;display:none}
+.fbk.ok{background:linear-gradient(180deg,#F5EEC8,#EED868);
+  border:1px solid #C89010;border-bottom:2px solid #A07008}
+.fbk.no{background:linear-gradient(180deg,#FEF0E8,#F5D8C8);
+  border:1px solid #D8A080;border-bottom:2px solid #B07050}
+.fbk-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.fbk-icon{font-size:14px;font-weight:900;
+  width:22px;height:22px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center}
+.fbk.ok .fbk-icon{background:var(--accent);color:#FDF8F0}
+.fbk.no .fbk-icon{background:var(--warn);color:#FDF8F0}
+.fbk-txt{font-size:14px;font-weight:700;color:var(--ink)}
+.fbk-ans{font-size:13px;color:var(--soft);margin-top:3px}
+
+/* ── DRILL ACTION BUTTONS ── */
+.dacts{margin-top:14px;display:flex;gap:8px}
+.skipbtn{padding:11px 16px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;
+  font-family:var(--fnt);
+  background:linear-gradient(180deg,#FFFFFF 0%,#F8F0E0 100%);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;color:var(--soft);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 4px rgba(40,20,5,.07);
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.skipbtn:active{transform:translateY(2px);border-bottom-width:1px}
+.nxtbtn{flex:1;padding:12px;border-radius:12px;font-size:15px;font-weight:700;
+  cursor:pointer;font-family:var(--fnt);display:none;
+  background:linear-gradient(180deg,#E89878 0%,#E86248 100%);
+  border:1px solid #D04030;border-bottom:3px solid #A82818;color:#FDF8F0;
+  box-shadow:inset 0 1px 0 rgba(255,255,220,.3),0 2px 5px rgba(40,20,5,.12);
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.nxtbtn:active{transform:translateY(2px);border-bottom-width:1px}
+
+/* ── COMPLETE ── */
+.cp-card{margin:20px;background:#FFFFFF;
+  border:1px solid #D8C090;border-bottom:4px solid #B09050;border-radius:24px;
+  padding:32px 24px;text-align:center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 4px 16px rgba(40,20,5,.08),
+    0 12px 32px rgba(40,20,5,.05)}
+.cp-badge{width:72px;height:72px;border-radius:50%;margin:0 auto 18px;
+  background:linear-gradient(145deg,#EED870,#E8C428);
+  border:1px solid #C89010;border-bottom:4px solid #A07008;
+  box-shadow:0 4px 14px rgba(40,20,5,.14),inset 0 1px 0 rgba(255,255,200,.6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;animation:popIn .5s cubic-bezier(.34,1.4,.64,1)}
+@keyframes popIn{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.cp-title{font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.03em;margin-bottom:8px}
+.cp-score{font-size:52px;font-weight:200;letter-spacing:-.07em;color:var(--ink);
+  text-shadow:0 3px 8px rgba(40,20,5,.12);margin:4px 0}
+.cp-label{font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--soft);margin-bottom:18px}
+.cp-sub{font-size:13px;color:var(--soft);margin-bottom:20px}
+.homebtn{padding:14px 24px;border-radius:14px;font-size:15px;font-weight:700;
+  cursor:pointer;font-family:var(--fnt);
+  background:linear-gradient(180deg,#EED068 0%,#E8A020 100%);
+  border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 6px rgba(40,20,5,.12);
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.homebtn:active{transform:translateY(2px);border-bottom-width:1px}
+
+/* ── ERROR BANK ── */
+.eitem{background:#FFFFFF;border:1px solid #D8C090;border-bottom:3px solid #B09050;
+  border-radius:18px;padding:16px 16px 14px;margin-bottom:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 8px rgba(40,20,5,.07)}
+.ecat{font-size:9.5px;color:var(--faint);font-weight:700;
+  text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}
+.eq{font-size:15px;line-height:1.7;color:var(--ink);
+  font-family:Georgia,serif;margin-bottom:5px}
+.ewrong{font-size:12px;color:var(--warn);margin-top:4px;font-weight:500}
+.ecorrect{font-size:12px;color:#5A7030;margin-top:3px;font-weight:700}
+.retrybtn{margin-top:11px;padding:7px 16px;border-radius:10px;
+  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
+  border:1px solid #D8C090;border-bottom:2.5px solid #B09050;
+  font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fnt);
+  color:var(--ink);transition:transform .08s,box-shadow .08s,border-bottom-width .08s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 4px rgba(40,20,5,.07)}
+.retrybtn:active{transform:translateY(1px);border-bottom-width:1px}
+
+/* ── LEADERBOARD ── */
+.lbrow{display:flex;align-items:center;gap:12px;padding:12px 16px;
+  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
+  border:1px solid #D8C090;border-bottom:2px solid #B09050;border-radius:14px;
+  margin-bottom:8px;box-shadow:0 2px 6px rgba(40,20,5,.06)}
+.lbrow.me{background:linear-gradient(180deg,#F5F0D8,#E8D8A0);
+  border-color:#C8A860;border-bottom-color:#9A7830;box-shadow:0 2px 8px rgba(40,20,5,.1)}
+.lbrank{width:32px;height:32px;border-radius:50%;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;
+  background:linear-gradient(145deg,#C8A870,#A08040);color:#FDF8F0;
+  border:1px solid #906828;box-shadow:0 1px 4px rgba(40,20,5,.14)}
+.lbrank.r1{background:linear-gradient(145deg,#F5C820,#C09010);border-color:#A07010}
+.lbrank.r2{background:linear-gradient(145deg,#D8D8D0,#909088);border-color:#707068}
+.lbrank.r3{background:linear-gradient(145deg,#D08830,#8A4810);border-color:#7A4010}
+.lbname{flex:1;font-size:15px;font-weight:600;color:var(--ink);letter-spacing:-.02em}
+.lbsco{font-size:15px;font-weight:300;color:var(--accent);letter-spacing:-.04em}
+.lb-refresh{display:block;text-align:center;margin:16px;
+  font-size:13px;font-weight:600;color:var(--faint);cursor:pointer;
+  text-decoration:none;letter-spacing:.04em}
+
+/* ── EMPTY STATES ── */
+.empty{text-align:center;padding:48px 20px;color:var(--soft)}
+.em-icon{font-size:44px;margin-bottom:12px;opacity:.5}
+.em-txt{font-size:14px;color:var(--soft)}
+
+/* ── SECTION LABEL ── */
+.stitle{font-size:9.5px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--faint);padding:16px 20px 8px}
+
+/* ── USER BAR (在score-block上方) ── */
+.ubar{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px 0}
+.uname{font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+.uswitch{font-size:11px;color:var(--soft);cursor:pointer;text-decoration:underline}
+
+/* ── RETRY OVERLAY ── */
+.ret-ov{position:fixed;inset:0;z-index:400;
+  background:rgba(42,30,8,.5);
+  display:none;align-items:flex-end;justify-content:center;padding:12px}
+.ret-ov.on{display:flex}
+.ret-box{background:var(--bg);border-radius:24px 24px 18px 18px;
+  width:100%;max-width:480px;padding:22px 20px;
+  box-shadow:0 -4px 40px rgba(42,30,8,.28)}
+.ret-cat{font-size:9.5px;color:var(--faint);font-weight:700;
+  text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px}
+.ret-q{font-size:17px;line-height:1.8;color:var(--ink);
+  font-family:Georgia,serif;margin-bottom:14px}
+.ret-in{width:100%;font-size:16px;padding:11px 14px;
+  background:var(--bg2);border:1px solid var(--hair);
+  border-bottom:2.5px solid #C8A870;border-radius:12px;
+  color:var(--ink);font-family:var(--fnt);outline:none;margin-bottom:12px;
+  transition:border-color .2s}
+.ret-in:focus{border-color:var(--accent)}
+.ret-in:disabled{opacity:.55}
+.ret-btns{display:flex;gap:8px}
+.ret-sub{flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:700;
+  cursor:pointer;font-family:var(--fnt);
+  background:linear-gradient(180deg,#EED068 0%,#E8A020 100%);
+  border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5);
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.ret-sub:active{transform:translateY(2px);border-bottom-width:1px}
+.ret-sub:disabled{background:linear-gradient(180deg,#EEE2C4,#D8C8A0);
+  border-color:#C0A870;border-bottom-color:#C0A870;color:rgba(58,42,16,.3);cursor:default}
+.ret-can{padding:12px 16px;border-radius:12px;font-size:13px;cursor:pointer;
+  font-family:var(--fnt);font-weight:600;
+  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;color:var(--soft);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95);
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.ret-can:active{transform:translateY(2px);border-bottom-width:1px}
+.ret-fbk{display:none;margin-top:12px;padding:11px 14px;
+  font-size:13px;font-weight:600;border-radius:12px}
+.ret-fbk.ok{background:linear-gradient(180deg,#F5EEC8,#EED868);
+  border:1px solid #C89010;border-bottom:2px solid #A07008;color:#4A3000}
+.ret-fbk.no{background:linear-gradient(180deg,#FEF0E8,#F5D8C8);
+  border:1px solid #D8A080;border-bottom:2px solid #B07050;color:#6A2810}
+.ret-nxt{display:none;margin-top:10px;width:100%;padding:12px;
+  border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;
+  font-family:var(--fnt);
+  background:linear-gradient(180deg,#E89878 0%,#E86248 100%);
+  border:1px solid #D04030;border-bottom:3px solid #A82818;color:#FDF8F0;
+  box-shadow:inset 0 1px 0 rgba(255,255,220,.3);
+  transition:transform .08s,border-bottom-width .08s}
+.ret-nxt:active{transform:translateY(2px);border-bottom-width:1px}
+
+/* ── INTRO OVERLAY ── */
+.intro-ov{position:fixed;inset:0;z-index:500;
+  background:rgba(42,30,8,.55);
+  display:none;align-items:flex-end;justify-content:center;padding:12px}
+.intro-ov.on{display:flex}
+.intro-box{background:var(--bg);border-radius:28px 28px 20px 20px;
+  width:100%;max-width:480px;overflow:hidden;
+  box-shadow:0 -4px 40px rgba(42,30,8,.32)}
+.intro-top{padding:28px 24px 22px;text-align:center}
+.intro-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--warn);
+  background:rgba(200,90,42,.1);border:1.5px solid rgba(200,90,42,.25);
+  border-radius:20px;padding:4px 14px;margin-bottom:16px}
+.intro-title{font-size:28px;font-weight:900;font-family:Georgia,serif;
+  color:var(--ink);letter-spacing:-.02em;margin-bottom:5px;
+  text-shadow:0 2px 6px rgba(40,20,5,.12)}
+.intro-en{font-size:11px;color:var(--faint);font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;margin-bottom:18px}
+.intro-body{font-size:14px;line-height:1.85;color:#5A4420;text-align:left;
+  background:rgba(200,168,112,.1);border-radius:14px;
+  padding:14px 16px;margin-bottom:16px;
+  border:1px solid rgba(200,168,112,.2)}
+.intro-body strong{color:var(--ink)}
+.intro-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.istat{text-align:center;background:#FFFFFF;border-radius:14px;padding:12px 8px;
+  border:1px solid #D8C090;border-bottom:2px solid #B09050;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 4px rgba(40,20,5,.07)}
+.istat-n{font-size:24px;font-weight:200;letter-spacing:-.04em;color:var(--ink)}
+.istat-l{font-size:10px;color:var(--soft);margin-top:2px;font-weight:600}
+.intro-btn{width:100%;padding:15px;border-radius:14px;font-size:16px;font-weight:800;
+  cursor:pointer;font-family:var(--fnt);letter-spacing:.02em;
+  background:linear-gradient(180deg,#EED068 0%,#E8A020 100%);
+  border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 8px rgba(40,20,5,.14);
+  transition:transform .1s,box-shadow .1s,border-bottom-width .1s}
+.intro-btn:active{transform:translateY(2px);border-bottom-width:1px}
+
+/* ── CAT-HEAD in category view ── */
+.cat-head{padding:0 20px 16px;display:flex;align-items:center;gap:12px}
+.cat-head-color{width:10px;height:40px;border-radius:5px;flex:0 0 auto}
+.cat-head-name{font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.03em}
+.cat-head-en{font-size:11px;color:var(--faint);font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+
+.page-wrap{padding:0 20px 20px}
+.foot{font-size:11px;color:var(--faint);text-align:center;
+  padding:12px 20px;letter-spacing:.04em}
 </style>
 </head>
 <body>
-<div class="overlay" id="ov"></div>
-<div class="layout">
-  <div class="left"><img src="bg.png" alt="John Class"></div>
-  <div class="right">
-    <div class="nav">
-      <a class="nav-brand" href="index.html" onclick="go(event,'index.html')">John Class</a>
-      <a class="nav-back" href="study.html" onclick="go(event,'study.html')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>返回
-      </a>
+
+<!-- ── INTRO ── -->
+<div class="intro-ov" id="intro-ov">
+<div class="intro-box">
+  <div class="intro-top">
+    <div class="intro-badge">写作专项训练</div>
+    <div class="intro-title">写作七宗醉</div>
+    <div class="intro-en">The Seven Dizzying Sins of Writing</div>
+    <div class="intro-body">
+      <strong>为什么叫「七宗醉」？</strong><br>
+      因为这七种错误，几乎是中国学生英语写作的「集体无意识」——犯得太自然、太顺手，连自己都没察觉，但每犯一次，阅卷老师就头昏眼花。<br><br>
+      主谓不一致、时态乱飞、冠词乱用、单复数混淆、介词全靠猜、词性随意穿、连词凭感觉——<strong>七醉入魂，分数悄悄流走。</strong>
     </div>
-    <div class="page-title">写作批改</div>
-    <div class="page-sub">写好作文，发给 John，获得专业批改反馈</div>
-    <div class="card">
-      <div class="card-icon">&#9997;&#65039;</div>
-      <div class="card-title">发作文给 John</div>
-      <div class="card-desc">任何英语作文都可以发给 John<br>语法纠错 · 结构优化 · 高分建议</div>
-      <div class="steps">
-        <div class="step-row"><span class="step-num">1</span> 在纸上写好英语作文</div>
-        <div class="step-row"><span class="step-num">2</span> 拍照或截图</div>
-        <div class="step-row"><span class="step-num">3</span> 通过微信发给 John</div>
-        <div class="step-row"><span class="step-num">4</span> John 批改后发回给你</div>
-      </div>
+    <div class="intro-stats">
+      <div class="istat"><div class="istat-n">7</div><div class="istat-l">错误类型</div></div>
+      <div class="istat"><div class="istat-n">315</div><div class="istat-l">练习句子</div></div>
+      <div class="istat"><div class="istat-n">+10</div><div class="istat-l">每题得分</div></div>
     </div>
-    <div class="wechat-box">
-      <div class="wechat-label">JOHN 老师微信</div>
-      <div class="wechat-id" id="wxId">JiahaoLee6666</div>
-    </div>
-    <button class="btn" id="copyBtn">复制微信号，发作文去</button>
-    <div class="foot">Writing Skills · John Class · Changsha 2026</div>
+    <button class="intro-btn" onclick="dismissIntro()">清醒了，开练 →</button>
   </div>
 </div>
+</div>
+
+<!-- ── HUD ── -->
+<div class="hud">
+  <div class="hud-row">
+    <a class="brand" href="study.html">John Class</a>
+    <a class="back-lnk jk" href="writing.html" style="text-decoration:none">← 写作</a>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ══ HOME ══ -->
+<div id="v-home" class="view on">
+  <div class="ubar">
+    <div>
+      <div class="uname" id="disp-name">未登录</div>
+    </div>
+    <span class="uswitch" onclick="switchUser()">切换账号</span>
+  </div>
+  <!-- Score strip -->
+  <div class="score-block">
+    <div class="jc-num" id="disp-score-num">0</div>
+    <div class="jc-unit">分</div>
+    <div class="jc-pills">
+      <div class="jc-pill" id="home-pill">写作特训</div>
+      <div class="jc-pill-red" id="home-err-pill" style="display:none"></div>
+    </div>
+  </div>
+  <div class="jc-pw"><div class="jc-pt"><div class="jc-pf" id="home-prog-fill" style="width:0%"></div></div></div>
+  <!-- Category shelves -->
+  <div id="cat-shelves"></div>
+  <div class="foot">每题 +10 分 · 错题自动入库</div>
+</div>
+
+<!-- ══ CATEGORY LEVEL SELECTION ══ -->
+<div id="v-cat" class="view">
+  <div class="bar">
+    <button class="back-btn" onclick="showHome()">‹</button>
+    <div class="bar-title" id="cat-bar-title"></div>
+    <div class="bar-right" id="cat-bar-score"></div>
+  </div>
+  <div class="cat-head" id="cat-head-block">
+    <div class="cat-head-color" id="cat-head-color"></div>
+    <div>
+      <div class="cat-head-name" id="cat-title"></div>
+      <div class="cat-head-en" id="cat-en"></div>
+    </div>
+  </div>
+  <div class="stitle">选择难度，开始闯关</div>
+  <div class="lev-list" id="lev-grid"></div>
+</div>
+
+<!-- ══ DRILL ══ -->
+<div id="v-drill" class="view">
+  <div class="bar">
+    <button class="back-btn" onclick="exitDrill()">‹</button>
+    <div class="bar-title" id="drill-bar-title"></div>
+    <div class="bar-right" id="dscorelab">+0</div>
+  </div>
+  <div class="drill-hud">
+    <div class="dhud-prog"><div class="dhud-fill" id="dfill" style="width:0%"></div></div>
+    <div class="dhud-label" id="dprog">1 / 15</div>
+  </div>
+  <div class="dcard">
+    <div class="dcat-label" id="dnote"></div>
+    <div class="dq-text" id="dq"></div>
+    <div class="dinrow">
+      <input class="din" id="din" type="text" placeholder="在此输入答案…"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <button class="subbtn" id="subbtn" onclick="submitAns()">提交</button>
+    </div>
+    <div class="fbk" id="fbk">
+      <div class="fbk-row">
+        <span class="fbk-icon" id="fbkemo"></span>
+        <span class="fbk-txt" id="fbktxt"></span>
+      </div>
+      <div class="fbk-ans" id="fbkans"></div>
+    </div>
+    <div class="dacts">
+      <button class="skipbtn" id="skipbtn" onclick="skipQ()">跳过这题</button>
+      <button class="nxtbtn" id="nxtbtn" onclick="nextQ()">下一题 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ COMPLETE ══ -->
+<div id="v-done" class="view">
+  <div class="cp-card">
+    <div class="cp-badge" id="cp-badge">★</div>
+    <div class="cp-title" id="cp-tit">本轮完成！</div>
+    <div class="cp-score" id="cp-sco">+0</div>
+    <div class="cp-label">本轮得分</div>
+    <div class="cp-sub" id="cp-sub"></div>
+    <button class="homebtn" onclick="showHome()">返回首页</button>
+  </div>
+</div>
+
+<!-- ══ ERRORS ══ -->
+<div id="v-errors" class="view">
+  <div class="bar">
+    <div class="bar-title" style="text-align:left;margin-left:4px">错题本</div>
+    <div class="bar-right" id="errcnt" style="font-size:12px;color:var(--soft)"></div>
+  </div>
+  <div class="stitle">点击「重做」在弹窗里挑战该题</div>
+  <div class="page-wrap" id="elist"></div>
+</div>
+
+<!-- ══ LEADERBOARD ══ -->
+<div id="v-lb" class="view">
+  <div class="bar">
+    <div class="bar-title" style="text-align:left;margin-left:4px">大神榜</div>
+    <div class="bar-right" style="font-size:12px;color:var(--soft)">写作积分</div>
+  </div>
+  <div class="page-wrap">
+    <div id="lbwrap">
+      <div class="empty"><div class="em-txt">加载中…</div></div>
+    </div>
+    <span class="lb-refresh" onclick="loadLB()">↻ 刷新排行</span>
+  </div>
+</div>
+
+
+<!-- ══ 写作投稿 ══ -->
+<div id="v-submit" class="view">
+  <div class="bar">
+    <div class="bar-title" style="text-align:left;margin-left:4px">写作批改</div>
+  </div>
+  <div class="page-wrap">
+
+    <!-- 说明卡 -->
+    <div style="background:#FFFFFF;border:1px solid #D8C090;border-bottom:3px solid #B09050;
+      border-radius:20px;padding:24px 20px 20px;margin-bottom:16px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 8px rgba(40,20,5,.07),
+        0 8px 24px rgba(40,20,5,.04)">
+      <div style="font-size:9.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+        color:var(--faint);margin-bottom:14px">Writing Feedback</div>
+      <div style="font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.03em;
+        margin-bottom:6px;text-shadow:0 2px 6px rgba(40,20,5,.1)">发作文给 John 批改</div>
+      <div style="font-size:13px;color:var(--soft);line-height:1.75;margin-bottom:20px">
+        任何英语作文都可以发给 John<br>语法纠错 · 结构优化 · 高分建议
+      </div>
+
+      <!-- 步骤 -->
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:28px;height:28px;border-radius:50%;flex:0 0 auto;
+            background:linear-gradient(145deg,#EED068,#E8A020);
+            border:1px solid #C88808;border-bottom:2px solid #986008;
+            box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 4px rgba(40,20,5,.1);
+            display:flex;align-items:center;justify-content:center;
+            font-size:12px;font-weight:700;color:#4A3000">1</div>
+          <div style="font-size:14px;color:var(--ink);line-height:1.5">在纸上写好英语作文</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:28px;height:28px;border-radius:50%;flex:0 0 auto;
+            background:linear-gradient(145deg,#EEB878,#E89038);
+            border:1px solid #C87828;border-bottom:2px solid #A05018;
+            box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 4px rgba(40,20,5,.1);
+            display:flex;align-items:center;justify-content:center;
+            font-size:12px;font-weight:700;color:#5A3000">2</div>
+          <div style="font-size:14px;color:var(--ink);line-height:1.5">拍照或截图</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:28px;height:28px;border-radius:50%;flex:0 0 auto;
+            background:linear-gradient(145deg,#E89878,#E86248);
+            border:1px solid #D04030;border-bottom:2px solid #A82818;
+            box-shadow:inset 0 1px 0 rgba(255,255,220,.3),0 2px 4px rgba(40,20,5,.1);
+            display:flex;align-items:center;justify-content:center;
+            font-size:12px;font-weight:700;color:#FDF8F0">3</div>
+          <div style="font-size:14px;color:var(--ink);line-height:1.5">通过微信发给 John</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:28px;height:28px;border-radius:50%;flex:0 0 auto;
+            background:linear-gradient(145deg,#E8A870,#D07840);
+            border:1px solid #D06080;border-bottom:2px solid #B04060;
+            box-shadow:inset 0 1px 0 rgba(255,255,230,.4),0 2px 4px rgba(40,20,5,.1);
+            display:flex;align-items:center;justify-content:center;
+            font-size:12px;font-weight:700;color:#5A0828">4</div>
+          <div style="font-size:14px;color:var(--ink);line-height:1.5">John 批改后发回给你</div>
+        </div>
+      </div>
+
+      <!-- 微信号 -->
+      <div style="background:linear-gradient(180deg,#FFF8D8,#F5EEB8);
+        border:1px solid #D8B828;border-bottom:2.5px solid #B09010;border-radius:14px;
+        padding:16px 18px;text-align:center;margin-bottom:16px;
+        box-shadow:inset 0 1px 0 rgba(255,255,200,.6),0 2px 6px rgba(40,20,5,.08)">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+          color:var(--soft);margin-bottom:6px">John 老师微信</div>
+        <div id="wxId" style="font-size:22px;font-weight:200;letter-spacing:.04em;
+          color:var(--ink);text-shadow:0 2px 6px rgba(40,20,5,.1)">JiahaoLee6666</div>
+      </div>
+
+      <!-- 复制按钮 -->
+      <button id="copyBtn" onclick="copyWx()" style="width:100%;padding:14px;border-radius:14px;
+        font-size:15px;font-weight:700;cursor:pointer;font-family:var(--fnt);
+        background:linear-gradient(180deg,#EED068 0%,#E8A020 100%);
+        border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
+        box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 8px rgba(40,20,5,.12);
+        transition:transform .08s,box-shadow .08s,border-bottom-width .08s">
+        复制微信号，去发作文
+      </button>
+    </div>
+
+    <div class="foot">Writing Feedback · John Class · Changsha 2026</div>
+  </div>
+</div>
+
+</div><!-- .main -->
+
+<!-- ── BOTTOM NAV ── -->
+<div class="jc-btm">
+  <div class="jc-keys">
+    <button class="jc-key on" id="nb-home" onclick="switchTab('home')">练习</button>
+    <button class="jc-key" id="nb-errors" onclick="switchTab('errors')">错题本</button>
+    <button class="jc-key" id="nb-lb" onclick="switchTab('lb')">大神榜</button>
+    <button class="jc-key jc-key-amber" id="nb-submit" onclick="switchTab('submit')">投稿批改</button>
+  </div>
+</div>
+
+<!-- ── RETRY OVERLAY ── -->
+<div class="ret-ov" id="ret-ov">
+  <div class="ret-box">
+    <div class="ret-cat" id="ret-cat"></div>
+    <div class="ret-q" id="ret-q"></div>
+    <input class="ret-in" id="ret-in" type="text" placeholder="填入答案…"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <div class="ret-btns">
+      <button class="ret-can" onclick="closeRetry()">取消</button>
+      <button class="ret-sub" id="ret-sub" onclick="submitRetry()">提交</button>
+    </div>
+    <div class="ret-fbk" id="ret-fbk"></div>
+    <button class="ret-nxt" id="ret-nxt" onclick="closeRetry()">完成，关闭</button>
+  </div>
+</div>
+
 <script>
-function go(e, href) {
-  if(e)e.preventDefault();
-  var ov=document.getElementById('ov')||document.getElementById('overlay');
-  if(!ov){window.location.href=href;return;}
-  ov.classList.add('show');
-  setTimeout(function(){window.location.href=href;},280);
+// ──────────────────────────────────────────
+//  SUPABASE
+// ──────────────────────────────────────────
+const SB='https://ghunrrtrdgicbmixsqrc.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
+const SH={apikey:SK,Authorization:`Bearer ${SK}`};
+
+// ──────────────────────────────────────────
+//  DATA  (7 × 3 × 15 = 315 题)
+// ──────────────────────────────────────────
+const CATS=[
+{name:'主谓不一致',en:'Subject-Verb Agreement',cardClass:'jcg1',
+ note:'填入括号内动词的正确形式',
+ levels:[
+  {name:'简单',dotBg:'linear-gradient(145deg,#E89878,#E86248)',qs:[
+    [`She ______ (like) apples.`,['likes']],
+    [`They ______ (be) students.`,['are']],
+    [`My brother ______ (play) football.`,['plays']],
+    [`The cat ______ (sleep) on the sofa.`,['sleeps']],
+    [`He and she ______ (be) friends.`,['are']],
+    [`It ______ (rain) a lot here.`,['rains']],
+    [`We ______ (go) to school every day.`,['go']],
+    [`A dog ______ (bark).`,['barks']],
+    [`These books ______ (be) interesting.`,['are']],
+    [`Her father ______ (work) in a hospital.`,['works']],
+    [`The children ______ (be) happy.`,['are']],
+    [`She ______ (have) a pen.`,['has']],
+    [`I ______ (eat) breakfast.`,['eat']],
+    [`They ______ (do) homework.`,['do']],
+    [`He ______ (watch) TV.`,['watches']],
+  ]},
+  {name:'中等',dotBg:'linear-gradient(145deg,#EEC888,#E89040)',qs:[
+    [`The teacher with many students ______ (be) in the classroom.`,['is']],
+    [`Each of the boys ______ (have) a ball.`,['has']],
+    [`Neither the students nor the teacher ______ (be) in the lab.`,['is']],
+    [`A number of problems ______ (have) been solved.`,['have']],
+    [`The number of cars ______ (increase) rapidly.`,['increases']],
+    [`Ten dollars ______ (be) enough.`,['is']],
+    [`Physics ______ (be) difficult for me.`,['is']],
+    [`The news ______ (surprise) us.`,['surprises']],
+    [`My family ______ (be) having dinner now.`,['are']],
+    [`The police ______ (search) for the thief.`,['are']],
+    [`Bread and butter ______ (be) his favorite breakfast.`,['is']],
+    [`Neither of the answers ______ (be) correct.`,['is']],
+    [`Everyone ______ (like) the idea.`,['likes']],
+    [`Some of the water ______ (be) polluted.`,['is']],
+    [`The pair of shoes ______ (fit) me well.`,['fits']],
+  ]},
+  {name:'困难',dotBg:'linear-gradient(145deg,#E89878,#EE4828)',qs:[
+    [`What he said ______ (be) true.`,['is']],
+    [`To learn languages ______ (require) patience.`,['requires']],
+    [`Growing vegetables ______ (need) water.`,['needs']],
+    [`There ______ (be) a book and two pens on the desk.`,['is']],
+    [`The singer and dancer ______ (be) coming. (同一人)`,['is']],
+    [`A great deal of money ______ (have) been spent.`,['has']],
+    [`The majority of the population ______ (be) young.`,['is']],
+    [`More than one student ______ (have) made the mistake.`,['has']],
+    [`Every man and every woman ______ (have) the right.`,['has']],
+    [`Many a student ______ (dream) of studying abroad.`,['dreams']],
+    [`It is I who ______ (be) responsible.`,['am']],
+    [`One of the books that ______ (be) on the shelf is missing.`,['are']],
+    [`The committee ______ (be) divided in opinion.`,['are']],
+    [`The Philippines ______ (be) an Asian country.`,['is']],
+    [`Half of the students ______ (be) from China.`,['are']],
+  ]},
+ ]},
+{name:'时态混用',en:'Tense Confusion',cardClass:'jcg2',
+ note:'填入括号内动词的正确时态形式',
+ levels:[
+  {name:'简单',dotBg:'linear-gradient(145deg,#EED068,#E8A020)',qs:[
+    [`He usually ______ (get) up at 7.`,['gets']],
+    [`Look! The bus ______ (come).`,['is coming']],
+    [`She ______ (visit) her grandma last Sunday.`,['visited']],
+    [`I ______ (do) my homework now.`,['am doing']],
+    [`They ______ (play) football every afternoon.`,['play']],
+    [`Listen! Someone ______ (sing).`,['is singing']],
+    [`We ______ (not go) to school yesterday.`,[`didn't go`,`did not go`]],
+    [`My mother ______ (cook) dinner at the moment.`,['is cooking']],
+    [`He often ______ (read) before sleeping.`,['reads']],
+    [`It ______ (rain) heavily last night.`,['rained']],
+    [`She ______ (watch) a movie when I called.`,['was watching']],
+    [`I ______ (see) him two days ago.`,['saw']],
+    [`We ______ (have) an English class now.`,['are having']],
+    [`Tom ______ (write) a letter yesterday.`,['wrote']],
+    [`The earth ______ (move) around the sun.`,['moves']],
+  ]},
+  {name:'中等',dotBg:'linear-gradient(145deg,#EEB878,#E89038)',qs:[
+    [`I ______ (finish) my homework already.`,['have finished']],
+    [`She ______ (live) here since 2010.`,['has lived']],
+    [`While I ______ (walk) home, I met a friend.`,['was walking']],
+    [`By the time he arrived, the movie ______ (start).`,['had started']],
+    [`He said he ______ (will) come.`,['would']],
+    [`We ______ (not see) each other for years.`,[`haven't seen`,`have not seen`]],
+    [`They ______ (build) the bridge by the end of last year.`,['had built']],
+    [`She ______ (study) English for five years before she moved to the US.`,['had studied']],
+    [`I ______ (work) when you called.`,['was working']],
+    [`He ______ (read) the book twice.`,['has read']],
+    [`Tomorrow at this time, I ______ (fly) to Beijing.`,['will be flying']],
+    [`She ______ (be) a teacher since she graduated.`,['has been']],
+    [`I ______ (never be) to London.`,[`have never been`]],
+    [`He ______ (just leave).`,['has just left']],
+    [`When I got home, my mom ______ (cook).`,['was cooking']],
+  ]},
+  {name:'困难',dotBg:'linear-gradient(145deg,#EED068,#EE8A18)',qs:[
+    [`By next month, I ______ (work) here for 10 years.`,['will have worked']],
+    [`She looked tired because she ______ (work) all day.`,['had been working']],
+    [`If I ______ (be) you, I would accept the offer.`,['were']],
+    [`I wish I ______ (know) the answer.`,['knew']],
+    [`He suggested that she ______ (go) early.`,['go']],
+    [`It is high time we ______ (leave).`,['left']],
+    [`Had I known, I ______ (not go).`,[`would not have gone`,`wouldn't have gone`]],
+    [`She ______ (write) three reports so far this week.`,['has written']],
+    [`This time yesterday, I ______ (lie) on the beach.`,['was lying']],
+    [`If he had studied harder, he ______ (pass) the exam.`,['would have passed']],
+    [`He looks as if he ______ (see) a ghost.`,['had seen']],
+    [`I would rather you ______ (not smoke) here.`,[`didn't smoke`,`did not smoke`]],
+    [`By the time we arrive, they ______ (leave).`,['will have left']],
+    [`She told me she ______ (finish) the work the next day.`,['would finish']],
+    [`I ______ (think) of going, but I changed my mind.`,['had thought']],
+  ]},
+ ]},
+{name:'冠词误用',en:'Article Misuse',cardClass:'jcg3',
+ note:'填入 a / an / the，零冠词填 /',
+ levels:[
+  {name:'简单',dotBg:'linear-gradient(145deg,#EEC888,#E89040)',qs:[
+    [`I have ______ apple.`,['an']],
+    [`She is ______ doctor.`,['a']],
+    [`______ sun rises in the east.`,['the']],
+    [`He goes to school by ______ bus.`,['/','']],
+    [`Can you play ______ piano?`,['the']],
+    [`She has ______ orange cat.`,['an']],
+    [`They went to ______ Great Wall.`,['the']],
+    [`I have ______ breakfast at 7.`,['/','']],
+    [`He is ______ tallest boy.`,['the']],
+    [`______ Amazon is the longest river.`,['the']],
+    [`I need ______ new phone.`,['a']],
+    [`She is ______ honest person.`,['an']],
+    [`______ water is essential.`,['/','']],
+    [`He is in ______ hospital (he is ill).`,['/','']],
+    [`______ Great Wall is famous.`,['the']],
+  ]},
+  {name:'中等',dotBg:'linear-gradient(145deg,#EED068,#E8A020)',qs:[
+    [`I want to become ______ engineer.`,['an']],
+    [`They are playing ______ football.`,['/','']],
+    [`She went to ______ bed late last night.`,['/','']],
+    [`He is ______ European.`,['a']],
+    [`This is ______ most interesting book I have read.`,['the']],
+    [`______ poor need help.`,['the']],
+    [`He has ______ one-year-old daughter.`,['a']],
+    [`I have ______ headache.`,['a']],
+    [`______ Yangtze River is the longest in China.`,['the']],
+    [`She is at ______ work.`,['/','']],
+    [`He is ______ university student.`,['a']],
+    [`We had ______ lunch at a nice restaurant.`,['/','']],
+    [`In ______ end, they agreed.`,['the']],
+    [`She studies ______ Chinese history.`,['/','']],
+    [`He plays ______ violin very well.`,['the']],
+  ]},
+  {name:'困难',dotBg:'linear-gradient(145deg,#EEC888,#EE7830)',qs:[
+    [`He is ______ Newton of our age.`,['the']],
+    [`______ more you read, the more you know.`,['the']],
+    [`She is by far ______ better student.`,['the']],
+    [`He was elected ______ chairman.`,['/','']],
+    [`It is ______ pity that you can't come.`,['a']],
+    [`______ rich are not always happy.`,['the']],
+    [`He has ______ good knowledge of English.`,['a']],
+    [`What ______ pity!`,['a']],
+    [`In ______ case of fire, call 119.`,['/','']],
+    [`______ few friends he has are loyal.`,['the']],
+    [`She is ______ taller of the two.`,['the']],
+    [`He is out of ______ work.`,['/','']],
+    [`They are paid by ______ hour.`,['the']],
+    [`She was ______ first woman to win the prize.`,['the']],
+    [`I saw ______ one-eyed dog.`,['a']],
+  ]},
+ ]},
+{name:'名词单复数',en:'Singular / Plural Nouns',cardClass:'jcg4',
+ note:'填入括号内名词的正确形式',
+ levels:[
+  {name:'简单',dotBg:'linear-gradient(145deg,#E8A870,#D07840)',qs:[
+    [`There are two ______ (cat).`,['cats']],
+    [`She has many ______ (book).`,['books']],
+    [`I bought some ______ (apple).`,['apples']],
+    [`Three ______ (bus) are coming.`,['buses']],
+    [`We see several ______ (child).`,['children']],
+    [`He has two ______ (watch).`,['watches']],
+    [`The ______ (leaf) fall in autumn.`,['leaves']],
+    [`There are ______ (mouse) in the kitchen.`,['mice']],
+    [`I need some ______ (water).`,['water']],
+    [`She gave me some ______ (advice).`,['advice']],
+    [`Two ______ (man) are talking.`,['men']],
+    [`The ______ (woman) are singing.`,['women']],
+    [`He has five ______ (sheep).`,['sheep']],
+    [`I'd like three ______ (glass) of water.`,['glasses']],
+    [`Those ______ (family) are happy.`,['families']],
+  ]},
+  {name:'中等',dotBg:'linear-gradient(145deg,#EED068,#E8A020)',qs:[
+    [`I saw two ______ (passer-by).`,['passers-by']],
+    [`The ______ (police) are coming.`,['police']],
+    [`He bought a pair of ______ (shoe).`,['shoes']],
+    [`The ______ (cattle) are grazing.`,['cattle']],
+    [`Two ______ (family) moved in.`,['families']],
+    [`Many ______ (species) are endangered.`,['species']],
+    [`He brought a lot of ______ (luggage).`,['luggage']],
+    [`I need some ______ (information).`,['information']],
+    [`She has two ______ (brother-in-law).`,['brothers-in-law']],
+    [`There are ten ______ (woman doctor) in the hospital.`,['women doctors']],
+    [`Some ______ (deer) are in the forest.`,['deer']],
+    [`These ______ (phenomenon) are rare.`,['phenomena']],
+    [`Keep your ______ (belonging) safe.`,['belongings']],
+    [`I have two ______ (scissor).`,['scissors']],
+    [`They bought new ______ (furniture).`,['furniture']],
+  ]},
+  {name:'困难',dotBg:'linear-gradient(145deg,#E8A870,#C85820)',qs:[
+    [`The ______ (crisis) are severe.`,['crises']],
+    [`Three ______ (analysis) were presented.`,['analyses']],
+    [`He has several ______ (medium) of communication.`,['media']],
+    [`A number of ______ (passerby) gathered.`,['passersby']],
+    [`The ______ (phenomenon) is strange.`,['phenomenon']],
+    [`Too much ______ (homework) was assigned.`,['homework']],
+    [`Some ______ (fish) are swimming in the pond.`,['fish']],
+    [`The ______ (means) of transport is cheap.`,['means']],
+    [`We need more ______ (staff).`,['staff']],
+    [`All the ______ (scenery) is beautiful.`,['scenery']],
+    [`He told us about his ______ (experience) as a teacher.`,['experience']],
+    [`They had several strange ______ (experience).`,['experiences']],
+    [`Several ______ (Chinese) live here.`,['chinese','Chinese']],
+    [`The ______ (phenomenon) have been studied.`,['phenomena']],
+    [`His ______ (thesis) are well-written.`,['theses']],
+  ]},
+ ]},
+{name:'介词误用',en:'Preposition Errors',cardClass:'jcg5',
+ note:'填入正确的介词',
+ levels:[
+  {name:'简单',dotBg:'linear-gradient(145deg,#EED870,#E8C428)',qs:[
+    [`I was born ______ May.`,['in']],
+    [`She lives ______ Beijing.`,['in']],
+    [`Let's meet ______ 5 o'clock.`,['at']],
+    [`He is ______ home.`,['at']],
+    [`The book is ______ the table.`,['on']],
+    [`I go to school ______ bus.`,['by']],
+    [`She is good ______ math.`,['at']],
+    [`I'm interested ______ music.`,['in']],
+    [`They arrived ______ the airport.`,['at']],
+    [`He is afraid ______ dogs.`,['of']],
+    [`We are proud ______ you.`,['of']],
+    [`Don't laugh ______ him.`,['at']],
+    [`She is married ______ John.`,['to']],
+    [`I agree ______ you.`,['with']],
+    [`It depends ______ the weather.`,['on']],
+  ]},
+  {name:'中等',dotBg:'linear-gradient(145deg,#EEB878,#E89038)',qs:[
+    [`She insisted ______ paying.`,['on']],
+    [`He succeeded ______ passing the exam.`,['in']],
+    [`I apologized ______ being late.`,['for']],
+    [`The room is full ______ people.`,['of']],
+    [`I'm familiar ______ this software.`,['with']],
+    [`She is similar ______ her mother.`,['to']],
+    [`He is different ______ his brother.`,['from']],
+    [`We are looking forward ______ your visit.`,['to']],
+    [`The key ______ success is hard work.`,['to']],
+    [`I have no interest ______ politics.`,['in']],
+    [`He is concerned ______ his health.`,['about']],
+    [`I prefer coffee ______ tea.`,['to']],
+    [`She is capable ______ doing it.`,['of']],
+    [`They are busy ______ their homework.`,['with']],
+    [`He is addicted ______ video games.`,['to']],
+  ]},
+  {name:'困难',dotBg:'linear-gradient(145deg,#EED870,#EEA010)',qs:[
+    [`______ regard to your letter, we have made a decision.`,['with','in']],
+    [`I'm writing ______ behalf of the committee.`,['on']],
+    [`He is superior ______ others.`,['to']],
+    [`This is a solution ______ the problem.`,['to']],
+    [`She has a talent ______ music.`,['for']],
+    [`He is guilty ______ theft.`,['of']],
+    [`I'm envious ______ her success.`,['of']],
+    [`She is absent ______ school.`,['from']],
+    [`We need to invest ______ education.`,['in']],
+    [`He is deficient ______ vitamin D.`,['in']],
+    [`The company provides us ______ tools.`,['with']],
+    [`I'm hopeful ______ success.`,['of']],
+    [`They are innocent ______ the crime.`,['of']],
+    [`This song is familiar ______ me.`,['to']],
+    [`We must comply ______ the rules.`,['with']],
+  ]},
+ ]},
+{name:'词性混淆',en:'Word Form Confusion',cardClass:'jcg6',
+ note:'用括号内词的正确形式填空',
+ levels:[
+  {name:'简单',dotBg:'linear-gradient(145deg,#EE9280,#E85838)',qs:[
+    [`She sings ______ (beautiful).`,['beautifully']],
+    [`He is a ______ (care) driver.`,['careful']],
+    [`The girl looks ______ (happy).`,['happy']],
+    [`The soup tastes ______ (good).`,['good']],
+    [`He runs ______ (quick).`,['quickly']],
+    [`She is a ______ (beauty) woman.`,['beautiful']],
+    [`I feel ______ (comfortable).`,['comfortable']],
+    [`This is an ______ (easy) exercise.`,['easy']],
+    [`He spoke ______ (soft).`,['softly']],
+    [`The weather is ______ (sun).`,['sunny']],
+    [`She danced ______ (graceful).`,['gracefully']],
+    [`His ______ (succeed) is due to hard work.`,['success']],
+    [`We need to make a ______ (decide).`,['decision']],
+    [`He gave a ______ (wonder) speech.`,['wonderful']],
+    [`She solved the problem ______ (wise).`,['wisely']],
+  ]},
+  {name:'中等',dotBg:'linear-gradient(145deg,#EED068,#E8A020)',qs:[
+    [`We must ______ (strength) our unity.`,['strengthen']],
+    [`There is a ______ (possible) that he will come.`,['possibility']],
+    [`He is a very ______ (create) person.`,['creative']],
+    [`I ______ (apology) for my mistake.`,['apologize']],
+    [`His ______ (explain) was clear.`,['explanation']],
+    [`They are ______ (pride) of their son.`,['proud']],
+    [`She showed great ______ (brave) during the fire.`,['bravery']],
+    [`He needs to ______ (wide) his knowledge.`,['widen']],
+    [`The ______ (long) of the bridge is 200 meters.`,['length']],
+    [`We should ______ (modern) the equipment.`,['modernize']],
+    [`Her ______ (arrive) was unexpected.`,['arrival']],
+    [`I ______ (simple) don't understand.`,['simply']],
+    [`The movie had a surprising ______ (end).`,['ending']],
+    [`She is ______ (respond) for the project.`,['responsible']],
+    [`His ______ (ill) is serious.`,['illness']],
+  ]},
+  {name:'困难',dotBg:'linear-gradient(145deg,#E89878,#EE4828)',qs:[
+    [`The government introduced new ______ (economy) policies.`,['economic']],
+    [`We need to be more ______ (sense) with money.`,['sensible']],
+    [`This is a ______ (history) event.`,['historic']],
+    [`He is very ______ (competition).`,['competitive']],
+    [`I have ______ (confident) in you.`,['confidence']],
+    [`She is ______ (ambition) to succeed.`,['ambitious']],
+    [`The ______ (deep) of the water is unknown.`,['depth']],
+    [`He gave a ______ (persuade) argument.`,['persuasive']],
+    [`Her words are full of ______ (wise).`,['wisdom']],
+    [`I'm ______ (caution) about giving personal information.`,['cautious']],
+    [`The ______ (grow) of the city is rapid.`,['growth']],
+    [`He is ______ (knowledge) about art.`,['knowledgeable']],
+    [`This drug is ______ (effect) against cancer.`,['effective']],
+    [`The two systems are ______ (compare).`,['comparable']],
+    [`She is a ______ (lead) in the field.`,['leader']],
+  ]},
+ ]},
+{name:'连词缺失',en:'Conjunctions & Connectors',cardClass:'jcg7',
+ note:'填入恰当的连接词或关系词',
+ levels:[
+  {name:'简单',dotBg:'linear-gradient(145deg,#EEB878,#E89038)',qs:[
+    [`I was tired, ______ I went to bed early.`,['so']],
+    [`She likes coffee, ______ he likes tea.`,['but']],
+    [`We can go by bus, ______ we can walk.`,['or']],
+    [`He studied hard, ______ he passed the test.`,['so']],
+    [`It's raining, ______ I will stay home.`,['so']],
+    [`She is tall, ______ her brother is short.`,['but']],
+    [`I wanted to call, ______ my phone was dead.`,['but']],
+    [`He can play guitar, ______ he can sing.`,['and']],
+    [`You must hurry, ______ you will be late.`,['or']],
+    [`I went to the store, ______ I bought milk.`,['and']],
+    [`She was late, ______ she missed the bus.`,['so']],
+    [`He is sick, ______ he didn't go to school.`,['so']],
+    [`The movie was boring, ______ we left early.`,['so']],
+    [`I can't swim, ______ my brother can.`,['but']],
+    [`We didn't have a map, ______ we got lost.`,['so']],
+  ]},
+  {name:'中等',dotBg:'linear-gradient(145deg,#EED068,#E8A020)',qs:[
+    [`I stayed home ______ it was raining.`,['because','since','as']],
+    [`______ it was cold, he went out without a coat.`,['although','though']],
+    [`She was reading ______ the doorbell rang.`,['when']],
+    [`You will succeed ______ you work hard.`,['if']],
+    [`The book ______ I borrowed is fascinating.`,['that','which']],
+    [`I'll call you ______ I arrive.`,['when']],
+    [`He didn't come ______ he was invited.`,['although','though','even though']],
+    [`______ she didn't study, she failed.`,['because','since','as']],
+    [`The man ______ is standing there is my uncle.`,['who']],
+    [`Do you know the reason ______ he left?`,['why']],
+    [`I can't understand ______ you said.`,['what']],
+    [`______ it's late, we should go.`,['since','as','because']],
+    [`He talked about the place ______ he grew up.`,['where']],
+    [`This is the house ______ I was born.`,['where']],
+    [`______ there is a will, there is a way.`,['where']],
+  ]},
+  {name:'困难',dotBg:'linear-gradient(145deg,#EEB878,#EE7830)',qs:[
+    [`The project, ______ we had worked on for months, was a success.`,['which']],
+    [`He passed the exam, ______ surprised everyone.`,['which']],
+    [`She has three brothers, two of ______ are doctors.`,['whom']],
+    [`I will go, ______ the weather is bad.`,['even if','even though']],
+    [`______ he is rich, he is not happy.`,['although','though']],
+    [`The crisis has deepened, ______ requires immediate action.`,['which']],
+    [`We talked to the professor, ______ advice was very helpful.`,['whose']],
+    [`The team won, ______ was unexpected.`,['which']],
+    [`He moved to London, ______ he found a job.`,['where']],
+    [`I will lend you the money, ______ you promise to pay back.`,['as long as','provided that']],
+    [`They left early, ______ they could catch the train.`,['so that']],
+    [`______ hard he tried, he couldn't open the door.`,['however']],
+    [`He kept working, ______ he was exhausted.`,['even though','although','though']],
+    [`We arrived late, ______ caused a problem.`,['which']],
+    [`He made several mistakes, ______ was due to carelessness.`,['which']],
+  ]},
+ ]},
+];
+
+// ──────────────────────────────────────────
+//  STATE
+// ──────────────────────────────────────────
+let username=localStorage.getItem('jc_username')||'';
+let prog={correct:new Set(),errors:[],totalScore:0};
+let ds={catI:0,levI:0,qs:[],qi:0,sessScore:0,answered:false};
+let retryIdx=-1;
+
+function save(){
+  if(!username)return;
+  localStorage.setItem('jc_grammar_'+username,JSON.stringify({
+    correct:[...prog.correct],errors:prog.errors,totalScore:prog.totalScore}));
 }
-document.getElementById('copyBtn').addEventListener('click', function(){
-  var wx = document.getElementById('wxId').textContent;
-  if(navigator.clipboard){ navigator.clipboard.writeText(wx); }
-  this.textContent = '已复制！去微信发给 John';
-  var t = this;
-  setTimeout(function(){ t.textContent = '复制微信号，发作文去'; }, 2500);
+function load(){
+  if(!username)return;
+  try{const d=JSON.parse(localStorage.getItem('jc_grammar_'+username)||'{}');
+    prog.correct=new Set(d.correct||[]);
+    prog.errors=d.errors||[];
+    prog.totalScore=d.totalScore||0;}catch(e){}
+}
+
+// ──────────────────────────────────────────
+//  ANSWER CHECKING
+// ──────────────────────────────────────────
+function norm(s){
+  return s.trim().toLowerCase()
+    .replace(/didn't/g,'did not').replace(/don't/g,'do not')
+    .replace(/doesn't/g,'does not').replace(/haven't/g,'have not')
+    .replace(/hasn't/g,'has not').replace(/won't/g,'will not')
+    .replace(/wouldn't/g,'would not').replace(/couldn't/g,'could not')
+    .replace(/shouldn't/g,'should not').replace(/isn't/g,'is not')
+    .replace(/aren't/g,'are not').replace(/hadn't/g,'had not');
+}
+function ok(input,ans){
+  if(ans.some(a=>a==='/'||a==='')&&(input.trim()===''||input.trim()==='/'))return true;
+  const ni=norm(input.trim());
+  return ans.some(a=>norm(a)===ni);
+}
+function dispAns(ans){
+  if(ans.some(a=>a==='/'||a===''))return '零冠词（不填 / 填 /）';
+  return ans.filter(a=>a!=='').join(' 或 ');
+}
+
+// ──────────────────────────────────────────
+//  SUPABASE SYNC
+// ──────────────────────────────────────────
+async function syncScore(){
+  if(!username)return;
+  try{await fetch(`${SB}/rest/v1/grammar_scores`,{method:'POST',
+    headers:{...SH,'Content-Type':'application/json',
+      Prefer:'resolution=merge-duplicates,return=minimal'},
+    body:JSON.stringify({name:username,score:prog.totalScore,
+      updated_at:new Date().toISOString()})});}catch(e){}
+}
+async function loadLB(){
+  const w=document.getElementById('lbwrap');
+  w.innerHTML='<div class="empty"><div class="em-txt">加载中…</div></div>';
+  try{
+    const r=await fetch(`${SB}/rest/v1/grammar_scores?select=name,score&order=score.desc&limit=20`,{headers:SH});
+    const d=await r.json();
+    if(!Array.isArray(d)||!d.length){
+      w.innerHTML='<div class="empty"><div class="em-icon">○</div><div class="em-txt">还没人上榜，抢第一！</div></div>';
+      return;
+    }
+    const rankClass=['r1','r2','r3'];
+    w.innerHTML=d.map((row,i)=>`<div class="lbrow${row.name===username?' me':''}">
+      <div class="lbrank ${rankClass[i]||''}">${i+1}</div>
+      <span class="lbname">${esc(row.name)}</span>
+      <span class="lbsco">${row.score}</span></div>`).join('');
+  }catch(e){w.innerHTML='<div class="empty"><div class="em-txt">加载失败，请重试</div></div>';}
+}
+
+// ──────────────────────────────────────────
+//  VIEWS
+// ──────────────────────────────────────────
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function showV(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById('v-'+id).classList.add('on');
+}
+
+function switchTab(t){
+  ['home','errors','lb','submit'].forEach(x=>{const el=document.getElementById('nb-'+x);if(el)el.classList.remove('on');});
+  const tEl=document.getElementById('nb-'+t);if(tEl)tEl.classList.add('on');
+  if(t==='home'){showHome();}
+  else if(t==='errors'){renderErrors();showV('errors');}
+  else if(t==='submit'){showV('submit');}
+  else{showV('lb');loadLB();}
+}
+
+function showHome(){
+  load();
+  document.getElementById('disp-name').textContent=username||'未登录';
+  document.getElementById('disp-score-num').textContent=prog.totalScore;
+  const errCount=prog.errors.length;
+  const errPill=document.getElementById('home-err-pill');
+  if(errCount>0){errPill.textContent='错题 '+errCount;errPill.style.display='';}
+  else errPill.style.display='none';
+  // Total progress
+  const total=CATS.reduce((s,c)=>s+c.levels.reduce((ss,l)=>ss+l.qs.length,0),0);
+  const done=prog.correct.size;
+  document.getElementById('home-prog-fill').style.width=(total?Math.round(done/total*100):0)+'%';
+  renderCatShelves();
+  showV('home');
+  document.getElementById('nb-home').classList.add('on');
+}
+
+function renderCatShelves(){
+  const container=document.getElementById('cat-shelves');
+  const gradClasses=['jcg1','jcg2','jcg3','jcg4','jcg5','jcg6','jcg7'];
+  let html='';
+  for(let i=0;i<CATS.length;i+=3){
+    const trio=CATS.slice(i,i+3);
+    let cards='';
+    trio.forEach((c,idx)=>{
+      const ci=i+idx;
+      const total=c.levels.reduce((s,l)=>s+l.qs.length,0);
+      const done=[...prog.correct].filter(id=>id.startsWith(ci+'_')).length;
+      const pct=total?Math.round(done/total*100):0;
+      const badge=done===total&&total>0?'<div class="jc-cbadge">通关</div>':'';
+      cards+=`<div class="jc-card ${gradClasses[ci]}" data-ci="${ci}" onclick="showCat(${ci})">
+        ${badge}
+        <div class="jc-ci">
+          <div style="font-size:9px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.65);text-transform:uppercase">${ci+1}</div>
+          <div style="flex:1;display:flex;align-items:center;font-size:15px;font-weight:700;
+            color:#fff;line-height:1.3;letter-spacing:-.02em;
+            text-shadow:0 1px 4px rgba(0,0,0,.2);padding:4px 0">${c.name}</div>
+          <div>
+            <div style="height:2px;background:rgba(255,255,255,.22);border-radius:2px;overflow:hidden;margin-bottom:3px">
+              <div style="height:100%;width:${pct}%;background:rgba(255,255,255,.85);border-radius:2px"></div>
+            </div>
+            <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.75)">${done}/${total}</div>
+          </div>
+        </div>
+      </div>`;
+    });
+    html+=`<section class="jc-shelf">
+      <div class="jc-sgrid">${cards}</div>
+      <div class="jc-sbar"></div>
+    </section>${i+3<CATS.length?'<div class="jc-sgap"></div>':''}`;
+  }
+  container.innerHTML=html;
+}
+
+function showCat(ci){
+  const c=CATS[ci];
+  document.getElementById('cat-bar-title').textContent=c.name;
+  const catScore=[...prog.correct].filter(id=>id.startsWith(ci+'_')).length*10;
+  document.getElementById('cat-bar-score').textContent=catScore?'+'+catScore+'分':'';
+  document.getElementById('cat-title').textContent=c.name;
+  document.getElementById('cat-en').textContent=c.en;
+  // Color accent strip using card gradient
+  const gradMap={jcg1:'#E89878',jcg2:'#EED068',jcg3:'#EEC888',jcg4:'#D09060',
+    jcg5:'#EED870',jcg6:'#EE9280',jcg7:'#EEB878'};
+  document.getElementById('cat-head-color').style.background=gradMap[c.cardClass]||'var(--accent)';
+  const g=document.getElementById('lev-grid');
+  g.innerHTML=c.levels.map((l,li)=>{
+    const done=l.qs.filter((_,qi)=>prog.correct.has(ci+'_'+li+'_'+qi)).length;
+    const rem=l.qs.length-done;
+    const pct=l.qs.length?Math.round(done/l.qs.length*100):0;
+    const allDone=done===l.qs.length;
+    const tag=allDone?`<div class="lev-done-tag">已通关</div>`:
+      done>0?`<div style="font-size:12px;color:var(--soft)">进行中 · ${pct}%</div>`:'';
+    return `<div class="lev-card" onclick="startDrill(${ci},${li})">
+      <div class="lev-dot" style="background:${l.dotBg}">
+        ${li+1}
+      </div>
+      <div class="lev-tx">
+        <span class="lev-name">${l.name}</span>
+        <div class="lev-sub">${rem>0?'剩 '+rem+' 题':'全部掌握'} · ${l.qs.length} 题</div>
+        ${tag}
+      </div>
+      <div class="lev-arrow">›</div>
+    </div>`;
+  }).join('');
+  showV('cat');
+}
+
+// ──────────────────────────────────────────
+//  DRILL
+// ──────────────────────────────────────────
+function startDrill(ci,li){
+  const lev=CATS[ci].levels[li];
+  const todo=lev.qs.map((q,qi)=>({q,qi})).filter(({qi})=>!prog.correct.has(ci+'_'+li+'_'+qi));
+  if(!todo.length){showComplete(ci,li,0);return;}
+  // Fisher-Yates shuffle
+  for(let i=todo.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[todo[i],todo[j]]=[todo[j],todo[i]];}
+  ds={catI:ci,levI:li,qs:todo,qi:0,sessScore:0,answered:false};
+  document.getElementById('drill-bar-title').textContent=CATS[ci].name+' · '+lev.name;
+  renderQ();showV('drill');
+}
+
+function renderQ(){
+  const {qs,qi,sessScore}=ds,item=qs[qi],total=qs.length;
+  document.getElementById('dprog').textContent=`${qi+1}/${total}`;
+  document.getElementById('dscorelab').textContent=`+${sessScore}`;
+  document.getElementById('dfill').style.width=(qi/total*100)+'%';
+  document.getElementById('dnote').textContent=CATS[ds.catI].note;
+  document.getElementById('dq').textContent=item.q[0];
+  const inp=document.getElementById('din');
+  inp.value='';inp.disabled=false;
+  const sub=document.getElementById('subbtn');
+  sub.disabled=false;
+  document.getElementById('fbk').style.display='none';
+  document.getElementById('nxtbtn').style.display='none';
+  document.getElementById('skipbtn').style.display='';
+  ds.answered=false;
+  setTimeout(()=>inp.focus(),120);
+}
+
+function submitAns(){
+  if(ds.answered)return;
+  const val=document.getElementById('din').value;
+  // BUG FIX: don't submit empty — prompt user to fill in
+  if(!val.trim()&&!CATS[ds.catI].levels[ds.levI].qs[0][1].some(a=>a===''||a==='/')){
+    document.getElementById('din').focus();return;
+  }
+  const item=ds.qs[ds.qi];
+  const isOk=ok(val,item.q[1]);
+  ds.answered=true;
+  document.getElementById('din').disabled=true;
+  document.getElementById('subbtn').disabled=true;
+  document.getElementById('skipbtn').style.display='none';
+  document.getElementById('nxtbtn').style.display='block';
+  const fbk=document.getElementById('fbk');
+  fbk.className='fbk '+(isOk?'ok':'no');fbk.style.display='block';
+  document.getElementById('fbkemo').textContent=isOk?'✓':'✗';
+  document.getElementById('fbktxt').textContent=isOk?'正确！+10 分':'答案不对';
+  // BUG FIX: only show correct answer when wrong
+  document.getElementById('fbkans').textContent=isOk?'':('正确答案：'+dispAns(item.q[1]));
+  if(isOk){
+    const id=ds.catI+'_'+ds.levI+'_'+item.qi;
+    if(!prog.correct.has(id)){prog.correct.add(id);prog.totalScore+=10;ds.sessScore+=10;
+      prog.errors=prog.errors.filter(e=>e.id!==id);}
+  }else{
+    const id=ds.catI+'_'+ds.levI+'_'+item.qi;
+    const ex=prog.errors.find(e=>e.id===id);
+    if(ex){ex.wrong=val||'（空）';}
+    else prog.errors.unshift({id,catI:ds.catI,levI:ds.levI,qi:item.qi,
+      q:item.q[0],a:item.q[1],
+      catName:CATS[ds.catI].name+' · '+CATS[ds.catI].levels[ds.levI].name,
+      wrong:val||'（空）'});
+  }
+  save();syncScore();
+}
+
+function skipQ(){
+  if(ds.answered)return;
+  const item=ds.qs[ds.qi];
+  ds.answered=true;
+  document.getElementById('din').disabled=true;
+  document.getElementById('subbtn').disabled=true;
+  document.getElementById('skipbtn').style.display='none';
+  document.getElementById('nxtbtn').style.display='block';
+  const fbk=document.getElementById('fbk');
+  fbk.className='fbk no';fbk.style.display='block';
+  document.getElementById('fbkemo').textContent='→';
+  document.getElementById('fbktxt').textContent='已跳过';
+  document.getElementById('fbkans').textContent='正确答案：'+dispAns(item.q[1]);
+  const id=ds.catI+'_'+ds.levI+'_'+item.qi;
+  if(!prog.errors.find(e=>e.id===id))
+    prog.errors.unshift({id,catI:ds.catI,levI:ds.levI,qi:item.qi,
+      q:item.q[0],a:item.q[1],
+      catName:CATS[ds.catI].name+' · '+CATS[ds.catI].levels[ds.levI].name,
+      wrong:'（已跳过）'});
+  save();
+}
+
+function nextQ(){
+  ds.qi++;
+  if(ds.qi>=ds.qs.length)showComplete(ds.catI,ds.levI,ds.sessScore);
+  else renderQ();
+}
+
+function showComplete(ci,li,ss){
+  const done=[...prog.correct].filter(id=>id.startsWith(ci+'_'+li+'_')).length;
+  const total=CATS[ci].levels[li].qs.length;
+  const isFullDone=done===total;
+  document.getElementById('cp-badge').textContent=isFullDone?'★':'✓';
+  document.getElementById('cp-tit').textContent=isFullDone?
+    `${CATS[ci].name} ${CATS[ci].levels[li].name}全部掌握！`:
+    `本轮结束`;
+  document.getElementById('cp-sco').textContent=ss>0?'+'+ss:'0';
+  document.getElementById('cp-sub').textContent=
+    `累计总分 ${prog.totalScore} 分 · 已掌握 ${done}/${total}`;
+  showV('done');
+}
+
+function exitDrill(){showCat(ds.catI);}
+
+// ──────────────────────────────────────────
+//  ERROR BANK
+// ──────────────────────────────────────────
+function renderErrors(){
+  const list=document.getElementById('elist');
+  const cnt=document.getElementById('errcnt');
+  cnt.textContent=prog.errors.length?prog.errors.length+' 题':'';
+  if(!prog.errors.length){
+    list.innerHTML='<div class="empty"><div class="em-icon" style="font-size:36px;opacity:.4">○</div><div class="em-txt">错题本是空的，实力超群！</div></div>';
+    return;
+  }
+  list.innerHTML=prog.errors.map((e,i)=>`<div class="eitem">
+    <div class="ecat">${esc(e.catName)}</div>
+    <div class="eq">${esc(e.q)}</div>
+    <div class="ewrong">你的答案：${esc(e.wrong)}</div>
+    <div class="ecorrect">正确答案：${esc(dispAns(e.a))}</div>
+    <button class="retrybtn" onclick="openRetry(${i})">重做这题</button>
+  </div>`).join('');
+}
+
+function openRetry(idx){
+  retryIdx=idx;const e=prog.errors[idx];
+  document.getElementById('ret-cat').textContent=e.catName;
+  document.getElementById('ret-q').textContent=e.q;
+  const inp=document.getElementById('ret-in');
+  inp.value='';inp.disabled=false;
+  const sub=document.getElementById('ret-sub');
+  sub.disabled=false;
+  document.getElementById('ret-fbk').style.display='none';
+  document.getElementById('ret-fbk').className='ret-fbk';
+  document.getElementById('ret-nxt').style.display='none';
+  document.getElementById('ret-ov').classList.add('on');
+  setTimeout(()=>inp.focus(),200);
+}
+
+function submitRetry(){
+  const e=prog.errors[retryIdx];
+  const val=document.getElementById('ret-in').value;
+  const isOk=ok(val,e.a);
+  const fbk=document.getElementById('ret-fbk');
+  fbk.style.display='block';
+  // BUG FIX: disable submit button after attempting
+  document.getElementById('ret-sub').disabled=true;
+  document.getElementById('ret-in').disabled=true;
+  if(isOk){
+    fbk.className='ret-fbk ok';
+    fbk.textContent='正确！+10 分，已从错题本移除';
+    if(!prog.correct.has(e.id)){prog.correct.add(e.id);prog.totalScore+=10;}
+    prog.errors.splice(retryIdx,1);
+    save();syncScore();
+    document.getElementById('ret-nxt').textContent='太好了，关闭';
+  }else{
+    fbk.className='ret-fbk no';
+    fbk.textContent='还不对，正确答案：'+dispAns(e.a);
+    prog.errors[retryIdx].wrong=val||'（空）';
+    save();
+    // Allow retry: re-enable after showing answer
+    setTimeout(()=>{
+      document.getElementById('ret-in').disabled=false;
+      document.getElementById('ret-sub').disabled=false;
+      document.getElementById('ret-in').value='';
+      document.getElementById('ret-in').focus();
+    },1800);
+  }
+  document.getElementById('ret-nxt').style.display='block';
+}
+
+function closeRetry(){
+  document.getElementById('ret-ov').classList.remove('on');
+  renderErrors();
+}
+
+// ──────────────────────────────────────────
+//  KEYBOARD
+// ──────────────────────────────────────────
+document.getElementById('din').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){if(!ds.answered)submitAns();else nextQ();}
 });
+document.getElementById('ret-in').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!document.getElementById('ret-sub').disabled)submitRetry();
+});
+
+// ──────────────────────────────────────────
+//  INTRO
+// ──────────────────────────────────────────
+function dismissIntro(){
+  document.getElementById('intro-ov').classList.remove('on');
+  sessionStorage.setItem('intro_seen','1');
+}
+function showIntro(){
+  if(!sessionStorage.getItem('intro_seen'))
+    document.getElementById('intro-ov').classList.add('on');
+}
+
+// ──────────────────────────────────────────
+//  MISC
+// ──────────────────────────────────────────
+function switchUser(){
+  if(confirm('切换账号？本机进度不会丢失。')){
+    localStorage.removeItem('jc_username');
+    location.href='study.html';
+  }
+}
+
+function copyWx(){
+  const wx=document.getElementById('wxId').textContent;
+  const btn=document.getElementById('copyBtn');
+  if(navigator.clipboard){navigator.clipboard.writeText(wx);}
+  btn.textContent='已复制！去微信发给 John';
+  setTimeout(()=>{btn.textContent='复制微信号，去发作文';},2500);
+}
+
+// ── INIT ──
+if(!username){
+  // Try to get username from jc_username (shared with vocab.html)
+  const saved=localStorage.getItem('jc_username');
+  if(saved&&saved.trim()){username=saved.trim();}
+  else{
+    const n=prompt('请输入你的名字（与 John Class 其他页面一致）：');
+    if(n&&n.trim()){username=n.trim();localStorage.setItem('jc_username',username);}
+  }
+}
+load();showHome();showIntro();
 </script>
-<script src="audio.js"></script>
-<script src="bgm-cross.js"></script>
 </body>
 </html>
