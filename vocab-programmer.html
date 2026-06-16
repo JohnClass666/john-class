@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>码神词库 · John Class</title>
+<style>
+:root{
+  --bg:#FDF8F0;--bg2:#F5EDD8;--ink:#3A2A10;--soft:#A08040;
+  --faint:#C8A870;--hair:#D8C8A0;--accent:#C89030;--warn:#C85A2A;
+  --fnt:-apple-system,"SF Pro Display","PingFang SC",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);font-family:var(--fnt);
+  color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.view{display:none;min-height:100vh;padding-bottom:88px}.view.on{display:block}
+
+/* ── HEADER (transparent) ── */
+.jc-hd{padding:14px 20px;padding-top:calc(14px + env(safe-area-inset-top))}
+.jc-hd-row{display:flex;align-items:center;justify-content:space-between}
+.jc-logo{font-size:22px;font-weight:700;letter-spacing:-.04em;color:var(--ink);
+  text-shadow:0 2px 4px rgba(40,20,5,.18),0 5px 14px rgba(40,20,5,.09);text-decoration:none}
+.jc-chips{display:flex;gap:8px;margin-top:10px}
+.jk{display:inline-flex;align-items:center;justify-content:center;
+  font-family:var(--fnt);cursor:pointer;font-size:11.5px;font-weight:600;
+  letter-spacing:-.01em;white-space:nowrap;-webkit-user-select:none;
+  background:linear-gradient(180deg,#F5C080 0%,#EEB878 100%);
+  border:1px solid #C87828;border-bottom:3px solid #A05018;border-radius:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 5px rgba(40,20,5,.09);
+  color:#5A3000;transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.jk:active,.jk:active{transform:translateY(2px);border-bottom-width:1px}
+
+/* ── SCORE ── */
+.sc-block{padding:16px 20px 6px;display:flex;align-items:baseline}
+.sc-num{font-size:44px;font-weight:200;letter-spacing:-.07em;color:var(--ink);
+  text-shadow:0 3px 6px rgba(40,20,5,.12),0 6px 18px rgba(40,20,5,.07);line-height:1}
+.sc-unit{font-size:15px;color:var(--soft);margin-left:4px}
+.sc-pills{margin-left:auto;display:flex;gap:7px;align-items:center;align-self:center}
+.sc-pill{font-size:11px;font-weight:700;padding:5px 11px;border-radius:10px;white-space:nowrap;
+  background:linear-gradient(180deg,#EED068,#E8A020);
+  border:1px solid #C89010;border-bottom:2.5px solid #A07008;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.6),0 2px 4px rgba(40,20,5,.1);color:#5A3800}
+.sc-pw{padding:6px 20px 14px}
+.sc-pt{height:3px;background:rgba(58,42,16,.12);border-radius:99px;overflow:hidden}
+.sc-pf{height:100%;background:linear-gradient(90deg,var(--accent),#E8A830);border-radius:99px}
+
+/* ── SHELF ── */
+.jc-shelf{margin-bottom:0}
+.jc-sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px}
+.jc-sbar{height:14px;background:linear-gradient(180deg,#B07030,#8A4E18);
+  box-shadow:0 5px 16px rgba(80,40,10,.25);position:relative}
+.jc-sbar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(255,220,120,.7) 50%,transparent)}
+.jc-sgap{height:28px}
+
+/* ── CARDS ── */
+.jc-card{border-radius:20px;overflow:hidden;aspect-ratio:3/4;position:relative;cursor:pointer;
+  box-shadow:0 1px 2px rgba(40,20,5,.08),0 4px 10px rgba(40,20,5,.10),
+    0 12px 26px rgba(40,20,5,.08),0 20px 40px rgba(40,20,5,.05);
+  transition:transform .18s cubic-bezier(.34,1.4,.64,1)}
+.jc-card:active{transform:scale(.96) translateY(2px)}
+.jc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:linear-gradient(180deg,rgba(255,235,180,.18),transparent);
+  border-radius:20px 20px 0 0;pointer-events:none;z-index:5}
+.jc-ci{position:absolute;inset:0;padding:14px 13px;
+  display:flex;flex-direction:column;justify-content:space-between;z-index:6}
+.jc-eye{font-size:8px;font-weight:700;letter-spacing:.14em;
+  color:rgba(255,255,255,.65);text-transform:uppercase;margin-bottom:2px}
+/* 主题名字 — 最大的字 */
+.jc-bigname{font-size:24px;font-weight:700;color:#fff;line-height:1.2;
+  letter-spacing:-.02em;text-shadow:0 2px 8px rgba(0,0,0,.22);
+  flex:1;display:flex;align-items:center;word-break:break-all}
+.jc-cpct{font-size:9px;font-weight:700;color:rgba(255,255,255,.75)}
+.jcg1{background:linear-gradient(145deg,#EEA080,#E86248)}
+.jcg2{background:linear-gradient(145deg,#EED068,#E8A020)}
+.jcg3{background:linear-gradient(145deg,#EEC888,#E89040)}
+.jcg4{background:linear-gradient(145deg,#E8A870,#D07840)}
+.jcg5{background:linear-gradient(145deg,#EED870,#E8C428)}
+.jcg6{background:linear-gradient(145deg,#EE9280,#E85838)}
+.jcg7{background:linear-gradient(145deg,#EEB878,#E89038)}
+
+/* ── BOTTOM BAR ── */
+.jc-btm{position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(253,248,240,.95);
+  backdrop-filter:saturate(160%) blur(20px);-webkit-backdrop-filter:saturate(160%) blur(20px);
+  border-top:.5px solid var(--hair);padding:12px 20px;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+.jc-keys{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}
+.jc-keys::-webkit-scrollbar{display:none}
+.jc-key{flex:0 0 auto;font-family:var(--fnt);cursor:pointer;padding:9px 14px;border-radius:10px;
+  font-size:11.5px;font-weight:600;white-space:nowrap;position:relative;
+  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 5px rgba(40,20,5,.08);
+  color:var(--ink);transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.jc-key:active{transform:translateY(2px);border-bottom-width:1px}
+.jc-key-gold{background:linear-gradient(180deg,#EED068,#E8A020);
+  border-color:#C88808;border-bottom-color:#986008;color:#4A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 6px rgba(40,20,5,.12)}
+.jc-key-gold:active{background:linear-gradient(180deg,#E8A020,#DC9010)}
+.jc-key-red{background:linear-gradient(180deg,#EEA080,#E85848);
+  border-color:#D04030;border-bottom-color:#B02818;color:#5A1008;
+  box-shadow:inset 0 1px 0 rgba(255,255,210,.4),0 2px 5px rgba(40,20,5,.10)}
+.jc-key-red:active{background:linear-gradient(180deg,#E85848,#E04030)}
+.jc-key-badge{position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;
+  background:#9A3A10;color:#FDF8F0;font-size:9px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;border:1.5px solid var(--bg)}
+
+/* ── BAR (二级页面) ── */
+.bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;padding:10px 16px;min-height:52px}
+.back-btn{width:36px;height:36px;border-radius:50%;flex:0 0 auto;cursor:pointer;
+  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 5px rgba(40,20,5,.09);
+  font-size:20px;color:var(--ink);display:flex;align-items:center;justify-content:center;
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s;font-family:var(--fnt)}
+.back-btn:active{transform:translateY(2px);border-bottom-width:1px}
+.bar-title{flex:1;text-align:center;font-size:16px;font-weight:700;color:var(--ink);
+  text-shadow:0 1px 2px rgba(40,20,5,.14),0 3px 8px rgba(40,20,5,.08);
+  letter-spacing:-.02em;margin:0 8px}
+.bar-right{font-size:13px;font-weight:700;color:var(--accent);white-space:nowrap}
+
+/* ── PROGRESS HUD ── */
+.dhud{padding:0 20px 10px;display:flex;align-items:center;gap:12px}
+.dhud-track{flex:1;height:3px;background:rgba(58,42,16,.1);border-radius:99px;overflow:hidden}
+.dhud-fill{height:100%;background:linear-gradient(90deg,var(--accent),#E8A830);
+  border-radius:99px;transition:width .3s}
+.dhud-lbl{font-size:11px;font-weight:700;color:var(--soft);letter-spacing:.04em;white-space:nowrap}
+
+/* ── MODE CARDS ── */
+.mode-list{display:flex;flex-direction:column;gap:10px;padding:12px 20px 20px}
+.mode-card{display:flex;align-items:center;gap:16px;padding:18px 16px;border-radius:18px;cursor:pointer;
+  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 6px rgba(40,20,5,.08),0 6px 18px rgba(40,20,5,.04);
+  transition:transform .1s,box-shadow .1s,border-bottom-width .1s}
+.mode-card:active{transform:translateY(2px);border-bottom-width:1px}
+.mode-dot{width:42px;height:42px;border-radius:50%;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;
+  color:#FDF8F0;box-shadow:0 2px 6px rgba(40,20,5,.16),inset 0 1px 0 rgba(255,240,160,.35)}
+.mode-tx{flex:1}
+.mode-name{font-size:16px;font-weight:600;color:var(--ink);display:block;letter-spacing:-.02em}
+.mode-desc{font-size:12px;color:var(--soft);margin-top:3px}
+.mode-pts{font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;white-space:nowrap;
+  background:linear-gradient(180deg,#EED068,#E8A020);
+  border:1px solid #C89010;border-bottom:2px solid #A07008;color:#4A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5)}
+
+/* ── QUIZ WORD CARD ── */
+.qcard{margin:8px 20px;background:#FFFFFF;border:1px solid #D8C090;
+  border-bottom:3px solid #B09050;border-radius:20px;padding:24px 20px 20px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 8px rgba(40,20,5,.08);text-align:center}
+.qcard-pos{font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--faint);margin-bottom:10px}
+.qcard-en{font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-.04em;
+  line-height:1.2;word-break:break-word}
+.qcard-zh{font-size:22px;font-weight:700;color:var(--ink);line-height:1.3}
+.qcard-sub{font-size:13px;color:var(--soft);margin-top:6px}
+.qcard-hint{font-size:11px;color:var(--faint);margin-top:8px;font-weight:600}
+
+/* ── FLIP ── */
+.flip-wrap{perspective:700px;cursor:pointer;margin:8px 20px 0;min-height:158px}
+.flip-inner{position:relative;width:100%;min-height:158px;
+  transition:transform .42s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
+.flip-inner.flipped{transform:rotateY(180deg)}
+.flip-face{position:absolute;width:100%;min-height:158px;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  background:#FFFFFF;border:1px solid #D8C090;border-bottom:3px solid #B09050;
+  border-radius:20px;padding:24px 20px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 8px rgba(40,20,5,.08)}
+.flip-back{transform:rotateY(180deg)}
+.flip-spacer{min-height:158px;visibility:hidden;margin:8px 20px 0}
+.flip-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 20px 0}
+.flip-btn{padding:14px 10px;border-radius:14px;font-size:14px;font-weight:700;
+  cursor:pointer;font-family:var(--fnt);text-align:center;
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.flip-btn:active{transform:translateY(2px);border-bottom-width:1px}
+.flip-btn.know{background:linear-gradient(180deg,#EED068,#E8A020);
+  border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 5px rgba(40,20,5,.10)}
+.flip-btn.nope{background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;color:var(--soft);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 5px rgba(40,20,5,.08)}
+
+/* ── OPTIONS (MCQ) ── */
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:10px 20px 16px}
+.opt{padding:13px 10px;font-size:13px;font-weight:600;color:var(--ink);
+  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;border-radius:14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 6px rgba(40,20,5,.07);
+  font-family:var(--fnt);cursor:pointer;text-align:center;line-height:1.35;
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s;
+  min-height:50px;display:flex;align-items:center;justify-content:center}
+.opt:active{transform:translateY(2px);border-bottom-width:1px}
+.opt.right{background:linear-gradient(180deg,#EED068,#E8A020);
+  border-color:#C88808;border-bottom-color:#986008;color:#4A3000}
+.opt.wrong{background:linear-gradient(180deg,#EEA080,#E85848);
+  border-color:#D04030;border-bottom-color:#B02818;color:#FDF8F0}
+.opt.dim{opacity:.2;pointer-events:none}
+
+/* ── SPELL ── */
+.spell-row{display:flex;gap:8px;padding:10px 20px 0}
+.spell-in{flex:1;font-size:16px;padding:11px 14px;
+  background:var(--bg2);border:1px solid var(--hair);
+  border-bottom:2.5px solid #C8A870;border-radius:12px;
+  color:var(--ink);font-family:var(--fnt);outline:none;transition:border-color .2s}
+.spell-in:focus{border-color:var(--accent);background:#FFFBF0}
+.spell-in:disabled{opacity:.55}
+.spell-sub{padding:11px 18px;border-radius:12px;font-size:14px;font-weight:700;
+  cursor:pointer;font-family:var(--fnt);
+  background:linear-gradient(180deg,#EED068,#E8A020);
+  border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5);
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.spell-sub:active{transform:translateY(2px);border-bottom-width:1px}
+.spell-sub:disabled{background:linear-gradient(180deg,#EEE2C4,#D8C8A0);
+  border-color:#C0A870;border-bottom-color:#C0A870;color:rgba(58,42,16,.3);cursor:default}
+
+/* ── FEEDBACK ── */
+.fbk{margin:10px 20px 0;border-radius:14px;padding:11px 14px;display:none}
+.fbk.ok{background:linear-gradient(180deg,#F5EEC8,#EED868);
+  border:1px solid #C89010;border-bottom:2px solid #A07008}
+.fbk.no{background:linear-gradient(180deg,#FEF0E8,#F5D8C8);
+  border:1px solid #D8A080;border-bottom:2px solid #B07050}
+.fbk-row{display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.fbk-icon{font-size:13px;font-weight:900;width:22px;height:22px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center}
+.fbk.ok .fbk-icon{background:var(--accent);color:#FDF8F0}
+.fbk.no .fbk-icon{background:var(--warn);color:#FDF8F0}
+.fbk-txt{font-size:14px;font-weight:700;color:var(--ink)}
+.fbk-sub{font-size:12px;color:var(--soft)}
+
+/* ── RESULT ── */
+.res-card{margin:20px;background:#FFFFFF;border:1px solid #D8C090;
+  border-bottom:4px solid #B09050;border-radius:24px;padding:30px 22px;text-align:center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 4px 16px rgba(40,20,5,.08)}
+.res-badge{width:72px;height:72px;border-radius:50%;margin:0 auto 16px;
+  background:linear-gradient(145deg,#EED068,#E8A020);
+  border:1px solid #C88808;border-bottom:4px solid #986008;
+  box-shadow:0 4px 14px rgba(40,20,5,.14),inset 0 1px 0 rgba(255,255,200,.6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;animation:popIn .5s cubic-bezier(.34,1.4,.64,1)}
+@keyframes popIn{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.res-title{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.res-score{font-size:52px;font-weight:200;letter-spacing:-.07em;color:var(--ink);
+  text-shadow:0 3px 8px rgba(40,20,5,.12);margin:4px 0;line-height:1}
+.res-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--soft);margin-bottom:18px}
+.res-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.res-st{text-align:center;padding:12px 6px;
+  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
+  border:1px solid #D8C090;border-bottom:2px solid #B09050;border-radius:12px}
+.res-st-n{display:block;font-size:20px;font-weight:300;letter-spacing:-.04em;color:var(--ink)}
+.res-st-l{display:block;font-size:9px;color:var(--soft);font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+.res-msg{font-size:13px;font-weight:600;color:#6A3800;padding:10px 14px;border-radius:12px;
+  margin-bottom:16px;background:linear-gradient(180deg,#FFF8D0,#EED868);
+  border:1px solid #C89010;border-bottom:2px solid #A07008;line-height:1.5}
+.res-btns{display:flex;flex-direction:column;gap:9px}
+.rbtn{padding:14px;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;
+  font-family:var(--fnt);width:100%;transition:transform .08s,border-bottom-width .08s}
+.rbtn:active{transform:translateY(2px)}
+.rbtn-p{background:linear-gradient(180deg,#EED068,#E8A020);
+  border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 6px rgba(40,20,5,.12)}
+.rbtn-s{background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;color:var(--ink);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 5px rgba(40,20,5,.07)}
+
+/* ── ERROR BANK ── */
+.eitem{background:#FFFFFF;border:1px solid #D8C090;border-bottom:3px solid #B09050;
+  border-radius:18px;padding:16px;margin-bottom:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 8px rgba(40,20,5,.07)}
+.ecat{font-size:9.5px;color:var(--faint);font-weight:700;text-transform:uppercase;
+  letter-spacing:.12em;margin-bottom:6px}
+.eword{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.03em;margin-bottom:3px}
+.ezh{font-size:13px;color:var(--soft);margin-bottom:3px}
+.ewrong{font-size:12px;color:var(--warn);font-weight:500}
+.retrybtn{margin-top:11px;padding:7px 16px;border-radius:10px;
+  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
+  border:1px solid #D8C090;border-bottom:2.5px solid #B09050;
+  font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fnt);color:var(--ink);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 4px rgba(40,20,5,.07);
+  transition:transform .08s,border-bottom-width .08s}
+.retrybtn:active{transform:translateY(1px);border-bottom-width:1px}
+
+/* ── MILESTONES ── */
+.ms-card{display:flex;align-items:center;gap:14px;padding:16px;
+  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;border-radius:16px;
+  margin-bottom:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 6px rgba(40,20,5,.07)}
+.ms-card.done{background:linear-gradient(180deg,#FFF8D0,#F0E8A0);
+  border-color:#C89010;border-bottom-color:#A07008}
+.ms-icon{font-size:24px;width:44px;text-align:center;flex:0 0 auto}
+.ms-tx b{font-size:15px;font-weight:600;color:var(--ink);display:block;margin-bottom:3px}
+.ms-tx span{font-size:12px;color:var(--soft)}
+
+/* ── LEADERBOARD ── */
+.lb-row{display:flex;align-items:center;gap:12px;padding:12px 16px;
+  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
+  border:1px solid #D8C090;border-bottom:2px solid #B09050;border-radius:14px;
+  margin-bottom:8px;box-shadow:0 2px 6px rgba(40,20,5,.06)}
+.lb-row.me{background:linear-gradient(180deg,#F5F0D8,#E8D8A0);
+  border-color:#C8A860;border-bottom-color:#9A7830}
+.lb-rank{width:32px;height:32px;border-radius:50%;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;
+  background:linear-gradient(145deg,#C8A870,#A08040);color:#FDF8F0;
+  border:1px solid #906828}
+.lb-rank.r1{background:linear-gradient(145deg,#EED068,#C09010);border-color:#A07010}
+.lb-rank.r2{background:linear-gradient(145deg,#D8D8D0,#909088);border-color:#707068}
+.lb-rank.r3{background:linear-gradient(145deg,#D08830,#8A4810);border-color:#7A4010}
+.lb-name{flex:1;font-size:15px;font-weight:600;color:var(--ink);letter-spacing:-.02em}
+.lb-pts{font-size:15px;font-weight:300;color:var(--accent);letter-spacing:-.04em}
+
+/* ── COMBO TOAST ── */
+#combo-toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) scale(.85);
+  background:linear-gradient(180deg,#EED068,#E8A020);
+  border:1px solid #C88808;border-bottom:2px solid #986008;
+  color:#4A3000;padding:7px 20px;border-radius:20px;
+  font-size:13px;font-weight:700;pointer-events:none;opacity:0;
+  transition:all .25s;z-index:999;white-space:nowrap;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 8px rgba(40,20,5,.14)}
+#combo-toast.show{opacity:1;transform:translateX(-50%) scale(1)}
+
+/* ── RETRY OVERLAY ── */
+.ret-ov{position:fixed;inset:0;z-index:400;
+  background:rgba(42,30,8,.5);display:none;align-items:flex-end;
+  justify-content:center;padding:12px}
+.ret-ov.on{display:flex}
+.ret-box{background:var(--bg);border-radius:24px 24px 18px 18px;
+  width:100%;max-width:480px;padding:22px 20px;
+  box-shadow:0 -4px 40px rgba(42,30,8,.28)}
+.ret-cat{font-size:9px;color:var(--faint);font-weight:700;text-transform:uppercase;
+  letter-spacing:.12em;margin-bottom:8px}
+.ret-word{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.03em;margin-bottom:4px}
+.ret-zh{font-size:14px;color:var(--soft);margin-bottom:14px}
+.ret-in{width:100%;font-size:16px;padding:11px 14px;
+  background:var(--bg2);border:1px solid var(--hair);
+  border-bottom:2.5px solid #C8A870;border-radius:12px;
+  color:var(--ink);font-family:var(--fnt);outline:none;margin-bottom:12px}
+.ret-in:focus{border-color:var(--accent)}
+.ret-in:disabled{opacity:.55}
+.ret-btns{display:flex;gap:8px}
+.ret-sub{flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:700;
+  cursor:pointer;font-family:var(--fnt);
+  background:linear-gradient(180deg,#EED068,#E8A020);
+  border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
+  transition:transform .08s,border-bottom-width .08s}
+.ret-sub:active{transform:translateY(2px);border-bottom-width:1px}
+.ret-sub:disabled{background:linear-gradient(180deg,#EEE2C4,#D8C8A0);
+  border-color:#C0A870;border-bottom-color:#C0A870;color:rgba(58,42,16,.3);cursor:default}
+.ret-can{padding:12px 16px;border-radius:12px;font-size:13px;font-weight:600;
+  cursor:pointer;font-family:var(--fnt);
+  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;color:var(--soft);
+  transition:transform .08s,border-bottom-width .08s}
+.ret-can:active{transform:translateY(2px);border-bottom-width:1px}
+.ret-fbk{display:none;margin-top:12px;padding:11px 14px;font-size:13px;font-weight:600;border-radius:12px}
+.ret-fbk.ok{background:linear-gradient(180deg,#F5EEC8,#EED868);
+  border:1px solid #C89010;border-bottom:2px solid #A07008;color:#4A3000}
+.ret-fbk.no{background:linear-gradient(180deg,#FEF0E8,#F5D8C8);
+  border:1px solid #D8A080;border-bottom:2px solid #B07050;color:#6A2810}
+.ret-nxt{display:none;margin-top:10px;width:100%;padding:12px;border-radius:12px;
+  font-size:14px;font-weight:700;cursor:pointer;font-family:var(--fnt);
+  background:linear-gradient(180deg,#EEA080,#E86248);
+  border:1px solid #D04030;border-bottom:3px solid #A82818;color:#FDF8F0;
+  transition:transform .08s,border-bottom-width .08s}
+.ret-nxt:active{transform:translateY(2px);border-bottom-width:1px}
+
+.page-wrap{padding:0 20px 20px}
+.stitle{font-size:9.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--faint);padding:14px 20px 8px}
+.foot{font-size:11px;color:var(--faint);text-align:center;padding:12px 20px;letter-spacing:.04em}
+.empty{text-align:center;padding:40px 20px;color:var(--soft);font-size:14px}
+</style>
+</head>
+<body>
+<div id="combo-toast"></div>
+
+<!-- ══ HOME ══ -->
+<div id="v-home" class="view on">
+  <div class="jc-hd">
+    <div class="jc-hd-row">
+      <a class="jc-logo" href="programmer.html">John Class</a>
+    </div>
+    <div class="jc-chips">
+      <button class="jk" onclick="location.href='programmer.html'" style="padding:7px 13px">← 程序员专区</button>
+    </div>
+  </div>
+  <div class="sc-block">
+    <div class="sc-num" id="h-pts">0</div>
+    <div class="sc-unit">分</div>
+    <div class="sc-pills">
+      <div class="sc-pill" id="h-level">小码</div>
+    </div>
+  </div>
+  <div class="sc-pw"><div class="sc-pt"><div class="sc-pf" id="h-prog" style="width:0%"></div></div></div>
+  <div id="cat-shelves"></div>
+  <div class="foot">码神词库 · 300个职场高频词</div>
+  <div class="jc-btm">
+    <div class="jc-keys">
+      <button class="jc-key jc-key-gold" onclick="goMode('all')">全部 300 词</button>
+      <button class="jc-key jc-key-red" id="btn-errors" onclick="showErrors()" style="position:relative">错词本</button>
+      <button class="jc-key" onclick="showDaily()" id="btn-daily">今日挑战</button>
+      <button class="jc-key" onclick="showMilestones()">我的目标</button>
+      <button class="jc-key" onclick="showLB()">排行榜</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODE SELECT ══ -->
+<div id="v-mode" class="view">
+  <div class="bar">
+    <button class="back-btn" onclick="goHome()">‹</button>
+    <div class="bar-title" id="mode-bar-title"></div>
+    <div class="bar-right" id="mode-cnt"></div>
+  </div>
+  <div class="stitle">选择模式，开始刷词</div>
+  <div class="mode-list" id="mode-list"></div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="v-quiz" class="view">
+  <div class="bar">
+    <button class="back-btn" onclick="exitQuiz()">‹</button>
+    <div class="bar-title" id="q-title"></div>
+    <div class="bar-right" id="q-score">0 分</div>
+  </div>
+  <div class="dhud">
+    <div class="dhud-track"><div class="dhud-fill" id="q-fill" style="width:0%"></div></div>
+    <div class="dhud-lbl" id="q-prog">1/20</div>
+  </div>
+  <div id="q-body"></div>
+</div>
+
+<!-- ══ RESULT ══ -->
+<div id="v-result" class="view">
+  <div class="res-card">
+    <div class="res-badge" id="r-badge">★</div>
+    <div class="res-title" id="r-title">本轮结束</div>
+    <div class="res-score" id="r-score">0</div>
+    <div class="res-label">本轮得分</div>
+    <div class="res-stats">
+      <div class="res-st"><span class="res-st-n" id="r-got">—</span><span class="res-st-l">正确</span></div>
+      <div class="res-st"><span class="res-st-n" id="r-combo">—</span><span class="res-st-l">最长连击</span></div>
+      <div class="res-st"><span class="res-st-n" id="r-total">—</span><span class="res-st-l">练习词数</span></div>
+    </div>
+    <div class="res-msg" id="r-msg"></div>
+    <div class="res-btns">
+      <button class="rbtn rbtn-p" onclick="retryQuiz()">再练一遍</button>
+      <button class="rbtn rbtn-s" onclick="exitQuiz()">换分类 / 换模式</button>
+      <button class="rbtn rbtn-s" onclick="goHome()">返回首页</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ERROR BANK ══ -->
+<div id="v-errors" class="view">
+  <div class="bar">
+    <button class="back-btn" onclick="goHome()">‹</button>
+    <div class="bar-title">错词本</div>
+    <div class="bar-right" id="err-cnt" style="font-size:12px;color:var(--soft)"></div>
+  </div>
+  <div class="stitle">做错的词，重新来过</div>
+  <div class="page-wrap" id="elist"></div>
+</div>
+
+<!-- ══ MILESTONES ══ -->
+<div id="v-ms" class="view">
+  <div class="bar">
+    <button class="back-btn" onclick="goHome()">‹</button>
+    <div class="bar-title">我的目标</div>
+  </div>
+  <div class="stitle">解锁成就，见证进步</div>
+  <div class="page-wrap" id="ms-list"></div>
+</div>
+
+<!-- ══ LEADERBOARD ══ -->
+<div id="v-lb" class="view">
+  <div class="bar">
+    <button class="back-btn" onclick="goHome()">‹</button>
+    <div class="bar-title">程序员大神榜</div>
+    <div class="bar-right" style="font-size:12px;color:var(--soft)">总积分</div>
+  </div>
+  <div class="page-wrap">
+    <div id="lb-wrap"><div class="foot">加载中…</div></div>
+    <div class="foot" style="cursor:pointer" onclick="loadLB()">↻ 刷新排行</div>
+  </div>
+</div>
+
+<!-- ══ RETRY OVERLAY ══ -->
+<div class="ret-ov" id="ret-ov">
+  <div class="ret-box">
+    <div class="ret-cat" id="ret-cat"></div>
+    <div class="ret-word" id="ret-word"></div>
+    <div class="ret-zh" id="ret-zh"></div>
+    <input class="ret-in" id="ret-in" type="text" placeholder="输入英文…"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <div class="ret-btns">
+      <button class="ret-can" onclick="closeRetry()">取消</button>
+      <button class="ret-sub" id="ret-sub" onclick="submitRetry()">提交</button>
+    </div>
+    <div class="ret-fbk" id="ret-fbk"></div>
+    <button class="ret-nxt" id="ret-nxt" onclick="closeRetry()">完成，关闭</button>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+const WORDS=[
+  {id:1,cat:'A',en:'repository',zh:'代码仓库',pos:'n.'},
+  {id:2,cat:'A',en:'branch',zh:'分支',pos:'n.'},
+  {id:3,cat:'A',en:'commit',zh:'提交代码',pos:'v./n.'},
+  {id:4,cat:'A',en:'merge',zh:'合并代码',pos:'v./n.'},
+  {id:5,cat:'A',en:'pull request',zh:'合并请求',pos:'n.'},
+  {id:6,cat:'A',en:'deploy',zh:'部署',pos:'v.'},
+  {id:7,cat:'A',en:'rollback',zh:'回滚',pos:'v./n.'},
+  {id:8,cat:'A',en:'debug',zh:'调试',pos:'v./n.'},
+  {id:9,cat:'A',en:'refactor',zh:'重构',pos:'v./n.'},
+  {id:10,cat:'A',en:'endpoint',zh:'接口地址',pos:'n.'},
+  {id:11,cat:'A',en:'payload',zh:'请求数据体',pos:'n.'},
+  {id:12,cat:'A',en:'authentication',zh:'身份认证',pos:'n.'},
+  {id:13,cat:'A',en:'authorization',zh:'权限控制',pos:'n.'},
+  {id:14,cat:'A',en:'token',zh:'令牌',pos:'n.'},
+  {id:15,cat:'A',en:'cache',zh:'缓存',pos:'n./v.'},
+  {id:16,cat:'A',en:'latency',zh:'延迟',pos:'n.'},
+  {id:17,cat:'A',en:'timeout',zh:'超时',pos:'n.'},
+  {id:18,cat:'A',en:'dependency',zh:'依赖项',pos:'n.'},
+  {id:19,cat:'A',en:'framework',zh:'框架',pos:'n.'},
+  {id:20,cat:'A',en:'library',zh:'代码库',pos:'n.'},
+  {id:21,cat:'A',en:'package',zh:'软件包',pos:'n.'},
+  {id:22,cat:'A',en:'version',zh:'版本',pos:'n.'},
+  {id:23,cat:'A',en:'release',zh:'发布',pos:'v./n.'},
+  {id:24,cat:'A',en:'hotfix',zh:'紧急修复',pos:'n.'},
+  {id:25,cat:'A',en:'patch',zh:'补丁',pos:'n.'},
+  {id:26,cat:'A',en:'staging',zh:'预发布环境',pos:'n.'},
+  {id:27,cat:'A',en:'production',zh:'生产环境',pos:'n.'},
+  {id:28,cat:'A',en:'query',zh:'查询',pos:'n./v.'},
+  {id:29,cat:'A',en:'migration',zh:'数据迁移',pos:'n.'},
+  {id:30,cat:'A',en:'schema',zh:'数据结构',pos:'n.'},
+  {id:31,cat:'A',en:'log',zh:'日志',pos:'n./v.'},
+  {id:32,cat:'A',en:'exception',zh:'异常',pos:'n.'},
+  {id:33,cat:'A',en:'callback',zh:'回调函数',pos:'n.'},
+  {id:34,cat:'A',en:'asynchronous',zh:'异步的',pos:'adj.'},
+  {id:35,cat:'A',en:'synchronous',zh:'同步的',pos:'adj.'},
+  {id:36,cat:'A',en:'parameter',zh:'参数',pos:'n.'},
+  {id:37,cat:'A',en:'boolean',zh:'布尔值',pos:'n.'},
+  {id:38,cat:'A',en:'array',zh:'数组',pos:'n.'},
+  {id:39,cat:'A',en:'compile',zh:'编译',pos:'v.'},
+  {id:40,cat:'A',en:'runtime',zh:'运行时',pos:'n.'},
+  {id:41,cat:'A',en:'performance',zh:'性能',pos:'n.'},
+  {id:42,cat:'A',en:'optimize',zh:'优化',pos:'v.'},
+  {id:43,cat:'A',en:'scalability',zh:'可扩展性',pos:'n.'},
+  {id:44,cat:'A',en:'microservice',zh:'微服务',pos:'n.'},
+  {id:45,cat:'A',en:'API',zh:'应用接口',pos:'n.'},
+  {id:46,cat:'A',en:'interface',zh:'接口',pos:'n.'},
+  {id:47,cat:'A',en:'integration',zh:'集成',pos:'n.'},
+  {id:48,cat:'A',en:'pipeline',zh:'流水线',pos:'n.'},
+  {id:49,cat:'A',en:'CI/CD',zh:'持续集成与部署',pos:'n.'},
+  {id:50,cat:'A',en:'containerize',zh:'容器化',pos:'v.'},
+  {id:51,cat:'A',en:'configuration',zh:'配置',pos:'n.'},
+  {id:52,cat:'A',en:'environment variable',zh:'环境变量',pos:'n.'},
+  {id:53,cat:'A',en:'hash',zh:'哈希值',pos:'n.'},
+  {id:54,cat:'A',en:'load balancer',zh:'负载均衡器',pos:'n.'},
+  {id:55,cat:'A',en:'middleware',zh:'中间件',pos:'n.'},
+  {id:56,cat:'B',en:'test case',zh:'测试用例',pos:'n.'},
+  {id:57,cat:'B',en:'test plan',zh:'测试计划',pos:'n.'},
+  {id:58,cat:'B',en:'test suite',zh:'测试套件',pos:'n.'},
+  {id:59,cat:'B',en:'regression test',zh:'回归测试',pos:'n.'},
+  {id:60,cat:'B',en:'smoke test',zh:'冒烟测试',pos:'n.'},
+  {id:61,cat:'B',en:'unit test',zh:'单元测试',pos:'n.'},
+  {id:62,cat:'B',en:'automation testing',zh:'自动化测试',pos:'n.'},
+  {id:63,cat:'B',en:'defect',zh:'缺陷',pos:'n.'},
+  {id:64,cat:'B',en:'reproduce',zh:'重现',pos:'v.'},
+  {id:65,cat:'B',en:'severity',zh:'严重程度',pos:'n.'},
+  {id:66,cat:'B',en:'priority',zh:'优先级',pos:'n.'},
+  {id:67,cat:'B',en:'blocker',zh:'阻断级问题',pos:'n.'},
+  {id:68,cat:'B',en:'coverage',zh:'测试覆盖率',pos:'n.'},
+  {id:69,cat:'B',en:'assertion',zh:'断言',pos:'n.'},
+  {id:70,cat:'B',en:'mock',zh:'模拟对象',pos:'n./v.'},
+  {id:71,cat:'B',en:'scenario',zh:'测试场景',pos:'n.'},
+  {id:72,cat:'B',en:'edge case',zh:'边界情况',pos:'n.'},
+  {id:73,cat:'B',en:'expected result',zh:'预期结果',pos:'n.'},
+  {id:74,cat:'B',en:'actual result',zh:'实际结果',pos:'n.'},
+  {id:75,cat:'B',en:'validate',zh:'验证',pos:'v.'},
+  {id:76,cat:'B',en:'acceptance criteria',zh:'验收标准',pos:'n.'},
+  {id:77,cat:'B',en:'sign-off',zh:'确认通过',pos:'n./v.'},
+  {id:78,cat:'B',en:'root cause',zh:'根本原因',pos:'n.'},
+  {id:79,cat:'B',en:'trace',zh:'追踪',pos:'v./n.'},
+  {id:80,cat:'B',en:'alert',zh:'告警',pos:'n./v.'},
+  {id:81,cat:'B',en:'incident',zh:'线上事故',pos:'n.'},
+  {id:82,cat:'B',en:'downtime',zh:'停机时间',pos:'n.'},
+  {id:83,cat:'B',en:'uptime',zh:'正常运行时间',pos:'n.'},
+  {id:84,cat:'B',en:'SLA',zh:'服务级别协议',pos:'n.'},
+  {id:85,cat:'B',en:'monitor',zh:'监控',pos:'v./n.'},
+  {id:86,cat:'B',en:'release candidate',zh:'候选发布版',pos:'n.'},
+  {id:87,cat:'B',en:'retest',zh:'重新测试',pos:'v.'},
+  {id:88,cat:'B',en:'workaround',zh:'临时解决方案',pos:'n.'},
+  {id:89,cat:'B',en:'bug report',zh:'缺陷报告',pos:'n.'},
+  {id:90,cat:'B',en:'test script',zh:'测试脚本',pos:'n.'},
+  {id:91,cat:'C',en:'odds',zh:'赔率',pos:'n.'},
+  {id:92,cat:'C',en:'bet',zh:'投注',pos:'v./n.'},
+  {id:93,cat:'C',en:'wager',zh:'下注',pos:'v./n.'},
+  {id:94,cat:'C',en:'stake',zh:'押注金额',pos:'n.'},
+  {id:95,cat:'C',en:'payout',zh:'赔付',pos:'n.'},
+  {id:96,cat:'C',en:'settlement',zh:'结算',pos:'n.'},
+  {id:97,cat:'C',en:'void',zh:'取消注单',pos:'v./adj.'},
+  {id:98,cat:'C',en:'cashout',zh:'提前结算',pos:'n./v.'},
+  {id:99,cat:'C',en:'sportsbook',zh:'体育博彩',pos:'n.'},
+  {id:100,cat:'C',en:'casino',zh:'线上赌场',pos:'n.'},
+  {id:101,cat:'C',en:'slot',zh:'老虎机',pos:'n.'},
+  {id:102,cat:'C',en:'jackpot',zh:'累积奖池',pos:'n.'},
+  {id:103,cat:'C',en:'bonus',zh:'奖金',pos:'n.'},
+  {id:104,cat:'C',en:'promotion',zh:'促销活动',pos:'n.'},
+  {id:105,cat:'C',en:'free bet',zh:'免费投注',pos:'n.'},
+  {id:106,cat:'C',en:'rollover',zh:'流水要求',pos:'n.'},
+  {id:107,cat:'C',en:'wagering requirement',zh:'打码量',pos:'n.'},
+  {id:108,cat:'C',en:'withdrawal',zh:'提款',pos:'n.'},
+  {id:109,cat:'C',en:'deposit',zh:'存款',pos:'n./v.'},
+  {id:110,cat:'C',en:'balance',zh:'账户余额',pos:'n.'},
+  {id:111,cat:'C',en:'transaction',zh:'交易',pos:'n.'},
+  {id:112,cat:'C',en:'KYC',zh:'用户身份核实',pos:'n.'},
+  {id:113,cat:'C',en:'AML',zh:'反洗钱',pos:'n.'},
+  {id:114,cat:'C',en:'compliance',zh:'合规',pos:'n.'},
+  {id:115,cat:'C',en:'jurisdiction',zh:'司法管辖区',pos:'n.'},
+  {id:116,cat:'C',en:'license',zh:'运营执照',pos:'n.'},
+  {id:117,cat:'C',en:'operator',zh:'运营商',pos:'n.'},
+  {id:118,cat:'C',en:'provider',zh:'平台供应商',pos:'n.'},
+  {id:119,cat:'C',en:'live betting',zh:'滚球投注',pos:'n.'},
+  {id:120,cat:'C',en:'pre-match',zh:'赛前投注',pos:'n.'},
+  {id:121,cat:'C',en:'in-play',zh:'比赛进行中',pos:'adj.'},
+  {id:122,cat:'C',en:'market',zh:'投注市场',pos:'n.'},
+  {id:123,cat:'C',en:'selection',zh:'投注选项',pos:'n.'},
+  {id:124,cat:'C',en:'accumulator',zh:'串关投注',pos:'n.'},
+  {id:125,cat:'C',en:'single bet',zh:'单关投注',pos:'n.'},
+  {id:126,cat:'C',en:'handicap',zh:'让球',pos:'n.'},
+  {id:127,cat:'C',en:'over/under',zh:'大小分',pos:'n.'},
+  {id:128,cat:'C',en:'draw',zh:'平局',pos:'n.'},
+  {id:129,cat:'C',en:'fixture',zh:'赛事安排',pos:'n.'},
+  {id:130,cat:'C',en:'league',zh:'联赛',pos:'n.'},
+  {id:131,cat:'C',en:'tournament',zh:'锦标赛',pos:'n.'},
+  {id:132,cat:'C',en:'risk management',zh:'风险管理',pos:'n.'},
+  {id:133,cat:'C',en:'fraud detection',zh:'欺诈检测',pos:'n.'},
+  {id:134,cat:'C',en:'responsible gambling',zh:'负责任博彩',pos:'n.'},
+  {id:135,cat:'C',en:'self-exclusion',zh:'自我排除',pos:'n.'},
+  {id:136,cat:'C',en:'account suspension',zh:'账户暂停',pos:'n.'},
+  {id:137,cat:'C',en:'verification',zh:'身份核实',pos:'n.'},
+  {id:138,cat:'C',en:'limit',zh:'投注限额',pos:'n.'},
+  {id:139,cat:'C',en:'currency',zh:'货币',pos:'n.'},
+  {id:140,cat:'C',en:'payment gateway',zh:'支付网关',pos:'n.'},
+  {id:141,cat:'C',en:'wallet',zh:'电子钱包',pos:'n.'},
+  {id:142,cat:'C',en:'affiliate',zh:'推广合作商',pos:'n.'},
+  {id:143,cat:'C',en:'GGR',zh:'总博彩收入',pos:'n.'},
+  {id:144,cat:'C',en:'NGR',zh:'净博彩收入',pos:'n.'},
+  {id:145,cat:'C',en:'RTP',zh:'玩家返还率',pos:'n.'},
+  {id:146,cat:'C',en:'volatility',zh:'波动性',pos:'n.'},
+  {id:147,cat:'C',en:'multiplier',zh:'倍数',pos:'n.'},
+  {id:148,cat:'C',en:'wild',zh:'百搭符号',pos:'n.'},
+  {id:149,cat:'C',en:'bet slip',zh:'投注单',pos:'n.'},
+  {id:150,cat:'C',en:'spin',zh:'旋转/一局',pos:'n./v.'},
+  {id:151,cat:'D',en:'sprint',zh:'冲刺周期',pos:'n.'},
+  {id:152,cat:'D',en:'backlog',zh:'待办列表',pos:'n.'},
+  {id:153,cat:'D',en:'ticket',zh:'工单',pos:'n.'},
+  {id:154,cat:'D',en:'issue',zh:'任务单',pos:'n.'},
+  {id:155,cat:'D',en:'epic',zh:'大功能块',pos:'n.'},
+  {id:156,cat:'D',en:'user story',zh:'用户故事',pos:'n.'},
+  {id:157,cat:'D',en:'milestone',zh:'里程碑',pos:'n.'},
+  {id:158,cat:'D',en:'deadline',zh:'截止日期',pos:'n.'},
+  {id:159,cat:'D',en:'deliverable',zh:'交付物',pos:'n.'},
+  {id:160,cat:'D',en:'requirement',zh:'需求',pos:'n.'},
+  {id:161,cat:'D',en:'specification',zh:'规格说明',pos:'n.'},
+  {id:162,cat:'D',en:'scope',zh:'项目范围',pos:'n.'},
+  {id:163,cat:'D',en:'estimate',zh:'工时估算',pos:'v./n.'},
+  {id:164,cat:'D',en:'velocity',zh:'迭代速度',pos:'n.'},
+  {id:165,cat:'D',en:'standup',zh:'站立会议',pos:'n.'},
+  {id:166,cat:'D',en:'retrospective',zh:'复盘会',pos:'n.'},
+  {id:167,cat:'D',en:'demo',zh:'演示',pos:'n./v.'},
+  {id:168,cat:'D',en:'code review',zh:'代码评审',pos:'n.'},
+  {id:169,cat:'D',en:'approval',zh:'审批',pos:'n.'},
+  {id:170,cat:'D',en:'escalate',zh:'上报处理',pos:'v.'},
+  {id:171,cat:'D',en:'handover',zh:'工作交接',pos:'n./v.'},
+  {id:172,cat:'D',en:'follow up',zh:'跟进',pos:'v./n.'},
+  {id:173,cat:'D',en:'clarify',zh:'澄清',pos:'v.'},
+  {id:174,cat:'D',en:'feasibility',zh:'可行性',pos:'n.'},
+  {id:175,cat:'D',en:'trade-off',zh:'权衡取舍',pos:'n.'},
+  {id:176,cat:'D',en:'rollout',zh:'逐步发布',pos:'n./v.'},
+  {id:177,cat:'D',en:'go-live',zh:'上线',pos:'n./v.'},
+  {id:178,cat:'D',en:'stakeholder',zh:'利益相关方',pos:'n.'},
+  {id:179,cat:'D',en:'product owner',zh:'产品负责人',pos:'n.'},
+  {id:180,cat:'D',en:'roadmap',zh:'产品路线图',pos:'n.'},
+  {id:181,cat:'D',en:'agile',zh:'敏捷开发',pos:'n./adj.'},
+  {id:182,cat:'D',en:'iteration',zh:'迭代',pos:'n.'},
+  {id:183,cat:'D',en:'blockers',zh:'阻碍项',pos:'n.'},
+  {id:184,cat:'D',en:'daily scrum',zh:'每日站会',pos:'n.'},
+  {id:185,cat:'D',en:'sprint review',zh:'冲刺评审',pos:'n.'},
+  {id:186,cat:'D',en:'burndown',zh:'燃尽图',pos:'n.'},
+  {id:187,cat:'D',en:'capacity',zh:'工作容量',pos:'n.'},
+  {id:188,cat:'D',en:'definition of done',zh:'完成标准',pos:'n.'},
+  {id:189,cat:'D',en:'impact analysis',zh:'影响分析',pos:'n.'},
+  {id:190,cat:'D',en:'release plan',zh:'发布计划',pos:'n.'},
+  {id:191,cat:'E',en:'timezone',zh:'时区',pos:'n.'},
+  {id:192,cat:'E',en:'availability',zh:'空档时间',pos:'n.'},
+  {id:193,cat:'E',en:'sync up',zh:'同步信息',pos:'v.'},
+  {id:194,cat:'E',en:'loop in',zh:'拉人进沟通',pos:'v.'},
+  {id:195,cat:'E',en:'heads up',zh:'提前通知',pos:'n.'},
+  {id:196,cat:'E',en:'FYI',zh:'仅供参考',pos:'abbr.'},
+  {id:197,cat:'E',en:'ASAP',zh:'尽快',pos:'abbr.'},
+  {id:198,cat:'E',en:'EOD',zh:'今天下班前',pos:'abbr.'},
+  {id:199,cat:'E',en:'ETA',zh:'预计完成时间',pos:'abbr.'},
+  {id:200,cat:'E',en:'LGTM',zh:'没问题/我批准',pos:'abbr.'},
+  {id:201,cat:'E',en:'TBD',zh:'待定',pos:'abbr.'},
+  {id:202,cat:'E',en:'OOO',zh:'不在办公室',pos:'abbr.'},
+  {id:203,cat:'E',en:'bandwidth',zh:'工作余力',pos:'n.'},
+  {id:204,cat:'E',en:'bottleneck',zh:'瓶颈',pos:'n.'},
+  {id:205,cat:'E',en:'alignment',zh:'达成共识',pos:'n.'},
+  {id:206,cat:'E',en:'visibility',zh:'透明度',pos:'n.'},
+  {id:207,cat:'E',en:'proactive',zh:'主动的',pos:'adj.'},
+  {id:208,cat:'E',en:'concise',zh:'简洁的',pos:'adj.'},
+  {id:209,cat:'E',en:'transparent',zh:'透明的',pos:'adj.'},
+  {id:210,cat:'E',en:'reliable',zh:'可靠的',pos:'adj.'},
+  {id:211,cat:'E',en:'responsive',zh:'及时回应的',pos:'adj.'},
+  {id:212,cat:'E',en:'initiative',zh:'主动性',pos:'n.'},
+  {id:213,cat:'E',en:'counterpart',zh:'对接方',pos:'n.'},
+  {id:214,cat:'E',en:'offshore team',zh:'海外团队',pos:'n.'},
+  {id:215,cat:'E',en:'remote work',zh:'远程工作',pos:'n.'},
+  {id:216,cat:'E',en:'conference call',zh:'电话会议',pos:'n.'},
+  {id:217,cat:'E',en:'meeting minutes',zh:'会议纪要',pos:'n.'},
+  {id:218,cat:'E',en:'action item',zh:'待办事项',pos:'n.'},
+  {id:219,cat:'E',en:'agenda',zh:'议程',pos:'n.'},
+  {id:220,cat:'E',en:'on my radar',zh:'在我关注中',pos:'phr.'},
+  {id:221,cat:'E',en:'take ownership',zh:'负责到底',pos:'phr.'},
+  {id:222,cat:'E',en:'reach out',zh:'主动联系',pos:'phr.'},
+  {id:223,cat:'E',en:'touch base',zh:'简单沟通',pos:'phr.'},
+  {id:224,cat:'E',en:'circle back',zh:'稍后再跟进',pos:'phr.'},
+  {id:225,cat:'E',en:'wrap up',zh:'收尾/结束',pos:'phr.'},
+  {id:226,cat:'E',en:'walk through',zh:'逐步讲解',pos:'phr.'},
+  {id:227,cat:'E',en:'sign off',zh:'批准/下线了',pos:'phr.'},
+  {id:228,cat:'E',en:'on track',zh:'按计划推进',pos:'adj.'},
+  {id:229,cat:'E',en:'behind schedule',zh:'进度滞后',pos:'adj.'},
+  {id:230,cat:'E',en:'ahead of schedule',zh:'提前完成',pos:'adj.'},
+  {id:231,cat:'E',en:'ping',zh:'发消息联系',pos:'v.'},
+  {id:232,cat:'E',en:'asynchronous communication',zh:'异步沟通',pos:'n.'},
+  {id:233,cat:'E',en:'get on the same page',zh:'达成共识',pos:'phr.'},
+  {id:234,cat:'E',en:'cc',zh:'抄送',pos:'v./n.'},
+  {id:235,cat:'E',en:'escalation path',zh:'问题上报路径',pos:'n.'},
+  {id:236,cat:'F',en:'SSL/TLS',zh:'安全传输协议',pos:'n.'},
+  {id:237,cat:'F',en:'firewall',zh:'防火墙',pos:'n.'},
+  {id:238,cat:'F',en:'vulnerability',zh:'安全漏洞',pos:'n.'},
+  {id:239,cat:'F',en:'penetration test',zh:'渗透测试',pos:'n.'},
+  {id:240,cat:'F',en:'data breach',zh:'数据泄露',pos:'n.'},
+  {id:241,cat:'F',en:'GDPR',zh:'欧盟数据保护条例',pos:'n.'},
+  {id:242,cat:'F',en:'privacy policy',zh:'隐私政策',pos:'n.'},
+  {id:243,cat:'F',en:'data retention',zh:'数据保留',pos:'n.'},
+  {id:244,cat:'F',en:'audit log',zh:'审计日志',pos:'n.'},
+  {id:245,cat:'F',en:'access control',zh:'访问控制',pos:'n.'},
+  {id:246,cat:'F',en:'two-factor authentication',zh:'双因素认证',pos:'n.'},
+  {id:247,cat:'F',en:'single sign-on',zh:'单点登录',pos:'n.'},
+  {id:248,cat:'F',en:'session',zh:'会话',pos:'n.'},
+  {id:249,cat:'F',en:'certificate',zh:'数字证书',pos:'n.'},
+  {id:250,cat:'F',en:'whitelist',zh:'白名单',pos:'n.'},
+  {id:251,cat:'F',en:'blacklist',zh:'黑名单',pos:'n.'},
+  {id:252,cat:'F',en:'rate limiting',zh:'速率限制',pos:'n.'},
+  {id:253,cat:'F',en:'CORS',zh:'跨域资源共享',pos:'n.'},
+  {id:254,cat:'F',en:'XSS',zh:'跨站脚本攻击',pos:'n.'},
+  {id:255,cat:'F',en:'SQL injection',zh:'SQL注入',pos:'n.'},
+  {id:256,cat:'F',en:'phishing',zh:'网络钓鱼',pos:'n.'},
+  {id:257,cat:'F',en:'IP ban',zh:'IP封禁',pos:'n.'},
+  {id:258,cat:'F',en:'geolocation',zh:'地理定位',pos:'n.'},
+  {id:259,cat:'F',en:'VPN',zh:'虚拟私人网络',pos:'n.'},
+  {id:260,cat:'F',en:'data masking',zh:'数据脱敏',pos:'n.'},
+  {id:261,cat:'F',en:'encryption key',zh:'加密密钥',pos:'n.'},
+  {id:262,cat:'F',en:'regulatory compliance',zh:'法规合规',pos:'n.'},
+  {id:263,cat:'F',en:'audit trail',zh:'审计追踪',pos:'n.'},
+  {id:264,cat:'F',en:'data integrity',zh:'数据完整性',pos:'n.'},
+  {id:265,cat:'F',en:'breach notification',zh:'数据泄露通知',pos:'n.'},
+  {id:266,cat:'G',en:'architecture',zh:'系统架构',pos:'n.'},
+  {id:267,cat:'G',en:'redundancy',zh:'冗余',pos:'n.'},
+  {id:268,cat:'G',en:'failover',zh:'故障切换',pos:'n.'},
+  {id:269,cat:'G',en:'disaster recovery',zh:'灾难恢复',pos:'n.'},
+  {id:270,cat:'G',en:'CDN',zh:'内容分发网络',pos:'n.'},
+  {id:271,cat:'G',en:'DNS',zh:'域名系统',pos:'n.'},
+  {id:272,cat:'G',en:'throughput',zh:'吞吐量',pos:'n.'},
+  {id:273,cat:'G',en:'concurrency',zh:'并发',pos:'n.'},
+  {id:274,cat:'G',en:'thread',zh:'线程',pos:'n.'},
+  {id:275,cat:'G',en:'queue',zh:'消息队列',pos:'n.'},
+  {id:276,cat:'G',en:'event-driven',zh:'事件驱动',pos:'adj.'},
+  {id:277,cat:'G',en:'webhook',zh:'网络钩子',pos:'n.'},
+  {id:278,cat:'G',en:'socket',zh:'套接字',pos:'n.'},
+  {id:279,cat:'G',en:'proxy',zh:'代理',pos:'n.'},
+  {id:280,cat:'G',en:'reverse proxy',zh:'反向代理',pos:'n.'},
+  {id:281,cat:'G',en:'gateway',zh:'网关',pos:'n.'},
+  {id:282,cat:'G',en:'monolith',zh:'单体应用',pos:'n.'},
+  {id:283,cat:'G',en:'README',zh:'说明文档',pos:'n.'},
+  {id:284,cat:'G',en:'changelog',zh:'更新日志',pos:'n.'},
+  {id:285,cat:'G',en:'API documentation',zh:'接口文档',pos:'n.'},
+  {id:286,cat:'G',en:'release notes',zh:'发布说明',pos:'n.'},
+  {id:287,cat:'G',en:'flowchart',zh:'流程图',pos:'n.'},
+  {id:288,cat:'G',en:'wireframe',zh:'线框图',pos:'n.'},
+  {id:289,cat:'G',en:'prototype',zh:'原型',pos:'n.'},
+  {id:290,cat:'G',en:'glossary',zh:'术语表',pos:'n.'},
+  {id:291,cat:'G',en:'troubleshoot',zh:'故障排查',pos:'v.'},
+  {id:292,cat:'G',en:'server cluster',zh:'服务器集群',pos:'n.'},
+  {id:293,cat:'G',en:'codebase',zh:'代码库',pos:'n.'},
+  {id:294,cat:'G',en:'technical debt',zh:'技术债务',pos:'n.'},
+  {id:295,cat:'G',en:'documentation',zh:'文档',pos:'n.'},
+  {id:296,cat:'G',en:'deprecate',zh:'废弃功能',pos:'v.'},
+  {id:297,cat:'G',en:'legacy code',zh:'遗留代码',pos:'n.'},
+  {id:298,cat:'G',en:'code smell',zh:'代码坏味道',pos:'n.'},
+  {id:299,cat:'G',en:'best practice',zh:'最佳实践',pos:'n.'},
+  {id:300,cat:'G',en:'maintainability',zh:'可维护性',pos:'n.'},
+];
+
+const CATS=[
+  {id:'A',name:'软件开发',en:'Dev Core',count:55,grad:'jcg1'},
+  {id:'B',name:'测试质量',en:'QA Testing',count:35,grad:'jcg2'},
+  {id:'C',name:'博彩行业',en:'iGaming',count:60,grad:'jcg3'},
+  {id:'D',name:'敏捷管理',en:'Agile PM',count:40,grad:'jcg4'},
+  {id:'E',name:'跨国沟通',en:'Global Comms',count:45,grad:'jcg5'},
+  {id:'F',name:'安全合规',en:'Security',count:30,grad:'jcg6'},
+  {id:'G',name:'系统架构',en:'Architecture',count:35,grad:'jcg7'},
+];
+const MODES=[
+  {id:'flash',name:'闪卡认词',desc:'英文→翻转看中文，快速刷',pts:5,ptsLabel:'+5 分/词',
+    dotBg:'linear-gradient(145deg,#EED068,#E8A020)'},
+  {id:'mcq',name:'四选一',desc:'看中文，选正确英文',pts:10,ptsLabel:'+10 分/词',
+    dotBg:'linear-gradient(145deg,#EEB878,#E89038)'},
+  {id:'spell',name:'拼写英文',desc:'看中文，打出英文',pts:20,ptsLabel:'+20 分/词',
+    dotBg:'linear-gradient(145deg,#EEA080,#E86248)'},
+];
+const LEVELS=[
+  {name:'小码',min:0},{name:'初级',min:300},
+  {name:'中级',min:800},{name:'高级',min:1800},
+  {name:'码爷',min:3500},{name:'码神',min:6000},
+];
+const SB='https://ghunrrtrdgicbmixsqrc.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.P5ixZCEYtAkEtFjnHDweVHClLIrFcE2CxHt1eTMyNuQ';
+const SH={apikey:SK,Authorization:'Bearer '+SK};
+
+// ── STATE ──
+let G={pool:[],cur:0,score:0,combo:0,maxCombo:0,got:0,wrong:0,
+       mode:'mcq',cat:'A',flipped:false,answered:false};
+let retryIdx=-1;
+
+// ── STORAGE ──
+const pts=()=>parseInt(localStorage.getItem('jc_prog_vocab_pts')||'0');
+const plays=()=>parseInt(localStorage.getItem('jc_prog_vocab_plays')||'0');
+const levelOf=p=>{let lv=LEVELS[0];for(const l of LEVELS)if(p>=l.min)lv=l;return lv;};
+const nextLv=p=>LEVELS.find(l=>l.min>p)||null;
+const getErrors=()=>JSON.parse(localStorage.getItem('jc_prog_errors')||'[]');
+const saveErrors=arr=>localStorage.setItem('jc_prog_errors',JSON.stringify(arr));
+const todayKey=()=>'jc_prog_daily_'+new Date().toISOString().split('T')[0];
+const dailyDone=()=>!!localStorage.getItem(todayKey());
+
+// ── AUDIO ──
+let ac;
+function _beep(f,t,v){try{if(!ac)ac=new(window.AudioContext||window.webkitAudioContext)();
+  const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);
+  o.frequency.value=f;g.gain.setValueAtTime(v||.18,ac.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+t);
+  o.start();o.stop(ac.currentTime+t);}catch(e){}}
+const sfx={ok:()=>{_beep(660,.07);setTimeout(()=>_beep(880,.1),80)},
+  err:()=>{_beep(200,.28,.15)},flip:()=>{_beep(440,.06,.1)},
+  combo:n=>{_beep(440+n*80,.1);setTimeout(()=>_beep(600+n*60,.12),90)},
+  win:()=>{[523,659,784].forEach((f,i)=>setTimeout(()=>_beep(f,.15),i*110))}};
+
+// ── UTILS ──
+function shuf(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function lev(a,b){const m=a.length,n=b.length,d=[];for(let i=0;i<=m;i++){d[i]=Array(n+1);for(let j=0;j<=n;j++)d[i][j]=i?j?0:i:j;}for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=a[i-1]===b[j-1]?d[i-1][j-1]:1+Math.min(d[i-1][j],d[i][j-1],d[i-1][j-1]);return d[m][n];}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function seededShuf(arr,seed){const a=[...arr];let s=seed;for(let i=a.length-1;i>0;i--){s=(s*1664525+1013904223)&0xFFFFFFFF;const j=Math.abs(s)%(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function showV(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById(id).classList.add('on');}
+
+// ── SUPABASE ──
+async function syncScore(add){
+  const nm=localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name');
+  if(!nm||add<=0)return;
+  const nv=pts()+add;
+  localStorage.setItem('jc_prog_vocab_pts',nv);
+  localStorage.setItem('jc_prog_vocab_plays',plays()+1);
+  const spk=parseInt(localStorage.getItem('jc_prog_speak_pts')||'0');
+  const oral=parseInt(localStorage.getItem('jc_prog_oral_pts')||'0');
+  try{await fetch(SB+'/rest/v1/programmer_scores',{method:'POST',
+    headers:{...SH,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},
+    body:JSON.stringify({user_name:nm,score:spk+oral+nv})});}catch(e){}
+}
+async function loadLB(){
+  const w=document.getElementById('lb-wrap');
+  w.innerHTML='<div class="foot">加载中…</div>';
+  const nm=localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name')||'';
+  try{
+    const r=await fetch(SB+'/rest/v1/programmer_scores?select=user_name,score&order=score.desc&limit=20',{headers:SH});
+    const d=await r.json();
+    if(!Array.isArray(d)||!d.length){w.innerHTML='<div class="empty">还没人上榜，抢第一！</div>';return;}
+    const rk=['r1','r2','r3'];
+    w.innerHTML=d.map((row,i)=>`<div class="lb-row${row.user_name===nm?' me':''}">
+      <div class="lb-rank ${rk[i]||''}">${i+1}</div>
+      <span class="lb-name">${esc(row.user_name)}</span>
+      <span class="lb-pts">${row.score}</span></div>`).join('');
+  }catch(e){w.innerHTML='<div class="empty">加载失败，请重试</div>';}
+}
+
+// ── HOME ──
+function buildHome(){
+  const p=pts(),lv=levelOf(p),nx=nextLv(p);
+  const pct=nx?Math.round((p-lv.min)/(nx.min-lv.min)*100):100;
+  document.getElementById('h-pts').textContent=p;
+  document.getElementById('h-level').textContent=lv.name;
+  document.getElementById('h-prog').style.width=pct+'%';
+  // 错词本 badge
+  const ec=getErrors().length;
+  const errBtn=document.getElementById('btn-errors');
+  const oldBadge=errBtn.querySelector('.jc-key-badge');
+  if(oldBadge)oldBadge.remove();
+  if(ec>0){const b=document.createElement('div');b.className='jc-key-badge';b.textContent=ec>9?'9+':ec;errBtn.appendChild(b);}
+  // 今日挑战 状态
+  const dBtn=document.getElementById('btn-daily');
+  if(dailyDone())dBtn.style.opacity='.45';
+  else dBtn.style.opacity='1';
+  // 分类书架
+  const grads=['jcg1','jcg2','jcg3','jcg4','jcg5','jcg6','jcg7'];
+  let html='';
+  for(let i=0;i<CATS.length;i+=2){
+    const pair=CATS.slice(i,i+2);
+    let cards='';
+    pair.forEach((c,idx)=>{
+      const ci=i+idx;
+      cards+=`<div class="jc-card ${grads[ci]}" onclick="goMode('${c.id}')">
+        <div class="jc-ci">
+          <div class="jc-eye">${c.en}</div>
+          <div class="jc-bigname">${c.name}</div>
+          <div class="jc-cpct">${c.count} 词</div>
+        </div>
+      </div>`;
+    });
+    html+=`<section class="jc-shelf">
+      <div class="jc-sgrid">${cards}</div>
+      <div class="jc-sbar"></div>
+    </section>${i+2<CATS.length?'<div class="jc-sgap"></div>':''}`;
+  }
+  document.getElementById('cat-shelves').innerHTML=html;
+}
+function goHome(){buildHome();showV('v-home');}
+
+// ── MODE SELECT ──
+function goMode(catId){
+  const cat=catId==='all'?{name:'全部 300 词',count:300}:CATS.find(c=>c.id===catId);
+  G.cat=catId;
+  document.getElementById('mode-bar-title').textContent=cat.name;
+  document.getElementById('mode-cnt').textContent=cat.count+' 词';
+  document.getElementById('mode-list').innerHTML=MODES.map((m,i)=>`
+    <div class="mode-card" onclick="startQuiz('${catId}','${m.id}')">
+      <div class="mode-dot" style="background:${m.dotBg}">${i+1}</div>
+      <div class="mode-tx">
+        <span class="mode-name">${m.name}</span>
+        <div class="mode-desc">${m.desc}</div>
+      </div>
+      <div class="mode-pts">${m.ptsLabel}</div>
+    </div>`).join('');
+  showV('v-mode');
+}
+
+// ── QUIZ ──
+function startQuiz(catId,modeId){
+  const raw=catId==='all'?[...WORDS]:WORDS.filter(w=>w.cat===catId);
+  const pool=shuf(raw);
+  G={...G,pool,cur:0,score:0,combo:0,maxCombo:0,got:0,wrong:0,
+     mode:modeId,cat:catId,flipped:false,answered:false};
+  const mn=MODES.find(m=>m.id===modeId)?.name||'';
+  const cn=catId==='all'?'全部':CATS.find(c=>c.id===catId)?.name||'';
+  document.getElementById('q-title').textContent=cn+' · '+mn;
+  showV('v-quiz');renderQ();
+}
+function retryQuiz(){startQuiz(G.cat,G.mode);}
+function exitQuiz(){goMode(G.cat);}
+
+function updateBar(){
+  const tot=G.pool.length;
+  document.getElementById('q-prog').textContent=(G.cur+1)+'/'+tot;
+  document.getElementById('q-score').textContent=G.score+' 分';
+  document.getElementById('q-fill').style.width=Math.round(G.cur/tot*100)+'%';
+}
+function renderQ(){
+  if(G.cur>=G.pool.length){endQuiz();return;}
+  G.flipped=false;G.answered=false;
+  updateBar();
+  const w=G.pool[G.cur],body=document.getElementById('q-body');
+  if(G.mode==='flash')renderFlash(w,body);
+  else if(G.mode==='mcq')renderMCQ(w,body);
+  else renderSpell(w,body);
+}
+function addError(w,wrong){
+  const errs=getErrors();
+  const ex=errs.find(e=>e.id===w.id);
+  if(ex){ex.wrong=wrong;}
+  else errs.unshift({id:w.id,en:w.en,zh:w.zh,pos:w.pos,cat:w.cat,wrong});
+  saveErrors(errs);
+}
+
+// ── FLASH ──
+function renderFlash(w,body){
+  body.innerHTML=`
+    <div class="flip-wrap" onclick="doFlip()" id="fw">
+      <div class="flip-inner" id="fi">
+        <div class="flip-face">
+          <div class="qcard-pos">${w.pos}</div>
+          <div class="qcard-en">${w.en}</div>
+          <div class="qcard-hint">点击翻转</div>
+        </div>
+        <div class="flip-face flip-back">
+          <div class="qcard-pos">${w.pos}</div>
+          <div class="qcard-zh">${w.zh}</div>
+          <div class="qcard-sub">${w.en}</div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-spacer"></div>
+    <div id="fa" style="display:none">
+      <div class="flip-btns">
+        <button class="flip-btn nope" onclick="rateFlash(false)">没记住 +0</button>
+        <button class="flip-btn know" onclick="rateFlash(true)">记住了 +5</button>
+      </div>
+    </div>`;
+}
+function doFlip(){if(G.flipped)return;G.flipped=true;sfx.flip();
+  document.getElementById('fi').classList.add('flipped');
+  setTimeout(()=>document.getElementById('fa').style.display='block',430);}
+function rateFlash(knew){if(G.answered)return;G.answered=true;
+  if(knew){G.score+=5;G.got++;G.combo++;G.maxCombo=Math.max(G.maxCombo,G.combo);sfx.ok();if(G.combo>=5)showCombo(G.combo);}
+  else{G.combo=0;G.wrong++;sfx.err();}
+  setTimeout(adv,320);}
+
+// ── MCQ ──
+function renderMCQ(w,body){
+  const wrongs=shuf(WORDS.filter(x=>x.id!==w.id)).slice(0,3);
+  const opts=shuf([{w,ok:true},...wrongs.map(x=>({w:x,ok:false}))]);
+  body.innerHTML=`
+    <div class="qcard">
+      <div class="qcard-pos">${w.pos}</div>
+      <div class="qcard-zh">${w.zh}</div>
+    </div>
+    <div class="opts">${opts.map(o=>`<button class="opt" onclick="doMCQ(this,${o.ok},'${esc(w.en)}')">${esc(o.w.en)}</button>`).join('')}</div>
+    <div class="fbk" id="fbk">
+      <div class="fbk-row"><span class="fbk-icon" id="fbk-ic"></span><span class="fbk-txt" id="fbk-tx"></span></div>
+      <div class="fbk-sub" id="fbk-sub"></div>
+    </div>`;
+}
+function doMCQ(btn,isOk,correct){if(G.answered)return;G.answered=true;
+  document.querySelectorAll('.opt').forEach(b=>{
+    if(b===btn)b.classList.add(isOk?'right':'wrong');
+    else if(b.textContent.trim()===correct)b.classList.add('right');
+    else b.classList.add('dim');
+  });
+  const fbk=document.getElementById('fbk');
+  fbk.className='fbk '+(isOk?'ok':'no');fbk.style.display='block';
+  document.getElementById('fbk-ic').textContent=isOk?'✓':'✗';
+  document.getElementById('fbk-tx').textContent=isOk?'正确！+10 分':'答案不对';
+  document.getElementById('fbk-sub').textContent=isOk?'':'正确答案：'+correct;
+  if(isOk){G.score+=10;G.got++;G.combo++;G.maxCombo=Math.max(G.maxCombo,G.combo);sfx.ok();if(G.combo>=3)showCombo(G.combo);}
+  else{const w=G.pool[G.cur];addError(w,'（选错）');G.combo=0;G.wrong++;sfx.err();}
+  setTimeout(adv,1100);}
+
+// ── SPELL ──
+function renderSpell(w,body){
+  body.innerHTML=`
+    <div class="qcard">
+      <div class="qcard-pos">${w.pos}</div>
+      <div class="qcard-zh">${w.zh}</div>
+    </div>
+    <div class="spell-row">
+      <input class="spell-in" id="si" type="text" placeholder="输入英文…"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <button class="spell-sub" id="ss" onclick="doSpell()">提交</button>
+    </div>
+    <div class="fbk" id="fbk">
+      <div class="fbk-row"><span class="fbk-icon" id="fbk-ic"></span><span class="fbk-txt" id="fbk-tx"></span></div>
+      <div class="fbk-sub" id="fbk-sub"></div>
+    </div>`;
+  setTimeout(()=>{const el=document.getElementById('si');if(el)el.focus();},80);
+  document.getElementById('si').addEventListener('keydown',e=>{if(e.key==='Enter')doSpell();});
+}
+function chkSpell(v,w){
+  const u=v.trim().toLowerCase().replace(/[^a-z0-9\s\/\-\.]/g,'');
+  const a=w.en.toLowerCase().trim();
+  if(u===a)return true;
+  if(/^[A-Z0-9\/]+$/.test(w.en))return false;
+  if(a.length>=6&&lev(u,a)<=1)return true;
+  return false;
+}
+function doSpell(){if(G.answered)return;
+  const inp=document.getElementById('si'),ss=document.getElementById('ss');
+  if(!inp.value.trim())return;
+  G.answered=true;inp.disabled=true;ss.disabled=true;
+  const w=G.pool[G.cur],isOk=chkSpell(inp.value,w);
+  const fbk=document.getElementById('fbk');
+  fbk.className='fbk '+(isOk?'ok':'no');fbk.style.display='block';
+  document.getElementById('fbk-ic').textContent=isOk?'✓':'✗';
+  document.getElementById('fbk-tx').textContent=isOk?'正确！+20 分':'拼写有误';
+  document.getElementById('fbk-sub').textContent=isOk?'':'正确答案：'+w.en;
+  if(isOk){G.score+=20;G.got++;G.combo++;G.maxCombo=Math.max(G.maxCombo,G.combo);sfx.ok();if(G.combo>=3)showCombo(G.combo);}
+  else{addError(w,inp.value||'（空）');G.combo=0;G.wrong++;sfx.err();}
+  setTimeout(adv,isOk?700:1400);}
+
+// ── COMBO ──
+let _ct;
+function showCombo(n){const el=document.getElementById('combo-toast');
+  el.textContent=n+'连击！';el.classList.add('show');sfx.combo(n);
+  clearTimeout(_ct);_ct=setTimeout(()=>el.classList.remove('show'),1200);}
+
+function adv(){G.cur++;renderQ();}
+
+// ── END ──
+function endQuiz(){
+  const tot=G.pool.length,pct=Math.round(G.got/tot*100);
+  sfx.win();syncScore(G.score);
+  const isDaily=G._daily;
+  if(isDaily){localStorage.setItem(todayKey(),'1');}
+  let badge,msg;
+  if(pct>=90){badge='★';msg='码神级！外方同事都要服你！';}
+  else if(pct>=70){badge='✓';msg='不错！再刷两遍就彻底稳了！';}
+  else if(pct>=50){badge='→';msg='有进步！这批词值得继续磨！';}
+  else{badge='↑';msg='刚起步没关系，多刷几遍见效快！';}
+  document.getElementById('r-badge').textContent=badge;
+  document.getElementById('r-title').textContent=isDaily?'今日挑战完成！':'本轮结束！';
+  document.getElementById('r-score').textContent=G.score;
+  document.getElementById('r-got').textContent=G.got+'/'+tot;
+  document.getElementById('r-combo').textContent=G.maxCombo+'连';
+  document.getElementById('r-total').textContent=tot+'词';
+  document.getElementById('r-msg').textContent=msg;
+  showV('v-result');
+}
+
+// ── DAILY CHALLENGE ──
+function showDaily(){
+  if(dailyDone()){
+    alert('今天的挑战已经完成了，明天再来！');return;
+  }
+  // 用日期作为种子选20个词
+  const seed=parseInt(new Date().toISOString().split('T')[0].replace(/-/g,''));
+  const pool=seededShuf([...WORDS],seed).slice(0,20);
+  G={...G,pool,cur:0,score:0,combo:0,maxCombo:0,got:0,wrong:0,
+     mode:'mcq',cat:'daily',flipped:false,answered:false,_daily:true};
+  document.getElementById('q-title').textContent='今日挑战';
+  showV('v-quiz');renderQ();
+}
+
+// ── ERROR BANK ──
+function showErrors(){
+  const errs=getErrors();
+  document.getElementById('err-cnt').textContent=errs.length?errs.length+' 题':'';
+  const catName=id=>CATS.find(c=>c.id===id)?.name||id;
+  const el=document.getElementById('elist');
+  if(!errs.length){el.innerHTML='<div class="empty">错词本是空的，实力超群！</div>';showV('v-errors');return;}
+  el.innerHTML=errs.map((e,i)=>`<div class="eitem">
+    <div class="ecat">${catName(e.cat)}</div>
+    <div class="eword">${esc(e.en)}</div>
+    <div class="ezh">${esc(e.zh)} · ${esc(e.pos)}</div>
+    <div class="ewrong">上次：${esc(e.wrong)}</div>
+    <button class="retrybtn" onclick="openRetry(${i})">重做这题</button>
+  </div>`).join('');
+  showV('v-errors');
+}
+function openRetry(idx){
+  retryIdx=idx;const e=getErrors()[idx];
+  document.getElementById('ret-cat').textContent=CATS.find(c=>c.id===e.cat)?.name||e.cat;
+  document.getElementById('ret-word').textContent=e.zh;
+  document.getElementById('ret-zh').textContent=e.pos;
+  const inp=document.getElementById('ret-in');
+  inp.value='';inp.disabled=false;
+  document.getElementById('ret-sub').disabled=false;
+  document.getElementById('ret-fbk').style.display='none';
+  document.getElementById('ret-fbk').className='ret-fbk';
+  document.getElementById('ret-nxt').style.display='none';
+  document.getElementById('ret-ov').classList.add('on');
+  setTimeout(()=>inp.focus(),200);
+}
+function submitRetry(){
+  const errs=getErrors(),e=errs[retryIdx];
+  const val=document.getElementById('ret-in').value;
+  const isOk=chkSpell(val,e);
+  document.getElementById('ret-sub').disabled=true;
+  document.getElementById('ret-in').disabled=true;
+  const fbk=document.getElementById('ret-fbk');
+  fbk.style.display='block';
+  if(isOk){
+    fbk.className='ret-fbk ok';fbk.textContent='正确！已从错词本移除';
+    errs.splice(retryIdx,1);saveErrors(errs);sfx.ok();
+    syncScore(10);
+  }else{
+    fbk.className='ret-fbk no';fbk.textContent='还不对，正确答案：'+e.en;sfx.err();
+    errs[retryIdx].wrong=val||'（空）';saveErrors(errs);
+    setTimeout(()=>{
+      document.getElementById('ret-in').disabled=false;
+      document.getElementById('ret-sub').disabled=false;
+      document.getElementById('ret-in').value='';
+      document.getElementById('ret-in').focus();
+    },1800);
+  }
+  document.getElementById('ret-nxt').style.display='block';
+}
+function closeRetry(){document.getElementById('ret-ov').classList.remove('on');showErrors();}
+document.getElementById('ret-in').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!document.getElementById('ret-sub').disabled)submitRetry();});
+
+// ── MILESTONES ──
+function showMilestones(){
+  const p=pts(),pl=plays();
+  const MS=[
+    {label:'首次练习',desc:'完成第一轮词汇练习',done:pl>=1},
+    {label:'初入行',desc:'累计达到 100 分',done:p>=100},
+    {label:'有点东西',desc:'累计达到 500 分',done:p>=500},
+    {label:'能出去混了',desc:'累计达到 1000 分',done:p>=1000},
+    {label:'扛把子',desc:'累计达到 3000 分',done:p>=3000},
+    {label:'大神候选',desc:'累计达到 6000 分',done:p>=6000},
+    {label:'码神认证',desc:'累计达到 9000 分',done:p>=9000},
+    {label:'练习达人',desc:'练习超过 10 次',done:pl>=10},
+    {label:'词库入魔',desc:'练习超过 30 次',done:pl>=30},
+  ];
+  document.getElementById('ms-list').innerHTML=MS.map(m=>`
+    <div class="ms-card${m.done?' done':''}">
+      <div class="ms-icon">${m.done?'★':'○'}</div>
+      <div class="ms-tx">
+        <b>${m.label}</b>
+        <span>${m.desc}</span>
+      </div>
+    </div>`).join('');
+  showV('v-ms');
+}
+
+// ── LEADERBOARD ──
+function showLB(){showV('v-lb');loadLB();}
+
+// ── INIT ──
+buildHome();
+</script>
+</body>
+</html>
