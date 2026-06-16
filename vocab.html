@@ -3694,14 +3694,19 @@ const _sb = {
    // 周日为每周第一天（周六晚12点一过自动重置）
    var d=new Date(); d.setDate(d.getDate()-d.getDay());
    var ws=d.toISOString().split('T')[0];
-   // 先查已有记录的 id
-   var wkCheck=await fetch(SUPABASE_URL+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+ws+'&select=id&limit=1',
+   // 先查已有记录的 id 和 vocab_score，防多端登录覆盖高分
+   var wkCheck=await fetch(SUPABASE_URL+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+ws+'&select=id,vocab_score&limit=1',
     {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}});
    var vm = localStorage.getItem('jc_victory_msg')||'';
-   var wkPayload={user_name:name, week_start:ws, vocab_score:(weekScore||0), victory_msg:vm, updated_at:new Date().toISOString()};
+   var finalVocab = weekScore||0;
+   var wkPayload={user_name:name, week_start:ws, vocab_score:finalVocab, victory_msg:vm, updated_at:new Date().toISOString()};
    if(wkCheck.ok){
     var wkRows=await wkCheck.json();
-    if(wkRows&&wkRows.length>0) wkPayload.id=wkRows[0].id;
+    if(wkRows&&wkRows.length>0){
+     wkPayload.id=wkRows[0].id;
+     finalVocab = Math.max(wkRows[0].vocab_score||0, weekScore||0);
+     wkPayload.vocab_score = finalVocab;
+    }
    }
    await fetch(SUPABASE_URL+'/rest/v1/weekly_scores', {
     method:'POST',
