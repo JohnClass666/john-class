@@ -4004,6 +4004,132 @@ function _charOverlap(a,b){if(!a||!b)return 0;const sa=new Set(a),sb=new Set(b);
 // 编辑距离
 function _levenshtein(a,b){const m=a.length,n=b.length,dp=[];for(let i=0;i<=m;i++){dp[i]=new Array(n+1);for(let j=0;j<=n;j++)dp[i][j]=i?j?0:i:j;}for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);return dp[m][n];}
 
+
+/* ===== 本地语义扩展（无需 API，纯离线） ===== */
+// 多义词表：英文原形 → 所有常见中文义项（含课本未收录的义项）
+// 解决 earth→地球、spring→弹簧 等"答对了却判错"的问题
+const ZH_MULTI={
+  earth:['泥土','土壤','大地','地球','土地'],
+  spring:['春天','春季','春','弹跳','弹簧','泉水','泉'],
+  can:['能','可以','会','罐头','易拉罐'],
+  right:['对','正确','没错','右','右边','右侧'],
+  left:['左','左边','左侧','剩余','离开'],
+  light:['光','光线','灯','灯光','轻','轻的','浅色','浅'],
+  well:['好','健康','好吧','井','水井'],
+  fine:['好','不错','健康','精细','晴朗','罚款'],
+  kind:['种类','类','善良','友善','好心','好的'],
+  match:['比赛','火柴','匹配','相配','相同'],
+  fall:['秋天','秋季','秋','落下','摔倒','跌倒'],
+  back:['后面','后边','背','背部','返回','回来','支持'],
+  plant:['植物','花草','工厂','种植','种'],
+  close:['关','关闭','近','接近','亲近'],
+  cold:['冷','寒冷','感冒'],
+  fair:['公平','公正','集市','晴朗'],
+  hard:['难','困难','硬','坚硬','努力'],
+  fly:['飞','飞行','苍蝇'],
+  cool:['凉快','凉爽','酷','冷静'],
+  ground:['地面','地','土地','场地','理由'],
+  fire:['火','火灾','开枪','解雇','炒鱿鱼'],
+  break:['休息','打破','课间','课间休息','断'],
+  class:['班级','课','等级','阶层'],
+  clear:['清楚','清晰','晴朗','清除','透明'],
+  cross:['生气','穿越','越过','十字','十字路口'],
+  floor:['地板','地面','楼层'],
+  free:['免费','自由','空闲','有空'],
+  hold:['抓住','握住','容纳','举行'],
+  lead:['领导','领先','铅'],
+  mean:['意思','含义','平均','小气','刻薄'],
+  mind:['思维','脑','心','介意','注意'],
+  note:['笔记','便条','注意','钞票','纸币'],
+  order:['命令','顺序','点餐','秩序'],
+  ring:['响','铃声','戒指','圆圈','打电话'],
+  rock:['岩石','石头','摇滚','摇动'],
+  save:['保存','储存','节省','救','拯救'],
+  show:['展示','表演','节目','显示'],
+  store:['商店','储存','存放'],
+  top:['顶部','顶','最好的','最佳','陀螺'],
+  watch:['手表','观看','注意','看'],
+  wave:['波浪','波','挥手'],
+  work:['工作','起作用','运转','有效'],
+  point:['点','尖','指出','要点','分数','观点'],
+  sign:['标志','符号','签名','迹象','手势'],
+  mark:['标记','分数','做记号','痕迹','马克'],
+  past:['过去','以前','经过','路过'],
+  spot:['地点','地方','斑点','发现'],
+  star:['星星','星','明星','主演'],
+  bank:['银行','河岸','堤'],
+  case:['情况','案例','案件','箱子'],
+  check:['检查','核实','支票'],
+  run:['跑','运行','管理','经营'],
+  play:['玩','打','演奏','比赛','戏剧'],
+  hit:['打','击','命中','热门'],
+  park:['公园','停车'],
+  rest:['休息','其余','剩余','其他'],
+  set:['设置','一套','落下','放置'],
+  turn:['转','转向','轮到','变成'],
+  flat:['平坦','平的','公寓'],
+  draw:['画','绘画','拉','平局'],
+  cut:['切','剪','削减','伤口'],
+  fast:['快','快速','结实','禁食'],
+  date:['日期','日子','约会','枣'],
+  tip:['小费','提示','技巧','尖端','倾斜'],
+  fair:['公平','公正','集市','晴朗'],
+  place:['地方','地点','放置','名次','位置'],
+  press:['按','压','出版社','新闻界'],
+  fix:['修理','固定','解决'],
+  sharp:['锋利','尖锐','聪明','准时'],
+  last:['最后','上一个','持续','坚持'],
+  live:['住','生活','活着','现场'],
+  miss:['想念','错过','未中'],
+  lock:['锁','锁定','头发'],
+  bit:['一点','一些','钻头','比特'],
+};
+
+// 中文近义词组：同组内任意词互相等价
+const ZH_SYN=[
+  ['高兴','开心','快乐','愉快','欢乐','喜悦','高兴'],
+  ['难过','伤心','悲伤','难受','悲哀','痛苦'],
+  ['生气','愤怒','恼火','气愤','发怒','愤慨'],
+  ['害怕','恐惧','害怕','惊慌','惧怕'],
+  ['惊讶','惊奇','诧异','吃惊','震惊'],
+  ['漂亮','美丽','好看','美','靓丽'],
+  ['聪明','智慧','聪颖','机智','机灵'],
+  ['勇敢','勇气','大胆','无畏','英勇'],
+  ['有趣','好玩','有意思','趣味','好笑','搞笑'],
+  ['友善','友好','善良','亲切','和善','好心'],
+  ['重要','重大','关键','重要性'],
+  ['著名','有名','出名','知名','闻名'],
+  ['清楚','清晰','明白','明确'],
+  ['认真','仔细','细心','专心'],
+  ['安静','宁静','寂静','平静'],
+  ['帮助','辅助','援助','协助','支持'],
+  ['喜欢','热爱','爱','喜爱'],
+  ['知道','了解','明白','懂','清楚'],
+  ['需要','需求','必须','必要'],
+  ['正确','对','没错','准确'],
+  ['错误','错','不对','不正确'],
+  ['开始','起始','开头','起步'],
+  ['完成','结束','终止','完毕','结束'],
+  ['认为','觉得','感觉','感到'],
+  ['快','迅速','快速','飞快','敏捷'],
+  ['慢','缓慢','慢慢','迟缓'],
+  ['强','强大','强壮','有力','强力'],
+  ['保护','保卫','防护','守护'],
+  ['练习','训练','锻炼','复习'],
+  ['担心','担忧','忧虑','着急'],
+  ['普通','一般','平常','平凡'],
+  ['特别','特殊','非凡','独特'],
+  ['小心','谨慎','仔细','注意'],
+  ['改变','变化','变','改','更改'],
+  ['允许','准许','许可','同意'],
+  ['相信','信任','信','信赖'],
+  ['表演','演出','演技','表演'],
+  ['解释','说明','解说','阐述'],
+  ['收集','收','收藏','采集'],
+  ['停止','停','停下','终止'],
+  ['继续','坚持','持续','继续'],
+];
+
 function runSpellingQuiz(u,pool,i,acc,mode){
  if(i>=pool.length){
    const key=mode;
@@ -4043,16 +4169,37 @@ function runSpellingQuiz(u,pool,i,acc,mode){
    const v=normalize(val);if(!v)return false;
    if(isEn){const norm=normalize(w.en);if(norm===v)return true;if(norm.length>=5&&_levenshtein(norm,v)<=1)return true;return false;}
    const cleanV=val.trim().replace(/\s+/g,'');if(!cleanV)return false;
-   return w.s.some(x=>{
-     const raw=x[1].trim();const core=raw.replace(/[（(][^）)]*[）)]/g,'').replace(/[；;]\s*$/,'').trim();
-     const nCore=normalize(core),nRaw=normalize(raw);
-     if(nCore===v||nRaw===v)return true;
-     if(cleanV.length>=2&&(core.includes(cleanV)||raw.includes(cleanV)))return true;
+   // 单个短语匹配（去括号后的 core 与原始 raw 都试）
+   const matchPhrase=(phrase)=>{
+     if(!phrase)return false;
+     const core=phrase.replace(/[（(][^）)]*[）)]/g,'').replace(/[；;]\s*$/,'').trim();
+     const nCore=normalize(core),nPh=normalize(phrase);
+     if(nCore===v||nPh===v)return true;
+     if(cleanV.length>=1&&(core===cleanV||phrase===cleanV))return true;
+     if(cleanV.length>=2&&(core.includes(cleanV)||phrase.includes(cleanV)))return true;
      if(core.length>=2&&cleanV.includes(core))return true;
      if(cleanV.length>=2&&core.length>=2&&_charOverlap(cleanV,core)>=0.60)return true;
      if(nCore.length>=2&&nCore.length<=4&&_levenshtein(nCore,v)<=1)return true;
      return false;
-   });
+   };
+   // 第一关：比对数据库里存的所有释义（含逗号拆分后的分段）
+   if(w.s.some(x=>{
+     const raw=x[1].trim();
+     if(matchPhrase(raw))return true;
+     const segs=raw.split(/[，,；;\/、]/);
+     return segs.length>1&&segs.some(seg=>matchPhrase(seg.trim()));
+   }))return true;
+   // 第二关：多义词扩展表（同一英文单词的其他常见中文义项）
+   const enKey=w.en.toLowerCase().replace(/[^a-z]/g,'');
+   const alts=ZH_MULTI[enKey];
+   if(alts&&alts.some(alt=>cleanV===alt||(cleanV.length>=2&&alt.includes(cleanV))||(alt.length>=2&&cleanV.includes(alt))))return true;
+   // 第三关：中文近义词组（学生写了与标准答案等价的近义词）
+   const storedSegs=w.s.flatMap(x=>x[1].split(/[，,；;\/、]/)).map(s=>s.trim()).filter(Boolean);
+   for(const seg of storedSegs){
+     const grp=ZH_SYN.find(g=>g.some(syn=>seg===syn||seg.includes(syn)||(syn.length>=2&&seg.includes(syn))));
+     if(grp&&grp.some(syn=>cleanV===syn||(cleanV.length>=2&&syn.includes(cleanV))||(syn.length>=2&&cleanV.includes(syn))))return true;
+   }
+   return false;
  };
  const doSubmit=()=>{
    if(answered)return;const val=inp.value;if(!val.trim()){inp.focus();return;}
