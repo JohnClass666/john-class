@@ -1354,10 +1354,32 @@ window.addEventListener('resize', () => {
 // ══════════════════════════════════════════════════════════
 function showGrammarBoard(){
   document.getElementById('grammarBoardOverlay').style.display='block';
-  loadGrammarBoard();
+  loadGrammarBoard();grammarStartupSync();
 }
 function hideGrammarBoard(){
   document.getElementById('grammarBoardOverlay').style.display='none';
+}
+async function grammarStartupSync(){
+  var name=localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name');
+  if(!name||name==='同学')return;
+  var gw=getGrammarWeek();
+  if(!gw.length)return;
+  // Calculate expected weekly score from completed levels
+  var expected=0;
+  gw.forEach(function(id){expected+=id===32?500:20;});
+  try{
+    var ws=getWeekStart();
+    var r=await fetch(SB_URL+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+ws+'&select=grammar_score',{headers:sbH()});
+    var rows=r.ok?await r.json():[];
+    if(!rows||!rows.length||!(rows[0].grammar_score>0)){
+      var eid=rows&&rows.length?rows[0].id:null;
+      var payload={user_name:name,week_start:ws,grammar_score:expected,updated_at:new Date().toISOString()};
+      if(eid)payload.id=eid;
+      await fetch(SB_URL+'/rest/v1/weekly_scores',{method:'POST',
+        headers:{...sbH(),'Prefer':'resolution=merge-duplicates,return=minimal'},
+        body:JSON.stringify(payload)});
+    }
+  }catch(e){}
 }
 async function loadGrammarBoard(){
   var el=document.getElementById('grammarBoardList');
