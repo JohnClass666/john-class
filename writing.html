@@ -450,7 +450,7 @@ html,body{height:100%;background:var(--bg);font-family:var(--fnt);
     <div class="intro-stats">
       <div class="istat"><div class="istat-n">7</div><div class="istat-l">错误类型</div></div>
       <div class="istat"><div class="istat-n">315</div><div class="istat-l">练习句子</div></div>
-      <div class="istat"><div class="istat-n">+10</div><div class="istat-l">每题得分</div></div>
+      <div class="istat"><div class="istat-n">+15</div><div class="istat-l">每题得分</div></div>
     </div>
     <button class="intro-btn" onclick="dismissIntro()">清醒了，开练 →</button>
   </div>
@@ -487,7 +487,7 @@ html,body{height:100%;background:var(--bg);font-family:var(--fnt);
   <div class="jc-pw"><div class="jc-pt"><div class="jc-pf" id="home-prog-fill" style="width:0%"></div></div></div>
   <!-- Category shelves -->
   <div id="cat-shelves"></div>
-  <div class="foot">每题 +10 分 · 错题自动入库</div>
+  <div class="foot">每题 +15 分 · 错题自动入库</div>
 </div>
 
 <!-- ══ CATEGORY LEVEL SELECTION ══ -->
@@ -1137,13 +1137,44 @@ function dispAns(ans){
 // ──────────────────────────────────────────
 //  SUPABASE SYNC
 // ──────────────────────────────────────────
+function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.toISOString().split('T')[0];}
 async function syncScore(){
   if(!username)return;
+  // grammar_scores (cumulative, never resets)
   try{await fetch(`${SB}/rest/v1/grammar_scores`,{method:'POST',
     headers:{...SH,'Content-Type':'application/json',
       Prefer:'resolution=merge-duplicates,return=minimal'},
     body:JSON.stringify({name:username,score:prog.totalScore,
       updated_at:new Date().toISOString()})});}catch(e){}
+  // weekly_scores (weekly leaderboard)
+  try{
+    var ws=getWeekStart();
+    var r=await fetch(`${SB}/rest/v1/weekly_scores?user_name=eq.${encodeURIComponent(username)}&week_start=eq.${ws}&select=id,writing_score`,{headers:SH});
+    var rows=r.ok?await r.json():[];
+    var cur=0,eid=null;
+    if(rows&&rows.length){cur=rows[0].writing_score||0;eid=rows[0].id;}
+    var payload={user_name:username,week_start:ws,writing_score:cur+15,updated_at:new Date().toISOString()};
+    if(eid)payload.id=eid;
+    await fetch(`${SB}/rest/v1/weekly_scores`,{method:'POST',
+      headers:{...SH,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'},
+      body:JSON.stringify(payload)});
+  }catch(e){}
+}
+async function startupSync(){
+  if(!username||!prog.totalScore)return;
+  try{
+    var ws=getWeekStart();
+    var r=await fetch(`${SB}/rest/v1/weekly_scores?user_name=eq.${encodeURIComponent(username)}&week_start=eq.${ws}&select=writing_score`,{headers:SH});
+    var rows=r.ok?await r.json():[];
+    if(!rows||!rows.length||!(rows[0].writing_score>0)){
+      var eid=rows&&rows.length?rows[0].id:null;
+      var payload={user_name:username,week_start:ws,writing_score:prog.totalScore,updated_at:new Date().toISOString()};
+      if(eid)payload.id=eid;
+      await fetch(`${SB}/rest/v1/weekly_scores`,{method:'POST',
+        headers:{...SH,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'},
+        body:JSON.stringify(payload)});
+    }
+  }catch(e){}
 }
 async function loadLB(){
   const w=document.getElementById('lbwrap');
@@ -1238,7 +1269,7 @@ function renderCatShelves(){
 function showCat(ci){
   const c=CATS[ci];
   document.getElementById('cat-bar-title').textContent=c.name;
-  const catScore=[...prog.correct].filter(id=>id.startsWith(ci+'_')).length*10;
+  const catScore=[...prog.correct].filter(id=>id.startsWith(ci+'_')).length*15;
   document.getElementById('cat-bar-score').textContent=catScore?'+'+catScore+'分':'';
   document.getElementById('cat-title').textContent=c.name;
   document.getElementById('cat-en').textContent=c.en;
@@ -1318,12 +1349,12 @@ function submitAns(){
   const fbk=document.getElementById('fbk');
   fbk.className='fbk '+(isOk?'ok':'no');fbk.style.display='block';
   document.getElementById('fbkemo').textContent=isOk?'✓':'✗';
-  document.getElementById('fbktxt').textContent=isOk?'正确！+10 分':'答案不对';
+  document.getElementById('fbktxt').textContent=isOk?'正确！+15 分':'答案不对';
   // BUG FIX: only show correct answer when wrong
   document.getElementById('fbkans').textContent=isOk?'':('正确答案：'+dispAns(item.q[1]));
   if(isOk){
     const id=ds.catI+'_'+ds.levI+'_'+item.qi;
-    if(!prog.correct.has(id)){prog.correct.add(id);prog.totalScore+=10;ds.sessScore+=10;
+    if(!prog.correct.has(id)){prog.correct.add(id);prog.totalScore+=15;ds.sessScore+=10;
       prog.errors=prog.errors.filter(e=>e.id!==id);}
   }else{
     const id=ds.catI+'_'+ds.levI+'_'+item.qi;
@@ -1427,8 +1458,8 @@ function submitRetry(){
   document.getElementById('ret-in').disabled=true;
   if(isOk){
     fbk.className='ret-fbk ok';
-    fbk.textContent='正确！+10 分，已从错题本移除';
-    if(!prog.correct.has(e.id)){prog.correct.add(e.id);prog.totalScore+=10;}
+    fbk.textContent='正确！+15 分，已从错题本移除';
+    if(!prog.correct.has(e.id)){prog.correct.add(e.id);prog.totalScore+=15;}
     prog.errors.splice(retryIdx,1);
     save();syncScore();
     document.getElementById('ret-nxt').textContent='太好了，关闭';
@@ -1503,7 +1534,7 @@ if(!username){
     if(n&&n.trim()){username=n.trim();localStorage.setItem('jc_username',username);}
   }
 }
-load();showHome();showIntro();
+load();showHome();showIntro();startupSync();
 </script>
 </body>
 </html>
