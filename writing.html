@@ -1180,17 +1180,18 @@ async function loadLB(){
   const w=document.getElementById('lbwrap');
   w.innerHTML='<div class="empty"><div class="em-txt">加载中…</div></div>';
   try{
-    const r=await fetch(`${SB}/rest/v1/grammar_scores?select=name,score&order=score.desc&limit=20`,{headers:SH});
+    const r=await fetch(`${SB}/rest/v1/weekly_scores?select=user_name,writing_score&order=writing_score.desc&limit=20`,{headers:SH});
     const d=await r.json();
-    if(!Array.isArray(d)||!d.length){
+    const valid=(d||[]).filter(function(r){return (r.writing_score||0)>0;});
+    if(!valid.length){
       w.innerHTML='<div class="empty"><div class="em-icon">○</div><div class="em-txt">还没人上榜，抢第一！</div></div>';
       return;
     }
     const rankClass=['r1','r2','r3'];
-    w.innerHTML=d.map((row,i)=>`<div class="lbrow${row.name===username?' me':''}">
+    w.innerHTML=valid.map((row,i)=>`<div class="lbrow${row.user_name===username?' me':''}">
       <div class="lbrank ${rankClass[i]||''}">${i+1}</div>
-      <span class="lbname">${esc(row.name)}</span>
-      <span class="lbsco">${row.score}</span></div>`).join('');
+      <span class="lbname">${esc(row.user_name)}</span>
+      <span class="lbsco">${row.writing_score||0}</span></div>`).join('');
   }catch(e){w.innerHTML='<div class="empty"><div class="em-txt">加载失败，请重试</div></div>';}
 }
 
