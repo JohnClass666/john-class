@@ -352,7 +352,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
 // CONFIG
 // ══════════════════════════════════════════
 var SB_URL = 'https://ghunrrtrdgicbmixsqrc.supabase.co';
-var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
 var BAILIAN_KEY = 'sk-864699328fc34ae0b433a87671a0f9c4';
 var DAILY_LIMIT = 10;
 var POINTS_PER_SENT = 50;
@@ -528,7 +528,7 @@ function resolveMode(){
 // ══════════════════════════════════════════
 // DAILY QUOTA
 // ══════════════════════════════════════════
-function getToday(){ return new Date().toISOString().split('T')[0]; }
+function getToday(){ return (function(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})(); }
 
 function getQuota(){
   try{
@@ -598,7 +598,7 @@ async function sbUpsert(table, data){
 function getWeekStart(){
   var d = new Date();
   d.setDate(d.getDate() - d.getDay());
-  return d.toISOString().split('T')[0];
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
 
 async function addSpeakingScore(){
