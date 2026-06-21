@@ -625,9 +625,9 @@ function allDone() { return LEVELS.every(l => isDone(l.id)); }
 //  Supabase — grammar scoring
 // ══════════════════════════════════════════════════════════
 var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
-var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
 function sbH(){return{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};}
-function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.toISOString().split('T')[0];}
+function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 async function sbGet(t,q){try{var r=await fetch(SB_URL+'/rest/v1/'+t+'?'+q,{headers:sbH()});return r.ok?await r.json():[];}catch(e){return[];}}
 async function sbUpsert(t,data){try{await fetch(SB_URL+'/rest/v1/'+t,{method:'POST',headers:Object.assign({},sbH(),{'Prefer':'resolution=merge-duplicates'}),body:JSON.stringify(data)});}catch(e){}}
 function getGrammarWeek(){try{return JSON.parse(localStorage.getItem('jc_grammar_week_'+getWeekStart())||'[]');}catch(e){return[];}}
