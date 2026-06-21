@@ -206,7 +206,7 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 
 /* 我的目标 / 里程碑 */
 .ms-cur{display:flex;align-items:center;gap:16px;background:var(--accent-soft);border-radius:20px;padding:20px 18px;margin-top:10px;border:1.5px solid var(--hair)}
-.ms-cur-icon{font-size:38px}
+.ms-cur-icon{flex:0 0 auto;display:flex;align-items:center;justify-content:center}
 .ms-cur-tx b{font-size:22px;font-weight:700;display:block;color:var(--ink)}
 .ms-cur-tx .ms-cur-label{font-size:12px;color:var(--soft);font-weight:600;letter-spacing:.06em;margin-bottom:2px}
 .ms-cur-next{margin-left:auto;text-align:right;font-size:14px;font-weight:600;color:var(--accent);line-height:1.5}
@@ -216,7 +216,7 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 .ms-lv.reached{background:var(--accent-soft);border-color:var(--accent)}
 .ms-lv.god{border-color:var(--accent);border-style:dashed}
 .ms-lv.god.reached{background:var(--accent-soft);border-style:solid}
-.ms-icon{font-size:22px;width:32px;text-align:center}
+.ms-icon{flex:0 0 auto;width:40px;display:flex;align-items:center;justify-content:center}
 .ms-tx{flex:1}
 .ms-tx b{font-size:16px;font-weight:600;color:var(--ink)}
 .ms-tx span{display:block;font-size:12px;color:var(--soft);margin-top:1px}
@@ -229,6 +229,19 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 .ms-dot.dot-on{background:var(--accent);border-color:var(--accent);color:#FDF8F0}
 .ms-detail b{font-size:16px;font-weight:600;display:block;color:var(--ink)}
 .ms-detail span{font-size:13px;color:var(--soft);margin-top:3px;display:block}
+
+/* 得分逻辑说明卡 */
+.ms-rule{background:var(--bg3);border:1.5px solid var(--hair);border-radius:18px;padding:14px 16px;margin-top:10px}
+.ms-rule-line{font-size:12.5px;color:var(--soft);text-align:center;line-height:1.6}
+.ms-rule-line b{color:var(--ink);font-weight:700}
+.ms-rule-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.ms-rule-stat{text-align:center;background:var(--bg2);border-radius:14px;padding:10px 6px}
+.ms-rule-num{font-size:24px;font-weight:800;color:var(--accent)}
+.ms-rule-num.ok{color:var(--ok)}
+.ms-rule-num.warn{color:var(--warn)}
+.ms-rule-lbl{font-size:12px;font-weight:700;color:var(--ink);margin-top:2px}
+.ms-rule-sub{font-size:10.5px;color:var(--faint);margin-top:2px;line-height:1.4}
+.ms-rule-foot{font-size:11px;color:var(--faint);text-align:center;margin-top:10px;line-height:1.6}
 
 /* brag wechat copy row */
 .brag-wechat-row{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1.5px solid var(--hair);border-radius:12px;padding:12px 16px;margin:0 0 12px}
@@ -525,6 +538,73 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 @keyframes sparkle{0%,100%{opacity:.4;transform:scale(.9)}50%{opacity:1;transform:scale(1.15)}}
 .lb-no1-glow{animation:glow1 3s ease-in-out infinite}
 @keyframes glow1{0%,100%{box-shadow:0 4px 20px rgba(255,215,0,.3)}50%{box-shadow:0 6px 32px rgba(255,215,0,.6),0 0 0 3px rgba(255,215,0,.15)}}
+
+/* ═══════════════════════════════════════════
+   复习中心 · Review Center
+═══════════════════════════════════════════ */
+.rc-hero{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1.5px solid var(--hair);border-radius:20px;padding:18px 20px;margin-top:6px}
+.rc-hero-l{flex:0 0 auto;text-align:center;padding-right:16px;border-right:1.5px solid var(--hair)}
+.rc-bignum{font-size:34px;font-weight:800;color:var(--accent);line-height:1}
+.rc-bigsub{font-size:11.5px;color:var(--soft);margin-top:3px;white-space:nowrap}
+.rc-hero-stats{flex:1;display:flex;gap:10px}
+.rc-stat{flex:1;text-align:center}
+.rc-stat b{display:block;font-size:20px;font-weight:700;color:var(--ink)}
+.rc-stat span{font-size:11px;color:var(--soft)}
+.rc-go{width:100%;margin-top:14px;font-size:16px;padding:14px}
+.rc-rest{margin-top:14px;text-align:center;font-size:13px;color:var(--soft);background:var(--bg2);border:1.5px dashed var(--hair);border-radius:14px;padding:14px}
+.rc-tabs{display:flex;gap:8px;margin:20px 0 14px}
+.rc-tab{flex:1;padding:10px 6px;border-radius:14px;border:1.5px solid var(--hair);background:var(--bg3);font-size:13px;font-weight:600;color:var(--soft);cursor:pointer;text-align:center;transition:all .18s}
+.rc-tab.active{background:var(--accent);border-color:var(--accent);color:#FDF8F0}
+.rc-card{border:1.5px solid var(--hair);border-radius:18px;background:var(--bg3);padding:16px 16px 14px;margin-bottom:14px}
+.rc-card-t{font-size:14.5px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.rc-card-s{font-size:12px;color:var(--soft);line-height:1.7;margin-bottom:10px}
+.rc-legend{display:flex;gap:16px;justify-content:center;margin-top:8px;font-size:11.5px;color:var(--soft)}
+.rc-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.rc-stages{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.rc-stage{background:var(--bg3);border:1.5px solid var(--hair);border-radius:12px;padding:10px 4px;text-align:center}
+.rc-stage-n{font-size:17px;font-weight:800;color:var(--accent)}
+.rc-stage-l{font-size:10px;color:var(--soft);margin-top:2px;display:flex;flex-direction:column}
+.rc-stage-l span{font-size:9px;color:var(--faint)}
+.rc-grp-t{font-size:12.5px;font-weight:700;color:var(--accent);margin:16px 0 8px;display:flex;justify-content:space-between;border-left:3px solid var(--accent);padding-left:9px}
+.rc-grp-t span{font-weight:500;color:var(--faint)}
+.rc-word{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border:1.5px solid var(--hair);border-radius:14px;background:var(--bg3);margin-bottom:7px;cursor:pointer;transition:transform .12s}
+.rc-word:active{transform:scale(.98)}
+.rc-word-l{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.rc-word-l b{font-size:15px;color:var(--ink)}
+.rc-ph{font-size:11px;color:var(--faint)}
+.rc-cn{font-size:12.5px;color:var(--soft)}
+.rc-word-tag{flex:0 0 auto;font-size:11px;font-weight:600;color:var(--soft);background:var(--bg2);border:1px solid var(--hair);padding:4px 9px;border-radius:99px;white-space:nowrap}
+.rc-word-tag.due{color:#fff;background:var(--warn);border-color:var(--warn)}
+.rc-word-tag.grad{color:var(--ok);background:rgba(90,138,48,.12);border-color:var(--ok)}
+.rc-empty{text-align:center;padding:40px 20px;color:var(--faint);font-size:14px;line-height:1.8}
+.rc-more{text-align:center;font-size:12px;color:var(--faint);margin-top:8px}
+
+/* ═══════════════════════════════════════════
+   进步可视化 · Progress Visualization
+═══════════════════════════════════════════ */
+.pg-cur{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1.5px solid var(--hair);border-radius:20px;padding:16px 18px;margin-top:6px}
+.pg-cur-medal{flex:0 0 auto}
+.pg-cur-tx{flex:1;min-width:0}
+.pg-cur-lbl{font-size:11px;color:var(--faint);letter-spacing:.08em}
+.pg-cur-tx b{font-size:21px;color:var(--ink);display:block;margin-top:1px}
+.pg-cur-sub{font-size:12.5px;color:var(--soft);margin-top:4px}
+.pg-week{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+.pg-wk{background:var(--bg3);border:1.5px solid var(--hair);border-radius:14px;padding:12px 4px;text-align:center}
+.pg-wk b{display:block;font-size:18px;font-weight:800;color:var(--accent)}
+.pg-wk span{font-size:10px;color:var(--soft);margin-top:2px;display:block}
+.pg-card{border:1.5px solid var(--hair);border-radius:18px;background:var(--bg3);padding:16px 16px 12px;margin-top:14px}
+.pg-card-t{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.pg-card-s{font-size:12px;color:var(--soft);margin-top:8px;line-height:1.7;text-align:center}
+.pg-card-s2{font-size:12px;color:var(--soft);margin:2px 0 12px;line-height:1.6}
+.pg-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pg-medal{background:var(--bg3);border:1.5px solid var(--hair);border-radius:16px;padding:12px 6px 10px;text-align:center;position:relative;transition:transform .15s}
+.pg-medal.cur{border-color:var(--accent);box-shadow:0 0 0 2px rgba(200,144,48,.18)}
+.pg-medal.lock{opacity:.92}
+.pg-medal-svg{display:flex;justify-content:center}
+.pg-medal-name{font-size:12.5px;font-weight:700;color:var(--ink);margin-top:4px}
+.pg-medal-req{font-size:10px;color:var(--faint);margin-top:1px}
+.pg-medal-cur{position:absolute;top:6px;right:6px;font-size:9px;font-weight:700;color:#fff;background:var(--accent);padding:2px 6px;border-radius:99px}
+
 /* ═══════════════════════════════════════════
    JC 设计系统 v2 · 书房暖色 + 3D 按键体系
 ═══════════════════════════════════════════ */
@@ -543,26 +623,29 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 
 /* JC Header */
 .jc-hd{position:sticky;top:0;z-index:100;
-  padding:14px 20px;
-  padding-top:calc(14px + env(safe-area-inset-top))}
+  padding:14px 0 2px;
+  padding-top:calc(14px + env(safe-area-inset-top));
+  background:var(--bg);
+  box-shadow:0 1px 0 var(--hair)}
+.jc-hd-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;padding:0 20px}
 .jc-logo{font-size:22px;font-weight:700;letter-spacing:-.04em;color:#3A2A10;
-  text-shadow:0 2px 4px rgba(40,20,5,.18),0 5px 14px rgba(40,20,5,.09);margin-bottom:10px}
-.jc-chips{display:flex;gap:8px}
+  text-shadow:0 2px 4px rgba(40,20,5,.18),0 5px 14px rgba(40,20,5,.09)}
+.jc-chips{display:flex;gap:8px;padding:0 20px}
+/* 勋章 + 积分徽章：放在右上角，点开就是「我的目标」 */
+.jc-medalbadge{display:flex;align-items:center;gap:6px;flex:0 0 auto;cursor:pointer;
+  background:rgba(253,248,240,.7);border:1.5px solid var(--hair);border-radius:99px;
+  padding:3px 13px 3px 3px;box-shadow:0 2px 6px rgba(40,20,5,.08);transition:transform .12s}
+.jc-medalbadge:active{transform:scale(.95)}
+.jc-medalbadge-ic{flex:0 0 auto;display:flex;align-items:center;justify-content:center;height:34px;overflow:visible}
+.jc-medalbadge-num{font-size:16px;font-weight:800;color:#3A2A10;letter-spacing:-.02em}
+.jc-medalbadge-u{font-size:11px;color:#A08040;margin-left:1px}
 
-/* Score Block */
-.jc-score{padding:20px 20px 6px;display:flex;align-items:baseline;gap:0}
-.jc-num{font-size:44px;font-weight:200;letter-spacing:-.07em;color:#3A2A10;
-  text-shadow:0 3px 6px rgba(40,20,5,.12),0 6px 18px rgba(40,20,5,.07);line-height:1}
-.jc-unit{font-size:15px;color:#A08040;margin-left:4px;margin-bottom:2px}
-.jc-pills{margin-left:auto;display:flex;align-items:center;gap:7px;align-self:center}
-.jc-pill{font-size:11px;font-weight:700;letter-spacing:-.01em;padding:5px 11px;
-  border-radius:10px;white-space:nowrap;cursor:default;
-  background:linear-gradient(180deg,#EED870 0%,#E8C428 100%);
-  border:1px solid #C89010;border-bottom:2.5px solid #A07008;
-  box-shadow:inset 0 1px 0 rgba(255,255,200,.6),0 2px 4px rgba(40,20,5,.1);color:#5A3800}
-.jc-pill-red{background:linear-gradient(180deg,#E89878 0%,#E85848 100%);
-  border-color:#D04030;border-bottom-color:#B02818;color:#5A1008;
-  box-shadow:inset 0 1px 0 rgba(255,255,210,.4),0 2px 4px rgba(40,20,5,.1)}
+/* Score Block：等级名 + 健康度小标签 + 升级进度条 */
+.jc-score{padding:4px 20px 4px;display:flex;align-items:center;gap:8px}
+.jc-score-lv{font-size:15px;font-weight:700;color:#3A2A10}
+.jc-score-cap{font-size:11px;font-weight:600;color:var(--warn);background:rgba(208,80,32,.1);
+  padding:2px 8px;border-radius:8px;margin-left:2px}
+.jc-score-next{margin-left:auto;font-size:11.5px;color:#A08040;text-align:right}
 .jc-pw{padding:8px 20px 14px}
 .jc-pt{height:3px;background:rgba(58,42,16,.12);border-radius:99px;overflow:hidden}
 .jc-pf{height:100%;background:linear-gradient(90deg,#C89030,#E8A830);border-radius:99px}
@@ -665,7 +748,8 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 /* ═══ 全站 UI 统一覆盖 ═══ */
 /* 顶栏 */
 .bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:0;
-  padding:10px 16px;min-height:52px}
+  padding:10px 16px;min-height:52px;
+  background:var(--bg);box-shadow:0 1px 0 var(--hair)}
 .back{width:36px;height:36px;border-radius:50%;flex:0 0 auto;
   background:linear-gradient(180deg,#FDF8F0 0%,#E8D8B4 100%);
   border:1px solid #C8A860;border-bottom:3px solid #9A7830;
@@ -888,7 +972,6 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
   border-color:#8AB050;border-bottom-color:#5A8020}
 .ms-card.cur{background:linear-gradient(180deg,#F5F0D8,#E8D8A0);
   border-color:#C8A860;border-bottom-color:#9A7830}
-.ms-icon{font-size:28px;width:48px;text-align:center;flex:0 0 auto}
 .ms-tx b{font-size:16px;font-weight:600;color:#3A2A10;display:block;margin-bottom:3px}
 .ms-tx span{font-size:12px;color:#A08040}
 /* 错词本 / ebook卡片 */
@@ -3621,7 +3704,7 @@ const LEVELS=[
 ];
 // 学神不在 LEVELS 里，单独里程碑检测
 const GOD_LEVEL={name:"学神",icon:"✨"};
-const PT={read:2,write:3,listen:3,comboStep:2,comboFrom:5,graduate:2};
+const PT={read:2,write:3,listen:3,comboStep:2,comboFrom:5,graduate:8};
 const INTERVALS=[1,2,4,7,15];
 const DAY=86400000;
 const EXEMPT_EVERY=3;          // 每完成 N 个单元的量，奖励一次单词免考
@@ -3771,6 +3854,7 @@ function load(){
  // ★ 先恢复存档（分数、进度等），再用统一名字覆盖，确保 jc_username 是权威来源
  try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r));}catch(e){}
  if(!S.gd)S.gd={};
+ migrateLevelCaps();
  if(unified) S.name = unified;
  // 确保 jc_username 同步
  if(S.name) localStorage.setItem('jc_username', S.name);
@@ -3778,6 +3862,18 @@ function load(){
  var d=new Date(); d.setDate(d.getDate()-d.getDay());
  var thisWeek=d.toISOString().split('T')[0];
  if(S.weekStart !== thisWeek){ S.weekStart = thisWeek; S.weekPoints = 0; }
+}
+// ★ 老用户升级兼容：以前没有"错词健康度"这套机制，不能让新规则一上线就把老用户打回起点。
+// 给每个年级补一次性的 capLv 记录——健康达标的年级不用管（升级逻辑会正常按分数走），
+// 不达标的年级先把"当前分数对应的等级"保底记下来，新规则只管"以后"，不倒退"以前"。
+function migrateLevelCaps(){
+ for(const gid in S.gd){
+   const g=S.gd[gid];if(g.capLv)continue;
+   const p=g.points||0;const P=g.prog||{};let inBox=0,overdue=0;
+   for(const id in P){const r=P[id];if(r.box>=0&&r.box<INTERVALS.length){inBox++;if(Date.now()-r.due>OVERDUE_GRACE)overdue++;}}
+   const hp=inBox===0?100:Math.round((1-overdue/inBox)*100);
+   if(hp<HEALTH_PASS)g.capLv=levelOf(p).name;
+ }
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 // 当前年级存档（懒创建）
@@ -3909,7 +4005,7 @@ function dueWordsToday(){const P=gd().prog;return Object.keys(P).filter(id=>{con
 function points(){return gd().points;}
 // 总榜用跨年级累计积分
 function totalPoints(){return Object.values(S.gd||{}).reduce((s,g)=>s+(g.points||0),0);}
-function addPoints(n){var d=new Date();d.setDate(d.getDate()-d.getDay());var tw=d.toISOString().split('T')[0];if(S.weekStart!==tw){S.weekStart=tw;S.weekPoints=0;}const bonus=(streakCount()>=5)?2:0;gd().points+=n+bonus;S.weekPoints=(S.weekPoints||0)+n+bonus;save();lbUpdate();}
+function addPoints(n){var d=new Date();d.setDate(d.getDate()-d.getDay());var tw=d.toISOString().split('T')[0];if(S.weekStart!==tw){S.weekStart=tw;S.weekPoints=0;}gd().points+=n;S.weekPoints=(S.weekPoints||0)+n;updateLevelCap();save();lbUpdate();}
 function clear(){app.innerHTML="";}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function greetWord(){const h=new Date().getHours();return h<6?"凌晨好":h<11?"早上好":h<13?"中午好":h<18?"下午好":"晚上好";}
@@ -3959,22 +4055,26 @@ function streakCount(){return gd().streak||0;}
 
 /* ===== 学神里程碑 ===== */
 function msAllCleared(){return UNITS.filter(u=>u.ready).every(u=>unitCleared(u));}
-function msErrorClear(){const P=gd().prog;return!Object.values(P).some(r=>r.box>=0);}
 function msMonsterCount(){return gd().monsterCount||0;}
 function msDailyCount(){return gd().dailyCount||0;}
-function msStreak(){return gd().streak||0;}
 /* 怪物副本解锁条件：所有单元至少完成第一关（R） */
 function monsterUnlocked(){return UNITS.filter(u=>u.ready).every(u=>unitStage(u.n).R);}
-function godMilestonesAll(){return msAllCleared()&&msErrorClear()&&msMonsterCount()>=3&&msDailyCount()>=5&&msStreak()>=5;}
+// 学神达标条件：全部单元通关 + 怪物副本/每日挑战的累计次数（不要求连续，什么时候做都算）+ 错词健康度100 + 掌握深度达标
+function godMilestonesAll(){return msAllCleared()&&msMonsterCount()>=3&&msDailyCount()>=5&&healthScore()>=GOD_HEALTH&&masteryScore()>=GOD_MASTERY;}
 function isGodLevel(){return!!(gd().isGod);}
 function checkGodLevel(){
  if(isGodLevel())return false;
  if(godMilestonesAll()){gd().isGod=true;save();return true;}
  return false;
 }
+// 学神的维持只看"现在"的记忆状态：错词健康度或掌握深度掉下阈值就会被请下榜，不看有没有每天打开 app
+function checkGodMaintained(){
+ if(!isGodLevel())return;
+ if(healthScore()<GOD_HEALTH||masteryScore()<GOD_MASTERY){gd().isGod=false;save();}
+}
 // 当前显示等级名
-function currentLevelName(){return isGodLevel()?GOD_LEVEL.name:levelOf(points()).name;}
-function currentLevelIcon(){return isGodLevel()?GOD_LEVEL.icon:levelOf(points()).icon;}
+function currentLevelName(){return isGodLevel()?GOD_LEVEL.name:realLevelOf(points()).name;}
+function currentLevelIcon(){return isGodLevel()?GOD_LEVEL.icon:realLevelOf(points()).icon;}
 const DAILY_N=20;
 function dailyStr(){return new Date().toISOString().slice(0,10);}
 function seededRand(seed){let s=seed;return()=>{s=(s*1664525+1013904223)&0xffffffff;return(s>>>0)/0xffffffff;};}
@@ -4135,6 +4235,45 @@ const ZH_SYN=[
   ['继续','坚持','持续','继续'],
 ];
 
+// ===== 拼写题答案匹配（runSpellingQuiz 和 复习中心拼写复习 共用）=====
+const normalizeSpell=(s)=>s.toLowerCase().trim().replace(/[·\s\-_]/g,'');
+function checkSpellAnswer(val,w,isEn){
+ const v=normalizeSpell(val);if(!v)return false;
+ if(isEn){const norm=normalizeSpell(w.en);if(norm===v)return true;if(norm.length>=5&&_levenshtein(norm,v)<=1)return true;return false;}
+ const cleanV=val.trim().replace(/\s+/g,'');if(!cleanV)return false;
+ // 单个短语匹配（去括号后的 core 与原始 raw 都试）
+ const matchPhrase=(phrase)=>{
+   if(!phrase)return false;
+   const core=phrase.replace(/[（(][^）)]*[）)]/g,'').replace(/[；;]\s*$/,'').trim();
+   const nCore=normalizeSpell(core),nPh=normalizeSpell(phrase);
+   if(nCore===v||nPh===v)return true;
+   if(cleanV.length>=1&&(core===cleanV||phrase===cleanV))return true;
+   if(cleanV.length>=2&&(core.includes(cleanV)||phrase.includes(cleanV)))return true;
+   if(core.length>=2&&cleanV.includes(core))return true;
+   if(cleanV.length>=2&&core.length>=2&&_charOverlap(cleanV,core)>=0.60)return true;
+   if(nCore.length>=2&&nCore.length<=4&&_levenshtein(nCore,v)<=1)return true;
+   return false;
+ };
+ // 第一关：比对数据库里存的所有释义（含逗号拆分后的分段）
+ if(w.s.some(x=>{
+   const raw=x[1].trim();
+   if(matchPhrase(raw))return true;
+   const segs=raw.split(/[，,；;\/、]/);
+   return segs.length>1&&segs.some(seg=>matchPhrase(seg.trim()));
+ }))return true;
+ // 第二关：多义词扩展表（同一英文单词的其他常见中文义项）
+ const enKey=w.en.toLowerCase().replace(/[^a-z]/g,'');
+ const alts=ZH_MULTI[enKey];
+ if(alts&&alts.some(alt=>cleanV===alt||(cleanV.length>=2&&alt.includes(cleanV))||(alt.length>=2&&cleanV.includes(alt))))return true;
+ // 第三关：中文近义词组（学生写了与标准答案等价的近义词）
+ const storedSegs=w.s.flatMap(x=>x[1].split(/[，,；;\/、]/)).map(s=>s.trim()).filter(Boolean);
+ for(const seg of storedSegs){
+   const grp=ZH_SYN.find(g=>g.some(syn=>seg===syn||seg.includes(syn)||(syn.length>=2&&seg.includes(syn))));
+   if(grp&&grp.some(syn=>cleanV===syn||(cleanV.length>=2&&syn.includes(cleanV))||(syn.length>=2&&cleanV.includes(syn))))return true;
+ }
+ return false;
+}
+
 function runSpellingQuiz(u,pool,i,acc,mode){
  if(i>=pool.length){
    const key=mode;
@@ -4169,43 +4308,7 @@ function runSpellingQuiz(u,pool,i,acc,mode){
  const answerEl=d.querySelector("#sanswer");
  const submitBtn=d.querySelector("#ssubmit");
  let answered=false;
- const normalize=(s)=>s.toLowerCase().trim().replace(/[·\s\-_]/g,'');
- const checkAnswer=(val)=>{
-   const v=normalize(val);if(!v)return false;
-   if(isEn){const norm=normalize(w.en);if(norm===v)return true;if(norm.length>=5&&_levenshtein(norm,v)<=1)return true;return false;}
-   const cleanV=val.trim().replace(/\s+/g,'');if(!cleanV)return false;
-   // 单个短语匹配（去括号后的 core 与原始 raw 都试）
-   const matchPhrase=(phrase)=>{
-     if(!phrase)return false;
-     const core=phrase.replace(/[（(][^）)]*[）)]/g,'').replace(/[；;]\s*$/,'').trim();
-     const nCore=normalize(core),nPh=normalize(phrase);
-     if(nCore===v||nPh===v)return true;
-     if(cleanV.length>=1&&(core===cleanV||phrase===cleanV))return true;
-     if(cleanV.length>=2&&(core.includes(cleanV)||phrase.includes(cleanV)))return true;
-     if(core.length>=2&&cleanV.includes(core))return true;
-     if(cleanV.length>=2&&core.length>=2&&_charOverlap(cleanV,core)>=0.60)return true;
-     if(nCore.length>=2&&nCore.length<=4&&_levenshtein(nCore,v)<=1)return true;
-     return false;
-   };
-   // 第一关：比对数据库里存的所有释义（含逗号拆分后的分段）
-   if(w.s.some(x=>{
-     const raw=x[1].trim();
-     if(matchPhrase(raw))return true;
-     const segs=raw.split(/[，,；;\/、]/);
-     return segs.length>1&&segs.some(seg=>matchPhrase(seg.trim()));
-   }))return true;
-   // 第二关：多义词扩展表（同一英文单词的其他常见中文义项）
-   const enKey=w.en.toLowerCase().replace(/[^a-z]/g,'');
-   const alts=ZH_MULTI[enKey];
-   if(alts&&alts.some(alt=>cleanV===alt||(cleanV.length>=2&&alt.includes(cleanV))||(alt.length>=2&&cleanV.includes(alt))))return true;
-   // 第三关：中文近义词组（学生写了与标准答案等价的近义词）
-   const storedSegs=w.s.flatMap(x=>x[1].split(/[，,；;\/、]/)).map(s=>s.trim()).filter(Boolean);
-   for(const seg of storedSegs){
-     const grp=ZH_SYN.find(g=>g.some(syn=>seg===syn||seg.includes(syn)||(syn.length>=2&&seg.includes(syn))));
-     if(grp&&grp.some(syn=>cleanV===syn||(cleanV.length>=2&&syn.includes(cleanV))||(syn.length>=2&&cleanV.includes(syn))))return true;
-   }
-   return false;
- };
+ const checkAnswer=(val)=>checkSpellAnswer(val,w,isEn);
  const doSubmit=()=>{
    if(answered)return;const val=inp.value;if(!val.trim()){inp.focus();return;}
    answered=true;inp.disabled=true;submitBtn.disabled=true;speak(w.en);
@@ -4434,9 +4537,61 @@ async function endSpeedGame(score,survived){
    badge.innerHTML='<div style="color:var(--ok);font-weight:600;margin-bottom:6px">🏆 本年级新纪录！</div>';
 }
 
-function markResult(w,good,mode){const r=rec(w.id);if(mode==="R")r.seenR=1;else r.seenW=1;
- if(good){if(r.box>=0){r.box++;if(r.box>=INTERVALS.length){r.box=-1;r.due=0;addPoints(PT.graduate);}else r.due=now()+INTERVALS[r.box]*DAY;}r.last="good";}
- else{r.box=0;r.due=now();r.last="bad";}save();}
+function markResult(w,good,mode){const r=rec(w.id);
+ const wasNew=(!r.seenR&&!r.seenW);
+ if(mode==="R")r.seenR=1;else r.seenW=1;
+ let graduated=false;
+ if(good){
+   if(r.box>=0){r.box++;if(r.box>=INTERVALS.length){r.box=-1;r.due=0;if(!r.grad){r.grad=1;graduated=true;addPoints(PT.graduate);}}else r.due=now()+INTERVALS[r.box]*DAY;}
+   else if(r.box===-1&&!r.grad){r.grad=1;} // 第一次就答对：计入"掌握深度"统计，但毕业奖励分留给真正走完错词复习周期的词，避免一次蒙对就拿满分
+   r.last="good";
+ }
+ else{r.box=0;r.due=now();r.last="bad";if(r.grad){r.grad=0;}} // 答错会让"已掌握"状态作废，必须重新通过错词复习证明记住了
+ logActivity(wasNew,good,graduated);updateLevelCap();checkGodMaintained();save();}
+/* ===== 进步可视化：每日学习活动记录 gd().act[YYYY-MM-DD]={n,c,w,nw,gr} ===== */
+function logActivity(isNew,correct,graduated){const g=gd();if(!g.act)g.act={};const d=todayStr();
+ if(!g.act[d])g.act[d]={n:0,c:0,w:0,nw:0,gr:0};
+ g.act[d].n++; if(correct)g.act[d].c++; else g.act[d].w++; if(isNew)g.act[d].nw++; if(graduated)g.act[d].gr++;}
+function weekStartStr(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.toISOString().split('T')[0];}
+function weekActivity(){const g=gd();const ws=weekStartStr();let nw=0,c=0,w=0,n=0,gr=0,days=0;
+ if(g.act){for(const d in g.act){if(d>=ws){const a=g.act[d];nw+=a.nw||0;c+=a.c||0;w+=a.w||0;n+=a.n||0;gr+=a.gr||0;days++;}}}
+ return {newWords:nw,correct:c,wrong:w,total:n,graduated:gr,activeDays:days};}
+// 最近7天每日新学单词（用于柱状图）
+function last7Activity(){const g=gd();const out=[];for(let i=6;i>=0;i--){const dt=new Date();dt.setDate(dt.getDate()-i);const ds=dt.toISOString().slice(0,10);
+  const a=(g.act&&g.act[ds])||{nw:0,n:0,c:0};out.push({date:ds,day:'日一二三四五六'[dt.getDay()],nw:a.nw||0,n:a.n||0,c:a.c||0});}return out;}
+// 已掌握(毕业)单词数：包含"一次就答对"和"错词复习5轮通过"两类
+function masteredCount(){const P=gd().prog;let m=0;for(const id in P){if(P[id].grad)m++;}return m;}
+// 等级勋章数：达到的普通等级数 + 学神
+function earnedMedals(){const idx=LEVELS.indexOf(realLevelOf(points()));return idx+1+(isGodLevel()?1:0);}
+
+/* ════════════════════════════════════════════════════════
+   ★ 得分系统核心：错词健康度 + 掌握深度（状态量，不按天打卡）
+   ════════════════════════════════════════════════════════ */
+const HEALTH_PASS=70;      // 升级所需的最低错词健康度
+const GOD_HEALTH=100;      // 学神要求错词本零逾期
+const GOD_MASTERY=85;      // 学神要求的最低掌握深度
+const OVERDUE_GRACE=DAY;   // 到期后留 1 天缓冲期，刚答错的词不会立刻被算作"逾期"
+// 接触过的词总数（曾经答过一次的词，无论对错）
+function encounteredCount(){const P=gd().prog;let n=0;for(const id in P){if(P[id].seenR||P[id].seenW)n++;}return n;}
+// 错词健康度：错词本里"真正被放置太久"（逾期超过缓冲期）的比例。错词本是空的时候视为 100%（没有欠账）
+function healthScore(){const P=gd().prog;let inBox=0,overdue=0;
+ for(const id in P){const r=P[id];if(r.box>=0&&r.box<INTERVALS.length){inBox++;if(now()-r.due>OVERDUE_GRACE)overdue++;}}
+ if(inBox===0)return 100;
+ return Math.round((1-overdue/inBox)*100);}
+// 掌握深度：接触过的词里，真正记住（已掌握）的比例
+function masteryScore(){const enc=encounteredCount();if(enc===0)return 0;return Math.round(masteredCount()/enc*100);}
+// 普通等级是否真正"解锁"：分数够 + 健康度过线，两个条件都满足才算
+function levelUnlocked(lv){return points()>=lv.min&&healthScore()>=HEALTH_PASS;}
+// 当前真实等级：按分数本该到哪一级，但健康度不够时，封顶在"健康度刚好达标那一刻"已经解锁的最高等级
+function realLevelOf(p){
+ if(healthScore()>=HEALTH_PASS)return levelOf(p); // 健康达标，正常按分数算
+ // 健康度不达标：找到当前 gd().capLv 记录的"最后一次健康达标时解锁的等级"，没有记录就回到起点
+ const capName=gd().capLv;const cap=capName?LEVELS.find(l=>l.name===capName):null;
+ return cap||LEVELS[0];
+}
+function realNextLevel(p){const cur=realLevelOf(p);const i=LEVELS.indexOf(cur);return LEVELS[i+1]||null;}
+// 健康达标时，把"按分数本该到达的等级"记录为已解锁的上限；健康不达标时这个记录保持不变（不会倒退记录，但也不会再往前涨）
+function updateLevelCap(){if(healthScore()>=HEALTH_PASS){const g=gd();const lv=levelOf(points());g.capLv=lv.name;}}
 
 /* ============ SCREENS ============ */
 const SCREENS={};
@@ -4491,6 +4646,7 @@ SCREENS.welcome=function(){clear();const d=document.createElement("div");d.class
           }
         }
         totalPts=Object.values(S.gd||{}).reduce((s,g)=>s+(g.points||0),0);
+        migrateLevelCaps(); // 云端数据可能也是老版本存的，同样要补一次 capLv
       } else if(cloud.score>0){
         const localTotal=Object.values(S.gd||{}).reduce((s,g)=>s+(g.points||0),0);
         if(cloud.score>localTotal){S._cloudScore=cloud.score;isReturning=true;}
@@ -4548,8 +4704,10 @@ SCREENS.grade=function(){clear();const d=document.createElement("div");d.classNa
  }
  d.innerHTML=`
   <div class="jc-hd">
-    <div class="jc-logo">John Class</div>
-    <div style="font-size:11px;color:#A08040;margin-top:2px;letter-spacing:.04em">CHOOSE YOUR LEVEL</div>
+    <div style="padding:0 20px">
+      <div class="jc-logo">John Class</div>
+      <div style="font-size:11px;color:#A08040;margin-top:2px;letter-spacing:.04em">CHOOSE YOUR LEVEL</div>
+    </div>
   </div>
   <div style="padding:20px 20px 16px">
     <div style="font-size:22px;font-weight:700;color:#3A2A10;letter-spacing:-.03em;margin-bottom:18px;text-shadow:0 2px 8px rgba(40,20,5,.12)">John 问你：<br>你在哪个阶段？</div>
@@ -4587,7 +4745,7 @@ SCREENS.stage=function(stageId){clear();const d=document.createElement("div");d.
  d.querySelectorAll(".grd-btn[data-g]").forEach(r=>r.onclick=()=>{const id=r.dataset.g;const g=gradeById(id);sfx.tap();
    if(g&&g.ready){S.grade=id;applyGrade(id);
      if(S._cloudScore&&S._cloudScore>points()){if(!S.gd[id])S.gd[id]={points:0,prog:{},stages:{}};S.gd[id].points=S._cloudScore;delete S._cloudScore;}
-     save();_prevLv=levelOf(points()).name;
+     save();_prevLv=realLevelOf(points()).name;
      const fresh=!S.gd[id]||points()===0;showHype(fresh);}
    else if(g&&!g.ready){go({name:"noperm",arg:id});}
  });
@@ -4621,13 +4779,16 @@ function showHype(fresh){
  setTimeout(()=>{if(!gone)h.querySelector(".tap").style.opacity="1";},1500);
 }
 
-SCREENS.home=function(){clear();checkStreak();
+SCREENS.home=function(){clear();checkGodMaintained();
  const god=isGodLevel();
- const lv=levelOf(points()),nx=god?null:nextLevel(points());
- const pct=god?100:(nx?Math.round((points()-lv.min)/(nx.min-lv.min)*100):100);
+ const lv=realLevelOf(points()),nx=god?null:realNextLevel(points());
+ const natLv=levelOf(points()); // 按分数本该到达的等级（用来判断是否被健康度卡住）
+ const capped=!god&&natLv.name!==lv.name;
+ // 被健康度卡住时，分数其实已经够了，进度条直接显示满，靠下面的提示文字说明原因
+ const pct=god?100:capped?100:(nx?Math.max(4,Math.round((points()-lv.min)/(nx.min-lv.min)*100)):100);
  const dispLv=god?GOD_LEVEL:lv;
+ const dispIdx=god?6:LEVELS.indexOf(lv);
  const due=dueWords().length,dueT=dueWordsToday().length;
- const sk=streakCount();
  const GRADS=['jcg1','jcg2','jcg3','jcg4','jcg5','jcg6','jcg7','jcg8'];
  const inProg=UNITS.find(u=>u.ready&&!unitCleared(u)&&stageCount(u)>0);
  // Build shelves – 2 cards per row
@@ -4675,32 +4836,37 @@ SCREENS.home=function(){clear();checkStreak();
  const d=document.createElement('div');d.className='screen active';
  d.innerHTML=`
   <div class="jc-hd">
-    <div class="jc-logo">John Class</div>
+    <div class="jc-hd-top">
+      <div class="jc-logo">John Class</div>
+      <div class="jc-medalbadge" id="jk-medalbadge">
+        <div class="jc-medalbadge-ic">${medalSVG(dispIdx,30,true)}</div>
+        <span class="jc-medalbadge-num">${points()}</span><span class="jc-medalbadge-u">分</span>
+      </div>
+    </div>
     <div class="jc-chips">
       <button class="jk" id="gradechip" style="padding:7px 13px">${gradeById(S.grade)?gradeById(S.grade).label:''}</button>
       <a class="jk" href="study.html" style="padding:7px 13px;text-decoration:none">← 学习中心</a>
     </div>
-  </div>
-  <div class="jc-score">
-    <div class="jc-num">${points()}</div>
-    <div class="jc-unit">分</div>
-    <div class="jc-pills">
-      <div class="jc-pill">${dispLv.name}</div>
-      ${sk>=1?`<div class="jc-pill${sk>=5?' jc-pill-red':''}">连续 ${sk} 天${sk>=5?' +2':''}</div>`:''}
+    <div class="jc-score">
+      <div class="jc-score-lv">${dispLv.name}</div>
+      ${capped?`<div class="jc-score-cap">错词健康度 ${healthScore()}%，需要 ${HEALTH_PASS}% 才能升级</div>`:''}
+      ${nx?`<div class="jc-score-next">${capped?'':`再 ${nx.min-points()} 分 → ${nx.name}`}</div>`:''}
     </div>
+    <div class="jc-pw"><div class="jc-pt"><div class="jc-pf" style="width:${pct}%"></div></div></div>
   </div>
-  <div class="jc-pw"><div class="jc-pt"><div class="jc-pf" style="width:${pct}%"></div></div></div>
   <div class="jc-dots">${dots}<span class="jc-dlbl">${UNITS.filter(u=>u.ready).length} Units</span></div>
   ${shelves}
   <div style="height:76px"></div>
   <div class="jc-btm">
     <div class="jc-keys">
       <button class="jc-key jc-key-trophy" id="jk-lb">排行榜</button>
+      <button class="jc-key jc-key-blue" id="jk-rc" style="position:relative">复习中心${dueWordsToday().length?`<div class="jc-key-badge">${dueWordsToday().length>9?'9+':dueWordsToday().length}</div>`:''}</button>
       <button class="${p2Cls}" id="jk-p2">${p2Txt}</button>
       <button class="jc-key jc-key-red" id="jk-eb" style="position:relative">错词本${due?`<div class="jc-key-badge">${due>9?'9+':due}</div>`:''}</button>
       <button class="jc-key${dailyDone()?'':monsterUnlocked()?' jc-key-red':' jc-key-amber'}" id="jk-daily">${monsterUnlocked()?'怪物副本':'今日挑战'}</button>
       <button class="jc-key jc-key-amber" id="jk-sp">速度挑战</button>
       <button class="jc-key" id="jk-ms">我的目标</button>
+      <button class="jc-key jc-key-dim" id="jk-pg">进步</button>
       <button class="jc-key" id="jk-card">成绩卡</button>
     </div>
   </div>`;
@@ -4714,12 +4880,15 @@ SCREENS.home=function(){clear();checkStreak();
    if(u&&u.ready)dot.onclick=()=>{sfx.tap();go({name:'unit',arg:u.n});};
  });
  d.querySelector('#gradechip').onclick=()=>{sfx.tap();go('grade');};
+ d.querySelector('#jk-medalbadge').onclick=()=>{sfx.tap();go('milestones');};
  d.querySelector('#jk-lb').onclick=()=>{sfx.tap();go('leaderboard');};
+ d.querySelector('#jk-rc').onclick=()=>{sfx.tap();go('reviewCenter');};
  d.querySelector('#jk-p2').onclick=()=>{if(!allUnitsCleared()&&!gd().pass2){sfx.wrong();return;}sfx.tap();confirmPass2();};
  d.querySelector('#jk-eb').onclick=()=>{if(due){sfx.tap();go('review');}};
  d.querySelector('#jk-daily').onclick=()=>{if(!dailyDone()){sfx.tap();monsterUnlocked()?go('monster'):go('daily');}};
  d.querySelector('#jk-sp').onclick=()=>{sfx.tap();go('speed');};
  d.querySelector('#jk-ms').onclick=()=>{sfx.tap();go('milestones');};
+ d.querySelector('#jk-pg').onclick=()=>{sfx.tap();go('progress');};
  d.querySelector('#jk-card').onclick=()=>{sfx.tap();go('card');};
 };
 
@@ -4931,7 +5100,7 @@ function stageResult(u,key,title,acc){
  const firstClear=passed&&!unitStage(u.n)[key];
  const repeatN=unitStage(u.n)[key+"n"]||0; // 通关前的次数（clearStage后会+1）
  if(passed){clearStage(u.n,key);lbUpdate();} // 通关立即同步云端
- clear();const lv=levelOf(points());
+ clear();const lv=realLevelOf(points());
  const d=document.createElement("div");d.className="screen active res";
  d.innerHTML=`
   <div class="rk">${title} ${passed?"通关":"未通关"}</div>
@@ -5010,9 +5179,8 @@ SCREENS.review=function(){
  runReview(pool,0,{got:0,gain:0,combo:0},isRevenge);
 };
 function runReview(pool,i,acc,revenge){
- if(i>=pool.length)return showResult(revenge?"⚔️ 复仇完成！错词已被你征服":"复习完成 · 又记牢了一些",acc,()=>go("home"));
+ if(i>=pool.length){const fin=()=>showResult(revenge?"⚔️ 复仇完成！错词已被你征服":"复习完成 · 又记牢了一些",acc,()=>go("home"));return afterPoint(fin);}
  clear();const w=pool[i];const d=document.createElement("div");d.className="screen active";
- const senses=w.s.map(x=>`<div class="sense">${x[0]?`<span class="pos">${x[0]}</span>`:""}${x[1]}</div>`).join("");
  const title=revenge?"⚔️ 错词复仇":"错词复习";
  // 艾宾浩斯复习计划提示
  const r=rec(w.id);
@@ -5027,31 +5195,43 @@ function runReview(pool,i,acc,revenge){
  d.innerHTML=`
   <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">${title}</div></div>
   <div class="qhud"><div class="tk"><i style="width:${i/pool.length*100}%"></i></div><div class="ct">${i+1} / ${pool.length}</div></div>
-  <div class="flip-wrap"><div class="flip" id="flip">
-    <div class="face"><div class="ftag">${w.type==="phrase"?"短语":"单词"}</div><div class="en">${w.en}</div>${w.ph?`<div class="ph">${w.ph}</div>`:""}</div>
-    <div class="face back"><div class="ftag">中文意思</div>${senses}</div>
-  </div></div>${ebHint}<div id="after"></div><div class="hint" id="hint">还记得吗？点卡片看答案</div>`;
+  <div class="qcn"><div class="ql">看中文，拼出这个${w.type==="phrase"?"短语":"单词"}</div><div class="qt">${w.s.map(x=>`${x[0]?`<span class="qp">${x[0]}</span>`:""} ${x[1]}`).join("　")}</div></div>
+  ${ebHint}
+  <div class="spell-input-wrap" style="margin:14px 0 10px">
+    <input class="spell-input" id="sinput" type="text" placeholder="输入英文单词…"
+      autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
+    <div class="spell-pts-badge">+${PT_SPELL.W}</div>
+  </div>
+  <div class="spell-answer" id="sanswer"></div>
+  <button class="spell-submit" id="ssubmit">确认</button>`;
  app.appendChild(d);
  d.querySelector("#bk").onclick=()=>{sfx.tap();go("home");};
- const flip=d.querySelector("#flip");let f=false;
- flip.onclick=()=>{
-  if(!f){
-   // 翻到背面：显示中文答案
-   f=true;flip.classList.add("flipped");sfx.flip();d.querySelector("#hint").style.display="none";
-   d.querySelector("#after").innerHTML=`<div class="knrow"><button class="btn line" id="no">还不记得</button><button class="btn accent" id="yes">${revenge?"⚔️ 复仇成功！":"记住了"}</button></div>`;
-   d.querySelector("#yes").onclick=()=>{
+ const inp=d.querySelector("#sinput");
+ const answerEl=d.querySelector("#sanswer");
+ const submitBtn=d.querySelector("#ssubmit");
+ let answered=false;
+ const doSubmit=()=>{
+  if(answered)return;const val=inp.value;if(!val.trim()){inp.focus();return;}
+  answered=true;inp.disabled=true;submitBtn.disabled=true;speak(w.en);
+  const correct=checkSpellAnswer(val,w,true);
+  if(correct){
+    inp.classList.add('correct');answerEl.style.color='var(--ok)';answerEl.textContent='✓ 正确！';
     if(revenge){
       const tip=document.createElement("div");tip.className="revenge-tip";tip.textContent="⚔️ 复仇成功！";document.body.appendChild(tip);
       setTimeout(()=>tip.remove(),1200);
     }
-    const grad=(rec(w.id).box===INTERVALS.length-1);markResult(w,true,"R");acc.got++;if(grad)acc.gain+=PT.graduate;sfx.correct();runReview(pool,i+1,acc,revenge);
-   };
-   d.querySelector("#no").onclick=()=>{markResult(w,false,"R");sfx.wrong();runReview(pool,i+1,acc,revenge);};
-  } else {
-   // 再点翻回正面
-   f=false;flip.classList.remove("flipped");d.querySelector("#hint").style.display="";d.querySelector("#after").innerHTML="";
+    const grad=(rec(w.id).box===INTERVALS.length-1);markResult(w,true,"W");acc.got++;if(grad)acc.gain+=PT.graduate;
+    acc.gain+=PT_SPELL.W;addPoints(PT_SPELL.W);sfx.correct();
+    setTimeout(()=>runReview(pool,i+1,acc,revenge),700);
+  }else{
+    inp.classList.add('wrong');
+    answerEl.style.color='var(--warn)';answerEl.textContent=`✗ 正确答案：${w.en}`;
+    markResult(w,false,"W");sfx.wrong();
+    setTimeout(()=>runReview(pool,i+1,acc,revenge),1400);
   }
  };
+ submitBtn.onclick=doSubmit;inp.addEventListener('keydown',e=>{if(e.key==='Enter')doSubmit();});
+ setTimeout(()=>inp.focus(),300);
 }
 
 /* ---------- 通用：混搭出题 + 运行函数 ---------- */
@@ -5170,7 +5350,7 @@ SCREENS.monster=function(){
 };
 
 /* ---------- RESULT ---------- */
-function showResult(title,acc,next){clear();const lv=levelOf(points());
+function showResult(title,acc,next){clear();const lv=realLevelOf(points());
  const canBrag=(acc.maxCombo||0)>=BRAG_COMBO;
  const d=document.createElement("div");d.className="screen active res";
  d.innerHTML=`<div class="ava"></div><div class="rk">${title}</div>
@@ -5235,27 +5415,29 @@ function drawBrag(kind,val,bt,bn){const W=750,H=900,c=document.createElement("ca
 
 /* ---------- SCORE CARD ---------- */
 /* ---------- MILESTONES 我的目标 ---------- */
-SCREENS.milestones=function(){clear();
+SCREENS.milestones=function(){clear();checkGodMaintained();
  const god=isGodLevel();
- const curLv=god?GOD_LEVEL:levelOf(points());
- const nx=god?null:nextLevel(points());
- // 普通等级列表
+ const curLv=god?GOD_LEVEL:realLevelOf(points());
+ const curIdx=god?6:LEVELS.indexOf(curLv);
+ const nx=god?null:realNextLevel(points());
+ const hp=healthScore(),mp=masteryScore();
+ // 普通等级列表：reached 跟首页的"当前等级"保持同一套判定（realLevelOf），不会互相矛盾
  let lvRows="";
- LEVELS.forEach(lv=>{
-   const reached=points()>=lv.min||god;
+ LEVELS.forEach((lv,i)=>{
+   const reached=i<=curIdx||god;
    lvRows+=`<div class="ms-lv ${reached?'reached':''}">
-     <div class="ms-icon">${lv.icon}</div>
+     <div class="ms-icon">${medalSVG(i,40,reached)}</div>
      <div class="ms-tx"><b>${lv.name}</b><span>${lv.min===0?'起点':`${lv.min} 分`}</span></div>
      ${reached?'<div class="ms-ck">✓</div>':''}
    </div>`;
  });
- // 学神里程碑
+ // 学神里程碑：3 项玩法成就（累计次数，不要求连续）+ 2 项记忆状态（健康度 / 掌握深度）
  const ms=[
    {label:"全部单元三关全通",done:msAllCleared(),tip:"每个单元的阅读、写作、听力都通关"},
-   {label:"错词本全部毕业",done:msErrorClear(),tip:"所有答错过的词都已复习通过"},
-   {label:"怪物副本累计 3 次",done:msMonsterCount()>=3,tip:`已通关 ${msMonsterCount()} / 3 次怪物副本`},
-   {label:"今日挑战累计 5 次",done:msDailyCount()>=5,tip:`已完成 ${msDailyCount()} / 5 次每日挑战`},
-   {label:"连续打卡 5 天以上",done:msStreak()>=5,tip:`当前已连续 ${msStreak()} 天`},
+   {label:"怪物副本累计 3 次",done:msMonsterCount()>=3,tip:`已通关 ${msMonsterCount()} / 3 次`},
+   {label:"今日挑战累计 5 次",done:msDailyCount()>=5,tip:`已完成 ${msDailyCount()} / 5 次`},
+   {label:`错词健康度 ${GOD_HEALTH}%`,done:hp>=GOD_HEALTH,tip:`当前 ${hp}% · 错词本零逾期`},
+   {label:`掌握深度 ≥ ${GOD_MASTERY}%`,done:mp>=GOD_MASTERY,tip:`当前 ${mp}% · 学过的词里真正记住的比例`},
  ];
  const msRows=ms.map(m=>`
    <div class="ms-row ${m.done?'ms-done':''}">
@@ -5267,28 +5449,46 @@ SCREENS.milestones=function(){clear();
  d.innerHTML=`
   <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">我的目标</div></div>
   <div class="ms-cur">
-    <div class="ms-cur-icon">${curLv.icon||"⭐"}</div>
+    <div class="ms-cur-icon">${medalSVG(curIdx,56,true)}</div>
     <div class="ms-cur-tx"><div class="ms-cur-label">当前等级</div><b>${curLv.name}</b></div>
-    ${nx?`<div class="ms-cur-next">→ ${nx.icon||""} ${nx.name}<br><span>${nx.min-points()} 分后升级</span></div>`:''}
+    ${nx?`<div class="ms-cur-next">→ ${nx.name}<br><span>${nx.min-points()} 分后升级</span></div>`:''}
   </div>
-  <div class="slabel" style="margin-top:28px">等级路线</div>
+
+  <div class="slabel" style="margin-top:26px">得分逻辑</div>
+  <div class="ms-rule">
+    <div class="ms-rule-line">积分靠做题积累，但<b>升级还要看错词健康度</b></div>
+    <div class="ms-rule-stats">
+      <div class="ms-rule-stat">
+        <div class="ms-rule-num ${hp>=HEALTH_PASS?'ok':'warn'}">${hp}%</div>
+        <div class="ms-rule-lbl">错词健康度</div>
+        <div class="ms-rule-sub">错词本里没有逾期未复习的比例</div>
+      </div>
+      <div class="ms-rule-stat">
+        <div class="ms-rule-num">${mp}%</div>
+        <div class="ms-rule-lbl">掌握深度</div>
+        <div class="ms-rule-sub">学过的词里真正记住的比例</div>
+      </div>
+    </div>
+    <div class="ms-rule-line">升级：积分够 + 健康度 ≥ ${HEALTH_PASS}%　·　学神：健康度 ${GOD_HEALTH}% + 掌握深度 ≥ ${GOD_MASTERY}%</div>
+    <div class="ms-rule-foot">两个数字都只看现在的状态，不按天打卡，去复习中心清完错词就能马上回正</div>
+  </div>
+
+  <div class="slabel" style="margin-top:26px">等级路线</div>
   <div class="ms-lvlist">${lvRows}
     <div class="ms-lv ${god?'reached god':'god'}">
-      <div class="ms-icon">✨</div>
+      <div class="ms-icon">${medalSVG(6,40,god)}</div>
       <div class="ms-tx"><b>学神</b><span>完成以下全部 5 项里程碑</span></div>
-      ${god?'<div class="ms-ck">✓</div>':'<div class="ms-prog">${doneCount}/5</div>'}
+      ${god?'<div class="ms-ck">✓</div>':`<div class="ms-prog">${doneCount}/5</div>`}
     </div>
   </div>
   <div class="slabel" style="margin-top:28px">✨ 学神里程碑 · ${doneCount}/5 项已完成</div>
   <div class="ms-milestones">${msRows}</div>
-  <div class="foot" style="margin-top:28px">积分每答对一题就能获得 · 完成挑战还有加成</div>`;
- // fix template literal issue with doneCount
- d.querySelector('.ms-prog') && (d.querySelector('.ms-prog').textContent=doneCount+'/5');
+  <div class="foot" style="margin-top:28px">积分每答对一题就能获得 · 毕业奖励比普通答对分值更高</div>`;
  app.appendChild(d);
  d.querySelector("#bk").onclick=()=>{sfx.tap();go("home");};
 };
 
-SCREENS.card=function(){clear();const lv=levelOf(points());const due=dueWords().length;const dueT=dueWordsToday().length;
+SCREENS.card=function(){clear();checkGodMaintained();const lv=isGodLevel()?GOD_LEVEL:realLevelOf(points());const due=dueWords().length;const dueT=dueWordsToday().length;
  const dt=new Date();const ds=`${dt.getFullYear()}.${dt.getMonth()+1}.${dt.getDate()}`;
  let rows="";UNITS.filter(u=>u.ready).forEach(u=>{const sc=stageCount(u);const tot=stageTotal();rows+=`<div class="sc-row"><b>Unit ${u.n} · ${u.title}</b><span class="v">${sc===tot?'🏆 通关':sc+'/'+tot+' 关'}</span></div>`;});
  const d=document.createElement("div");d.className="screen active";
@@ -5325,7 +5525,7 @@ function confirmReset(){const m=document.getElementById("modal");const gl=gradeB
  m.querySelector("#cancel").onclick=()=>{m.classList.remove("show");sfx.tap();};
  m.querySelector("#doreset").onclick=()=>{
    if(S.grade)S.gd[S.grade]={points:0,prog:{},stages:{},exemptGiven:0};
-   save();_prevLv=levelOf(0).name;
+   save();_prevLv=realLevelOf(0).name;
    m.classList.remove("show");sfx.levelup();go("home");
  };
 }
@@ -5356,24 +5556,24 @@ function drawCard(lv,due,ds){const W=750,H=1000,c=document.createElement("canvas
 /* ---------- FX ---------- */
 function showCombo(n){const e=document.getElementById("combo");e.textContent=`连击 ×${n}　+${PT.comboStep}`;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),1000);}
 let _prevLv=null;
-function afterPoint(then){const cur=levelOf(points()).name;
+function afterPoint(then){const cur=realLevelOf(points()).name;
  if(_prevLv&&cur!==_prevLv&&LEVELS.findIndex(l=>l.name===cur)>LEVELS.findIndex(l=>l.name===_prevLv)){_prevLv=cur;celebrate(cur,then);}
  else{_prevLv=cur;
   // 每次得分后检查学神里程碑
   if(checkGodLevel()){setTimeout(()=>celebrateGod(then),300);}else then();}}
 function celebrate(name,then){sfx.levelup();const m=document.getElementById("modal");
- const lv=LEVELS.find(l=>l.name===name)||{icon:"⭐"};
- const canBrag=LEVELS.findIndex(l=>l.name===name)>=LEVELS.findIndex(l=>l.name===BRAG_LEVEL);
+ const idx=LEVELS.findIndex(l=>l.name===name);const lv=LEVELS[idx]||{};
+ const canBrag=idx>=LEVELS.findIndex(l=>l.name===BRAG_LEVEL);
  m.innerHTML=`<div class="box"><div class="rk">Level Up !</div>
-   <div class="ring" style="font-size:36px;letter-spacing:0">${lv.icon} ${name}</div>
-   <h2 style="margin:12px 0 4px">升到新等级了！</h2><p style="font-size:14px;color:var(--soft)">${lv.desc||""}</p>
+   <div style="margin:0 auto 14px;display:flex;justify-content:center;animation:ringpulse 1.4s ease-in-out infinite;border-radius:50%">${medalSVG(idx,96,true)}</div>
+   <h2 style="margin:12px 0 4px;font-size:18px;font-weight:700;color:var(--ink)">${name}</h2><p style="font-size:14px;color:var(--soft)">${lv.desc||""}</p>
    ${canBrag?`<button class="btn accent" id="brag">🔥 向 ${JOHN_WECHAT} 炫耀</button><button class="btn line" id="ok">继续</button>`:`<button class="btn accent" id="ok">继续</button>`}</div>`;
  m.classList.add("show");
  m.querySelector("#ok").onclick=()=>{m.classList.remove("show");sfx.tap();then();};
  if(canBrag)m.querySelector("#brag").onclick=()=>{m.classList.remove("show");sfx.tap();bragScreen("level",name,then);};}
 function celebrateGod(then){sfx.levelup();const m=document.getElementById("modal");
  m.innerHTML=`<div class="box"><div class="rk">最高成就解锁</div>
-   <div class="ring" style="font-size:40px;letter-spacing:0;animation:ringpulse 1s infinite">✨</div>
+   <div style="margin:0 auto 8px;display:flex;justify-content:center;animation:ringpulse 1s infinite;border-radius:50%">${medalSVG(6,100,true)}</div>
    <h2 style="font-size:22px;font-weight:800;margin:12px 0 8px">恭喜你成为学神！</h2>
    <p style="font-size:14px;color:var(--soft);line-height:1.7">你完成了本年级的全部里程碑<br>这是最高荣誉！</p>
    <button class="btn accent" id="bragGod">🔥 向 ${JOHN_WECHAT} 终极炫耀</button>
@@ -5398,11 +5598,303 @@ function confirmGodReset(){const m=document.getElementById("modal");const gl=gra
  m.classList.add("show");
  m.querySelector("#cancel").onclick=()=>{m.classList.remove("show");sfx.tap();};
  m.querySelector("#doreset").onclick=()=>{
-   if(S.grade)S.gd[S.grade]={points:0,prog:{},stages:{},exemptGiven:0,monsterCount:0,dailyCount:0,streak:0};
-   save();_prevLv=levelOf(0).name;
+   if(S.grade)S.gd[S.grade]={points:0,prog:{},stages:{},exemptGiven:0,monsterCount:0,dailyCount:0};
+   save();_prevLv=realLevelOf(0).name;
    m.classList.remove("show");sfx.levelup();go("home");
  };
 }
+/* ════════════════════════════════════════════════════════
+   ★ 3D 等级勋章系统（纯 SVG 立体模型，无 emoji）
+   ★ 复习中心（艾宾浩斯遗忘曲线可视化）
+   ★ 进步可视化（本周成果 + 勋章陈列馆）
+   ════════════════════════════════════════════════════════ */
+
+/* 7 枚等级勋章：学渣→混子→普通学生→努力生→尖子生→学霸→学神 */
+const MEDAL_DEFS=[
+ {name:"学渣",  min:0,    c1:"#D8C79A",c2:"#9A845A",c3:"#6E5A36",rib:"#7A6A4A",em:"sprout"},
+ {name:"混子",  min:500,  c1:"#9FE0DE",c2:"#3E9A96",c3:"#2A6E6A",rib:"#347E7A",em:"wave"},
+ {name:"普通学生",min:1000,c1:"#B8D0F0",c2:"#5E86C0",c3:"#3A5A94",rib:"#4A6AA0",em:"book"},
+ {name:"努力生",min:1600, c1:"#F4BC7C",c2:"#D07828",c3:"#9A5410",rib:"#B0651C",em:"flame"},
+ {name:"尖子生",min:2300, c1:"#ECF0F8",c2:"#9AA6BC",c3:"#697590",rib:"#8A94AA",em:"target"},
+ {name:"学霸",  min:3000, c1:"#FFEC9E",c2:"#E8B820",c3:"#A87E08",rib:"#C89810",em:"crown"},
+ {name:"学神",  min:99999,c1:"#FFFFFF",c2:"#C088E8",c3:"#6E36B8",rib:"#9A5AD8",em:"star",leg:true},
+];
+function medalEmblem(em,c3){
+ const F="#FFF7E6";
+ switch(em){
+  case "sprout": return `<path d="M50 76 V60" stroke="${F}" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M50 65 C43 65 38 60 37 53 C45 53 50 57 50 65 Z" fill="${F}"/>
+    <path d="M50 62 C57 62 62 57 63 50 C55 50 50 54 50 62 Z" fill="${F}" opacity=".82"/>`;
+  case "wave": return `<path d="M35 57 Q40 51 45 57 T55 57 T65 57" stroke="${F}" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M35 65 Q40 59 45 65 T55 65 T65 65" stroke="${F}" stroke-width="2.8" fill="none" stroke-linecap="round" opacity=".78"/>`;
+  case "book": return `<path d="M50 49 C45 46 38 46 34 48 V74 C38 72 45 72 50 75 Z" fill="${F}"/>
+    <path d="M50 49 C55 46 62 46 66 48 V74 C62 72 55 72 50 75 Z" fill="${F}" opacity=".88"/>
+    <path d="M50 49 V75" stroke="${c3}" stroke-width="1.6"/>`;
+  case "flame": return `<path d="M50 47 C42 56 45 61 47 65 C48 62 49 60 51 59 C52 64 56 65 56 70 C56 75 51 78 50 78 C48 78 43 75 43 69 C43 60 50 56 50 47 Z" fill="${F}"/>`;
+  case "target": return `<circle cx="50" cy="62" r="14" fill="none" stroke="${F}" stroke-width="2.6"/>
+    <circle cx="50" cy="62" r="8" fill="none" stroke="${F}" stroke-width="2.4"/>
+    <circle cx="50" cy="62" r="2.6" fill="${F}"/>`;
+  case "crown": return `<path d="M35 71 L33 51 L43 60 L50 47 L57 60 L67 51 L65 71 Z" fill="${F}"/>
+    <rect x="35" y="71" width="30" height="4.2" rx="1.6" fill="${F}"/>
+    <circle cx="50" cy="47" r="2.4" fill="${F}"/>`;
+  case "star": return `<path d="M50 45 L54.6 58 L68 58 L57 66 L61.4 79 L50 71 L38.6 79 L43 66 L32 58 L45.4 58 Z" fill="${F}"/>
+    <path d="M50 38 L51.5 44 L50 47 L48.5 44 Z" fill="${F}" opacity=".7"/>`;
+  default: return "";
+ }
+}
+function medalSVG(idx,size,earned){
+ const m=MEDAL_DEFS[idx]||MEDAL_DEFS[0];
+ const uid="md"+idx+"_"+Math.floor(Math.random()*1e6);
+ const dim=earned?"":'style="filter:grayscale(.85) brightness(.96);opacity:.45"';
+ const legRing=(m.leg&&earned)?`<circle cx="50" cy="62" r="34" fill="none" stroke="url(#ring_${uid})" stroke-width="1.4" stroke-dasharray="4 5" opacity=".8"><animateTransform attributeName="transform" type="rotate" from="0 50 62" to="360 50 62" dur="9s" repeatCount="indefinite"/></circle>`:"";
+ return `<svg viewBox="0 0 100 124" width="${size}" height="${Math.round(size*1.24)}" xmlns="http://www.w3.org/2000/svg" ${dim}>
+  <defs>
+   <radialGradient id="disc_${uid}" cx="38%" cy="30%" r="78%">
+     <stop offset="0%" stop-color="${m.c1}"/><stop offset="52%" stop-color="${m.c2}"/><stop offset="100%" stop-color="${m.c3}"/>
+   </radialGradient>
+   <linearGradient id="ring_${uid}" x1="0" y1="0" x2="0" y2="1">
+     <stop offset="0%" stop-color="${m.c1}"/><stop offset="100%" stop-color="${m.c3}"/>
+   </linearGradient>
+   <filter id="sh_${uid}" x="-35%" y="-25%" width="170%" height="160%">
+     <feDropShadow dx="0" dy="3" stdDeviation="2.6" flood-color="#281405" flood-opacity=".4"/>
+   </filter>
+  </defs>
+  <path d="M35 12 L45 54 L34 58 L23 18 Z" fill="${m.rib}" opacity=".92"/>
+  <path d="M65 12 L55 54 L66 58 L77 18 Z" fill="${m.rib}" opacity=".74"/>
+  <g filter="url(#sh_${uid})">
+   ${legRing}
+   <circle cx="50" cy="62" r="31" fill="url(#ring_${uid})"/>
+   <circle cx="50" cy="62" r="26.5" fill="url(#disc_${uid})"/>
+   <circle cx="50" cy="62" r="26.5" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="1.2"/>
+   <circle cx="50" cy="62" r="22" fill="none" stroke="${m.c3}" stroke-opacity=".4" stroke-width="1"/>
+   <ellipse cx="41" cy="49" rx="13" ry="7.5" fill="#fff" opacity=".3"/>
+   ${medalEmblem(m.em,m.c3)}
+  </g>
+ </svg>`;
+}
+
+/* ────────────────────────────────────────────────────────
+   复习中心：艾宾浩斯遗忘曲线 + 复习计划 + 对词/错词
+   ──────────────────────────────────────────────────────── */
+// 艾宾浩斯遗忘曲线 SVG（含 5 个复习节点）
+function ebbinghausCurveSVG(){
+ const W=320,H=150,pad=26;
+ const x0=pad,x1=W-12,y0=12,y1=H-22;
+ const days=15;
+ // 不复习的遗忘曲线 R=exp(-t/S)
+ const fx=t=>x0+(t/days)*(x1-x0);
+ const fy=r=>y1-(r)*(y1-y0);
+ let forget="";
+ for(let t=0;t<=days;t+=0.5){const r=Math.exp(-t/2.4);forget+=(t===0?"M":"L")+fx(t).toFixed(1)+" "+fy(r).toFixed(1)+" ";}
+ // 间隔复习后的记忆保持（锯齿回升）
+ const marks=[1,2,4,7,15];
+ let rev="M"+fx(0)+" "+fy(1)+" ";let cur=1;let last=0;
+ marks.forEach((mk,i)=>{
+   // 从 last 衰减到 mk，再回升到接近 1
+   const seg=Math.exp(-(mk-last)/(2.4+i*1.6));
+   rev+="L"+fx(mk).toFixed(1)+" "+fy(seg).toFixed(1)+" ";
+   rev+="L"+fx(mk).toFixed(1)+" "+fy(Math.min(1,seg+0.62)).toFixed(1)+" ";
+   last=mk;
+ });
+ let dots="";marks.forEach((mk,i)=>{const xx=fx(mk),yy=fy(Math.min(1,Math.exp(-(mk-(i?marks[i-1]:0))/(2.4+i*1.6))+0.62));
+   dots+=`<circle cx="${xx.toFixed(1)}" cy="${yy.toFixed(1)}" r="4" fill="var(--accent)" stroke="#fff" stroke-width="1.5"/>
+   <text x="${xx.toFixed(1)}" y="${(y1+14).toFixed(1)}" font-size="9" fill="var(--soft)" text-anchor="middle">第${mk}天</text>`;});
+ return `<svg viewBox="0 0 ${W} ${H}" width="100%" xmlns="http://www.w3.org/2000/svg">
+   <line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="var(--hair)" stroke-width="1"/>
+   <line x1="${x0}" y1="${y1}" x2="${x1}" y2="${y1}" stroke="var(--hair)" stroke-width="1"/>
+   <text x="${x0-4}" y="${y0+4}" font-size="8.5" fill="var(--faint)" text-anchor="end">100%</text>
+   <text x="${x0-4}" y="${y1}" font-size="8.5" fill="var(--faint)" text-anchor="end">0</text>
+   <path d="${forget}" fill="none" stroke="var(--warn)" stroke-width="2" stroke-dasharray="4 3" opacity=".75"/>
+   <path d="${rev}" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linejoin="round"/>
+   ${dots}
+ </svg>`;
+}
+// 复习计划：未来 16 天每天到期词数
+function reviewForecast(){
+ const P=gd().prog;const buckets=new Array(16).fill(0);
+ for(const id in P){const r=P[id];if(r.box>=0&&r.box<INTERVALS.length){
+   const d=Math.max(0,Math.ceil((r.due-now())/86400000));if(d<=15)buckets[d]++;}}
+ return buckets;
+}
+function reviewForecastSVG(){
+ const b=reviewForecast();const max=Math.max(1,...b);
+ const W=320,H=120,pad=18,bw=(W-pad*2)/16-2;
+ let bars="";
+ b.forEach((v,i)=>{const h=v?Math.max(4,(v/max)*(H-34)):2;const x=pad+i*((W-pad*2)/16);const y=H-22-h;
+   const col=i===0?"var(--warn)":"var(--accent)";
+   bars+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${col}" opacity="${v?(i===0?'1':'.85'):'.18'}"/>`;
+   if(v)bars+=`<text x="${(x+bw/2).toFixed(1)}" y="${(y-3).toFixed(1)}" font-size="8" fill="var(--soft)" text-anchor="middle">${v}</text>`;
+   if(i%3===0||i===0)bars+=`<text x="${(x+bw/2).toFixed(1)}" y="${H-8}" font-size="8" fill="var(--faint)" text-anchor="middle">${i===0?'今天':'+'+i}</text>`;
+ });
+ return `<svg viewBox="0 0 ${W} ${H}" width="100%" xmlns="http://www.w3.org/2000/svg">
+   <line x1="${pad}" y1="${H-22}" x2="${W-pad}" y2="${H-22}" stroke="var(--hair)" stroke-width="1"/>
+   ${bars}</svg>`;
+}
+
+SCREENS.reviewCenter=function(){
+ clear();
+ const due=dueWords();              // 全部仍在复习队列的错词
+ const dueT=dueWordsToday();        // 今日到期
+ const P=gd().prog;
+ // 错词按艾宾浩斯阶段分组
+ const stageLabel=["第1天","第2天","第4天","第7天","第15天"];
+ const byStage=[[],[],[],[],[]];
+ due.forEach(w=>{const r=P[w.id];if(r.box>=0&&r.box<5)byStage[r.box].push(w);});
+ // 对词（已毕业 / 已掌握）
+ const mastered=[];for(const id in P){if(P[id].grad){const w=WORDS.find(x=>x.id==id);if(w)mastered.push(w);}}
+ let curTab="plan"; // plan | wrong | right
+
+ const d=document.createElement("div");d.className="screen active";
+ d.innerHTML=`
+  <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">复习中心</div></div>
+  <div class="rc-hero">
+    <div class="rc-hero-l">
+      <div class="rc-bignum">${dueT.length}</div>
+      <div class="rc-bigsub">今日待复习</div>
+    </div>
+    <div class="rc-hero-stats">
+      <div class="rc-stat"><b>${due.length}</b><span>复习中</span></div>
+      <div class="rc-stat"><b>${mastered.length}</b><span>已毕业</span></div>
+    </div>
+  </div>
+  ${dueT.length? `<button class="btn accent rc-go" id="rc-go">开始今日复习 · ${dueT.length} 词</button>`
+    : (due.length? `<div class="rc-rest">今日已无到期词 · ${due.length} 个词在记忆周期中</div>`
+      : `<div class="rc-rest">错词本已清空，继续保持！</div>`)}
+  <div class="rc-tabs">
+    <div class="rc-tab active" data-t="plan">复习计划</div>
+    <div class="rc-tab" data-t="wrong">错词 ${due.length}</div>
+    <div class="rc-tab" data-t="right">对词 ${mastered.length}</div>
+  </div>
+  <div id="rc-body"></div>`;
+ app.appendChild(d);
+ d.querySelector("#bk").onclick=()=>{sfx.tap();go("home");};
+ const goBtn=d.querySelector("#rc-go");if(goBtn)goBtn.onclick=()=>{sfx.tap();go("review");};
+
+ const body=d.querySelector("#rc-body");
+ const renderPlan=()=>{
+   const fc=reviewForecast();const upcoming=fc.slice(1).reduce((a,b)=>a+b,0);
+   body.innerHTML=`
+    <div class="rc-card">
+      <div class="rc-card-t">艾宾浩斯遗忘曲线</div>
+      <div class="rc-card-s">不复习时记忆快速流失（红色虚线）；在 1·2·4·7·15 天的节点复习，记忆每次回升并越来越牢（金色实线）。</div>
+      ${ebbinghausCurveSVG()}
+      <div class="rc-legend"><span><i style="background:var(--warn)"></i>不复习</span><span><i style="background:var(--accent)"></i>按计划复习</span></div>
+    </div>
+    <div class="rc-card">
+      <div class="rc-card-t">未来 16 天复习计划</div>
+      <div class="rc-card-s">今天 ${fc[0]} 个待复习，未来 ${upcoming} 个将陆续到期。每个错词都按它自己的记忆周期自动排期。</div>
+      ${reviewForecastSVG()}
+    </div>
+    <div class="rc-stages">
+      ${stageLabel.map((lb,i)=>`<div class="rc-stage">
+        <div class="rc-stage-n">${byStage[i].length}</div>
+        <div class="rc-stage-l">${lb}<span>第${i+1}轮</span></div>
+      </div>`).join("")}
+    </div>`;
+ };
+ const wordRow=(w,tag,tagcls)=>{
+   const cn=w.s.map(x=>`${x[0]?`<i>${x[0]}</i>`:""}${x[1]}`).join("；");
+   return `<div class="rc-word" data-en="${w.en}">
+     <div class="rc-word-l"><b>${w.en}</b>${w.ph?`<span class="rc-ph">${w.ph}</span>`:""}<span class="rc-cn">${cn}</span></div>
+     <div class="rc-word-tag ${tagcls}">${tag}</div></div>`;
+ };
+ const renderWrong=()=>{
+   if(!due.length){body.innerHTML=`<div class="rc-empty">还没有错词，太棒了！</div>`;return;}
+   let h="";
+   for(let i=0;i<5;i++){if(!byStage[i].length)continue;
+     h+=`<div class="rc-grp-t">艾宾浩斯第${i+1}轮 · ${stageLabel[i]} <span>${byStage[i].length}词</span></div>`;
+     byStage[i].forEach(w=>{const r=P[w.id];const dl=Math.ceil((r.due-now())/86400000);
+       const tag=dl<=0?"今日复习":dl+"天后";const tc=dl<=0?"due":"";
+       h+=wordRow(w,tag,tc);});
+   }
+   body.innerHTML=h;bindSpeakRows(body);
+ };
+ const renderRight=()=>{
+   if(!mastered.length){body.innerHTML=`<div class="rc-empty">还没有毕业的词。<br>错词复习满 5 轮即可毕业到这里。</div>`;return;}
+   let h=`<div class="rc-grp-t">已掌握 · 完成全部 5 轮复习 <span>${mastered.length}词</span></div>`;
+   mastered.slice(0,60).forEach(w=>{h+=wordRow(w,"已毕业","grad");});
+   if(mastered.length>60)h+=`<div class="rc-more">仅显示前 60 个，共 ${mastered.length} 个已掌握</div>`;
+   body.innerHTML=h;bindSpeakRows(body);
+ };
+ const draw=()=>{curTab==="plan"?renderPlan():curTab==="wrong"?renderWrong():renderRight();};
+ d.querySelectorAll(".rc-tab").forEach(t=>t.onclick=()=>{
+   sfx.tap();curTab=t.dataset.t;
+   d.querySelectorAll(".rc-tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");draw();});
+ draw();
+};
+function bindSpeakRows(scope){scope.querySelectorAll(".rc-word[data-en]").forEach(el=>{el.onclick=()=>{speak(el.dataset.en);};});}
+
+/* ────────────────────────────────────────────────────────
+   进步可视化：本周成果 + 3D 勋章陈列馆
+   ──────────────────────────────────────────────────────── */
+SCREENS.progress=function(){
+ clear();checkGodMaintained();
+ const wa=weekActivity();
+ const acc=wa.total?Math.round(wa.correct/wa.total*100):0;
+ const l7=last7Activity();const maxNw=Math.max(1,...l7.map(x=>x.nw));
+ const earned=earnedMedals();
+ const realIdx=LEVELS.indexOf(realLevelOf(points()));
+ const curIdx=isGodLevel()?6:realIdx;
+ const hp=healthScore(),mp=masteryScore();
+
+ // 7天柱状图
+ let week7="";const bw=30,gap=8,W=(bw+gap)*7+10,Hc=90;
+ l7.forEach((dd,i)=>{const h=dd.nw?Math.max(6,(dd.nw/maxNw)*(Hc-24)):3;const x=6+i*(bw+gap);const y=Hc-18-h;
+   const today=i===6;
+   week7+=`<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="4" fill="${today?'var(--accent)':'var(--faint)'}" opacity="${dd.nw?(today?'1':'.7'):'.2'}"/>`;
+   if(dd.nw)week7+=`<text x="${x+bw/2}" y="${y-4}" font-size="10" fill="var(--soft)" text-anchor="middle" font-weight="600">${dd.nw}</text>`;
+   week7+=`<text x="${x+bw/2}" y="${Hc-4}" font-size="10" fill="${today?'var(--accent)':'var(--faint)'}" text-anchor="middle" font-weight="${today?'700':'400'}">${dd.day}</text>`;
+ });
+
+ // 勋章陈列馆：解锁状态跟首页/我的目标保持同一套判定（按 realLevelOf 的等级序号），不会互相矛盾
+ let gallery="";
+ MEDAL_DEFS.forEach((m,i)=>{
+   const got=i===6?isGodLevel():i<=realIdx;
+   const isCur=(i===curIdx);
+   gallery+=`<div class="pg-medal ${got?'got':'lock'} ${isCur?'cur':''}">
+     <div class="pg-medal-svg">${medalSVG(i,72,got)}</div>
+     <div class="pg-medal-name">${m.name}</div>
+     <div class="pg-medal-req">${m.min===0?'起点':(i===6?'集齐里程碑':m.min+'分')}</div>
+     ${isCur?'<div class="pg-medal-cur">当前</div>':''}
+   </div>`;
+ });
+
+ const d=document.createElement("div");d.className="screen active";
+ d.innerHTML=`
+  <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">进步可视化</div></div>
+
+  <div class="pg-cur">
+    <div class="pg-cur-medal">${medalSVG(curIdx,84,true)}</div>
+    <div class="pg-cur-tx">
+      <div class="pg-cur-lbl">当前等级</div>
+      <b>${MEDAL_DEFS[curIdx].name}</b>
+      <div class="pg-cur-sub">已解锁 ${earned}/7 枚勋章 · 健康度 ${hp}% · 掌握深度 ${mp}%</div>
+    </div>
+  </div>
+
+  <div class="slabel" style="margin-top:24px">本周成果</div>
+  <div class="pg-week">
+    <div class="pg-wk"><b>${wa.newWords}</b><span>新学单词</span></div>
+    <div class="pg-wk"><b>${S.weekPoints||0}</b><span>本周积分</span></div>
+    <div class="pg-wk"><b>${wa.graduated}</b><span>毕业单词</span></div>
+    <div class="pg-wk"><b>${acc}%</b><span>正确率</span></div>
+  </div>
+
+  <div class="pg-card">
+    <div class="pg-card-t">最近 7 天 · 每日新学单词</div>
+    <svg viewBox="0 0 ${W} ${Hc}" width="100%" xmlns="http://www.w3.org/2000/svg">${week7}</svg>
+    <div class="pg-card-s">本周共练习 ${wa.total} 题，答对 ${wa.correct} 题，活跃 ${wa.activeDays} 天。</div>
+  </div>
+
+  <div class="slabel" style="margin-top:24px">勋章陈列馆 · ${earned}/7</div>
+  <div class="pg-card-s2">每升一级解锁一枚立体勋章，集齐学神勋章即为最高荣誉。</div>
+  <div class="pg-gallery">${gallery}</div>
+  <div class="foot" style="margin-top:26px">点击错词、对词可朗读发音 · 勋章随等级自动点亮</div>`;
+ app.appendChild(d);
+ d.querySelector("#bk").onclick=()=>{sfx.tap();go("home");};
+};
+
+
 /* ============ 班级排行榜界面 ============ */
 function lbGetRanking(){ return lbCacheLoad(); }
 
@@ -5630,7 +6122,7 @@ load();initTTS();
  if(_g&&gradeById(_g)&&gradeById(_g).ready){S.grade=_g;save();}}catch(e){}})();
 // 恢复年级
 if(S.grade&&gradeById(S.grade)&&gradeById(S.grade).ready){applyGrade(S.grade);}
-_prevLv=levelOf(points()).name;
+_prevLv=realLevelOf(points()).name;
 if(!S.name){
   go("welcome");
 } else {
@@ -5644,6 +6136,7 @@ if(!S.name){
             S.gd[gid]=cloud.data[gid];
           }
         }
+        migrateLevelCaps(); // 云端数据可能也是老版本存的，同样要补一次 capLv
         save();
       }
     }catch(e){}
