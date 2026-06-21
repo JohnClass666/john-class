@@ -3,28 +3,83 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>发音跟读 · 码神训练营</title>
+<title>发音跟读训练 · John Class</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:#F5EDD8;color:#2A1E08;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
 body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 20px}
+
+/* ── PANE SYSTEM ── */
 .pane{display:none;flex-direction:column;align-items:center;width:100%;max-width:480px;text-align:center}
 .pane.on{display:flex}
-.logo{font-size:11px;letter-spacing:.18em;color:#B5A080;font-weight:600;margin-bottom:28px}
+
+/* ── SHARED ── */
+.logo{font-size:11px;letter-spacing:.18em;color:#B5A080;font-weight:600;margin-bottom:36px}
 .back-link{font-size:12px;color:#B5A080;text-decoration:none;align-self:flex-start;margin-bottom:20px}
-.btn{display:block;width:100%;padding:15px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none;margin-bottom:10px}
+.back-link:hover{color:#2A1E08}
+.btn{display:block;width:100%;padding:15px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none;letter-spacing:.01em}
 .btn:active{opacity:.8}
 .btn:disabled{opacity:.35;cursor:default}
-.btn-ghost{display:block;width:100%;padding:14px;background:transparent;color:#7A6040;border:1.5px solid rgba(42,30,8,.2);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none;margin-bottom:10px}
+.btn-ghost{display:block;width:100%;padding:14px;background:transparent;color:#7A6040;border:1.5px solid rgba(42,30,8,.2);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none}
 .btn-ghost:active{opacity:.7}
-/* progress */
-.prog-row{display:flex;justify-content:space-between;font-size:11px;color:#B5A080;margin-bottom:5px;width:100%}
-.prog-track{width:100%;height:4px;background:rgba(42,30,8,.08);border-radius:2px;overflow:hidden;margin-bottom:16px}
-.prog-fill{height:4px;background:#2A1E08;border-radius:2px;transition:width .4s}
-/* sentence card */
-.sent-card{width:100%;background:rgba(255,252,245,.92);border:1.5px solid rgba(184,149,106,.2);border-radius:16px;padding:20px 18px;margin-bottom:14px;text-align:left}
-.sent-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.sent-num{font-size:11px;color:#B5A080;font-weight:600;letter-spacing:.06em}
+
+/* ── ENTRY SCREEN ── */
+.entry-emoji{font-size:52px;line-height:1;margin-bottom:20px}
+.entry-title{font-size:24px;font-weight:700;color:#2A1E08;margin-bottom:8px}
+.entry-sub{font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:32px}
+.mode-cards{display:flex;flex-direction:column;gap:12px;width:100%;margin-bottom:24px}
+.mode-card{
+  display:flex;align-items:center;gap:16px;
+  padding:18px 20px;
+  background:rgba(255,252,245,.9);
+  border:1.5px solid rgba(184,149,106,.22);
+  border-radius:14px;cursor:pointer;text-align:left;
+  transition:border-color .18s, box-shadow .18s;
+  font-family:inherit;color:#2A1E08;width:100%;
+}
+.mode-card:hover{border-color:rgba(42,30,8,.35);box-shadow:0 2px 12px rgba(42,30,8,.08)}
+.mode-card:active{opacity:.8}
+.mode-card.recommended{border-color:rgba(42,30,8,.6);background:rgba(42,30,8,.04)}
+.mode-icon{font-size:28px;flex-shrink:0}
+.mode-info{flex:1}
+.mode-name{font-size:16px;font-weight:700;margin-bottom:3px}
+.mode-desc{font-size:12px;color:#8A7050;line-height:1.5}
+.mode-tag{font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:10px;flex-shrink:0}
+.tag-rec{background:rgba(42,30,8,.08);color:#2A1E08}
+.tag-android{background:rgba(74,124,184,.12);color:#1A3A7A}
+.tag-ios{background:rgba(60,150,90,.12);color:#1A4A28}
+.tag-dev{background:rgba(200,140,50,.15);color:#5A3000}
+
+/* ── QUOTA BAR ── */
+.quota-wrap{width:100%;margin-bottom:8px}
+.quota-label{display:flex;justify-content:space-between;font-size:11px;color:#B5A080;margin-bottom:5px}
+.quota-track{width:100%;height:4px;background:rgba(42,30,8,.08);border-radius:2px;overflow:hidden}
+.quota-fill{height:4px;background:#2A1E08;border-radius:2px;transition:width .4s}
+.quota-fill.warn{background:#C85A2A}
+.quota-fill.full{background:#A03020}
+.quota-locked{font-size:13px;color:#A03020;font-weight:600;text-align:center;padding:10px;background:rgba(200,70,60,.08);border-radius:10px;margin-bottom:12px}
+
+/* ── SCENE FILTER ── */
+.scene-scroll{width:100%;overflow-x:auto;scrollbar-width:none;margin-bottom:20px}
+.scene-scroll::-webkit-scrollbar{display:none}
+.scene-row{display:flex;gap:8px;width:max-content;padding:2px 0}
+.scene-chip{
+  padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;
+  border:1.5px solid rgba(184,149,106,.25);background:rgba(255,252,245,.7);
+  color:#8A7050;cursor:pointer;white-space:nowrap;font-family:inherit;
+  transition:all .15s;-webkit-appearance:none;
+}
+.scene-chip.active{background:#2A1E08;color:#F5EDD8;border-color:#2A1E08}
+.scene-chip:active{opacity:.75}
+
+/* ── SENTENCE CARD ── */
+.sent-card{
+  width:100%;background:rgba(255,252,245,.92);
+  border:1.5px solid rgba(184,149,106,.2);border-radius:16px;
+  padding:22px 20px;margin-bottom:16px;text-align:left;
+}
+.sent-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sent-num{font-size:11px;color:#B5A080;font-weight:600;letter-spacing:.08em}
 .sent-scene{font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:10px}
 .scene-meeting{background:rgba(74,124,184,.1);color:#1A3A7A}
 .scene-bug{background:rgba(200,70,60,.1);color:#7A1A10}
@@ -35,414 +90,826 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
 .scene-opinion{background:rgba(212,136,42,.12);color:#5A3000}
 .scene-deadline{background:rgba(184,149,106,.15);color:#7A5A30}
 .scene-everymatrix{background:rgba(42,30,8,.1);color:#2A1E08}
-.sent-text{font-family:Georgia,serif;font-size:19px;line-height:1.75;color:#2A1E08}
-/* attempt dots */
-.attempt-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px}
-.attempt-dot{width:10px;height:10px;border-radius:50%;background:rgba(184,149,106,.2);border:1.5px solid rgba(184,149,106,.3);transition:all .2s}
-.attempt-dot.used-pass{background:rgba(60,150,90,.5);border-color:rgba(60,150,90,.7)}
-.attempt-dot.used-fail{background:rgba(200,70,60,.4);border-color:rgba(200,70,60,.6)}
-.attempt-dot.current{background:#2A1E08;border-color:#2A1E08;transform:scale(1.2)}
-.attempt-label{font-size:11px;color:#B5A080;letter-spacing:.06em}
-/* transcript */
-.transcript-box{width:100%;background:rgba(255,252,245,.85);border:1.5px solid rgba(184,149,106,.18);border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.8;min-height:52px;text-align:left;margin-bottom:12px;font-family:Georgia,serif;color:#2A1E08}
-.transcript-box.empty{color:#B5A080;font-style:normal;font-family:inherit;font-size:13px;text-align:center;padding:16px}
-.transcript-box.listening{border-color:rgba(200,70,60,.4)}
-/* score */
-.score-wrap{display:flex;align-items:center;gap:12px;margin-bottom:12px;width:100%}
-.score-circle{width:68px;height:68px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;border:2px solid;flex-shrink:0}
+.sent-text{
+  font-family:Georgia,serif;font-size:19px;line-height:1.75;
+  color:#2A1E08;letter-spacing:.01em;
+}
+
+/* ── DIFF HIGHLIGHT ── */
+.w-correct{color:#1A4A28}
+.w-wrong{color:#A03020;text-decoration:underline wavy rgba(200,70,60,.5);text-underline-offset:3px}
+.w-missing{color:#A03020;font-style:italic;opacity:.6}
+
+/* ── SCORE BADGE ── */
+.score-wrap{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:16px}
+.score-circle{
+  width:72px;height:72px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-weight:700;border:2px solid;
+}
 .score-A{background:rgba(60,150,90,.12);border-color:rgba(60,150,90,.4);color:#1A4A28}
 .score-B{background:rgba(74,124,184,.12);border-color:rgba(74,124,184,.35);color:#1A3A7A}
 .score-C{background:rgba(200,140,50,.12);border-color:rgba(200,140,50,.35);color:#5A3000}
 .score-D{background:rgba(200,70,60,.1);border-color:rgba(200,70,60,.3);color:#7A1A10}
-.score-num{font-size:20px;line-height:1}
-.score-lbl{font-size:10px;margin-top:2px}
+.score-num{font-size:22px;line-height:1}
+.score-lbl{font-size:10px;letter-spacing:.06em;margin-top:2px}
 .score-msg{font-size:14px;font-weight:600;color:#2A1E08;line-height:1.4;text-align:left;flex:1}
-.diff-box{width:100%;background:rgba(255,252,245,.85);border:1.5px solid rgba(184,149,106,.15);border-radius:12px;padding:12px 14px;font-family:Georgia,serif;font-size:14px;line-height:1.9;text-align:left;margin-bottom:12px}
-.w-correct{color:#1A5C28}
-.w-wrong{color:#A03020;text-decoration:underline wavy rgba(200,70,60,.5);text-underline-offset:3px}
-.w-missing{color:#A03020;font-style:italic;opacity:.6}
-/* rec btn */
-.rec-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:14px;font-size:17px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none;margin-bottom:12px;transition:background .2s}
+
+/* ── TRANSCRIPT BOX ── */
+.transcript-box{
+  width:100%;background:rgba(255,252,245,.85);
+  border:1.5px solid rgba(184,149,106,.18);border-radius:12px;
+  padding:14px 16px;font-size:14px;line-height:1.8;
+  min-height:52px;text-align:left;margin-bottom:14px;
+  font-family:Georgia,serif;color:#2A1E08;
+}
+.transcript-box.empty{color:#B5A080;font-style:italic;font-family:inherit;font-size:13px;text-align:center;padding:16px}
+.transcript-box.listening{border-color:rgba(200,70,60,.4)}
+
+/* ── REC BUTTON ── */
+.rec-btn-wrap{width:100%;margin-bottom:14px}
+.rec-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:16px;
+  background:#2A1E08;color:#F5EDD8;
+  border:none;border-radius:14px;
+  font-size:17px;font-weight:600;cursor:pointer;
+  font-family:inherit;-webkit-appearance:none;
+  transition:background .2s;
+}
 .rec-btn.recording{background:#A03020}
 .rec-btn:disabled{opacity:.35;cursor:default}
 .rec-dot{width:9px;height:9px;border-radius:50%;background:#F5EDD8;animation:blink 1s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(42,30,8,.15);border-top-color:#2A1E08;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
-@keyframes spin{to{transform:rotate(360deg)}}
-/* pts toast */
-.pts-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:#2A1E08;color:#F5EDD8;padding:10px 22px;border-radius:20px;font-size:14px;font-weight:600;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:99;white-space:nowrap}
+
+/* ── POINTS TOAST ── */
+.pts-toast{
+  position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:#2A1E08;color:#F5EDD8;
+  padding:10px 22px;border-radius:20px;
+  font-size:14px;font-weight:600;letter-spacing:.04em;
+  opacity:0;transition:opacity .3s, transform .3s;
+  pointer-events:none;z-index:99;white-space:nowrap;
+}
 .pts-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-/* done screen */
-.done-emoji{font-size:48px;margin-bottom:14px}
+
+/* ── LOADING SPINNER ── */
+.spinner{
+  display:inline-block;width:18px;height:18px;
+  border:2px solid rgba(245,237,216,.3);
+  border-top-color:#F5EDD8;border-radius:50%;
+  animation:spin .7s linear infinite;vertical-align:middle;margin-right:8px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── DONE SCREEN ── */
+.done-emoji{font-size:52px;margin-bottom:16px}
 .done-title{font-size:22px;font-weight:700;margin-bottom:8px}
-.done-sub{font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:24px}
-.stat-row{display:flex;gap:10px;width:100%;margin-bottom:24px}
-.stat-item{flex:1;padding:14px 10px;background:rgba(255,252,245,.9);border:1.5px solid rgba(184,149,106,.2);border-radius:12px;text-align:center}
-.stat-num{font-size:24px;font-weight:700;color:#2A1E08;line-height:1}
-.stat-lbl{font-size:11px;color:#8A7050;margin-top:4px}
+.done-sub{font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:28px}
+.done-stat{
+  width:100%;display:flex;gap:10px;margin-bottom:28px;
+}
+.done-stat-item{
+  flex:1;padding:16px 12px;
+  background:rgba(255,252,245,.9);border:1.5px solid rgba(184,149,106,.2);
+  border-radius:12px;text-align:center;
+}
+.done-stat-num{font-size:26px;font-weight:700;color:#2A1E08;line-height:1}
+.done-stat-lbl{font-size:11px;color:#8A7050;margin-top:4px}
+
+/* ── ATTEMPT COUNTER ── */
+.attempt-row{
+  display:flex;align-items:center;justify-content:center;
+  gap:8px;margin-bottom:14px;
+}
+.attempt-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:rgba(184,149,106,.2);border:1.5px solid rgba(184,149,106,.3);
+  transition:all .2s;
+}
+.attempt-dot.used-pass{background:rgba(60,150,90,.5);border-color:rgba(60,150,90,.7)}
+.attempt-dot.used-fail{background:rgba(200,70,60,.4);border-color:rgba(200,70,60,.6)}
+.attempt-dot.current{background:#2A1E08;border-color:#2A1E08;transform:scale(1.2)}
+.attempt-label{font-size:11px;color:#B5A080;letter-spacing:.06em}
+
+/* ── ERROR BOOK ── */
+.error-word-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 12px;margin:4px;
+  background:rgba(200,70,60,.08);border:1.5px solid rgba(200,70,60,.2);
+  border-radius:20px;font-size:13px;font-weight:600;color:#7A1A10;
+}
+.error-word-chip .error-count{
+  font-size:10px;background:rgba(200,70,60,.15);
+  padding:1px 5px;border-radius:8px;font-weight:700;
+}
+.error-sent-ref{font-size:11px;color:#B5A080;font-style:italic}
+.error-section-title{
+  font-size:11px;font-weight:700;letter-spacing:.1em;color:#B5A080;
+  text-transform:uppercase;margin:16px 0 8px;width:100%;text-align:left;
+}
+.error-empty{
+  text-align:center;padding:32px 20px;
+  font-size:14px;color:#B5A080;line-height:1.8;
+}
 </style>
 </head>
 <body>
 
-<!-- ENTRY -->
+<!-- ══ PANE: ENTRY ══ -->
 <div id="p-entry" class="pane on">
-  <a class="back-link" href="programmer.html">← 程序员专区</a>
+  <a class="back-link" href="study.html">← 返回学习中心</a>
   <div class="logo">JOHN CLASS · 发音跟读 <span style="font-size:10px">(请用Safari打开)</span></div>
-  <div style="font-size:44px;margin-bottom:16px">🎤</div>
-  <div style="font-size:22px;font-weight:700;margin-bottom:8px">发音跟读训练</div>
-  <div style="font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:28px;text-align:center">朗读职场英语句子<br>系统识别并给出词级评分<br>每句 <strong>25 分</strong> · 共 100 句 · 满分 2500</div>
-  <div style="width:100%;background:rgba(255,252,245,.9);border:1.5px solid rgba(184,149,106,.2);border-radius:14px;padding:16px 18px;margin-bottom:24px;text-align:left">
-    <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#B5A080;text-transform:uppercase;margin-bottom:10px">本周进度</div>
-    <div class="prog-row"><span>已完成</span><span id="entrySentDone">0 / 100 句</span></div>
-    <div class="prog-track"><div class="prog-fill" id="entryProgFill" style="width:0%"></div></div>
-    <div style="display:flex;justify-content:space-between;font-size:13px">
-      <span style="color:#6A5040">本周积分</span>
-      <span style="font-weight:700" id="entryPts">0 分</span>
-    </div>
+  <div class="entry-emoji">🎤</div>
+  <div class="entry-title">职场英语发音跟读</div>
+  <div class="entry-sub">跟着读，检查发音准确度<br>针对 EveryMatrix 日常沟通场景</div>
+  <div class="mode-cards" id="modeCards">
+    <!-- rendered by JS based on device -->
   </div>
-  <button class="btn" id="btnStart">开始训练 →</button>
-  <button class="btn-ghost" onclick="window.location.href='programmer.html'">返回专区</button>
+  <div class="quota-wrap" id="entryQuota" style="display:none">
+    <div class="quota-label">
+      <span>今日进度</span>
+      <span id="entryQuotaText">0 / 10 句</span>
+    </div>
+    <div class="quota-track"><div class="quota-fill" id="entryQuotaFill" style="width:0%"></div></div>
+  </div>
+  <button class="btn-ghost" onclick="showPane('p-errors');loadErrorBook();" style="margin-top:8px;font-size:13px;padding:10px">📖 查看我的错词本</button>
 </div>
 
-<!-- PRACTICE -->
+<!-- ══ PANE: PRACTICE ══ -->
 <div id="p-practice" class="pane">
   <a class="back-link" href="#" id="backToEntry">← 返回</a>
   <div class="logo">JOHN CLASS · 发音跟读</div>
-  <div class="prog-row" style="width:100%"><span>今日进度</span><span id="progText">0 / 100</span></div>
-  <div class="prog-track" style="width:100%"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
-  <div class="sent-card">
+  <div class="quota-wrap" style="margin-bottom:16px">
+    <div class="quota-label">
+      <span>今日已练</span>
+      <span id="quotaText">0 / 10 句</span>
+    </div>
+    <div class="quota-track"><div class="quota-fill" id="quotaFill" style="width:0%"></div></div>
+  </div>
+  <div id="quotaLockedMsg" class="quota-locked" style="display:none">今日 10 句已完成，明天继续 💪</div>
+
+  <!-- scene filter -->
+  <div class="scene-scroll">
+    <div class="scene-row" id="sceneRow"></div>
+  </div>
+
+  <!-- sentence card -->
+  <div class="sent-card" id="sentCard">
     <div class="sent-meta">
       <span class="sent-num" id="sentNum">句子 1 / 100</span>
       <span class="sent-scene" id="sentScene"></span>
     </div>
     <div class="sent-text" id="sentText"></div>
   </div>
-  <div class="transcript-box empty" id="transcriptBox">按下录音，朗读上方句子</div>
-  <div class="attempt-row">
-    <span class="attempt-label">尝试</span>
+
+  <!-- transcript -->
+  <div class="transcript-box empty" id="transcriptBox">按下录音，开始朗读上方句子</div>
+
+  <!-- attempt counter -->
+  <div class="attempt-row" id="attemptRow">
+    <span class="attempt-label">本句尝试</span>
     <div class="attempt-dot" id="dot1"></div>
     <div class="attempt-dot" id="dot2"></div>
     <div class="attempt-dot" id="dot3"></div>
   </div>
-  <div id="scoreWrap" style="display:none;width:100%">
+
+  <!-- score (hidden until result) -->
+  <div id="scoreWrap" style="display:none;width:100%;margin-bottom:14px">
     <div class="score-wrap">
-      <div class="score-circle" id="scoreCircle"><div class="score-num" id="scoreNum">—</div><div class="score-lbl">分</div></div>
+      <div class="score-circle" id="scoreCircle">
+        <div class="score-num" id="scoreNum">—</div>
+        <div class="score-lbl" id="scoreLbl">分</div>
+      </div>
       <div class="score-msg" id="scoreMsg"></div>
     </div>
-    <div class="diff-box" id="diffBox"></div>
+    <div class="transcript-box" id="diffBox" style="margin-bottom:0"></div>
   </div>
-  <button class="rec-btn" id="recBtn" onclick="toggleRec()">🎤 按下开始录音</button>
-  <div style="display:flex;gap:10px;width:100%">
-    <button class="btn-ghost" id="btnSkip" onclick="skipSentence()" style="flex:1;margin-bottom:0">换一句</button>
-    <button class="btn" id="btnRetry" onclick="retryNow()" style="flex:1;display:none;margin-bottom:0">再试一次 🔄</button>
-    <button class="btn" id="btnNext" onclick="nextSentence()" style="flex:2;display:none;margin-bottom:0">下一句 →</button>
+
+  <!-- rec button -->
+  <div class="rec-btn-wrap">
+    <button class="rec-btn" id="recBtn" onclick="toggleRec()">
+      🎤 按住开始录音
+    </button>
+  </div>
+
+  <!-- action buttons -->
+  <div style="display:flex;gap:10px;width:100%" id="actionRow">
+    <button class="btn-ghost" id="btnSkip" onclick="skipSentence()" style="flex:1">换一句</button>
+    <button class="btn-ghost" id="btnRetry" onclick="retryCurrentSentence()" style="flex:1;display:none">再试一次 🔄</button>
+    <button class="btn" id="btnNext" onclick="nextSentence()" style="flex:2;display:none">下一句 →</button>
+  </div>
+
+  <div style="margin-top:14px;width:100%">
+    <button class="btn-ghost" onclick="showPane('p-entry')" style="font-size:13px;padding:10px">退出训练</button>
   </div>
 </div>
 
-<!-- DONE -->
+<!-- ══ PANE: DONE ══ -->
 <div id="p-done" class="pane">
   <div class="logo">JOHN CLASS · 发音跟读</div>
-  <div class="done-emoji">🏆</div>
-  <div class="done-title">全部完成！</div>
-  <div class="done-sub">100 句发音训练全部搞定<br>你已经是码神了！</div>
-  <div class="stat-row">
-    <div class="stat-item"><div class="stat-num" id="doneTotal">2500</div><div class="stat-lbl">本周总分</div></div>
-    <div class="stat-item"><div class="stat-num" id="doneAvg">—</div><div class="stat-lbl">平均得分</div></div>
+  <div class="done-emoji">🎉</div>
+  <div class="done-title">今日训练完成！</div>
+  <div class="done-sub">已完成今天全部 10 句跟读<br>大脑需要时间消化，明天继续！</div>
+  <div class="done-stat">
+    <div class="done-stat-item">
+      <div class="done-stat-num" id="doneCount">10</div>
+      <div class="done-stat-lbl">今日句数</div>
+    </div>
+    <div class="done-stat-item">
+      <div class="done-stat-num" id="doneScore">+500</div>
+      <div class="done-stat-lbl">获得积分</div>
+    </div>
+    <div class="done-stat-item">
+      <div class="done-stat-num" id="doneAvg">—</div>
+      <div class="done-stat-lbl">平均得分</div>
+    </div>
   </div>
-  <button class="btn" onclick="window.location.href='programmer.html'">返回专区</button>
+  <button class="btn" onclick="showPane('p-errors')" style="margin-bottom:10px">查看错词本 📖</button>
+  <button class="btn-ghost" onclick="window.location.href='study.html'" style="margin-bottom:10px">返回学习中心</button>
+  <button class="btn-ghost" onclick="showPane('p-entry')">再练一轮</button>
 </div>
 
-<div class="pts-toast" id="ptsToast">+25 分 🎯</div>
+<!-- ══ PANE: ERROR BOOK ══ -->
+<div id="p-errors" class="pane">
+  <a class="back-link" href="#" id="errorBookBack">← 返回</a>
+  <div class="logo">JOHN CLASS · 发音跟读</div>
+  <div style="font-size:22px;font-weight:700;color:#2A1E08;margin-bottom:6px">📖 我的错词本</div>
+  <div style="font-size:13px;color:#8A7050;margin-bottom:20px">发音不准确的单词会记录在这里</div>
+  <div id="errorBookList" style="width:100%">
+    <div style="font-size:13px;color:#B5A080;padding:20px;text-align:center">加载中...</div>
+  </div>
+  <div style="margin-top:16px;width:100%">
+    <button class="btn-ghost" onclick="showPane('p-done')">← 返回</button>
+  </div>
+</div>
+
+<!-- points toast -->
+<div class="pts-toast" id="ptsToast">+50 分 🎯</div>
 
 <script>
-var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
-var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
-var POINTS=25;
-var PASS_SCORE=70;
-var MAX_ATTEMPTS=3;
+// ══════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════
+var SB_URL = 'https://ghunrrtrdgicbmixsqrc.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
+var BAILIAN_KEY = 'sk-864699328fc34ae0b433a87671a0f9c4';
+var DAILY_LIMIT = 10;
+var POINTS_PER_SENT = 50;
 
-var SENTENCES=[
-  {id:1,scene:'meeting',text:'Good morning, everyone. Shall we get started?'},
-  {id:2,scene:'meeting',text:"Can everyone hear me okay? I'm having some connection issues."},
-  {id:3,scene:'meeting',text:"Sorry I'm a bit late — my previous meeting ran over."},
-  {id:4,scene:'meeting',text:'Let me share my screen real quick.'},
-  {id:5,scene:'meeting',text:'Could you go back to the previous slide? I missed that part.'},
-  {id:6,scene:'meeting',text:"I'll send the meeting notes to the group after this."},
-  {id:7,scene:'meeting',text:'Does anyone have any questions before we move on?'},
-  {id:8,scene:'meeting',text:"Let's wrap up here — I'll follow up with an email."},
-  {id:9,scene:'bug',text:"I found a bug in the payment module — it's blocking the release."},
-  {id:10,scene:'bug',text:'The issue only happens when the user is logged out. Can you reproduce it?'},
-  {id:11,scene:'bug',text:"I've tested it on Chrome and Firefox, but not Safari yet."},
-  {id:12,scene:'bug',text:"This is a high-priority bug — we need to fix it before Friday."},
-  {id:13,scene:'bug',text:'The test case passed locally but failed on the staging server.'},
-  {id:14,scene:'bug',text:'Can you check the logs and see what error message comes up?'},
-  {id:15,scene:'bug',text:"I'll open a Jira ticket for this and assign it to you."},
-  {id:16,scene:'bug',text:'We need to write more test cases for the edge cases.'},
-  {id:17,scene:'bug',text:'The regression testing is done — no new issues found.'},
-  {id:18,scene:'bug',text:'This bug was introduced in the last deployment.'},
-  {id:19,scene:'dev',text:"I've pushed the changes to the dev branch — can you review it?"},
-  {id:20,scene:'dev',text:"There's a merge conflict in the main branch. I'll resolve it now."},
-  {id:21,scene:'dev',text:"The API is returning a 500 error. I'm looking into it."},
-  {id:22,scene:'dev',text:"I need to refactor this function — it's getting too complicated."},
-  {id:23,scene:'dev',text:'Can you explain what this part of the code is supposed to do?'},
-  {id:24,scene:'dev',text:'The build failed because of a missing dependency.'},
-  {id:25,scene:'dev',text:"I'll write the unit tests once the feature is complete."},
-  {id:26,scene:'dev',text:'This logic needs to be moved to the backend.'},
-  {id:27,scene:'dev',text:'We should add some error handling here in case the request fails.'},
-  {id:28,scene:'dev',text:"The performance is slow — I think it's a database query issue."},
-  {id:29,scene:'dev',text:"I'm getting a NullPointerException — I think the object isn't being initialized properly."},
-  {id:30,scene:'dev',text:'The endpoint is working, but the response time is way too slow.'},
-  {id:31,scene:'dev',text:"I need to add a new column to the database — I'll write the migration script."},
-  {id:32,scene:'dev',text:"The service is throwing an exception when the input is null. I'll add a null check."},
-  {id:33,scene:'dev',text:"I've updated the dependency in the POM file — please pull the latest version."},
-  {id:34,scene:'dev',text:"The scheduled job ran twice last night — I think there's a timing issue in the config."},
-  {id:35,scene:'dev',text:"I'll add some logging here so we can trace what's happening in production."},
-  {id:36,scene:'dev',text:'The connection pool is getting exhausted under heavy load — we need to tune it.'},
-  {id:37,scene:'dev',text:'Can you review my pull request? I want a second pair of eyes before merging.'},
-  {id:38,scene:'dev',text:'I deployed to staging — can you do a quick sanity check?'},
-  {id:39,scene:'qa',text:"I've written 30 test cases for the registration flow — I'll share them with you."},
-  {id:40,scene:'qa',text:'The smoke test passed, but the full regression is still running.'},
-  {id:41,scene:'qa',text:'This is a critical path — if this breaks, nothing else works.'},
-  {id:42,scene:'qa',text:'I need a test account with admin privileges to complete this test.'},
-  {id:43,scene:'qa',text:"The bug is intermittent — it doesn't happen every time, which makes it hard to reproduce."},
-  {id:44,scene:'qa',text:"I've attached screenshots and a screen recording to the Jira ticket."},
-  {id:45,scene:'qa',text:'The fix looks good in staging, but I want to run one more round of testing.'},
-  {id:46,scene:'qa',text:'Can you deploy the hotfix to the test environment first so I can verify it?'},
-  {id:47,scene:'qa',text:'I tested all the scenarios in the test plan — only two minor issues found.'},
-  {id:48,scene:'qa',text:"This needs exploratory testing — the requirements don't cover all the edge cases."},
-  {id:49,scene:'qa',text:'The data in the test environment is outdated — can someone refresh it?'},
-  {id:50,scene:'qa',text:"I'll sign off on this once the last two bugs are fixed."},
-  {id:51,scene:'product',text:"The requirements aren't clear enough — can we get more details from the client?"},
-  {id:52,scene:'product',text:"This feature wasn't in the original scope. We'll need to update the timeline."},
-  {id:53,scene:'product',text:"I just want to make sure we're building the right thing before we start coding."},
-  {id:54,scene:'product',text:'Can you walk me through the expected behavior step by step?'},
-  {id:55,scene:'product',text:'The acceptance criteria need to be more specific — "works correctly" isn\'t enough.'},
-  {id:56,scene:'product',text:"Let's keep this simple for the first version and improve it later."},
-  {id:57,scene:'product',text:'I have some concerns about this approach — do you have five minutes to talk?'},
-  {id:58,scene:'product',text:'Who is the owner of this feature? I need to get sign-off before I proceed.'},
-  {id:59,scene:'sprint',text:"I'm currently working on the login module — should be done by tomorrow."},
-  {id:60,scene:'sprint',text:"I'm blocked on this task because I'm waiting for the API documentation."},
-  {id:61,scene:'sprint',text:'This ticket is taking longer than expected — I may need to push it to the next sprint.'},
-  {id:62,scene:'sprint',text:'Can we reprioritize? The bug fix feels more urgent than the new feature right now.'},
-  {id:63,scene:'sprint',text:'I finished my tasks early — is there anything else I can pick up?'},
-  {id:64,scene:'sprint',text:"The sprint ends on Friday — let's make sure everything is merged and tested."},
-  {id:65,scene:'sprint',text:"I'll update the Jira board at the end of today."},
-  {id:66,scene:'sprint',text:"We're on track to hit the deadline — no blockers at the moment."},
-  {id:67,scene:'meeting',text:"I'm not sure I fully understood — could you say that again more slowly?"},
-  {id:68,scene:'meeting',text:'Just to confirm, you want me to finish this by end of day Thursday, right?'},
-  {id:69,scene:'meeting',text:"I'll be out of office next Monday — please contact David if it's urgent."},
-  {id:70,scene:'meeting',text:"We're five hours ahead of the Romania team, so let's schedule for 3 PM our time."},
-  {id:71,scene:'meeting',text:'Can we move the call to tomorrow? I have a conflict at that time.'},
-  {id:72,scene:'meeting',text:"The Ukraine team handles the front-end — I'll loop them in."},
-  {id:73,scene:'meeting',text:"My English isn't perfect, but let me try to explain."},
-  {id:74,scene:'meeting',text:'Could you put that in writing? I want to make sure I get it right.'},
-  {id:75,scene:'meeting',text:'I think there might be a miscommunication — let me clarify.'},
-  {id:76,scene:'everymatrix',text:"The client's platform went down during peak betting hours — it's critical."},
-  {id:77,scene:'everymatrix',text:'We need to make sure the payment gateway is stable before the match starts.'},
-  {id:78,scene:'everymatrix',text:"EveryMatrix's sportsbook integration needs to be tested end-to-end."},
-  {id:79,scene:'everymatrix',text:'The casino module has a new feature request from the Thailand team.'},
-  {id:80,scene:'everymatrix',text:"We're running load tests to make sure the system handles high traffic."},
-  {id:81,scene:'everymatrix',text:'The compliance team needs this feature before the product goes live.'},
-  {id:82,scene:'everymatrix',text:"This is a third-party API — we don't control how it behaves."},
-  {id:83,scene:'opinion',text:'I understand the urgency, but rushing this could introduce more bugs.'},
-  {id:84,scene:'opinion',text:'I think there\'s a better way to do this — can I show you what I have in mind?'},
-  {id:85,scene:'opinion',text:"I'm not comfortable merging this without proper testing."},
-  {id:86,scene:'opinion',text:"That's a good point — I hadn't thought of it from that angle."},
-  {id:87,scene:'opinion',text:"I disagree with this approach, but I'm happy to discuss it further."},
-  {id:88,scene:'opinion',text:'I think we need to involve the team lead before making this decision.'},
-  {id:89,scene:'opinion',text:'I can do that, but it will affect the timeline for the other tasks.'},
-  {id:90,scene:'deadline',text:'Is the deadline flexible? The current timeline is really tight.'},
-  {id:91,scene:'deadline',text:'I can have it ready by Wednesday if I focus on just this task.'},
-  {id:92,scene:'deadline',text:"I'll need at least two more days to do this properly."},
-  {id:93,scene:'deadline',text:'Can we break this into two parts and deliver the first half on Friday?'},
-  {id:94,scene:'deadline',text:"Let's set a realistic deadline together — I want to commit to something I can actually deliver."},
-  {id:95,scene:'dev',text:"The feature is behind a feature flag — I'll enable it for testing."},
-  {id:96,scene:'dev',text:"I'll cherry-pick that commit and apply it to the release branch."},
-  {id:97,scene:'qa',text:"I'm doing a final round of smoke tests before we release to production."},
-  {id:98,scene:'qa',text:"The test environment is down — I'll raise it with the DevOps team."},
-  {id:99,scene:'sprint',text:"Let's do a quick sync before the stand-up to align on priorities."},
-  {id:100,scene:'meeting',text:'Thanks everyone — great work this week. See you on Monday.'}
+// ══════════════════════════════════════════
+// SENTENCE BANK  (100 sentences)
+// ══════════════════════════════════════════
+var SENTENCES = [
+  // scene: meeting
+  {id:1,  scene:'meeting',  text:'Good morning, everyone. Shall we get started?'},
+  {id:2,  scene:'meeting',  text:'Can everyone hear me okay? I\'m having some connection issues.'},
+  {id:3,  scene:'meeting',  text:'Sorry I\'m a bit late — my previous meeting ran over.'},
+  {id:4,  scene:'meeting',  text:'Let me share my screen real quick.'},
+  {id:5,  scene:'meeting',  text:'Could you go back to the previous slide? I missed that part.'},
+  {id:6,  scene:'meeting',  text:'I\'ll send the meeting notes to the group after this.'},
+  {id:7,  scene:'meeting',  text:'Does anyone have any questions before we move on?'},
+  {id:8,  scene:'meeting',  text:'Let\'s wrap up here — I\'ll follow up with an email.'},
+  // scene: bug
+  {id:9,  scene:'bug',      text:'I found a bug in the payment module — it\'s blocking the release.'},
+  {id:10, scene:'bug',      text:'The issue only happens when the user is logged out. Can you reproduce it?'},
+  {id:11, scene:'bug',      text:'I\'ve tested it on Chrome and Firefox, but not Safari yet.'},
+  {id:12, scene:'bug',      text:'This is a high-priority bug — we need to fix it before Friday.'},
+  {id:13, scene:'bug',      text:'The test case passed locally but failed on the staging server.'},
+  {id:14, scene:'bug',      text:'Can you check the logs and see what error message comes up?'},
+  {id:15, scene:'bug',      text:'I\'ll open a Jira ticket for this and assign it to you.'},
+  {id:16, scene:'bug',      text:'We need to write more test cases for the edge cases.'},
+  {id:17, scene:'bug',      text:'The regression testing is done — no new issues found.'},
+  {id:18, scene:'bug',      text:'This bug was introduced in the last deployment.'},
+  // scene: dev
+  {id:19, scene:'dev',      text:'I\'ve pushed the changes to the dev branch — can you review it?'},
+  {id:20, scene:'dev',      text:'There\'s a merge conflict in the main branch. I\'ll resolve it now.'},
+  {id:21, scene:'dev',      text:'The API is returning a 500 error. I\'m looking into it.'},
+  {id:22, scene:'dev',      text:'I need to refactor this function — it\'s getting too complicated.'},
+  {id:23, scene:'dev',      text:'Can you explain what this part of the code is supposed to do?'},
+  {id:24, scene:'dev',      text:'The build failed because of a missing dependency.'},
+  {id:25, scene:'dev',      text:'I\'ll write the unit tests once the feature is complete.'},
+  {id:26, scene:'dev',      text:'This logic needs to be moved to the backend.'},
+  {id:27, scene:'dev',      text:'We should add some error handling here in case the request fails.'},
+  {id:28, scene:'dev',      text:'The performance is slow — I think it\'s a database query issue.'},
+  {id:29, scene:'dev',      text:'I\'m getting a NullPointerException — I think the object isn\'t being initialized properly.'},
+  {id:30, scene:'dev',      text:'The endpoint is working, but the response time is way too slow.'},
+  {id:31, scene:'dev',      text:'I need to add a new column to the database — I\'ll write the migration script.'},
+  {id:32, scene:'dev',      text:'The service is throwing an exception when the input is null. I\'ll add a null check.'},
+  {id:33, scene:'dev',      text:'I\'ve updated the dependency in the POM file — please pull the latest version.'},
+  {id:34, scene:'dev',      text:'The scheduled job ran twice last night — I think there\'s a timing issue in the config.'},
+  {id:35, scene:'dev',      text:'I\'ll add some logging here so we can trace what\'s happening in production.'},
+  {id:36, scene:'dev',      text:'The connection pool is getting exhausted under heavy load — we need to tune it.'},
+  {id:37, scene:'dev',      text:'Can you review my pull request? I want a second pair of eyes before merging.'},
+  {id:38, scene:'dev',      text:'I deployed to staging — can you do a quick sanity check?'},
+  // scene: qa
+  {id:39, scene:'qa',       text:'I\'ve written 30 test cases for the registration flow — I\'ll share them with you.'},
+  {id:40, scene:'qa',       text:'The smoke test passed, but the full regression is still running.'},
+  {id:41, scene:'qa',       text:'This is a critical path — if this breaks, nothing else works.'},
+  {id:42, scene:'qa',       text:'I need a test account with admin privileges to complete this test.'},
+  {id:43, scene:'qa',       text:'The bug is intermittent — it doesn\'t happen every time, which makes it hard to reproduce.'},
+  {id:44, scene:'qa',       text:'I\'ve attached screenshots and a screen recording to the Jira ticket.'},
+  {id:45, scene:'qa',       text:'The fix looks good in staging, but I want to run one more round of testing.'},
+  {id:46, scene:'qa',       text:'Can you deploy the hotfix to the test environment first so I can verify it?'},
+  {id:47, scene:'qa',       text:'I tested all the scenarios in the test plan — only two minor issues found.'},
+  {id:48, scene:'qa',       text:'This needs exploratory testing — the requirements don\'t cover all the edge cases.'},
+  {id:49, scene:'qa',       text:'The data in the test environment is outdated — can someone refresh it?'},
+  {id:50, scene:'qa',       text:'I\'ll sign off on this once the last two bugs are fixed.'},
+  // scene: product
+  {id:51, scene:'product',  text:'The requirements aren\'t clear enough — can we get more details from the client?'},
+  {id:52, scene:'product',  text:'This feature wasn\'t in the original scope. We\'ll need to update the timeline.'},
+  {id:53, scene:'product',  text:'I just want to make sure we\'re building the right thing before we start coding.'},
+  {id:54, scene:'product',  text:'Can you walk me through the expected behavior step by step?'},
+  {id:55, scene:'product',  text:'The acceptance criteria need to be more specific — "works correctly" isn\'t enough.'},
+  {id:56, scene:'product',  text:'Let\'s keep this simple for the first version and improve it later.'},
+  {id:57, scene:'product',  text:'I have some concerns about this approach — do you have five minutes to talk?'},
+  {id:58, scene:'product',  text:'Who is the owner of this feature? I need to get sign-off before I proceed.'},
+  // scene: sprint
+  {id:59, scene:'sprint',   text:'I\'m currently working on the login module — should be done by tomorrow.'},
+  {id:60, scene:'sprint',   text:'I\'m blocked on this task because I\'m waiting for the API documentation.'},
+  {id:61, scene:'sprint',   text:'This ticket is taking longer than expected — I may need to push it to the next sprint.'},
+  {id:62, scene:'sprint',   text:'Can we reprioritize? The bug fix feels more urgent than the new feature right now.'},
+  {id:63, scene:'sprint',   text:'I finished my tasks early — is there anything else I can pick up?'},
+  {id:64, scene:'sprint',   text:'The sprint ends on Friday — let\'s make sure everything is merged and tested.'},
+  {id:65, scene:'sprint',   text:'I\'ll update the Jira board at the end of today.'},
+  {id:66, scene:'sprint',   text:'We\'re on track to hit the deadline — no blockers at the moment.'},
+  // scene: collab (foreign colleagues)
+  {id:67, scene:'meeting',  text:'I\'m not sure I fully understood — could you say that again more slowly?'},
+  {id:68, scene:'meeting',  text:'Just to confirm, you want me to finish this by end of day Thursday, right?'},
+  {id:69, scene:'meeting',  text:'I\'ll be out of office next Monday — please contact David if it\'s urgent.'},
+  {id:70, scene:'meeting',  text:'We\'re five hours ahead of the Romania team, so let\'s schedule for 3 PM our time.'},
+  {id:71, scene:'meeting',  text:'Can we move the call to tomorrow? I have a conflict at that time.'},
+  {id:72, scene:'meeting',  text:'The Ukraine team handles the front-end — I\'ll loop them in.'},
+  {id:73, scene:'meeting',  text:'My English isn\'t perfect, but let me try to explain.'},
+  {id:74, scene:'meeting',  text:'Could you put that in writing? I want to make sure I get it right.'},
+  {id:75, scene:'meeting',  text:'I think there might be a miscommunication — let me clarify.'},
+  // scene: everymatrix
+  {id:76, scene:'everymatrix', text:'The client\'s platform went down during peak betting hours — it\'s critical.'},
+  {id:77, scene:'everymatrix', text:'We need to make sure the payment gateway is stable before the match starts.'},
+  {id:78, scene:'everymatrix', text:'EveryMatrix\'s sportsbook integration needs to be tested end-to-end.'},
+  {id:79, scene:'everymatrix', text:'The casino module has a new feature request from the Thailand team.'},
+  {id:80, scene:'everymatrix', text:'We\'re running load tests to make sure the system handles high traffic.'},
+  {id:81, scene:'everymatrix', text:'The compliance team needs this feature before the product goes live.'},
+  {id:82, scene:'everymatrix', text:'This is a third-party API — we don\'t control how it behaves.'},
+  // scene: opinion
+  {id:83, scene:'opinion',  text:'I understand the urgency, but rushing this could introduce more bugs.'},
+  {id:84, scene:'opinion',  text:'I think there\'s a better way to do this — can I show you what I have in mind?'},
+  {id:85, scene:'opinion',  text:'I\'m not comfortable merging this without proper testing.'},
+  {id:86, scene:'opinion',  text:'That\'s a good point — I hadn\'t thought of it from that angle.'},
+  {id:87, scene:'opinion',  text:'I disagree with this approach, but I\'m happy to discuss it further.'},
+  {id:88, scene:'opinion',  text:'I think we need to involve the team lead before making this decision.'},
+  {id:89, scene:'opinion',  text:'I can do that, but it will affect the timeline for the other tasks.'},
+  // scene: deadline
+  {id:90, scene:'deadline', text:'Is the deadline flexible? The current timeline is really tight.'},
+  {id:91, scene:'deadline', text:'I can have it ready by Wednesday if I focus on just this task.'},
+  {id:92, scene:'deadline', text:'I\'ll need at least two more days to do this properly.'},
+  {id:93, scene:'deadline', text:'Can we break this into two parts and deliver the first half on Friday?'},
+  {id:94, scene:'deadline', text:'Let\'s set a realistic deadline together — I want to commit to something I can actually deliver.'},
+  // extra dev / qa
+  {id:95, scene:'dev',      text:'The feature is behind a feature flag — I\'ll enable it for testing.'},
+  {id:96, scene:'dev',      text:'I\'ll cherry-pick that commit and apply it to the release branch.'},
+  {id:97, scene:'qa',       text:'I\'m doing a final round of smoke tests before we release to production.'},
+  {id:98, scene:'qa',       text:'The test environment is down — I\'ll raise it with the DevOps team.'},
+  {id:99, scene:'sprint',   text:'Let\'s do a quick sync before the stand-up to align on priorities.'},
+  {id:100,scene:'meeting',  text:'Thanks everyone — great work this week. See you on Monday.'}
 ];
 
-var SCENE_LABELS={meeting:'会议沟通',bug:'Bug处理',dev:'开发',qa:'QA测试',product:'需求讨论',sprint:'Sprint',opinion:'表达意见',deadline:'截止时间',everymatrix:'EveryMatrix'};
-var SCENE_CSS={meeting:'scene-meeting',bug:'scene-bug',dev:'scene-dev',qa:'scene-qa',product:'scene-product',sprint:'scene-sprint',opinion:'scene-opinion',deadline:'scene-deadline',everymatrix:'scene-everymatrix'};
+var SCENE_LABELS = {
+  meeting:'会议沟通', bug:'Bug处理', dev:'开发', qa:'QA测试',
+  product:'需求讨论', sprint:'Sprint', opinion:'表达意见',
+  deadline:'截止时间', everymatrix:'EveryMatrix'
+};
+var SCENE_CSS = {
+  meeting:'scene-meeting', bug:'scene-bug', dev:'scene-dev', qa:'scene-qa',
+  product:'scene-product', sprint:'scene-sprint', opinion:'scene-opinion',
+  deadline:'scene-deadline', everymatrix:'scene-everymatrix'
+};
 
-// ── STATE ──
-var userName='', currentAttempt=0, recLocked=false, isRecording=false;
-var recognition=null, sessionScores=[], orderedSents=[];
-var currentIdx=0; // index into orderedSents
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+var userName = '';
+var currentMode = ''; // 'ios' or 'android'
+var currentScene = 'all';
+var filteredSents = [];
+var currentIdx = 0;
+var isRecording = false;
+var recLocked = false;
+var recognition = null;
+var mediaRecorder = null; // kept for safety but unused
+var audioChunks = [];
+var sessionScores = [];
+var sessionPoints = 0;
+var currentAttempt = 0;
+var MAX_ATTEMPTS = 3;
+var PASS_SCORE = 70;
 
-// ── SUPABASE ──
-function sbHeaders(){return{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};}
-function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.toISOString().split('T')[0];}
-async function sbGet(t,q){try{var r=await fetch(SB_URL+'/rest/v1/'+t+'?'+q,{headers:sbHeaders()});return r.ok?await r.json():[];}catch(e){return[];}}
-async function sbUpsert(t,data){try{await fetch(SB_URL+'/rest/v1/'+t,{method:'POST',headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),body:JSON.stringify(data)});}catch(e){}}
+// ══════════════════════════════════════════
+// DEVICE DETECTION
+// ══════════════════════════════════════════
+var UA = navigator.userAgent;
+var IS_IOS = /iPhone|iPad|iPod/i.test(UA);
+var IS_ANDROID = /Android/i.test(UA);
 
-// ── PROGRESS ──
-function getProgressKey(){return 'jc_prog_speak_'+getWeekStart();}
-function getProgress(){
-  try{var r=localStorage.getItem(getProgressKey());return r?JSON.parse(r):{done:[],pts:0};}
-  catch(e){return{done:[],pts:0};}
+function getForceMode(){
+  var p = new URLSearchParams(window.location.search);
+  return p.get('mode') || '';
 }
-function saveProgress(p){try{localStorage.setItem(getProgressKey(),JSON.stringify(p));}catch(e){}}
-function isDone(id){return getProgress().done.indexOf(id)!==-1;}
 
-async function addPoints(){
-  if(!userName)return;
-  var ws=getWeekStart();
-  var rows=await sbGet('weekly_scores','user_name=eq.'+encodeURIComponent(userName)+'&week_start=eq.'+ws+'&select=id,programmer_score');
-  var cur=0,eid=null;
-  if(rows&&rows.length){cur=rows[0].programmer_score||0;eid=rows[0].id;}
-  var payload={user_name:userName,week_start:ws,programmer_score:cur+POINTS,updated_at:new Date().toISOString()};
-  if(eid)payload.id=eid;
-  await sbUpsert('weekly_scores',payload);
-  // local display cache
-  var spk=parseInt(localStorage.getItem('jc_prog_speak_pts')||'0')+POINTS;
-  localStorage.setItem('jc_prog_speak_pts',spk);
+function resolveMode(){
+  if(window._devAndroid) return 'android';
+  var force = getForceMode();
+  if(force === 'android') return 'android';
+  if(force === 'ios') return 'ios';
+  if(IS_ANDROID) return 'android';
+  return 'ios';
 }
 
-// ── SHUFFLE (seeded by module name so different from oral) ──
-function shuffle(arr, seed){
-  var a=arr.slice(), s=seed;
-  for(var i=a.length-1;i>0;i--){
-    s=(s*1664525+1013904223)&0xffffffff;
-    var j=Math.abs(s)%(i+1);
-    var t=a[i];a[i]=a[j];a[j]=t;
+// ══════════════════════════════════════════
+// DAILY QUOTA
+// ══════════════════════════════════════════
+function getToday(){ return new Date().toISOString().split('T')[0]; }
+
+function getQuota(){
+  try{
+    var raw = localStorage.getItem('jc_speaking_quota');
+    if(!raw) return {date:getToday(), count:0};
+    var q = JSON.parse(raw);
+    if(q.date !== getToday()) return {date:getToday(), count:0};
+    return q;
+  }catch(e){ return {date:getToday(), count:0}; }
+}
+
+function saveQuota(q){ try{ localStorage.setItem('jc_speaking_quota', JSON.stringify(q)); }catch(e){} }
+
+function incrementQuota(){
+  var q = getQuota();
+  q.count = Math.min(q.count + 1, DAILY_LIMIT);
+  saveQuota(q);
+  return q;
+}
+
+function isQuotaFull(){ return getQuota().count >= DAILY_LIMIT; }
+
+function updateQuotaUI(){
+  var q = getQuota();
+  var pct = Math.round(q.count / DAILY_LIMIT * 100);
+  var fillCls = pct >= 100 ? 'quota-fill full' : pct >= 70 ? 'quota-fill warn' : 'quota-fill';
+
+  ['quotaText','entryQuotaText'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.textContent = q.count + ' / ' + DAILY_LIMIT + ' 句';
+  });
+  ['quotaFill','entryQuotaFill'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el){ el.style.width = pct+'%'; el.className = fillCls; }
+  });
+
+  var lockMsg = document.getElementById('quotaLockedMsg');
+  if(lockMsg) lockMsg.style.display = isQuotaFull() ? 'block' : 'none';
+
+  var recBtn = document.getElementById('recBtn');
+  if(recBtn) recBtn.disabled = isQuotaFull();
+}
+
+// ══════════════════════════════════════════
+// SUPABASE
+// ══════════════════════════════════════════
+function sbHeaders(){
+  return {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+}
+async function sbGet(table, qs){
+  try{
+    var r = await fetch(SB_URL+'/rest/v1/'+table+'?'+qs,{headers:sbHeaders()});
+    if(!r.ok) return [];
+    return await r.json();
+  }catch(e){ return []; }
+}
+async function sbUpsert(table, data){
+  try{
+    await fetch(SB_URL+'/rest/v1/'+table,{
+      method:'POST',
+      headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),
+      body:JSON.stringify(data)
+    });
+  }catch(e){ console.error('upsert fail',e); }
+}
+
+function getWeekStart(){
+  var d = new Date();
+  d.setDate(d.getDate() - d.getDay());
+  return d.toISOString().split('T')[0];
+}
+
+async function addSpeakingScore(){
+  if(!userName) return;
+  var weekStart = getWeekStart();
+  var rows = await sbGet('weekly_scores',
+    'user_name=eq.'+encodeURIComponent(userName)+
+    '&week_start=eq.'+weekStart+'&select=id,programmer_score');
+  var cur = 0, existingId = null;
+  if(rows && rows.length > 0){ cur = rows[0].programmer_score || 0; existingId = rows[0].id; }
+  var payload = {
+    user_name: userName,
+    week_start: weekStart,
+    programmer_score: cur + POINTS_PER_SENT,
+    updated_at: new Date().toISOString()
+  };
+  if(existingId) payload.id = existingId;
+  await sbUpsert('weekly_scores', payload);
+}
+
+// ══════════════════════════════════════════
+// LEVENSHTEIN + DIFF
+// ══════════════════════════════════════════
+function levenshtein(a, b){
+  var m = a.length, n = b.length;
+  var dp = [];
+  for(var i=0;i<=m;i++){ dp[i]=[]; for(var j=0;j<=n;j++) dp[i][j]=0; }
+  for(var i=0;i<=m;i++) dp[i][0]=i;
+  for(var j=0;j<=n;j++) dp[0][j]=j;
+  for(var i=1;i<=m;i++) for(var j=1;j<=n;j++){
+    dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1] : 1+Math.min(dp[i-1][j-1],dp[i-1][j],dp[i][j-1]);
   }
-  return a;
-}
-
-// ── LEVENSHTEIN + DIFF ──
-function levenshtein(a,b){
-  var m=a.length,n=b.length,dp=[];
-  for(var i=0;i<=m;i++){dp[i]=[];for(var j=0;j<=n;j++)dp[i][j]=0;}
-  for(var i=0;i<=m;i++)dp[i][0]=i;
-  for(var j=0;j<=n;j++)dp[0][j]=j;
-  for(var i=1;i<=m;i++)for(var j=1;j<=n;j++)
-    dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j-1],dp[i-1][j],dp[i][j-1]);
   return dp[m][n];
 }
-function normalizeWord(w){return w.toLowerCase().replace(/[^a-z0-9']/g,'');}
-function calcScore(ref,spoken){
-  var rw=ref.split(/\s+/).map(normalizeWord).filter(Boolean);
-  var sw=spoken.split(/\s+/).map(normalizeWord).filter(Boolean);
-  var correct=0;
-  rw.forEach(function(w){var i=sw.indexOf(w);if(i!==-1){correct++;sw.splice(i,1);}});
-  return rw.length?Math.round(correct/rw.length*100):0;
+
+function normalizeWord(w){ return w.toLowerCase().replace(/[^a-z0-9']/g,''); }
+
+function calcScore(ref, spoken){
+  var refWords = ref.split(/\s+/).map(normalizeWord).filter(Boolean);
+  var spkWords = spoken.split(/\s+/).map(normalizeWord).filter(Boolean);
+  var correct = 0;
+  refWords.forEach(function(w){
+    var idx = spkWords.indexOf(w);
+    if(idx !== -1){ correct++; spkWords.splice(idx,1); }
+  });
+  return refWords.length ? Math.round(correct / refWords.length * 100) : 0;
 }
-function buildDiff(ref,spoken){
-  var rw=ref.split(/\s+/),rn=rw.map(normalizeWord),sn=spoken.trim().split(/\s+/).map(normalizeWord),su=sn.slice(),html='';
-  rw.forEach(function(w,i){
-    var n=rn[i],idx=su.indexOf(n);
-    if(idx!==-1){html+='<span class="w-correct">'+esc(w)+'</span> ';su[idx]=null;return;}
-    var best=-1,bd=99;
-    su.forEach(function(sw,j){if(!sw)return;var d=levenshtein(n,sw);if(d<=2&&d<bd){bd=d;best=j;}});
-    if(best!==-1){html+='<span class="w-wrong">'+esc(w)+'</span> ';su[best]=null;}
-    else html+='<span class="w-missing">'+esc(w)+'</span> ';
+
+function buildDiff(ref, spoken){
+  var refWords = ref.split(/\s+/);
+  var spkWords = spoken.trim().split(/\s+/);
+  var refNorm = refWords.map(normalizeWord);
+  var spkNorm = spkWords.map(normalizeWord);
+
+  // simple greedy alignment
+  var html = '';
+  var spkUsed = spkNorm.slice();
+  refWords.forEach(function(rw, i){
+    var rn = refNorm[i];
+    var idx = spkUsed.indexOf(rn);
+    if(idx !== -1){
+      html += '<span class="w-correct">'+escHtml(rw)+'</span> ';
+      spkUsed[idx] = null;
+    } else {
+      // find close match
+      var best = -1, bestDist = 99;
+      spkUsed.forEach(function(sw, j){
+        if(!sw) return;
+        var d = levenshtein(rn, sw);
+        if(d <= 2 && d < bestDist){ bestDist=d; best=j; }
+      });
+      if(best !== -1){
+        html += '<span class="w-wrong">'+escHtml(rw)+'</span> ';
+        spkUsed[best] = null;
+      } else {
+        html += '<span class="w-missing">'+escHtml(rw)+'</span> ';
+      }
+    }
   });
   return html.trim();
 }
-function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-// ── UI ──
-function showPane(id){document.querySelectorAll('.pane').forEach(function(p){p.classList.remove('on');});document.getElementById(id).classList.add('on');}
-
-function updateEntryUI(){
-  var p=getProgress();
-  var pct=Math.round(p.done.length/100*100);
-  document.getElementById('entrySentDone').textContent=p.done.length+' / 100 句';
-  document.getElementById('entryProgFill').style.width=pct+'%';
-  document.getElementById('entryPts').textContent=p.pts+' 分';
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+function scoreGrade(pct){
+  if(pct>=90) return {grade:'A',msg:'非常棒！发音准确，继续保持 💪'};
+  if(pct>=75) return {grade:'B',msg:'不错！大部分都对，再练几遍更完美'};
+  if(pct>=55) return {grade:'C',msg:'有进步空间，重点注意标红的单词'};
+  return {grade:'D',msg:'再来一遍！对照句子仔细朗读'};
+}
+
+// ══════════════════════════════════════════
+// RENDER ENTRY
+// ══════════════════════════════════════════
+function renderEntry(){
+  var mode = resolveMode();
+  var force = getForceMode();
+  var cards = '';
+
+  if(window._devAndroid){
+    // dev test mode — only show android card, direct entry
+    cards += makeCard('android', true, false);
+  } else if(force === 'android' || force === 'ios'){
+    cards += makeCard('ios',   mode==='ios',   true);
+    cards += makeCard('android', mode==='android', true);
+  } else if(IS_ANDROID){
+    cards += makeCard('android', true, false);
+  } else {
+    cards += makeCard('ios', true, false);
+  }
+
+  document.getElementById('modeCards').innerHTML = cards;
+
+  var eq = document.getElementById('entryQuota');
+  if(eq) eq.style.display = 'block';
+  updateQuotaUI();
+}
+
+function makeCard(mode, isRec, showBoth){
+  var rec = isRec ? ' recommended' : '';
+  var tag = isRec ? (showBoth ? '<span class="mode-tag tag-dev">当前设备</span>' : '') : '';
+  if(mode === 'ios'){
+    return '<button class="mode-card'+rec+'" onclick="startMode(\'ios\')">'
+      +'<div class="mode-icon">🍎</div>'
+      +'<div class="mode-info">'
+      +'<div class="mode-name">iOS / 桌面</div>'
+      +'<div class="mode-desc">使用系统内置语音识别<br>Safari · 无需网络请求</div>'
+      +'</div>'
+      +(tag||'<span class="mode-tag tag-ios">推荐</span>')
+      +'</button>';
+  } else {
+    return '<button class="mode-card'+rec+'" onclick="startMode(\'android\')">'
+      +'<div class="mode-icon">🤖</div>'
+      +'<div class="mode-info">'
+      +'<div class="mode-name">Android</div>'
+      +'<div class="mode-desc">使用阿里云百炼识别<br>Paraformer-v2 · 精准英语识别</div>'
+      +'</div>'
+      +(tag||'<span class="mode-tag tag-android">Android专用</span>')
+      +'</button>';
+  }
+}
+
+function startMode(mode){
+  currentMode = mode;
+  buildFilteredList();
+  renderSceneFilter();
+  renderSentence();
+  updateQuotaUI();
+  showPane('p-practice');
+}
+
+// ══════════════════════════════════════════
+// SCENE FILTER
+// ══════════════════════════════════════════
+function buildFilteredList(){
+  if(currentScene === 'all'){
+    filteredSents = SENTENCES.slice();
+  } else {
+    filteredSents = SENTENCES.filter(function(s){ return s.scene === currentScene; });
+  }
+  // shuffle
+  for(var i=filteredSents.length-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1));
+    var tmp=filteredSents[i]; filteredSents[i]=filteredSents[j]; filteredSents[j]=tmp;
+  }
+  currentIdx = 0;
+}
+
+function renderSceneFilter(){
+  var scenes = ['all'].concat(Object.keys(SCENE_LABELS));
+  var html = scenes.map(function(sc){
+    var label = sc==='all' ? '全部' : SCENE_LABELS[sc];
+    var active = sc===currentScene ? ' active' : '';
+    return '<button class="scene-chip'+active+'" onclick="setScene(\''+sc+'\')">'+label+'</button>';
+  }).join('');
+  document.getElementById('sceneRow').innerHTML = html;
+}
+
+function setScene(sc){
+  currentScene = sc;
+  buildFilteredList();
+  renderSceneFilter();
+  resetPracticeUI();
+  renderSentence();
+}
+
+// ══════════════════════════════════════════
+// SENTENCE RENDER
+// ══════════════════════════════════════════
 function renderSentence(){
-  var s=orderedSents[currentIdx];
-  document.getElementById('sentNum').textContent='句子 '+s.id+' / 100';
-  document.getElementById('sentText').textContent=s.text;
-  var sc=document.getElementById('sentScene');
-  sc.textContent=SCENE_LABELS[s.scene]||s.scene;
-  sc.className='sent-scene '+(SCENE_CSS[s.scene]||'');
-  resetUI();
+  if(!filteredSents.length) return;
+  var s = filteredSents[currentIdx % filteredSents.length];
+  document.getElementById('sentNum').textContent = '句子 ' + s.id + ' / 100';
+  document.getElementById('sentText').textContent = s.text;
+  var scEl = document.getElementById('sentScene');
+  scEl.textContent = SCENE_LABELS[s.scene] || s.scene;
+  scEl.className = 'sent-scene ' + (SCENE_CSS[s.scene]||'');
+  resetPracticeUI();
 }
 
-function updateProgUI(){
-  var p=getProgress();
-  var pct=Math.round(p.done.length/100*100);
-  document.getElementById('progText').textContent=p.done.length+' / 100';
-  document.getElementById('progFill').style.width=pct+'%';
-}
-
-function resetUI(){
-  var tb=document.getElementById('transcriptBox');
-  tb.textContent='按下录音，朗读上方句子';
-  tb.className='transcript-box empty';
-  document.getElementById('scoreWrap').style.display='none';
-  document.getElementById('btnNext').style.display='none';
-  document.getElementById('btnRetry').style.display='none';
-  document.getElementById('btnSkip').style.display='inline-block';
-  currentAttempt=0;
-  recLocked=false;
-  updateDots();
+function resetPracticeUI(){
+  var tb = document.getElementById('transcriptBox');
+  tb.textContent = '按下录音，开始朗读上方句子';
+  tb.className = 'transcript-box empty';
+  document.getElementById('scoreWrap').style.display = 'none';
+  document.getElementById('btnNext').style.display = 'none';
+  document.getElementById('btnRetry').style.display = 'none';
+  document.getElementById('btnSkip').style.display = 'inline-block';
+  currentAttempt = 0;
+  updateAttemptDots();
+  recLocked = false;
+  updateQuotaUI();
   updateRecBtn(false);
 }
 
-function updateDots(){
+function updateAttemptDots(){
   for(var i=1;i<=3;i++){
-    var d=document.getElementById('dot'+i);
-    if(!d)return;
-    d.className='attempt-dot';
-    if(i<currentAttempt) d.className='attempt-dot used-fail';
-    else if(i===currentAttempt) d.className='attempt-dot current';
+    var d = document.getElementById('dot'+i);
+    if(!d) continue;
+    d.className = 'attempt-dot';
+    if(i <= currentAttempt){
+      // already used — colour set after result
+    } else if(i === currentAttempt+1 && currentAttempt < MAX_ATTEMPTS){
+      d.className = 'attempt-dot current';
+    }
   }
 }
-function markDot(pass){
-  var d=document.getElementById('dot'+currentAttempt);
-  if(d)d.className='attempt-dot '+(pass?'used-pass':'used-fail');
+
+function markAttemptDot(passed){
+  var d = document.getElementById('dot'+currentAttempt);
+  if(d) d.className = 'attempt-dot '+(passed?'used-pass':'used-fail');
 }
 
-function updateRecBtn(rec){
-  var btn=document.getElementById('recBtn');
-  if(!btn)return;
-  if(rec){btn.innerHTML='🔴 识别中，请稍候...';btn.className='rec-btn recording';btn.disabled=true;}
-  else{btn.innerHTML='🎤 按下开始录音';btn.className='rec-btn';btn.disabled=false;}
+function retryCurrentSentence(){
+  // Don't move to next sentence — just reset UI for same sentence
+  var tb = document.getElementById('transcriptBox');
+  tb.textContent = '按下录音，开始朗读上方句子';
+  tb.className = 'transcript-box empty';
+  document.getElementById('scoreWrap').style.display = 'none';
+  document.getElementById('btnNext').style.display = 'none';
+  document.getElementById('btnRetry').style.display = 'none';
+  document.getElementById('btnSkip').style.display = 'none'; // can't skip mid-attempt
+  recLocked = false;
+  updateRecBtn(false);
+  updateAttemptDots();
 }
 
 function skipSentence(){
-  currentIdx=(currentIdx+1)%orderedSents.length;
+  currentIdx = (currentIdx + 1) % filteredSents.length;
+  resetPracticeUI();
   renderSentence();
 }
-function retryNow(){
-  var tb=document.getElementById('transcriptBox');
-  tb.textContent='按下录音，朗读上方句子';
-  tb.className='transcript-box empty';
-  document.getElementById('scoreWrap').style.display='none';
-  document.getElementById('btnRetry').style.display='none';
-  document.getElementById('btnNext').style.display='none';
-  document.getElementById('btnSkip').style.display='none';
-  recLocked=false;
-  document.getElementById('recBtn').disabled=false;
-  updateRecBtn(false);
-  updateDots();
-}
+
 function nextSentence(){
-  currentIdx=(currentIdx+1)%orderedSents.length;
+  currentIdx = (currentIdx + 1) % filteredSents.length;
+  resetPracticeUI();
   renderSentence();
 }
 
-// ── REC ──
-var recTimer = null;
-var pendingFinal = ''; // 最新识别文字，stopRec时用
+// ══════════════════════════════════════════
+// REC BUTTON UI
+// ══════════════════════════════════════════
+function updateRecBtn(recording){
+  var btn = document.getElementById('recBtn');
+  if(!btn) return;
+  if(isQuotaFull()){
+    btn.disabled = true;
+    btn.innerHTML = '今日已完成 10 句';
+    btn.className = 'rec-btn';
+    return;
+  }
+  if(recording){
+    btn.innerHTML = '<span class="rec-dot"></span>录音中，点击停止';
+    btn.className = 'rec-btn recording';
+    btn.disabled = false;
+  } else {
+    btn.innerHTML = '🎤 按下开始录音';
+    btn.className = 'rec-btn';
+    btn.disabled = false;
+  }
+}
 
+// ══════════════════════════════════════════
+// TOGGLE REC — routes to correct mode
+// ══════════════════════════════════════════
 function toggleRec(){
   if(recLocked||isRecording)return;
-  startRec();
+  if(currentMode==='ios') startIOS();
+  else startAndroid();
+}
+  if(isRecording){
+    if(currentMode === 'ios') stopIOS();
+    else stopAndroid();
+  } else {
+    if(currentMode === 'ios') startIOS();
+    else startAndroid();
+  }
 }
 
-function startRec(){
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR){ alert('请用 Safari 打开此页面'); return; }
+// ══════════════════════════════════════════
+// iOS — Web Speech API
+// ══════════════════════════════════════════
+var recTimer = null;
+var pendingFinal = '';
 
-  // 清理旧实例
+function startIOS(){
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ alert('你的浏览器不支持语音识别，请用 Safari 打开'); return; }
+
   if(recognition){ try{ recognition.abort(); }catch(e){} recognition = null; }
   if(recTimer){ clearTimeout(recTimer); recTimer = null; }
   pendingFinal = '';
@@ -456,7 +923,7 @@ function startRec(){
     recognition = new SR2();
     recognition.lang = 'en-US';
     recognition.continuous = false;
-    recognition.interimResults = true; // 实时显示，让用户看到在识别
+    recognition.interimResults = true;
     recognition.maxAlternatives = 1;
 
     recognition.onresult = function(e){
@@ -471,7 +938,6 @@ function startRec(){
     };
 
     recognition.onend = function(){
-      // onend 触发时（无论是自然结束还是 abort），用 pendingFinal 处理结果
       if(recTimer){ clearTimeout(recTimer); recTimer = null; }
       recognition = null;
       isRecording = false;
@@ -486,7 +952,6 @@ function startRec(){
 
     recognition.onerror = function(e){
       if(recTimer){ clearTimeout(recTimer); recTimer = null; }
-      // 不置 null，让 onend 自然触发处理收尾
       if(e.error === 'not-allowed'){
         tb.textContent = '请允许麦克风权限后重试';
         tb.className = 'transcript-box empty';
@@ -498,7 +963,6 @@ function startRec(){
       isRecording = true;
       updateRecBtn(true);
       tb.textContent = '🔴 正在录音，说完后会自动识别';
-      // 15秒自动超时兜底
       recTimer = setTimeout(function(){
         if(recognition){ try{ recognition.abort(); }catch(e){} }
       }, 15000);
@@ -510,7 +974,7 @@ function startRec(){
   }, 350);
 }
 
-function stopRec(){
+function stopIOS(){
   if(recTimer){ clearTimeout(recTimer); recTimer = null; }
   isRecording = false;
   updateRecBtn(false);
@@ -530,92 +994,494 @@ function stopRec(){
   }
 }
 
-// ── PROCESS ──
-function processResult(spoken){
-  recLocked=true;
-  currentAttempt++;
-  var s=orderedSents[currentIdx];
-  var pct=calcScore(s.text,spoken);
-  var passed=pct>=PASS_SCORE;
-  markDot(passed);
+// ══════════════════════════════════════════
+// Android — Bailian Paraformer WebSocket 实时识别
+// ══════════════════════════════════════════
+var wsConn = null;
+var wsTaskId = null;
+var wsAudioCtx = null;
+var wsProcessor = null;
+var wsStream = null;
+var wsFinalText = '';
+var wsSubmitted = false;
+var wsStarting = false;   // 防止 startAndroid 重入
 
-  var grade=pct>=90?'A':pct>=70?'B':pct>=55?'C':'D';
-  document.getElementById('scoreCircle').className='score-circle score-'+grade;
-  document.getElementById('scoreNum').textContent=pct;
-  document.getElementById('diffBox').innerHTML=buildDiff(s.text,spoken);
-  document.getElementById('scoreWrap').style.display='block';
-  document.getElementById('btnSkip').style.display='none';
+function startAndroid(){
+  // ── 防重入：如果已经在启动或录音中，直接忽略 ──
+  if(wsStarting || isRecording) return;
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    alert('你的浏览器不支持录音，请更新 Chrome'); return;
+  }
+  wsStarting = true;
+
+  var tb = document.getElementById('transcriptBox');
+  tb.textContent = '连接中...';
+  tb.className = 'transcript-box listening';
+
+  // 重置本次会话状态
+  wsFinalText = '';
+  wsSubmitted = false;
+  wsTaskId = 'task-' + Date.now();
+
+  // 确保旧连接彻底关闭
+  wsCleanup();
+
+  // 建立 WebSocket（浏览器不支持自定义 header，token 放 URL 参数）
+  var wsUrl = 'wss://dashscope.aliyuncs.com/api-ws/v1/inference'
+    + '?Authorization=' + encodeURIComponent('Bearer ' + BAILIAN_KEY);
+
+  try{ wsConn = new WebSocket(wsUrl); }
+  catch(e){
+    tb.textContent = '无法建立连接: ' + e.message;
+    tb.className = 'transcript-box empty';
+    wsStarting = false;
+    return;
+  }
+
+  wsConn.onopen = function(){
+    // 发送 run-task
+    wsConn.send(JSON.stringify({
+      header: { action:'run-task', task_id:wsTaskId, streaming:'duplex' },
+      payload: {
+        task_group:'audio', task:'asr', function:'recognition',
+        model:'paraformer-realtime-v2',
+        parameters:{
+          format:'pcm', sample_rate:16000,
+          language_hints:['en'],
+          punctuation_prediction:false,
+          inverse_text_normalization:false
+        },
+        input:{}
+      }
+    }));
+
+    // 获取麦克风
+    navigator.mediaDevices.getUserMedia({
+      audio:{ sampleRate:16000, channelCount:1, echoCancellation:true }
+    }).then(function(stream){
+      wsStream = stream;
+      wsAudioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate:16000 });
+      var source = wsAudioCtx.createMediaStreamSource(stream);
+      wsProcessor = wsAudioCtx.createScriptProcessor(3200, 1, 1);
+      wsProcessor.onaudioprocess = function(e){
+        // 只在连接开着且没提交时推送音频
+        if(!wsConn || wsConn.readyState !== WebSocket.OPEN || wsSubmitted) return;
+        var pcm16 = float32ToPcm16(e.inputBuffer.getChannelData(0));
+        wsConn.send(pcm16.buffer);
+      };
+      source.connect(wsProcessor);
+      wsProcessor.connect(wsAudioCtx.destination);
+
+      isRecording = true;
+      wsStarting = false;
+      updateRecBtn(true);
+      tb.textContent = '🔴 录音中，朗读后点击停止...';
+      tb.className = 'transcript-box listening';
+    }).catch(function(err){
+      tb.textContent = '无法访问麦克风: ' + err.message;
+      tb.className = 'transcript-box empty';
+      wsCleanup();
+      wsStarting = false;
+    });
+  };
+
+  wsConn.onmessage = function(evt){
+    try{
+      var msg = JSON.parse(evt.data);
+      var event = (msg.header || {}).event;
+      var output = ((msg.payload || {}).output || {});
+      var sentence = output.sentence || {};
+
+      if(event === 'result-generated'){
+        var text = sentence.text || '';
+        if(text){
+          tb.textContent = text;
+          tb.className = 'transcript-box';
+          // 只累积 sentence_end=true 的最终句
+          if(sentence.sentence_end){
+            wsFinalText += (wsFinalText ? ' ' : '') + text;
+          }
+        }
+      }
+
+      if(event === 'task-finished'){
+        // 如果没有累积到 sentence_end，用最后一条 text 兜底
+        if(!wsFinalText && sentence.text) wsFinalText = sentence.text;
+        wsCleanup();
+        isRecording = false;
+        updateRecBtn(false);
+        // wsSubmitted 确保 processResult 只调用一次
+        if(wsFinalText.trim() && !wsSubmitted){
+          wsSubmitted = true;
+          processResult(wsFinalText.trim());
+        } else if(!wsFinalText.trim()){
+          tb.textContent = '没有识别到内容，请重新录音';
+          tb.className = 'transcript-box empty';
+        }
+      }
+
+      if(event === 'task-failed'){
+        var errMsg = (msg.payload || {}).message || '识别失败，请重试';
+        tb.textContent = errMsg;
+        tb.className = 'transcript-box empty';
+        wsCleanup();
+        isRecording = false;
+        updateRecBtn(false);
+      }
+    }catch(e){ console.error('ws parse error', e); }
+  };
+
+  wsConn.onerror = function(){
+    tb.textContent = '连接失败，请检查网络后重试';
+    tb.className = 'transcript-box empty';
+    wsCleanup();
+    isRecording = false;
+    wsStarting = false;
+    updateRecBtn(false);
+  };
+
+  wsConn.onclose = function(){
+    wsStarting = false;
+    if(isRecording){
+      isRecording = false;
+      updateRecBtn(false);
+    }
+  };
+}
+
+function stopAndroid(){
+  if(!wsConn) return;
+  // 先停麦克风，不再推音频
+  if(wsProcessor){ try{ wsProcessor.disconnect(); }catch(e){} wsProcessor = null; }
+  if(wsAudioCtx){ try{ wsAudioCtx.close(); }catch(e){} wsAudioCtx = null; }
+  if(wsStream){ wsStream.getTracks().forEach(function(t){ t.stop(); }); wsStream = null; }
+
+  // 发 finish-task，服务端收到后返回 task-finished，再关闭连接
+  if(wsConn.readyState === WebSocket.OPEN){
+    wsConn.send(JSON.stringify({
+      header:{ action:'finish-task', task_id:wsTaskId, streaming:'duplex' },
+      payload:{ input:{} }
+    }));
+    var tb = document.getElementById('transcriptBox');
+    tb.innerHTML = '<span class="spinner"></span>识别中，请稍候...';
+    tb.className = 'transcript-box';
+  }
+  isRecording = false;
   updateRecBtn(false);
-  document.getElementById('recBtn').disabled=true;
+}
+
+function wsCleanup(){
+  if(wsProcessor){ try{ wsProcessor.disconnect(); }catch(e){} wsProcessor = null; }
+  if(wsAudioCtx){ try{ wsAudioCtx.close(); }catch(e){} wsAudioCtx = null; }
+  if(wsStream){ try{ wsStream.getTracks().forEach(function(t){ t.stop(); }); }catch(e){} wsStream = null; }
+  if(wsConn){
+    // 移除所有事件避免触发 onclose 的二次处理
+    wsConn.onopen = wsConn.onmessage = wsConn.onerror = wsConn.onclose = null;
+    try{ wsConn.close(); }catch(e){}
+    wsConn = null;
+  }
+}
+
+function float32ToPcm16(float32){
+  var buf = new Int16Array(float32.length);
+  for(var i=0;i<float32.length;i++){
+    var s = Math.max(-1, Math.min(1, float32[i]));
+    buf[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+  }
+  return buf;
+}
+
+// ══════════════════════════════════════════
+// PROCESS RESULT (shared iOS + Android)
+// ══════════════════════════════════════════
+function processResult(spoken){
+  recLocked = true;
+  currentAttempt++;
+
+  var s = filteredSents[currentIdx % filteredSents.length];
+  var pct = calcScore(s.text, spoken);
+  var passed = pct >= PASS_SCORE;
+
+  // Mark dot
+  markAttemptDot(passed);
+
+  // Score circle
+  var grade = pct>=90?'A':pct>=70?'B':pct>=55?'C':'D';
+  document.getElementById('scoreCircle').className = 'score-circle score-'+grade;
+  document.getElementById('scoreNum').textContent = pct;
+  document.getElementById('scoreLbl').textContent = '分';
+
+  // Diff display
+  document.getElementById('diffBox').innerHTML = buildDiff(s.text, spoken);
+  document.getElementById('scoreWrap').style.display = 'block';
+  updateRecBtn(false);
+  document.getElementById('recBtn').disabled = true;
+  document.getElementById('btnSkip').style.display = 'none';
 
   if(passed){
-    document.getElementById('scoreMsg').textContent=pct>=90?'完美！🎉':'通过！继续 👍';
-    document.getElementById('btnNext').style.display='inline-block';
-    // only award points if not already done this week
-    if(!isDone(s.id)){
-      var p=getProgress();
-      p.done.push(s.id);
-      p.pts+=POINTS;
-      saveProgress(p);
-      updateProgUI();
-      addPoints();
-      showToast('+25 分 ✅');
-      if(p.done.length>=100)setTimeout(function(){showDone(p);},1800);
-    } else {
-      document.getElementById('scoreMsg').textContent+=' （本句本周已计分）';
-      document.getElementById('btnNext').style.display='inline-block';
-    }
+    // ── PASSED ──
+    var msg = pct>=90 ? '完美！发音非常准确 🎉' : '通过！继续下一句 👍';
+    document.getElementById('scoreMsg').textContent = msg;
+    document.getElementById('btnNext').style.display = 'inline-block';
+    document.getElementById('btnRetry').style.display = 'none';
+
+    // Deduct quota
+    var q = incrementQuota();
+    updateQuotaUI();
     sessionScores.push(pct);
+
+    // Points only on pass
+    sessionPoints += POINTS_PER_SENT;
+    addSpeakingScore();
+    showPointsToast('+50 分 ✅');
+
+    // Save wrong words (only if not perfect)
+    if(pct < 90) saveErrorWords(s, spoken);
+
+    if(q.count >= DAILY_LIMIT) setTimeout(showDoneScreen, 1800);
+
   } else {
-    var left=MAX_ATTEMPTS-currentAttempt;
-    if(left>0){
-      document.getElementById('scoreMsg').textContent=currentAttempt===1?'再试一次！注意标红的词 💪':'最后机会，慢慢来 🎯';
-      document.getElementById('btnRetry').style.display='inline-block';
+    // ── FAILED this attempt ──
+    var attemptsLeft = MAX_ATTEMPTS - currentAttempt;
+
+    if(attemptsLeft > 0){
+      // Can retry
+      var msgs = ['再试一次，注意标红的单词 💪','最后一次机会，慢慢来 🎯'];
+      document.getElementById('scoreMsg').textContent = msgs[currentAttempt-1] || '再试一次 💪';
+      document.getElementById('btnRetry').style.display = 'inline-block';
+      document.getElementById('btnNext').style.display = 'none';
+      // recLocked stays true until retry is clicked
+
     } else {
-      document.getElementById('scoreMsg').textContent='没过关，不要灰心，继续下一句';
-      document.getElementById('btnNext').style.display='inline-block';
+      // ── 3 attempts exhausted ──
+      document.getElementById('scoreMsg').textContent = '已用完 3 次机会，错词已记录，继续下一句';
+      document.getElementById('btnNext').style.display = 'inline-block';
+      document.getElementById('btnRetry').style.display = 'none';
+
+      // Deduct quota (counts as attempted)
+      var q = incrementQuota();
+      updateQuotaUI();
       sessionScores.push(pct);
+
+      // No points, but save error words
+      saveErrorWords(s, spoken);
+
+      if(q.count >= DAILY_LIMIT) setTimeout(showDoneScreen, 1800);
     }
   }
 }
 
-function showDone(p){
-  var avg=sessionScores.length?Math.round(sessionScores.reduce(function(a,b){return a+b;},0)/sessionScores.length):0;
-  document.getElementById('doneTotal').textContent=p.pts;
-  document.getElementById('doneAvg').textContent=avg||'—';
-  showPane('p-done');
-}
-
-function showToast(msg){
-  var t=document.getElementById('ptsToast');
-  t.textContent=msg;
-  t.classList.add('show');
-  setTimeout(function(){t.classList.remove('show');},2000);
-}
-
-// ── INIT ──
-function init(){
-  var name=localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name');
-  if(!name||name==='同学'){window.location.href='start.html';return;}
-  userName=name;
-
-  // Seed 1 for speaking (different from oral which uses seed 2)
-  orderedSents=shuffle(SENTENCES,1);
-
-  updateEntryUI();
-  updateProgUI();
-
-  document.getElementById('btnStart').addEventListener('click',function(){
-    renderSentence();
-    showPane('p-practice');
+// ══════════════════════════════════════════
+// ERROR WORDS — extract & save
+// ══════════════════════════════════════════
+function getWrongWords(ref, spoken){
+  var refWords = ref.split(/\s+/);
+  var refNorm  = refWords.map(normalizeWord);
+  var spkNorm  = spoken.split(/\s+/).map(normalizeWord).filter(Boolean);
+  var spkUsed  = spkNorm.slice();
+  var wrong = [];
+  refNorm.forEach(function(rn, i){
+    if(!rn) return;
+    var idx = spkUsed.indexOf(rn);
+    if(idx !== -1){ spkUsed[idx] = null; return; }
+    // fuzzy: close match?
+    var best = -1, bestDist = 99;
+    spkUsed.forEach(function(sw, j){
+      if(!sw) return;
+      var d = levenshtein(rn, sw);
+      if(d <= 2 && d < bestDist){ bestDist=d; best=j; }
+    });
+    if(best !== -1){ spkUsed[best] = null; return; }
+    // truly missing/wrong
+    wrong.push(refWords[i].replace(/[^a-zA-Z'-]/g,''));
   });
-  document.getElementById('backToEntry').addEventListener('click',function(e){
+  return wrong.filter(Boolean);
+}
+
+async function saveErrorWords(sentence, spoken){
+  var words = getWrongWords(sentence.text, spoken);
+  if(!words.length || !userName) return;
+  var rows = words.map(function(w){
+    return {
+      user_name: userName,
+      word: w.toLowerCase(),
+      sentence_id: sentence.id,
+      sentence_text: sentence.text
+    };
+  });
+  try{
+    await fetch(SB_URL+'/rest/v1/speaking_errors',{
+      method:'POST',
+      headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),
+      body:JSON.stringify(rows)
+    });
+  }catch(e){ console.error('saveErrorWords fail',e); }
+}
+
+// ══════════════════════════════════════════
+// LOAD ERROR BOOK
+// ══════════════════════════════════════════
+async function loadErrorBook(){
+  var el = document.getElementById('errorBookList');
+  el.innerHTML = '<div style="font-size:13px;color:#B5A080;padding:20px;text-align:center">加载中...</div>';
+
+  var rows = await sbGet('speaking_errors',
+    'user_name=eq.'+encodeURIComponent(userName)+
+    '&select=word,sentence_text,created_at&order=created_at.desc&limit=200');
+
+  if(!rows || !rows.length){
+    el.innerHTML = '<div class="error-empty">🎉 暂无错词记录<br>继续保持！</div>';
+    return;
+  }
+
+  // Count word frequency
+  var freq = {};
+  var sentMap = {};
+  rows.forEach(function(r){
+    var w = r.word;
+    freq[w] = (freq[w]||0) + 1;
+    if(!sentMap[w]) sentMap[w] = r.sentence_text;
+  });
+
+  // Sort by frequency
+  var sorted = Object.keys(freq).sort(function(a,b){ return freq[b]-freq[a]; });
+
+  var html = '<div class="error-section-title">高频错词（按出现次数）</div>';
+  html += '<div style="display:flex;flex-wrap:wrap;width:100%;margin-bottom:20px">';
+  sorted.forEach(function(w){
+    html += '<div class="error-word-chip">'
+      + w
+      + (freq[w]>1 ? '<span class="error-count">×'+freq[w]+'</span>' : '')
+      +'</div>';
+  });
+  html += '</div>';
+
+  // Recent 5 sentences with errors
+  var recentSents = [];
+  rows.forEach(function(r){
+    if(r.sentence_text && recentSents.indexOf(r.sentence_text)===-1) recentSents.push(r.sentence_text);
+  });
+  recentSents = recentSents.slice(0,5);
+  if(recentSents.length){
+    html += '<div class="error-section-title">近期出错的句子</div>';
+    recentSents.forEach(function(t){
+      html += '<div style="width:100%;background:rgba(255,252,245,.85);border:1.5px solid rgba(184,149,106,.18);border-radius:10px;padding:12px 14px;margin-bottom:8px;font-family:Georgia,serif;font-size:14px;line-height:1.7;text-align:left;color:#2A1E08">'+escHtml(t)+'</div>';
+    });
+  }
+
+  html += '<div style="margin-top:8px;font-size:11px;color:#B5A080;text-align:center">共 '+rows.length+' 条错词记录</div>';
+  el.innerHTML = html;
+}
+
+// ══════════════════════════════════════════
+// POINTS TOAST
+// ══════════════════════════════════════════
+function showPointsToast(msg){
+  var t = document.getElementById('ptsToast');
+  t.textContent = msg || '+50 分 🎯';
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2000);
+}
+
+// ══════════════════════════════════════════
+// DONE SCREEN
+// ══════════════════════════════════════════
+function showDoneScreen(){
+  var count = sessionScores.length;
+  var avg = count ? Math.round(sessionScores.reduce(function(a,b){return a+b;},0)/count) : 0;
+  document.getElementById('doneCount').textContent = count;
+  document.getElementById('doneScore').textContent = '+' + sessionPoints;
+  document.getElementById('doneAvg').textContent = avg || '—';
+  showPane('p-done');
+  loadErrorBook();
+}
+
+// ══════════════════════════════════════════
+// PANE SWITCHER
+// ══════════════════════════════════════════
+function showPane(id){
+  document.querySelectorAll('.pane').forEach(function(p){ p.classList.remove('on'); });
+  document.getElementById(id).classList.add('on');
+}
+
+// ══════════════════════════════════════════
+// BROWSER CHECK
+// ══════════════════════════════════════════
+function checkBrowser(){
+  // Secret dev mode: ?jc_dev=bailian — shows Android mode on any device
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('jc_dev') === 'bailian'){
+    // Bypass all checks, force android mode — only you know this param
+    window._devAndroid = true;
+    return true;
+  }
+
+  // iOS but not Safari (e.g. QQ, WeChat, Chrome on iOS)
+  var isIOSNonSafari = IS_IOS && !/^((?!chrome|android).)*safari/i.test(UA);
+  var isQQ = /QQ\//i.test(UA) || /MQQBrowser/i.test(UA);
+  var isWechat = /MicroMessenger/i.test(UA);
+
+  if(IS_IOS && (isIOSNonSafari || isQQ || isWechat)){
+    document.body.innerHTML =
+      '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px;background:#F5EDD8">'
+      +'<div style="max-width:380px;text-align:center">'
+      +'<div style="font-size:56px;margin-bottom:20px">🌐</div>'
+      +'<div style="font-size:20px;font-weight:700;color:#2A1E08;margin-bottom:10px">请用 Safari 打开</div>'
+      +'<div style="font-size:14px;color:#8A7050;line-height:1.8;margin-bottom:28px">'
+      +'iOS 上的语音识别只在 <strong>Safari</strong> 里有效。<br>'
+      +'QQ浏览器、微信、Chrome 均不支持。<br><br>'
+      +'点击右上角 <strong>···</strong> 或 <strong>分享按钮</strong>，<br>'
+      +'选择「在 Safari 中打开」即可。'
+      +'</div>'
+      +'<div style="font-size:12px;color:#B5A080">JOHN CLASS · 发音跟读</div>'
+      +'</div></div>';
+    return false;
+  }
+  return true;
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+function init(){
+  // Browser check first
+  if(!checkBrowser()) return;
+
+  var params = new URLSearchParams(window.location.search);
+  var isTest = params.get('test') === '1';
+
+  var name = localStorage.getItem('jc_username') || localStorage.getItem('jc_student_name');
+  if(!name || name==='同学'){
+    if(isTest){
+      // test mode: use a placeholder name, skip redirect
+      name = 'TestUser';
+      localStorage.setItem('jc_username', name);
+    } else {
+      window.location.href='start.html'; return;
+    }
+  }
+  userName = name;
+
+  document.getElementById('backToEntry').addEventListener('click', function(e){
     e.preventDefault();
-    if(isRecording&&recognition){recognition.stop();isRecording=false;}
-    updateEntryUI();
+    if(isRecording){
+      if(currentMode==='ios' && recognition){ recognition.stop(); recognition = null; }
+      if(currentMode==='android'){ stopAndroid(); wsCleanup(); }
+      isRecording = false;
+    }
     showPane('p-entry');
   });
+
+  // Error book back: go to done if session finished, else entry
+  document.getElementById('errorBookBack').addEventListener('click', function(e){
+    e.preventDefault();
+    if(sessionScores.length > 0) showPane('p-done');
+    else showPane('p-entry');
+  });
+
+  renderEntry();
 }
+
 init();
 </script>
 </body>
