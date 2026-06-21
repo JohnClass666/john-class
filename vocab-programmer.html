@@ -834,7 +834,7 @@ const LEVELS=[
   {name:'码爷',min:3500},{name:'码神',min:6000},
 ];
 const SB='https://ghunrrtrdgicbmixsqrc.supabase.co';
-const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
 const SH={apikey:SK,Authorization:'Bearer '+SK};
 
 // ── STATE ──
@@ -883,6 +883,14 @@ async function syncScore(add){
   try{await fetch(SB+'/rest/v1/programmer_scores',{method:'POST',
     headers:{...SH,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},
     body:JSON.stringify({user_name:nm,score:spk+oral+nv})});}catch(e){}
+  // weekly_scores
+  try{var d=new Date();d.setDate(d.getDate()-d.getDay());var ws=d.toISOString().split('T')[0];
+  var wr=await fetch(SB+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(nm)+'&week_start=eq.'+ws+'&select=id,programmer_score',{headers:SH});
+  var wRows=wr.ok?await wr.json():[];var wCur=0,wEid=null;
+  if(wRows&&wRows.length){wCur=wRows[0].programmer_score||0;wEid=wRows[0].id;}
+  var wPayload={user_name:nm,week_start:ws,programmer_score:wCur+add,updated_at:new Date().toISOString()};
+  if(wEid)wPayload.id=wEid;
+  await fetch(SB+'/rest/v1/weekly_scores',{method:'POST',headers:{...SH,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},body:JSON.stringify(wPayload)});}catch(e){}
 }
 async function loadLB(){
   const w=document.getElementById('lb-wrap');
