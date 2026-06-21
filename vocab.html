@@ -3757,23 +3757,27 @@ const _sb = {
     `${SUPABASE_URL}/rest/v1/leaderboard?name=eq.${encodeURIComponent(name)}&select=score&limit=1`,
     {headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}}
    );
+   var cloudScore=0;
    if(check.ok){
     const rows=await check.json();
-    const cloudScore=rows[0]?rows[0].score:0;
-    if(score < cloudScore) return; // 本地分数低于云端，拒绝写入
+    cloudScore=rows[0]?rows[0].score:0;
    }
-   await fetch(`${SUPABASE_URL}/rest/v1/leaderboard`, {
-    method:'POST',
-    headers:{
-     'apikey': SUPABASE_KEY,
-     'Authorization': `Bearer ${SUPABASE_KEY}`,
-     'Content-Type': 'application/json',
-     'Prefer': 'resolution=merge-duplicates'
-    },
-    body: JSON.stringify({name, score, grade, data: S.gd, updated_at: new Date().toISOString()})
-   });
+   // 只有本地累计分 >= 云端才写 leaderboard，防止低分覆盖高分
+   // weekly_scores 不受此限制——周分独立计算，不应被总榜挡住
+   if(score >= cloudScore){
+    await fetch(`${SUPABASE_URL}/rest/v1/leaderboard`, {
+     method:'POST',
+     headers:{
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'resolution=merge-duplicates'
+     },
+     body: JSON.stringify({name, score, grade, data: S.gd, updated_at: new Date().toISOString()})
+    });
+   }
 
-   // 同时写入 weekly_scores 供明星榜使用
+   // 同时写入 weekly_scores 供明星榜使用（不受 leaderboard 分值限制）
    // 周日为每周第一天（周六晚12点一过自动重置）
    var d=new Date(); d.setDate(d.getDate()-d.getDay());
    var ws=d.toISOString().split('T')[0];
