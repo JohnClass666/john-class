@@ -34,42 +34,10 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
   color:var(--ink);letter-spacing:-.01em;margin-bottom:6px}
 .page-sub{font-size:13px;color:var(--soft);margin-bottom:4px}
 .week-label{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--faint);
-  text-transform:uppercase;margin-bottom:28px}
+  text-transform:uppercase;margin-bottom:20px}
 
-/* ══════ 总榜封面：唯一的强调色重点区域，呼应 study.html 里「大神榜」入口的尊贵感 ══════ */
-.crown-board{position:relative;overflow:hidden;border-radius:var(--r-lg);padding:22px 20px 18px;
-  margin-bottom:30px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-deep) 100%);
-  box-shadow:0 2px 4px rgba(40,20,5,.14),0 10px 22px rgba(122,84,20,.28),0 22px 44px rgba(122,84,20,.16)}
-.crown-board::after{content:'';position:absolute;inset:0;
-  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.16) 45%,transparent 60%);
-  background-size:220% 100%;background-position:130% 0;animation:shimmer 4.2s ease-in-out infinite;pointer-events:none}
-@keyframes shimmer{0%,55%{background-position:130% 0}100%{background-position:-50% 0}}
-.crown-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;position:relative;z-index:1}
-.crown-hd-l{display:flex;align-items:center;gap:8px}
-.crown-hd-ic{flex:0 0 auto;width:32px;height:32px;border-radius:50%;
-  background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
-.crown-hd-ic svg{width:16px;height:16px}
-.crown-hd-tt{font-family:var(--fnt-display);font-size:17px;font-weight:600;color:#FFF8E8;letter-spacing:-.01em}
-.crown-hd-r{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:rgba(255,248,232,.7);text-transform:uppercase}
-
-.crow-row{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:var(--r-md);
-  margin-bottom:7px;position:relative;z-index:1;background:rgba(255,255,255,.10)}
-.crow-row:last-child{margin-bottom:0}
-.crow-row.first{background:rgba(255,255,255,.20);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
-.crow-rank{font-family:var(--fnt-display);font-size:16px;font-weight:600;width:26px;flex-shrink:0;
-  text-align:center;color:rgba(255,248,232,.55)}
-.crow-row.first .crow-rank{color:#FFF8E8;font-size:19px}
-.crow-row.r2 .crow-rank,.crow-row.r3 .crow-rank{color:rgba(255,248,232,.78)}
-.crow-name{flex:1;font-size:14.5px;font-weight:500;color:#FFF8E8;min-width:0}
-.crow-vm{display:block;font-size:10.5px;color:rgba(255,248,232,.55);margin-top:1px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.crow-score{font-family:var(--fnt-display);font-size:16px;font-weight:600;color:#FFF8E8;flex-shrink:0}
-.crow-score-u{font-size:10.5px;color:rgba(255,248,232,.55);font-weight:400;margin-left:2px;font-family:var(--fnt)}
-.crow-empty{position:relative;z-index:1;text-align:center;padding:18px 0;font-size:13px;color:rgba(255,248,232,.7)}
-
-/* ══════ 分类标签：单元宽度的 tab 切换（中性色，不靠颜色区分功能） ══════ */
-.cat-tabs{display:flex;gap:6px;overflow-x:auto;padding:2px 0 14px;margin:0 -18px;padding-left:18px;padding-right:18px;
+/* ══════ 7 个 tab：总榜 + 6 分类，统一胶囊样式，总榜用强调色默认选中 ══════ */
+.cat-tabs{display:flex;gap:6px;overflow-x:auto;padding:2px 0 22px;margin:0 -18px;padding-left:18px;padding-right:18px;
   scrollbar-width:none}
 .cat-tabs::-webkit-scrollbar{display:none}
 .cat-tab{flex:0 0 auto;padding:9px 16px;border-radius:var(--r-pill);font-size:13px;font-weight:600;
@@ -78,20 +46,39 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 .cat-tab:active{transform:scale(.95)}
 .cat-tab.active{background:var(--accent);color:#FFF8E8;border-color:var(--accent)}
 
-/* ══════ 分类榜列表（米白卡片，跟主页底栏一致的中性风格） ══════ */
-.cat-board{background:var(--bg3);border:1px solid var(--hair);border-radius:var(--r-lg);
-  padding:6px;box-shadow:var(--shadow-sm)}
-.cat-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-md)}
-.cat-row.first{background:var(--accent-soft)}
-.cat-rank{font-family:var(--fnt-display);font-size:15px;font-weight:600;width:24px;flex-shrink:0;
-  text-align:center;color:var(--faint)}
-.cat-row.first .cat-rank{color:var(--accent-deep);font-size:18px}
-.cat-name{flex:1;font-size:14.5px;font-weight:500;color:var(--ink);min-width:0}
-.cat-vm{display:block;font-size:10.5px;color:var(--faint);margin-top:1px;
+/* ══════ 排行榜大卡片：唯一的强调色重点区域，点哪个 tab 这里就显示哪个的内容 ══════ */
+.board-card{position:relative;overflow:hidden;border-radius:var(--r-lg);padding:22px 20px 18px;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent-deep) 100%);
+  box-shadow:0 2px 4px rgba(40,20,5,.14),0 10px 22px rgba(122,84,20,.28),0 22px 44px rgba(122,84,20,.16)}
+.board-card::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.16) 45%,transparent 60%);
+  background-size:220% 100%;background-position:130% 0;animation:shimmer 4.2s ease-in-out infinite;pointer-events:none}
+@keyframes shimmer{0%,55%{background-position:130% 0}100%{background-position:-50% 0}}
+.board-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;position:relative;z-index:1}
+.board-hd-l{display:flex;align-items:center;gap:8px}
+.board-hd-ic{flex:0 0 auto;width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.board-hd-ic svg{width:16px;height:16px}
+.board-hd-tt{font-family:var(--fnt-display);font-size:17px;font-weight:600;color:#FFF8E8;letter-spacing:-.01em}
+.board-hd-r{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:rgba(255,248,232,.7);text-transform:uppercase}
+
+/* 条幅行：长度按分数占最高分比例缩放，第一名最长；
+   不接背景轨道——条幅本身就是这个人的真实长度，不暗示存在"满分"或"未填满"。
+   姓名/分数固定在条幅上方，不受条幅宽度影响，避免分数低的人名字被挤变形 */
+.bar-row{position:relative;z-index:1;margin-bottom:16px}
+.bar-row:last-child{margin-bottom:0}
+.bar-meta{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;padding:0 2px}
+.bar-rank{font-family:var(--fnt-display);font-size:14px;font-weight:600;color:rgba(255,248,232,.55);flex-shrink:0;width:16px;text-align:center}
+.bar-row.first .bar-rank{color:#FFF8E8;font-size:16px}
+.bar-name{flex:1;font-size:13.5px;font-weight:600;color:#FFF8E8;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-score{font-family:var(--fnt-display);font-size:13px;font-weight:600;color:#FFF8E8;flex-shrink:0}
+.bar-score-u{font-size:9.5px;color:rgba(255,248,232,.6);font-weight:400;margin-left:1px;font-family:var(--fnt)}
+.bar-fill{height:32px;border-radius:var(--r-sm);min-width:24px;
+  background:#FFF8E8;transition:width .5s cubic-bezier(.22,1,.36,1)}
+.bar-vm{font-size:11px;color:rgba(255,248,232,.62);margin-top:4px;padding-left:2px;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cat-score{font-family:var(--fnt-display);font-size:15px;font-weight:600;color:var(--ink);flex-shrink:0}
-.cat-score-u{font-size:10.5px;color:var(--faint);font-weight:400;margin-left:2px;font-family:var(--fnt)}
-.cat-empty{text-align:center;padding:24px 0;font-size:13px;color:var(--faint)}
+.board-empty{position:relative;z-index:1;text-align:center;padding:18px 0;font-size:13px;color:rgba(255,248,232,.7)}
 
 /* ══════ 胜利宣言编辑 ══════ */
 .edit-trigger{font-size:12.5px;color:var(--soft);cursor:pointer;margin-top:22px;display:inline-flex;
@@ -129,34 +116,27 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
   <div class="page-sub">TOP 6 · 每周六晚 12 点重置</div>
   <div class="week-label" id="week-label">本周</div>
 
-  <!-- 总榜：页面封面 -->
-  <div class="crown-board">
-    <div class="crown-hd">
-      <div class="crown-hd-l">
-        <div class="crown-hd-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#FFF8E8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l2-9 4 4 3-7 3 7 4-4 2 9z"/><path d="M5 20h14"/></svg></div>
-        <div class="crown-hd-tt">总榜</div>
-      </div>
-      <div class="crown-hd-r">TOP 6</div>
-    </div>
-    <div id="board-total"><div class="crow-empty">加载中…</div></div>
-  </div>
-
-  <!-- 分类榜：tab 切换 -->
+  <!-- 7 个 tab：总榜 + 6 分类 -->
   <div class="cat-tabs" id="catTabs">
-    <div class="cat-tab active" data-cat="vocab">词汇</div>
+    <div class="cat-tab active" data-cat="total">总榜</div>
+    <div class="cat-tab" data-cat="vocab">词汇</div>
     <div class="cat-tab" data-cat="reading">阅读</div>
     <div class="cat-tab" data-cat="speaking">口语</div>
     <div class="cat-tab" data-cat="programmer">码神</div>
     <div class="cat-tab" data-cat="grammar">语法</div>
     <div class="cat-tab" data-cat="writing">写作</div>
   </div>
-  <div class="cat-board">
-    <div id="board-vocab"><div class="cat-empty">加载中…</div></div>
-    <div id="board-reading" style="display:none"><div class="cat-empty">加载中…</div></div>
-    <div id="board-speaking" style="display:none"><div class="cat-empty">加载中…</div></div>
-    <div id="board-programmer" style="display:none"><div class="cat-empty">加载中…</div></div>
-    <div id="board-grammar" style="display:none"><div class="cat-empty">加载中…</div></div>
-    <div id="board-writing" style="display:none"><div class="cat-empty">加载中…</div></div>
+
+  <!-- 唯一的大卡片：点哪个 tab 就显示哪个的榜单 -->
+  <div class="board-card">
+    <div class="board-hd">
+      <div class="board-hd-l">
+        <div class="board-hd-ic" id="boardIcon"><svg viewBox="0 0 24 24" fill="none" stroke="#FFF8E8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l2-9 4 4 3-7 3 7 4-4 2 9z"/><path d="M5 20h14"/></svg></div>
+        <div class="board-hd-tt" id="boardTitle">总榜</div>
+      </div>
+      <div class="board-hd-r">TOP 6</div>
+    </div>
+    <div id="boardBody"><div class="board-empty">加载中…</div></div>
   </div>
 
   <span class="edit-trigger" id="editTrigger" style="display:none" onclick="showEdit()">
@@ -178,6 +158,21 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 var SB_URL = 'https://ghunrrtrdgicbmixsqrc.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
 
+var CAT_META = {
+  total:      {title:'总榜',  icon:'<path d="M3 17l2-9 4 4 3-7 3 7 4-4 2 9z"/><path d="M5 20h14"/>'},
+  vocab:      {title:'词汇榜',icon:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'},
+  reading:    {title:'阅读榜',icon:'<path d="M12 7c-2-2-5-2-8-1v13c3-1 6-1 8 1 2-2 5-2 8-1V6c-3-1-6-1-8 1z"/><path d="M12 7v13"/>'},
+  speaking:   {title:'口语榜',icon:'<path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M19 11a7 7 0 0 1-14 0"/><path d="M12 18v3"/>'},
+  programmer: {title:'码神榜',icon:'<path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/>'},
+  grammar:    {title:'语法榜',icon:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>'},
+  writing:    {title:'写作榜',icon:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>'}
+};
+var SCORE_KEY = {vocab:'vocab_score',reading:'reading_score',speaking:'survival_score',
+  programmer:'programmer_score',grammar:'grammar_score',writing:'writing_score'};
+
+var _data = null; // 本周全量原始数据，tab 切换时本地重新排序，不重新请求
+var _curCat = 'total';
+
 function getWeekStart(){
   // 周日为每周第一天（周六晚12点一过自动重置）
   var d=new Date();
@@ -189,56 +184,68 @@ function formatWeek(s){
   end.setDate(d.getDate()+6);
   return (d.getMonth()+1)+'月'+d.getDate()+'日 — '+(end.getMonth()+1)+'月'+end.getDate()+'日';
 }
-
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function totalOf(r){
+  return (r.reading_score||0)+(r.vocab_score||0)+(r.survival_score||0)+(r.programmer_score||0)+(r.grammar_score||0)+(r.writing_score||0);
+}
 
-/* 总榜：封面卡片专用渲染，深色底配色 */
-function renderCrownBoard(el, rows){
+/* 条幅式排行榜渲染：长度按分数占最高分比例缩放，第一名条幅最长。
+   不接背景轨道——每根条幅就是它本身该有的实际长度，不暗示存在"未填满"。 */
+function renderBars(rows, scoreFn){
   if(!rows||rows.length===0){
-    el.innerHTML='<div class="crow-empty">本周还没有人上榜，快去练习吧</div>';
-    return;
+    return '<div class="board-empty">本周还没有人上榜，快去练习吧</div>';
   }
   var top6 = rows.slice(0,6);
-  el.innerHTML = top6.map(function(r,i){
-    var rankCls = i===0?'first':i===1?'r2':i===2?'r3':'';
-    var t = (r.reading_score||0)+(r.vocab_score||0)+(r.survival_score||0)+(r.programmer_score||0)+(r.grammar_score||0)+(r.writing_score||0);
-    var vm = r.victory_msg ? '<span class="crow-vm">'+esc(r.victory_msg)+'</span>' : '';
-    return '<div class="crow-row '+rankCls+'">'+
-      '<div class="crow-rank">'+(i+1)+'</div>'+
-      '<div class="crow-name">'+esc(r.user_name)+vm+'</div>'+
-      '<div class="crow-score">'+t+'<span class="crow-score-u">分</span></div>'+
+  var maxScore = scoreFn(top6[0]) || 1;
+  return top6.map(function(r,i){
+    var v = scoreFn(r);
+    var pct = Math.max(6, Math.round(v/maxScore*100)); // 最小宽度只保证色块本身可见，不再需要塞文字
+    var vm = r.victory_msg ? '<div class="bar-vm">\u201c'+esc(r.victory_msg)+'\u201d</div>' : '';
+    return '<div class="bar-row '+(i===0?'first':'')+'">'+
+      '<div class="bar-meta">'+
+        '<div class="bar-rank">'+(i+1)+'</div>'+
+        '<div class="bar-name">'+esc(r.user_name)+'</div>'+
+        '<div class="bar-score">'+v+'<span class="bar-score-u">分</span></div>'+
+      '</div>'+
+      '<div class="bar-fill" style="width:'+pct+'%"></div>'+
+      vm+
       '</div>';
   }).join('');
 }
 
-/* 分类榜：中性卡片渲染 */
-function renderCatBoard(el, rows, scoreKey){
-  if(!rows||rows.length===0){
-    el.innerHTML='<div class="cat-empty">本周还没有人上榜</div>';
+/* 根据当前选中分类，从原始数据里筛选/排序后渲染 */
+function renderCurrentCat(){
+  var meta = CAT_META[_curCat];
+  document.getElementById('boardTitle').textContent = meta.title;
+  document.getElementById('boardIcon').innerHTML =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="#FFF8E8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+meta.icon+'</svg>';
+
+  if(!_data || _data.length===0){
+    document.getElementById('boardBody').innerHTML = '<div class="board-empty">本周还没有人上榜，快去练习吧</div>';
     return;
   }
-  var top6 = rows.slice(0,6);
-  el.innerHTML = top6.map(function(r,i){
-    var v = r[scoreKey]||0;
-    var vm = r.victory_msg ? '<span class="cat-vm">'+esc(r.victory_msg)+'</span>' : '';
-    return '<div class="cat-row '+(i===0?'first':'')+'">'+
-      '<div class="cat-rank">'+(i+1)+'</div>'+
-      '<div class="cat-name">'+esc(r.user_name)+vm+'</div>'+
-      '<div class="cat-score">'+v+'<span class="cat-score-u">分</span></div>'+
-      '</div>';
-  }).join('');
+
+  var html;
+  if(_curCat==='total'){
+    var byTotal = _data.slice().sort(function(a,b){return totalOf(b)-totalOf(a);});
+    html = renderBars(byTotal, totalOf);
+  } else {
+    var key = SCORE_KEY[_curCat];
+    var filtered = _data.slice().filter(function(r){return (r[key]||0)>0;})
+                    .sort(function(a,b){return (b[key]||0)-(a[key]||0);});
+    html = renderBars(filtered, function(r){return r[key]||0;});
+  }
+  document.getElementById('boardBody').innerHTML = html;
 }
 
-// 分类 tab 切换
+// tab 切换：本地重新渲染，不重新请求接口
 document.getElementById('catTabs').addEventListener('click', function(e){
   var tab = e.target.closest('.cat-tab');
   if(!tab) return;
   document.querySelectorAll('.cat-tab').forEach(function(t){t.classList.remove('active');});
   tab.classList.add('active');
-  var cat = tab.dataset.cat;
-  ['vocab','reading','speaking','programmer','grammar','writing'].forEach(function(c){
-    document.getElementById('board-'+c).style.display = (c===cat) ? '' : 'none';
-  });
+  _curCat = tab.dataset.cat;
+  renderCurrentCat();
 });
 
 // 胜利宣言编辑
@@ -288,52 +295,12 @@ async function load(){
     var r = await fetch(SB_URL+'/rest/v1/weekly_scores?week_start=eq.'+ws+'&select=user_name,reading_score,vocab_score,survival_score,programmer_score,grammar_score,writing_score,victory_msg&limit=100',
       {headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}});
     if(!r.ok) throw new Error('HTTP '+r.status);
-    var data = await r.json();
-
-    if(!data||data.length===0){
-      document.getElementById('board-total').innerHTML='<div class="crow-empty">本周还没有人上榜，快去练习吧</div>';
-      ['vocab','reading','speaking','programmer','grammar','writing'].forEach(function(c){
-        document.getElementById('board-'+c).innerHTML='<div class="cat-empty">本周还没有人上榜</div>';
-      });
-      return;
-    }
-
-    var byTotal = data.slice().sort(function(a,b){
-      return ((b.reading_score||0)+(b.vocab_score||0)+(b.survival_score||0)+(b.programmer_score||0)+(b.grammar_score||0)+(b.writing_score||0)) -
-             ((a.reading_score||0)+(a.vocab_score||0)+(a.survival_score||0)+(a.programmer_score||0)+(a.grammar_score||0)+(a.writing_score||0));
-    });
-    renderCrownBoard(document.getElementById('board-total'), byTotal);
-
-    var byVocab = data.slice().filter(function(r){return (r.vocab_score||0)>0;})
-                  .sort(function(a,b){return (b.vocab_score||0)-(a.vocab_score||0);});
-    renderCatBoard(document.getElementById('board-vocab'), byVocab, 'vocab_score');
-
-    var byReading = data.slice().filter(function(r){return (r.reading_score||0)>0;})
-                     .sort(function(a,b){return (b.reading_score||0)-(a.reading_score||0);});
-    renderCatBoard(document.getElementById('board-reading'), byReading, 'reading_score');
-
-    var bySpeaking = data.slice().filter(function(r){return (r.survival_score||0)>0;})
-                       .sort(function(a,b){return (b.survival_score||0)-(a.survival_score||0);});
-    renderCatBoard(document.getElementById('board-speaking'), bySpeaking, 'survival_score');
-
-    var byProgrammer = data.slice().filter(function(r){return (r.programmer_score||0)>0;})
-                          .sort(function(a,b){return (b.programmer_score||0)-(a.programmer_score||0);});
-    renderCatBoard(document.getElementById('board-programmer'), byProgrammer, 'programmer_score');
-
-    var byGrammar = data.slice().filter(function(r){return (r.grammar_score||0)>0;})
-                       .sort(function(a,b){return (b.grammar_score||0)-(a.grammar_score||0);});
-    renderCatBoard(document.getElementById('board-grammar'), byGrammar, 'grammar_score');
-
-    var byWriting = data.slice().filter(function(r){return (r.writing_score||0)>0;})
-                       .sort(function(a,b){return (b.writing_score||0)-(a.writing_score||0);});
-    renderCatBoard(document.getElementById('board-writing'), byWriting, 'writing_score');
-
+    _data = await r.json();
+    renderCurrentCat();
   }catch(e){
     console.error('weekly_stars 加载失败:', e);
-    document.getElementById('board-total').innerHTML='<div class="crow-empty">加载失败，请检查网络</div>';
-    ['vocab','reading','speaking','programmer','grammar','writing'].forEach(function(c){
-      document.getElementById('board-'+c).innerHTML='<div class="cat-empty">加载失败，请检查网络</div>';
-    });
+    _data = null;
+    document.getElementById('boardBody').innerHTML = '<div class="board-empty">加载失败，请检查网络</div>';
   }
 }
 load();
