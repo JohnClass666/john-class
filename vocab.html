@@ -990,20 +990,15 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
   border:1px solid #8AAAE0;border-bottom:2px solid #5A8ACA;
   border-radius:14px;box-shadow:0 2px 6px rgba(40,60,120,.1)}
 
-/* ── 年级选择卡片（复用jc-card风格） ── */
-.grd-card{border-radius:20px;overflow:hidden;aspect-ratio:3/4;position:relative;cursor:pointer;
+/* ── 年级选择卡片：复用单元卡片同款"立体精装书"SVG插画（stageBookSVG），
+   颜色和文字全部画在SVG内部，外层卡片只负责圆角阴影容器 + 点击反馈 ── */
+.grd-sgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:0 20px}
+.grd-card{border-radius:20px;overflow:hidden;aspect-ratio:162/228;position:relative;cursor:pointer;
   box-shadow:0 1px 2px rgba(40,20,5,.08),0 4px 10px rgba(40,20,5,.10),
     0 12px 26px rgba(40,20,5,.08),0 20px 40px rgba(40,20,5,.05);
   transition:transform .18s cubic-bezier(.34,1.4,.64,1),box-shadow .18s}
+.grd-card svg{position:absolute;inset:0;width:100%;height:100%}
 .grd-card:active{transform:scale(.96) translateY(2px);box-shadow:0 2px 6px rgba(40,20,5,.12)}
-.grd-card::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;
-  background:linear-gradient(180deg,rgba(255,235,180,.16) 0%,transparent 100%);
-  border-radius:20px 20px 0 0;pointer-events:none;z-index:3}
-.grd-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:25%;
-  background:none;
-  pointer-events:none;z-index:2}
-.grd-ci{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;text-align:center;gap:6px;padding:16px}
 
 /* ── 年级内列表 3D 按钮 ── */
 .grd-btn{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:18px;cursor:pointer;
@@ -4659,22 +4654,18 @@ SCREENS.welcome=function(){clear();const d=document.createElement("div");d.class
 
 /* ---------- GRADE SELECT — 阶段卡片 ---------- */
 SCREENS.grade=function(){clear();const d=document.createElement("div");d.className="screen active";
- const stageGrads={primary:'jcg2',middle:'jcg1',high:'jcg4',college:'jcg3'};
+ const stageLabelEn={primary:'PRIMARY',middle:'MIDDLE',high:'HIGH',college:'COLLEGE'};
  const stageDesc={primary:'小学英语词汇',middle:'初中英语词汇',high:'高中英语词汇',college:'大学英语词汇'};
  let shelves='';
  for(let i=0;i<STAGES.length;i+=2){
    const pair=STAGES.slice(i,i+2);
    let cards='';
    pair.forEach(st=>{
-     const g=stageGrads[st.id]||'jcg1';
-     cards+=`<div class="grd-card ${g}" data-st="${st.id}">
-       <div class="grd-ci">
-         <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(255,255,255,.45);text-transform:uppercase">${stageDesc[st.id]||''}</div>
-         <div style="font-size:34px;font-weight:700;color:#fff;letter-spacing:-.04em;line-height:1;text-shadow:0 4px 16px rgba(0,0,0,.2)">${st.label}</div>
-       </div>
-     </div>`;
+     cards+=`<div class="grd-card" data-st="${st.id}">${stageBookSVG({
+       labelEn:stageLabelEn[st.id]||'',labelCn:st.label,subText:stageDesc[st.id]||'',stageId:st.id
+     })}</div>`;
    });
-   shelves+=`<div class="jc-sgrid">${cards}</div><div class="jc-sbar"></div>${i+2<STAGES.length?'<div class="jc-sgap"></div>':''}`;
+   shelves+=`<div class="grd-sgrid">${cards}</div><div class="jc-sbar"></div>${i+2<STAGES.length?'<div class="jc-sgap"></div>':''}`;
  }
  d.innerHTML=`
   <div class="jc-hd">
@@ -5657,6 +5648,44 @@ function bookCoverSVG(d){
   <text x="86" y="262" font-family="-apple-system,sans-serif" font-size="9.5" font-weight="700" fill="#FFF8E8" opacity="${0.7*textOp}">${statusText}</text>
   ${badge?`<rect x="158" y="58" width="38" height="15" rx="7.5" fill="#F0E0B8" stroke="#9A7830" stroke-width="0.6"/>
   <text x="179" y="68.3" font-family="-apple-system,sans-serif" font-size="7.3" font-weight="700" letter-spacing="0.3" fill="#7A5414" text-anchor="middle">${badge.txt}</text>`:''}
+ </svg>`;
+}
+/* ── 学段选择的"立体精装书"插画：复用单元卡片同款封底/书页层/封面叠放手法，
+   去掉进度条/通关徽章等单元专属状态，换成学段英文小标 + 中文大字 ── */
+const STAGE_BOOK_COLORS={
+ primary:{c0:"#E2C078",c1:"#C99A4E",c2:"#8A5E22"},
+ middle: {c0:"#E8C888",c1:"#D9B36A",c2:"#A8763A"},
+ high:   {c0:"#C8924A",c1:"#B07A38",c2:"#74481A"},
+ college:{c0:"#A0703A",c1:"#8A5E22",c2:"#5A3812"},
+};
+function stageBookSVG(d){
+ // d: {labelEn, labelCn, subText, stageId}
+ const uid="sbk"+Math.floor(Math.random()*1e6);
+ const col=STAGE_BOOK_COLORS[d.stageId]||STAGE_BOOK_COLORS.primary;
+ return `<svg viewBox="60 46 162 228" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+   <clipPath id="sbkClip_${uid}"><rect x="60" y="58" width="144" height="216" rx="16"/></clipPath>
+   <linearGradient id="sbkCover_${uid}" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="${col.c0}"/><stop offset="45%" stop-color="${col.c1}"/><stop offset="100%" stop-color="${col.c2}"/>
+   </linearGradient>
+   <linearGradient id="sbkSpine_${uid}" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="${col.c2}"/><stop offset="100%" stop-color="${col.c1}"/>
+   </linearGradient>
+  </defs>
+  <rect x="60" y="46" width="162" height="228" fill="${col.c2}"/>
+  <rect x="78" y="46" width="144" height="216" rx="16" fill="${col.c2}"/>
+  <rect x="72.6" y="49.6" width="144" height="216" rx="16" fill="#D8C794"/>
+  <rect x="68.1" y="52.6" width="144" height="216" rx="16" fill="#EDE0BE"/>
+  <rect x="63.6" y="55.6" width="144" height="216" rx="16" fill="#FBF3E2"/>
+  <rect x="60" y="58" width="144" height="216" rx="16" fill="url(#sbkCover_${uid})"/>
+  <rect x="60" y="58" width="144" height="216" rx="16" fill="none" stroke="#6B4812" stroke-width="0.7" opacity="0.4"/>
+  <rect x="60" y="58" width="13" height="216" fill="url(#sbkSpine_${uid})" opacity="0.85" clip-path="url(#sbkClip_${uid})"/>
+  <rect x="77" y="76" width="108" height="180" rx="6" fill="none" stroke="#FFE9B0" stroke-width="1" opacity="0.4"/>
+  <rect x="81" y="80" width="100" height="172" rx="5" fill="none" stroke="#FFE9B0" stroke-width="0.5" opacity="0.3"/>
+  <path d="M76,58 L188,58 Q204,58 204,74 L204,90 L76,90 Z" fill="#FFFFFF" opacity="0.10"/>
+  <text x="86" y="92" font-family="-apple-system,sans-serif" font-size="9.5" font-weight="700" letter-spacing="1.5" fill="#FFE9B0" opacity="0.85">${(d.labelEn||"").toUpperCase()}</text>
+  <text x="86" y="200" font-family="Georgia, serif" font-size="44" font-weight="600" fill="#FFF8E8" opacity="0.97">${d.labelCn||""}</text>
+  <text x="86" y="248" font-family="-apple-system,sans-serif" font-size="9.5" fill="#FFF8E8" opacity="0.55">${d.subText||""}</text>
  </svg>`;
 }
 function medalSVG(idx,size,earned){
