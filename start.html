@@ -2,48 +2,98 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <title>欢迎 · John Class</title>
 <style>
+:root{
+  --bg:#FBF6EC;--bg2:#F0E2C4;--bg3:#F6EEDC;
+  --ink:#2A1D08;--soft:#8C6B35;--faint:#C2A26C;
+  --hair:#E2D0A4;--accent:#AD7A1E;--accent-deep:#7A5414;--accent-soft:#F5E8C8;
+  --warn:#C2491E;
+  --r-sm:10px;--r-md:16px;--r-lg:22px;
+  --fnt:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
+  --fnt-display:Georgia,"Songti SC","STSong",serif;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#F5EDD8;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased;color:#2A1E08}
-body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:28px 20px}
-.card{width:100%;max-width:420px;text-align:center}
-.logo{font-size:11px;letter-spacing:.18em;color:#B5A080;font-weight:600;margin-bottom:40px}
-.emoji{font-size:48px;margin-bottom:12px;line-height:1}
-.title{font-size:22px;font-weight:700;margin-bottom:8px;color:#2A1E08}
-.sub{font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:24px}
-.inp{width:100%;padding:14px 16px;background:rgba(255,252,245,.9);border:1.5px solid rgba(42,30,8,.2);border-radius:14px;font-size:17px;font-family:inherit;color:#2A1E08;outline:none;text-align:center;margin-bottom:16px}
-.inp:focus{border-color:#2A1E08}
-.btn{display:block;width:100%;padding:16px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:12px;font-size:17px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:10px}
-.btn:active{opacity:.8}
-.btn-ghost{display:block;width:100%;padding:14px;background:transparent;color:#7A6040;border:1.5px solid rgba(42,30,8,.2);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
-.btn-ghost:active{opacity:.7}
+html,body{height:100%}
+body{
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 8%, rgba(173,122,30,.10), transparent 65%),
+    var(--bg);
+  font-family:var(--fnt);-webkit-font-smoothing:antialiased;color:var(--ink);
+  display:flex;align-items:center;justify-content:center;min-height:100vh;
+  padding:28px 20px;
+}
+.card{width:100%;max-width:400px;text-align:center;
+  opacity:0;animation:cardIn .6s cubic-bezier(.22,1,.36,1) .05s forwards}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.logo{font-family:var(--fnt-display);font-size:15px;font-weight:600;letter-spacing:.1em;
+  color:var(--faint);margin-bottom:36px}
+.mark{width:56px;height:56px;margin:0 auto 18px;border-radius:50%;
+  background:linear-gradient(160deg,var(--accent-soft),var(--accent));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 4px rgba(40,20,5,.1),0 8px 18px rgba(122,84,20,.22)}
+.mark svg{width:26px;height:26px;stroke:#FFF8E8}
+
+.title{font-family:var(--fnt-display);font-size:23px;font-weight:600;margin-bottom:8px;color:var(--ink);letter-spacing:-.01em}
+.sub{font-size:13px;color:var(--soft);line-height:1.7;margin-bottom:26px}
+
+.inp{width:100%;padding:15px 18px;background:#FFFCF4;
+  border:1.5px solid var(--hair);border-radius:var(--r-md);
+  font-size:17px;font-family:var(--fnt-display);font-weight:500;color:var(--ink);
+  outline:none;text-align:center;margin-bottom:16px;letter-spacing:.02em;
+  box-shadow:inset 0 1px 2px rgba(40,20,5,.04);
+  transition:border-color .2s,box-shadow .2s}
+.inp::placeholder{font-family:var(--fnt);font-weight:400;color:var(--faint)}
+.inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(173,122,30,.13),inset 0 1px 2px rgba(40,20,5,.04)}
+.inp.shake{animation:shake .4s ease;border-color:var(--warn)}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}
+}
+
+.btn{display:block;width:100%;padding:16px;
+  background:linear-gradient(180deg,#C8943C,var(--accent));
+  color:#FFF8E8;border:none;border-radius:var(--r-md);
+  font-family:var(--fnt-display);font-size:16px;font-weight:600;letter-spacing:.01em;
+  cursor:pointer;margin-bottom:12px;
+  box-shadow:0 1px 2px rgba(40,20,5,.1),0 6px 16px rgba(122,84,20,.28),inset 0 1px 0 rgba(255,255,255,.2);
+  transition:transform .12s,box-shadow .12s}
+.btn:active{transform:scale(.97);box-shadow:0 1px 2px rgba(40,20,5,.1),0 2px 6px rgba(122,84,20,.2)}
+.btn:disabled{opacity:.5;pointer-events:none}
+
+.hint{font-size:11.5px;color:var(--faint);letter-spacing:.02em}
 </style>
 </head>
 <body>
 <div class="card">
   <div class="logo">JOHN CLASS</div>
-  <div class="emoji">🤔</div>
+  <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4v3a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M6 11v1a6 6 0 0 0 12 0v-1M12 18v3"/></svg></div>
   <div class="title">你是 John 的亲学生吗？</div>
   <div class="sub">请输入你的名字</div>
   <input class="inp" id="nameInp" type="text" placeholder="输入你的名字" maxlength="20" autocomplete="off">
-  <button class="btn" onclick="enter()">开始学习 →</button>
+  <button class="btn" id="enterBtn" onclick="enter()">开始学习 →</button>
+  <div class="hint">你的名字会用于同步多设备进度</div>
 </div>
 
 <script>
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function lsRemove(k){try{localStorage.removeItem(k);}catch(e){}}
+
 (function(){
   var prefill = '';
   var oldKeys = ['jc_reading_name','jc_username','vocab_name','jc_name'];
   for(var i=0; i<oldKeys.length; i++){
-    var v = localStorage.getItem(oldKeys[i]);
+    var v = lsGet(oldKeys[i]);
     if(v && v.trim() && v!=='同学'){ prefill = v.trim(); break; }
   }
   if(prefill){ document.getElementById('nameInp').value = prefill; }
 })();
 
 var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
-var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
 function sbH(){return{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};}
 
 // 查 Supabase：是否老生（4秒超时，超时当新生）
@@ -72,31 +122,39 @@ async function pullAndRestore(name){
     var data = await Promise.all(resp.map(function(r){return r.ok?r.json():Promise.resolve([]);}));
     if(data[0].length>0){
       var rp=data[0][0];
-      if(rp.saved_ids&&rp.saved_ids.length>0)localStorage.setItem('jc_reading_saved',JSON.stringify(rp.saved_ids));
-      if(rp.total_completed)localStorage.setItem('jc_reading_total',rp.total_completed);
+      if(rp.saved_ids&&rp.saved_ids.length>0)lsSet('jc_reading_saved',JSON.stringify(rp.saved_ids));
+      if(rp.total_completed)lsSet('jc_reading_total',rp.total_completed);
     }
-    if(data[1].length>0&&data[1][0].progress_data)localStorage.setItem('jc_vocab_progress_sync',JSON.stringify(data[1][0].progress_data));
-    localStorage.setItem('jc_synced',name);
+    if(data[1].length>0&&data[1][0].progress_data)lsSet('jc_vocab_progress_sync',JSON.stringify(data[1][0].progress_data));
+    lsSet('jc_synced',name);
     return true;
   }catch(e){return false;}
 }
 
 async function enter(){
-  var name = document.getElementById('nameInp').value.trim();
-  if(!name){ alert('请输入你的名字'); return; }
-  localStorage.setItem('jc_username', name);
+  var input = document.getElementById('nameInp');
+  var btn = document.getElementById('enterBtn');
+  var name = input.value.trim();
+  if(!name){
+    input.classList.remove('shake'); void input.offsetWidth; input.classList.add('shake');
+    setTimeout(function(){input.classList.remove('shake');},400);
+    input.focus();
+    return;
+  }
+  btn.disabled = true; btn.textContent = '进入中…';
+  lsSet('jc_username', name);
 
   // 已同步过的设备直接进
-  if(localStorage.getItem('jc_synced')!==name){
+  if(lsGet('jc_synced')!==name){
     var isReturning = await checkReturning(name);
     if(isReturning && confirm(name+'，检测到你在其他设备上有学习记录。\n\n要同步到这个设备吗？')){
       await pullAndRestore(name);
       alert('同步完成！欢迎回来');
     }
-    localStorage.setItem('jc_synced', name);
+    lsSet('jc_synced', name);
   }
 
-  localStorage.setItem('jc_show_welcome', '1');
+  lsSet('jc_show_welcome', '1');
   window.location.href = 'index.html';
 }
 
