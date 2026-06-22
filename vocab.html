@@ -502,52 +502,6 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 .brag-card .bs{font-size:15px;color:var(--soft);margin-top:12px}
 .brag-card .bn{font-size:46px;font-weight:200;color:var(--accent);margin-top:18px;letter-spacing:-.03em}
 .brag-tip{text-align:center;font-size:13px;color:var(--soft);margin-top:22px;line-height:1.6}
-/* 排行榜 */
-.lb-wrap{padding-top:6px}
-.lb-tabs{display:flex;gap:8px;margin-bottom:18px;padding:0 2px}
-.lb-tab{flex:1;padding:10px 6px;border-radius:14px;border:1.5px solid var(--hair);background:var(--bg3);font-size:14px;font-weight:600;color:var(--soft);cursor:pointer;text-align:center;transition:all .18s}
-.lb-tab.active{background:var(--accent);border-color:var(--accent);color:#FDF8F0}
-.lb-sub{font-size:13px;color:var(--soft);text-align:center;margin-bottom:14px;line-height:1.6;min-height:20px}
-.lb-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
-
-/* 年级分区标题 */
-.lb-grade-section{margin-top:18px}
-.lb-grade-title{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--accent);text-transform:uppercase;margin-bottom:8px;padding:0 4px;border-left:3px solid var(--accent);padding-left:10px}
-
-/* 普通行 */
-.lb-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--hair);border-radius:16px;background:var(--bg3);transition:transform .15s}
-.lb-row.lb-me{background:var(--accent-soft);border-color:var(--accent)}
-.lb-rank{width:32px;height:32px;border-radius:50%;background:var(--hair);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--soft);flex:0 0 auto}
-.lb-rank.r2{background:#C0C0C0;color:#444}
-.lb-rank.r3{background:#CD7F32;color:#fff}
-.lb-info{flex:1;min-width:0}
-.lb-name{font-size:16px;font-weight:600;color:var(--ink);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lb-grade{font-size:12px;color:var(--soft);margin-top:1px}
-.lb-score{font-size:20px;font-weight:700;color:var(--accent);text-align:right;white-space:nowrap}
-.lb-me-tag{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent);padding:2px 8px;border-radius:99px;margin-top:3px;display:inline-block}
-.lb-empty{text-align:center;padding:40px 20px;color:var(--faint);font-size:15px}
-.lb-note{font-size:12px;color:var(--faint);text-align:center;margin-top:16px;line-height:1.7}
-
-/* 前三名特效卡片 */
-.lb-top{border-radius:20px;padding:18px 18px 16px;margin-bottom:4px;position:relative;overflow:hidden;display:flex;align-items:center;gap:14px}
-.lb-top::before{content:'';position:absolute;inset:0;opacity:.08;pointer-events:none}
-.lb-top-1{background:linear-gradient(135deg,#FFF8DC,#FFF0A0);border:2px solid #FFD700;box-shadow:0 4px 20px rgba(255,215,0,.3)}
-.lb-top-1::before{background:radial-gradient(circle at 80% 20%,#FFD700,transparent)}
-.lb-top-2{background:linear-gradient(135deg,#F8F8F8,#E8E8E8);border:2px solid #C0C0C0;box-shadow:0 4px 16px rgba(0,0,0,.1)}
-.lb-top-3{background:linear-gradient(135deg,#FFF4EC,#FFE4CC);border:2px solid #CD7F32;box-shadow:0 4px 14px rgba(205,127,50,.2)}
-.lb-crown{font-size:28px;line-height:1;flex:0 0 auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
-.lb-top-info{flex:1;min-width:0}
-.lb-top-name{font-size:18px;font-weight:700;color:var(--ink);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lb-top-grade{font-size:12px;color:var(--soft);margin-top:2px}
-.lb-top-score{font-size:26px;font-weight:800;text-align:right;white-space:nowrap;line-height:1}
-.lb-top-score small{font-size:13px;font-weight:400;color:var(--soft)}
-.lb-top-1 .lb-top-score{color:#9A7000}
-.lb-top-2 .lb-top-score{color:#555}
-.lb-top-3 .lb-top-score{color:#7A3F10}
-.lb-sparkle{position:absolute;top:8px;right:12px;font-size:16px;animation:sparkle 2s infinite;opacity:.7}
-@keyframes sparkle{0%,100%{opacity:.4;transform:scale(.9)}50%{opacity:1;transform:scale(1.15)}}
-.lb-no1-glow{animation:glow1 3s ease-in-out infinite}
-@keyframes glow1{0%,100%{box-shadow:0 4px 20px rgba(255,215,0,.3)}50%{box-shadow:0 6px 32px rgba(255,215,0,.6),0 0 0 3px rgba(255,215,0,.15)}}
 
 /* ═══════════════════════════════════════════
    复习中心 · Review Center
@@ -899,41 +853,70 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 .passmsg.warn{color:#9A3A10;
   background:linear-gradient(180deg,#FAF0E8,#EEDAD8);
   border-color:#D0A090;border-bottom-color:#A07060}
-/* 排行榜 */
+/* ── 排行榜：完全套用 design_spec 体系，复用 weekly_stars.html 验证过的
+   条幅式排行榜手法——TOP 6 装在强调色卡片里，条幅长度按分数占最高分比例缩放，
+   不接背景轨道（不暗示"未填满"），姓名固定在条幅上方不受宽度影响；
+   第 7 名往后跳出卡片，变成中性样式的普通列表行，可以一直往下翻 ── */
 .lb-wrap{padding:0 20px 20px}
-.lb-tabs{display:flex;gap:8px;margin-bottom:16px}
-.lb-tab{flex:1;padding:9px 12px;text-align:center;
-  font-size:12px;font-weight:600;letter-spacing:-.01em;cursor:pointer;
-  background:linear-gradient(180deg,#FDF8F0 0%,#E8D8B4 100%);
-  border:1px solid #C8A860;border-bottom:3px solid #9A7830;border-radius:10px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 2px 4px rgba(40,20,5,.08);
-  color:#A08040;transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
-.lb-tab:active{transform:translateY(2px);border-bottom-width:1px}
-.lb-tab.active{background:linear-gradient(180deg,#D4A030 0%,#A87818 100%);
-  border-color:#906010;border-bottom-color:#5A3808;color:#FDF8F0;
-  box-shadow:inset 0 1px 0 rgba(255,240,160,.4),0 2px 5px rgba(40,20,5,.14)}
-.lb-sub{font-size:11px;color:#A08040;text-align:center;margin-bottom:12px;
-  font-weight:600;letter-spacing:.04em}
-.lb-row{display:flex;align-items:center;gap:12px;padding:12px 16px;
-  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
-  border:1px solid #E8DBBD;border-bottom:2px solid #C8A860;border-radius:14px;
-  margin-bottom:8px;box-shadow:0 2px 6px rgba(40,20,5,.06)}
-.lb-row.me{background:linear-gradient(180deg,#F5F0D8,#E8D8A0);
-  border-color:#C8A860;border-bottom-color:#9A7830;
-  box-shadow:0 2px 8px rgba(40,20,5,.12)}
-.lb-rank{width:32px;height:32px;border-radius:50%;flex:0 0 auto;
-  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;
-  background:linear-gradient(145deg,#C8A870,#A08040);
-  border:1px solid #906828;color:#FDF8F0;
-  box-shadow:0 1px 4px rgba(40,20,5,.14)}
-.lb-rank.r1{background:linear-gradient(145deg,#F0C030,#C09010);border-color:#A07010}
-.lb-rank.r2{background:linear-gradient(145deg,#C0B0A0,#907060);border-color:#706050}
-.lb-rank.r3{background:linear-gradient(145deg,#C07830,#8A4810);border-color:#6A3010}
-.lb-name{flex:1;font-size:15px;font-weight:600;color:#3A2A10;letter-spacing:-.02em}
-.lb-pts{font-size:15px;font-weight:300;color:#C89030;letter-spacing:-.04em}
-.lb-grp{font-size:10px;font-weight:700;letter-spacing:.14em;color:#C8A870;
-  text-transform:uppercase;margin:16px 0 8px}
-.lb-note{font-size:11px;color:#A08040;text-align:center;margin-top:12px}
+.lb-tabs{display:flex;gap:6px;margin-bottom:16px}
+.lb-tab{flex:1;padding:10px 12px;text-align:center;font-size:13px;font-weight:600;
+  background:var(--bg3);color:var(--soft);border:1.5px solid var(--hair);border-radius:var(--r-md);
+  cursor:pointer;transition:transform .12s,background .15s,color .15s,border-color .15s}
+.lb-tab:active{transform:scale(.96)}
+.lb-tab.active{background:var(--accent);color:#FFF8E8;border-color:var(--accent)}
+.lb-sub{font-size:12px;color:var(--soft);text-align:center;margin-bottom:14px;font-weight:500}
+.lb-note{font-size:11px;color:var(--warn);text-align:center;margin-top:12px}
+
+/* TOP 6 卡片容器：唯一的强调色重点区域 */
+.lb-card{position:relative;overflow:hidden;border-radius:var(--r-lg);padding:20px 18px 16px;
+  margin-bottom:14px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-deep) 100%);
+  box-shadow:0 2px 4px rgba(40,20,5,.14),0 10px 22px rgba(122,84,20,.28),0 22px 44px rgba(122,84,20,.16)}
+.lb-card::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.16) 45%,transparent 60%);
+  background-size:220% 100%;background-position:130% 0;animation:shimmer 4.2s ease-in-out infinite;pointer-events:none}
+@keyframes shimmer{0%,55%{background-position:130% 0}100%{background-position:-50% 0}}
+.lb-card-cap{position:relative;z-index:1;font-size:10.5px;font-weight:700;letter-spacing:.14em;
+  color:rgba(255,248,232,.7);text-transform:uppercase;margin-bottom:14px}
+
+/* 条幅行：长度按分数占最高分比例缩放，第一名最长；不接背景轨道；
+   姓名/分数固定在条幅上方，不受条幅宽度影响 */
+.lb-bar-row{position:relative;z-index:1;margin-bottom:14px}
+.lb-bar-row:last-child{margin-bottom:0}
+.lb-bar-meta{display:flex;align-items:baseline;gap:7px;margin-bottom:6px;padding:0 2px}
+.lb-bar-rank{font-family:var(--fnt-display);font-size:13.5px;font-weight:600;color:rgba(255,248,232,.55);
+  flex-shrink:0;width:16px;text-align:center}
+.lb-bar-row.first .lb-bar-rank{color:#FFF8E8;font-size:16px}
+.lb-bar-name{flex:1;font-size:13.5px;font-weight:600;color:#FFF8E8;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-bar-tag{font-size:9.5px;font-weight:700;color:var(--accent-deep);background:rgba(255,248,232,.85);
+  border-radius:var(--r-sm);padding:1px 6px;flex-shrink:0}
+.lb-bar-grade{font-size:10px;color:rgba(255,248,232,.55);flex-shrink:0}
+.lb-bar-score{font-family:var(--fnt-display);font-size:13px;font-weight:600;color:#FFF8E8;flex-shrink:0}
+.lb-bar-score-u{font-size:9.5px;color:rgba(255,248,232,.6);font-weight:400;margin-left:1px;font-family:var(--fnt)}
+.lb-bar-fill{height:30px;border-radius:var(--r-sm);min-width:24px;
+  background:#FFF8E8;transition:width .5s cubic-bezier(.22,1,.36,1)}
+.lb-card-empty{position:relative;z-index:1;text-align:center;padding:18px 0;font-size:13px;color:rgba(255,248,232,.7)}
+
+/* 第 7 名往后：跳出卡片，中性列表行，可以一直往下翻 */
+.lb-plain-row{display:flex;align-items:center;gap:12px;padding:12px 14px;
+  background:var(--bg3);border:1px solid var(--hair);border-radius:var(--r-md);margin-bottom:7px}
+.lb-plain-row.me{background:var(--accent-soft);border-color:var(--accent)}
+.lb-plain-rank{font-family:var(--fnt-display);font-size:13.5px;font-weight:600;color:var(--faint);
+  width:24px;flex-shrink:0;text-align:center}
+.lb-plain-name{flex:1;font-size:14px;font-weight:500;color:var(--ink);min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:baseline;gap:6px}
+.lb-plain-grade{font-size:10.5px;color:var(--faint);flex-shrink:0}
+.lb-plain-score{font-family:var(--fnt-display);font-size:14px;font-weight:600;color:var(--ink);flex-shrink:0}
+.lb-plain-score-u{font-size:10.5px;color:var(--faint);font-weight:400;margin-left:1px;font-family:var(--fnt)}
+.lb-plain-tag{font-size:9.5px;font-weight:700;color:#FFF8E8;background:var(--accent);
+  border-radius:var(--r-sm);padding:1px 6px;flex-shrink:0}
+
+/* 年级分区标题 */
+.lb-grade-section{margin-bottom:24px}
+.lb-grade-section:last-child{margin-bottom:0}
+.lb-grade-title{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--faint);
+  text-transform:uppercase;margin-bottom:10px;padding:0 4px}
+.lb-empty{text-align:center;padding:40px 0;font-size:13px;color:var(--soft);line-height:1.7}
 /* 里程碑 */
 .ms-card{display:flex;align-items:center;gap:14px;padding:16px;
   background:linear-gradient(180deg,#FDF8F0,#EEE2C4);
@@ -1024,25 +1007,6 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 .htitle{text-align:center;font-size:16px;font-weight:700;color:#3A2A10;
   text-shadow:0 1px 2px rgba(40,20,5,.14),0 3px 8px rgba(40,20,5,.08);
   letter-spacing:-.02em}
-
-/* ── 排行榜 Top 3 炫 3D ── */
-.lb-top-1{background:linear-gradient(135deg,#F5C820,#C09010,#F0D060)!important;
-  border:1px solid #906008!important;border-bottom:4px solid #5A3808!important;
-  box-shadow:0 4px 14px rgba(160,100,0,.28),0 8px 28px rgba(160,100,0,.14),
-    inset 0 1px 0 rgba(255,250,180,.7)!important;border-radius:20px!important}
-.lb-top-2{background:linear-gradient(135deg,#D8D8D0,#909088,#E0E0D8)!important;
-  border:1px solid #606058!important;border-bottom:3px solid #404038!important;
-  box-shadow:0 3px 10px rgba(80,80,70,.2),inset 0 1px 0 rgba(255,255,255,.6)!important;
-  border-radius:18px!important}
-.lb-top-3{background:linear-gradient(135deg,#D08830,#8A4810,#E0A850)!important;
-  border:1px solid #7A3808!important;border-bottom:3px solid #4A2408!important;
-  box-shadow:0 3px 8px rgba(100,50,20,.2),inset 0 1px 0 rgba(255,210,150,.5)!important;
-  border-radius:18px!important}
-.lb-top-1 .lb-top-score{color:#4A2800!important;font-weight:900}
-.lb-top-1 .lb-top-name{color:#3A2000!important}
-.lb-top-2 .lb-top-name,.lb-top-3 .lb-top-name{color:#2A1808!important}
-.lb-no1-glow{animation:glow1 3s ease-in-out infinite,lbFloat 2.5s ease-in-out infinite}
-@keyframes lbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 </style>
 </head>
 <body>
@@ -5960,67 +5924,65 @@ function gradeGroup(grade){
  return g||"其他";
 }
 
-// 骨架屏 HTML
+// 骨架屏 HTML（用新的中性列表样式，不再依赖旧的金色 .lb-rank/.lb-info/.lb-score）
 function lbSkeleton(){
  return [1,2,3,4,5].map(()=>`
-  <div class="lb-row" style="opacity:.25">
-   <div class="lb-rank" style="background:var(--hair)"></div>
-   <div class="lb-info"><span class="lb-name" style="background:var(--hair);color:transparent;border-radius:4px;display:block">加载中加载中加</span></div>
-   <div class="lb-score" style="background:var(--hair);color:transparent;border-radius:4px">999</div>
+  <div class="lb-plain-row" style="opacity:.25">
+   <div class="lb-plain-rank" style="background:var(--hair);border-radius:4px;color:transparent">99</div>
+   <div class="lb-plain-name" style="background:var(--hair);color:transparent;border-radius:4px">加载中加载中加</div>
+   <div class="lb-plain-score" style="background:var(--hair);color:transparent;border-radius:4px">999</div>
   </div>`).join("");
 }
 
-// 渲染总榜（前三特效 + 其余普通行）
-function renderTotal(ranking, myName){
- if(!ranking.length) return `<div class="lb-empty">暂无数据<br><small>完成练习后自动上榜</small></div>`;
- let html="";
- ranking.forEach((r,i)=>{
+/* 共享渲染：TOP 6 装进强调色卡片，做成条幅式（长度按分数占最高分比例缩放，不接背景轨道）；
+   第 7 名往后跳出卡片，变成中性列表行，可以一直往下翻。
+   list: 该范围内完整排序后的数组；myName: 用于标记"我"；gradeShown: 是否在条幅/列表行里显示年级标签 */
+function renderRankedList(list, myName, gradeShown){
+ if(!list.length) return `<div class="lb-card-empty">暂无数据，完成练习后自动上榜</div>`;
+ const top6=list.slice(0,6);
+ const rest=list.slice(6);
+ const maxScore=top6[0].score||1;
+
+ const cardHtml=top6.map((r,i)=>{
   const isMe=r.name===myName;
-  const meTag=isMe?`<span class="lb-me-tag">我</span>`:"";
-  const gradeStr=r.grade?`<span class="${i<3?'lb-top-grade':'lb-grade'}">${r.grade}</span>`:"";
-  if(i===0){
-   html+=`<div class="lb-top lb-top-1 lb-no1-glow ${isMe?'lb-me':''}">
-    <span class="lb-sparkle">✨</span>
-    <div class="lb-crown">👑</div>
-    <div class="lb-top-info">
-     <span class="lb-top-name">${r.name}</span>
-     ${gradeStr}${meTag}
-    </div>
-    <div class="lb-top-score">${r.score}<br><small>分</small></div>
-   </div>`;
-  } else if(i===1){
-   html+=`<div class="lb-top lb-top-2 ${isMe?'lb-me':''}">
-    <div class="lb-crown">🥈</div>
-    <div class="lb-top-info">
-     <span class="lb-top-name">${r.name}</span>
-     ${gradeStr}${meTag}
-    </div>
-    <div class="lb-top-score">${r.score}<br><small>分</small></div>
-   </div>`;
-  } else if(i===2){
-   html+=`<div class="lb-top lb-top-3 ${isMe?'lb-me':''}">
-    <div class="lb-crown">🥉</div>
-    <div class="lb-top-info">
-     <span class="lb-top-name">${r.name}</span>
-     ${gradeStr}${meTag}
-    </div>
-    <div class="lb-top-score">${r.score}<br><small>分</small></div>
-   </div>`;
-  } else {
-   html+=`<div class="lb-row ${isMe?'lb-me':''}">
-    <div class="lb-rank"><span style="font-size:13px">${i+1}</span></div>
-    <div class="lb-info">
-     <span class="lb-name">${r.name}</span>
-     ${gradeStr}${meTag}
-    </div>
-    <div class="lb-score">${r.score}<small style="font-size:12px;font-weight:400;color:var(--soft)">分</small></div>
-   </div>`;
-  }
- });
- return html;
+  const pct=Math.max(6,Math.round((r.score||0)/maxScore*100));
+  const gradeStr=gradeShown&&r.grade?`<span class="lb-bar-grade">${r.grade}</span>`:"";
+  const meTag=isMe?`<span class="lb-bar-tag">我</span>`:"";
+  return `<div class="lb-bar-row ${i===0?'first':''}">
+   <div class="lb-bar-meta">
+    <div class="lb-bar-rank">${i+1}</div>
+    <div class="lb-bar-name">${r.name}</div>
+    ${gradeStr}${meTag}
+    <div class="lb-bar-score">${r.score}<span class="lb-bar-score-u">分</span></div>
+   </div>
+   <div class="lb-bar-fill" style="width:${pct}%"></div>
+  </div>`;
+ }).join("");
+
+ const restHtml=rest.map((r,i)=>{
+  const isMe=r.name===myName;
+  const gradeStr=gradeShown&&r.grade?`<span class="lb-plain-grade">${r.grade}</span>`:"";
+  const meTag=isMe?`<span class="lb-plain-tag">我</span>`:"";
+  return `<div class="lb-plain-row ${isMe?'me':''}">
+   <div class="lb-plain-rank">${i+7}</div>
+   <div class="lb-plain-name">${r.name}${gradeStr}${meTag}</div>
+   <div class="lb-plain-score">${r.score}<span class="lb-plain-score-u">分</span></div>
+  </div>`;
+ }).join("");
+
+ return `<div class="lb-card">
+  <div class="lb-card-cap">TOP 6</div>
+  ${cardHtml}
+ </div>${restHtml}`;
 }
 
-// 渲染年级榜（各年级分区，每个分区自己的前三特效）
+// 渲染总榜：TOP 6 条幅 + 第7名往后中性列表
+function renderTotal(ranking, myName){
+ if(!ranking.length) return `<div class="lb-empty">暂无数据<br><small>完成练习后自动上榜</small></div>`;
+ return renderRankedList(ranking, myName, true);
+}
+
+// 渲染年级榜：各年级分区，每个分区内部各自一套 TOP 6 条幅 + 第7名往后中性列表
 function renderGrade(ranking, myName){
  if(!ranking.length) return `<div class="lb-empty">暂无数据<br><small>完成练习后自动上榜</small></div>`;
  // 按年级分组
@@ -6037,41 +5999,9 @@ function renderGrade(ranking, myName){
   const list=groups[key];
   if(!list||!list.length)return;
   html+=`<div class="lb-grade-section">
-   <div class="lb-grade-title">${key} · ${list.length}人</div>`;
-  list.forEach((r,i)=>{
-   const isMe=r.name===myName;
-   const meTag=isMe?`<span class="lb-me-tag">我</span>`:"";
-   if(i===0){
-    html+=`<div class="lb-top lb-top-1 lb-no1-glow ${isMe?'lb-me':''}" style="margin-bottom:6px">
-     <span class="lb-sparkle">✨</span>
-     <div class="lb-crown" style="font-size:22px">👑</div>
-     <div class="lb-top-info">
-      <span class="lb-top-name" style="font-size:16px">${r.name}</span>
-      ${meTag}
-     </div>
-     <div class="lb-top-score" style="font-size:22px">${r.score}<br><small>分</small></div>
-    </div>`;
-   } else if(i===1){
-    html+=`<div class="lb-top lb-top-2 ${isMe?'lb-me':''}" style="margin-bottom:6px">
-     <div class="lb-crown" style="font-size:20px">🥈</div>
-     <div class="lb-top-info"><span class="lb-top-name" style="font-size:15px">${r.name}</span>${meTag}</div>
-     <div class="lb-top-score" style="font-size:20px">${r.score}<br><small>分</small></div>
-    </div>`;
-   } else if(i===2){
-    html+=`<div class="lb-top lb-top-3 ${isMe?'lb-me':''}" style="margin-bottom:6px">
-     <div class="lb-crown" style="font-size:20px">🥉</div>
-     <div class="lb-top-info"><span class="lb-top-name" style="font-size:15px">${r.name}</span>${meTag}</div>
-     <div class="lb-top-score" style="font-size:20px">${r.score}<br><small>分</small></div>
-    </div>`;
-   } else {
-    html+=`<div class="lb-row ${isMe?'lb-me':''}">
-     <div class="lb-rank"><span style="font-size:13px">${i+1}</span></div>
-     <div class="lb-info"><span class="lb-name">${r.name}</span>${meTag}</div>
-     <div class="lb-score">${r.score}<small style="font-size:12px;font-weight:400;color:var(--soft)">分</small></div>
-    </div>`;
-   }
-  });
-  html+=`</div>`;
+   <div class="lb-grade-title">${key} · ${list.length}人</div>
+   ${renderRankedList(list, myName, false)}
+  </div>`;
  });
  return html;
 }
