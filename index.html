@@ -35,7 +35,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);-webkit-font-smoothin
 .greeting{position:absolute;top:44px;right:56px;font-size:13px;color:var(--soft);letter-spacing:.02em}
 
 .inner{opacity:0;animation:fadeIn .8s cubic-bezier(.22,1,.36,1) .15s forwards}
-.divider{width:32px;height:2px;background:var(--accent);margin-bottom:34px;border-radius:2px}
 
 .entry{display:block;text-decoration:none;margin-bottom:34px;cursor:pointer;position:relative}
 .entry:last-of-type{margin-bottom:0}
@@ -69,6 +68,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);-webkit-font-smoothin
   color:var(--ink);text-align:center;line-height:1.5;animation:splashPop .5s cubic-bezier(.22,1,.36,1) .2s both}
 .splash-sub{font-size:14px;color:var(--soft);margin-top:10px;text-align:center;
   animation:splashPop .5s cubic-bezier(.22,1,.36,1) .3s both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes splashPop{from{opacity:0;transform:scale(.85) translateY(10px)}to{opacity:1;transform:none}}
 .splash-stars{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .ss{position:absolute;animation:ssFly 1.2s ease-out forwards}
@@ -104,10 +104,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);-webkit-font-smoothin
     <div class="brand">John Class</div>
     <div class="greeting" id="greeting"></div>
     <div class="inner">
-      <div class="divider"></div>
       <a class="entry" href="study.html" onclick="go(event,'study.html')">
         <div class="entry-title">英语学习提升</div>
-        <div class="entry-sub">单词训练 · 语法冒险</div>
+        <div class="entry-sub">单词 · 语法 · 阅读 · 听力 · 写作 · 口语</div>
       </a>
       <a class="entry" href="teacher.html" onclick="go(event,'teacher.html')">
         <div class="entry-title">和 John 说说</div>
@@ -293,7 +292,13 @@ function go(e, href) {
   setTimeout(function(){window.location.href=href;},280);
 }
 
-init();
+// 最后一道保险：不管上面哪一步出了没预料到的错，都不能让整页空白卡死——
+// 至少把主页面显示出来，让访客能正常进站，个性化问候/云同步缺失不影响使用
+try{
+  init();
+}catch(e){
+  try{document.getElementById('mainPage').classList.add('show');}catch(e2){}
+}
 </script>
   <script src="audio.js"></script>
   <script src="bgm-cross.js"></script>
