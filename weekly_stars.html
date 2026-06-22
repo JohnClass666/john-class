@@ -2,118 +2,167 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>每周学习大神榜 · John Class</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{background:#F5EDD8;color:#2A1E08;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;min-height:100%}
-.wrap{max-width:480px;margin:0 auto;padding:40px 24px 80px}
-.back{font-size:13px;color:#B5A080;text-decoration:none;display:block;margin-bottom:28px}
-.back:hover{color:#2A1E08}
-.page-title{font-size:26px;font-weight:700;margin-bottom:4px}
-.page-sub{font-size:13px;color:#8A7050;margin-bottom:6px;line-height:1.6}
-.week-label{font-size:11px;letter-spacing:.14em;color:#B5A080;font-weight:600;margin-bottom:32px}
-/* board section */
-.board-section{margin-bottom:32px}
-.board-title{font-size:15px;font-weight:700;color:#2A1E08;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.board-title .bt-icon{font-size:18px}
-.board-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,252,245,.88);border-radius:12px;margin-bottom:6px}
-.rank{font-size:17px;font-weight:700;width:28px;flex-shrink:0;color:#B5A080;text-align:center}
-.rank.r1{color:#C9A96E;font-size:20px}
-.rank.r2{color:#A0A0A0;font-size:20px}
-.rank.r3{color:#C88C32;font-size:20px}
-.name{flex:1;font-size:15px;font-weight:500}
-.score{font-size:16px;font-weight:700;color:#2A1E08}
-.score-sm{font-size:11px;color:#B5A080;font-weight:400;margin-left:4px}
-.empty{font-size:13px;color:#B5A080;text-align:center;padding:20px 0}
-.divider{height:1px;background:rgba(184,149,106,.15);margin:24px 0}
-.legend{display:flex;gap:16px;margin-top:28px;padding:14px 16px;background:rgba(42,30,8,.04);border-radius:10px}
-.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#8A7050}
-.dot-read{width:8px;height:8px;border-radius:50%;background:rgba(61,107,46,.6);flex-shrink:0}
-.dot-vocab{width:8px;height:8px;border-radius:50%;background:rgba(80,120,200,.6);flex-shrink:0}
-.edit-box{display:none;margin-top:24px;padding:16px;background:rgba(255,252,245,.8);border-radius:12px;border:1px solid rgba(184,149,106,.18)}
+:root{
+  --bg:#FBF6EC;--bg2:#F0E2C4;--bg3:#F6EEDC;
+  --ink:#2A1D08;--soft:#8C6B35;--faint:#C2A26C;
+  --hair:#E2D0A4;--accent:#AD7A1E;--accent-deep:#7A5414;--accent-soft:#F5E8C8;
+  --warn:#C2491E;--warn-soft:#FAEEE8;
+  --r-sm:10px;--r-md:16px;--r-lg:22px;--r-pill:999px;
+  --shadow-sm:0 1px 2px rgba(40,24,5,.10);
+  --shadow-md:0 3px 10px rgba(40,24,5,.12);
+  --shadow-lg:0 10px 28px rgba(40,24,5,.16);
+  --fnt:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
+  --fnt-display:Georgia,"Songti SC","STSong",serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+.content{padding:22px 18px calc(48px + env(safe-area-inset-bottom));position:relative;max-width:560px;margin:0 auto}
+
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px}
+.nav-brand{font-family:var(--fnt-display);font-size:16px;font-weight:600;letter-spacing:-.01em;
+  color:var(--ink);text-decoration:none}
+.nav-back{font-size:12px;color:var(--soft);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .2s}
+.nav-back:active{opacity:.6}
+
+.page-title{font-family:var(--fnt-display);font-size:clamp(24px,4vw,30px);font-weight:600;
+  color:var(--ink);letter-spacing:-.01em;margin-bottom:6px}
+.page-sub{font-size:13px;color:var(--soft);margin-bottom:4px}
+.week-label{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--faint);
+  text-transform:uppercase;margin-bottom:28px}
+
+/* ══════ 总榜封面：唯一的强调色重点区域，呼应 study.html 里「大神榜」入口的尊贵感 ══════ */
+.crown-board{position:relative;overflow:hidden;border-radius:var(--r-lg);padding:22px 20px 18px;
+  margin-bottom:30px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-deep) 100%);
+  box-shadow:0 2px 4px rgba(40,20,5,.14),0 10px 22px rgba(122,84,20,.28),0 22px 44px rgba(122,84,20,.16)}
+.crown-board::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.16) 45%,transparent 60%);
+  background-size:220% 100%;background-position:130% 0;animation:shimmer 4.2s ease-in-out infinite;pointer-events:none}
+@keyframes shimmer{0%,55%{background-position:130% 0}100%{background-position:-50% 0}}
+.crown-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;position:relative;z-index:1}
+.crown-hd-l{display:flex;align-items:center;gap:8px}
+.crown-hd-ic{flex:0 0 auto;width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.crown-hd-ic svg{width:16px;height:16px}
+.crown-hd-tt{font-family:var(--fnt-display);font-size:17px;font-weight:600;color:#FFF8E8;letter-spacing:-.01em}
+.crown-hd-r{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:rgba(255,248,232,.7);text-transform:uppercase}
+
+.crow-row{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:var(--r-md);
+  margin-bottom:7px;position:relative;z-index:1;background:rgba(255,255,255,.10)}
+.crow-row:last-child{margin-bottom:0}
+.crow-row.first{background:rgba(255,255,255,.20);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.crow-rank{font-family:var(--fnt-display);font-size:16px;font-weight:600;width:26px;flex-shrink:0;
+  text-align:center;color:rgba(255,248,232,.55)}
+.crow-row.first .crow-rank{color:#FFF8E8;font-size:19px}
+.crow-row.r2 .crow-rank,.crow-row.r3 .crow-rank{color:rgba(255,248,232,.78)}
+.crow-name{flex:1;font-size:14.5px;font-weight:500;color:#FFF8E8;min-width:0}
+.crow-vm{display:block;font-size:10.5px;color:rgba(255,248,232,.55);margin-top:1px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crow-score{font-family:var(--fnt-display);font-size:16px;font-weight:600;color:#FFF8E8;flex-shrink:0}
+.crow-score-u{font-size:10.5px;color:rgba(255,248,232,.55);font-weight:400;margin-left:2px;font-family:var(--fnt)}
+.crow-empty{position:relative;z-index:1;text-align:center;padding:18px 0;font-size:13px;color:rgba(255,248,232,.7)}
+
+/* ══════ 分类标签：单元宽度的 tab 切换（中性色，不靠颜色区分功能） ══════ */
+.cat-tabs{display:flex;gap:6px;overflow-x:auto;padding:2px 0 14px;margin:0 -18px;padding-left:18px;padding-right:18px;
+  scrollbar-width:none}
+.cat-tabs::-webkit-scrollbar{display:none}
+.cat-tab{flex:0 0 auto;padding:9px 16px;border-radius:var(--r-pill);font-size:13px;font-weight:600;
+  background:var(--bg3);color:var(--soft);border:1.5px solid var(--hair);cursor:pointer;
+  transition:transform .12s,background .15s,color .15s,border-color .15s;white-space:nowrap}
+.cat-tab:active{transform:scale(.95)}
+.cat-tab.active{background:var(--accent);color:#FFF8E8;border-color:var(--accent)}
+
+/* ══════ 分类榜列表（米白卡片，跟主页底栏一致的中性风格） ══════ */
+.cat-board{background:var(--bg3);border:1px solid var(--hair);border-radius:var(--r-lg);
+  padding:6px;box-shadow:var(--shadow-sm)}
+.cat-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-md)}
+.cat-row.first{background:var(--accent-soft)}
+.cat-rank{font-family:var(--fnt-display);font-size:15px;font-weight:600;width:24px;flex-shrink:0;
+  text-align:center;color:var(--faint)}
+.cat-row.first .cat-rank{color:var(--accent-deep);font-size:18px}
+.cat-name{flex:1;font-size:14.5px;font-weight:500;color:var(--ink);min-width:0}
+.cat-vm{display:block;font-size:10.5px;color:var(--faint);margin-top:1px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat-score{font-family:var(--fnt-display);font-size:15px;font-weight:600;color:var(--ink);flex-shrink:0}
+.cat-score-u{font-size:10.5px;color:var(--faint);font-weight:400;margin-left:2px;font-family:var(--fnt)}
+.cat-empty{text-align:center;padding:24px 0;font-size:13px;color:var(--faint)}
+
+/* ══════ 胜利宣言编辑 ══════ */
+.edit-trigger{font-size:12.5px;color:var(--soft);cursor:pointer;margin-top:22px;display:inline-flex;
+  align-items:center;gap:5px;transition:color .15s}
+.edit-trigger:active{color:var(--accent-deep)}
+.edit-box{display:none;margin-top:14px;padding:16px;background:var(--bg3);border-radius:var(--r-md);border:1px solid var(--hair)}
 .edit-box.on{display:block}
-.edit-inp{width:100%;padding:12px 14px;background:rgba(255,252,245,.9);border:1.5px solid rgba(42,30,8,.2);border-radius:10px;font-size:15px;font-family:inherit;color:#2A1E08;outline:none;text-align:center;margin-bottom:8px}
-.edit-inp:focus{border-color:#2A1E08}
+.edit-inp{width:100%;padding:12px 14px;background:#FFFCF4;border:1.5px solid var(--hair);
+  border-radius:var(--r-sm);font-size:15px;font-family:inherit;color:var(--ink);outline:none;
+  text-align:center;margin-bottom:10px;transition:border-color .15s}
+.edit-inp:focus{border-color:var(--accent)}
 .edit-btn-row{display:flex;gap:8px}
-.edit-btn{flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;border:none}
-.edit-btn-save{background:#2A1E08;color:#F5EDD8}
-.edit-btn-cancel{background:transparent;color:#9A8060;border:1.5px solid rgba(184,149,106,.25)}
-.edit-trigger{font-size:12px;color:#B5A080;cursor:pointer;text-decoration:underline;margin-top:20px;display:inline-block}
-.edit-trigger:hover{color:#2A1E08}
+.edit-btn{flex:1;padding:11px;border-radius:var(--r-sm);font-size:13px;font-weight:600;cursor:pointer;
+  font-family:inherit;border:none;transition:transform .12s}
+.edit-btn:active{transform:scale(.97)}
+.edit-btn-save{background:var(--accent);color:#FFF8E8}
+.edit-btn-cancel{background:transparent;color:var(--soft);border:1.5px solid var(--hair)}
+
+.foot{margin-top:34px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--faint);text-align:center}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <a class="back" href="study.html">&larr; 返回学习中心</a>
-  <div class="page-title">&#127942; 每周学习大神榜</div>
-  <div class="page-sub">TOP 6 · 每周六晚12点重置</div>
+
+<div class="content">
+  <div class="nav">
+    <a class="nav-brand" href="study.html">John Class</a>
+    <a class="nav-back" href="study.html">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      返回
+    </a>
+  </div>
+
+  <div class="page-title">每周学习大神榜</div>
+  <div class="page-sub">TOP 6 · 每周六晚 12 点重置</div>
   <div class="week-label" id="week-label">本周</div>
 
-  <!-- 总榜 -->
-  <div class="board-section">
-    <div class="board-title"><span class="bt-icon">&#127942;</span>总榜 TOP 6</div>
-    <div id="board-total"><div class="empty">加载中...</div></div>
+  <!-- 总榜：页面封面 -->
+  <div class="crown-board">
+    <div class="crown-hd">
+      <div class="crown-hd-l">
+        <div class="crown-hd-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#FFF8E8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l2-9 4 4 3-7 3 7 4-4 2 9z"/><path d="M5 20h14"/></svg></div>
+        <div class="crown-hd-tt">总榜</div>
+      </div>
+      <div class="crown-hd-r">TOP 6</div>
+    </div>
+    <div id="board-total"><div class="crow-empty">加载中…</div></div>
   </div>
 
-  <div class="divider"></div>
-
-  <!-- 词汇榜 -->
-  <div class="board-section">
-    <div class="board-title"><span class="bt-icon">&#128214;</span>词汇榜 TOP 6</div>
-    <div id="board-vocab"><div class="empty">加载中...</div></div>
+  <!-- 分类榜：tab 切换 -->
+  <div class="cat-tabs" id="catTabs">
+    <div class="cat-tab active" data-cat="vocab">词汇</div>
+    <div class="cat-tab" data-cat="reading">阅读</div>
+    <div class="cat-tab" data-cat="speaking">口语</div>
+    <div class="cat-tab" data-cat="programmer">码神</div>
+    <div class="cat-tab" data-cat="grammar">语法</div>
+    <div class="cat-tab" data-cat="writing">写作</div>
+  </div>
+  <div class="cat-board">
+    <div id="board-vocab"><div class="cat-empty">加载中…</div></div>
+    <div id="board-reading" style="display:none"><div class="cat-empty">加载中…</div></div>
+    <div id="board-speaking" style="display:none"><div class="cat-empty">加载中…</div></div>
+    <div id="board-programmer" style="display:none"><div class="cat-empty">加载中…</div></div>
+    <div id="board-grammar" style="display:none"><div class="cat-empty">加载中…</div></div>
+    <div id="board-writing" style="display:none"><div class="cat-empty">加载中…</div></div>
   </div>
 
-  <div class="divider"></div>
-
-  <!-- 阅读榜 -->
-  <div class="board-section">
-    <div class="board-title"><span class="bt-icon">&#128218;</span>阅读榜 TOP 6</div>
-    <div id="board-reading"><div class="empty">加载中...</div></div>
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- 口语榜 -->
-  <div class="board-section">
-    <div class="board-title"><span class="bt-icon">&#127897;</span>口语榜 TOP 6</div>
-    <div id="board-speaking"><div class="empty">加载中...</div></div>
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- 码神榜 -->
-  <div class="board-section">
-    <div class="board-title"><span class="bt-icon">&#128187;</span>码神榜 TOP 6</div>
-    <div id="board-programmer"><div class="empty">加载中...</div></div>
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- 语法榜 -->
-  <div class="board-section">
-    <div class="board-title"><span class="bt-icon">&#128220;</span>语法榜 TOP 6</div>
-    <div id="board-grammar"><div class="empty">加载中...</div></div>
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- 写作榜 -->
-  <div class="board-section">
-    <div class="board-title"><span class="bt-icon">&#9997;&#65039;</span>写作榜 TOP 6</div>
-    <div id="board-writing"><div class="empty">加载中...</div></div>
-  </div>
-
-  <div class="legend">
-    <div class="legend-item"><div class="dot-read"></div>阅读 上限1000</div>
-    <div class="legend-item"><div class="dot-vocab"></div>词汇</div>
-    <div class="legend-item"><div style="width:8px;height:8px;border-radius:50%;background:rgba(200,140,50,.6);flex-shrink:0"></div>口语</div>
-    <div class="legend-item"><div style="width:8px;height:8px;border-radius:50%;background:rgba(180,80,40,.6);flex-shrink:0"></div>码神</div>
-    <div class="legend-item"><div style="width:8px;height:8px;border-radius:50%;background:rgba(74,124,63,.5);flex-shrink:0"></div>语法</div>
-    <div class="legend-item"><div style="width:8px;height:8px;border-radius:50%;background:rgba(160,60,120,.5);flex-shrink:0"></div>写作</div>
-  </div>
-
-  <span class="edit-trigger" id="editTrigger" style="display:none" onclick="showEdit()">&#9998; 修改我的胜利宣言</span>
+  <span class="edit-trigger" id="editTrigger" style="display:none" onclick="showEdit()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+    修改我的胜利宣言
+  </span>
   <div class="edit-box" id="editBox">
     <input class="edit-inp" id="editInp" placeholder="你想对手下败将说什么？" maxlength="40">
     <div class="edit-btn-row">
@@ -121,6 +170,8 @@ html,body{background:#F5EDD8;color:#2A1E08;font-family:-apple-system,"PingFang S
       <button class="edit-btn edit-btn-save" onclick="saveEdit()">保存宣言</button>
     </div>
   </div>
+
+  <div class="foot">Growing Skills · Shaping Futures</div>
 </div>
 
 <script>
@@ -131,7 +182,7 @@ function getWeekStart(){
   // 周日为每周第一天（周六晚12点一过自动重置）
   var d=new Date();
   d.setDate(d.getDate()-d.getDay());
-  return d.toISOString().split('T')[0];
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
 function formatWeek(s){
   var d=new Date(s),end=new Date(d);
@@ -139,36 +190,61 @@ function formatWeek(s){
   return (d.getMonth()+1)+'月'+d.getDate()+'日 — '+(end.getMonth()+1)+'月'+end.getDate()+'日';
 }
 
-var MEDALS = ['&#129351;','&#129352;','&#129353;']; // gold, silver, bronze
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-function renderBoard(el, rows, scoreKey, isTotal){
+/* 总榜：封面卡片专用渲染，深色底配色 */
+function renderCrownBoard(el, rows){
   if(!rows||rows.length===0){
-    el.innerHTML='<div class="empty">暂无数据，快去练习吧</div>';
+    el.innerHTML='<div class="crow-empty">本周还没有人上榜，快去练习吧</div>';
     return;
   }
-  var top6 = rows.slice(0, 6);
-  el.innerHTML = top6.map(function(r, i){
-    var rank = i<3 ? '<span class="rank r'+(i+1)+'">'+MEDALS[i]+'</span>'
-                   : '<span class="rank">'+(i+1)+'</span>';
-    var sc;
-    if(isTotal){
-      var t = (r.reading_score||0) + (r.vocab_score||0) + (r.survival_score||0) + (r.programmer_score||0) + (r.grammar_score||0) + (r.writing_score||0);
-      sc = t+' <span class="score-sm">分</span>';
-    } else {
-      var v = r[scoreKey]||0;
-      sc = v+' <span class="score-sm">分</span>';
-    }
-    var vm = r.victory_msg ? ' <span style="font-size:10px;color:#B5A080;display:block">'+esc(r.victory_msg)+'</span>' : '';
-    return '<div class="board-row">'+rank+'<span class="name">'+esc(r.user_name)+vm+'</span><span class="score">'+sc+'</span></div>';
+  var top6 = rows.slice(0,6);
+  el.innerHTML = top6.map(function(r,i){
+    var rankCls = i===0?'first':i===1?'r2':i===2?'r3':'';
+    var t = (r.reading_score||0)+(r.vocab_score||0)+(r.survival_score||0)+(r.programmer_score||0)+(r.grammar_score||0)+(r.writing_score||0);
+    var vm = r.victory_msg ? '<span class="crow-vm">'+esc(r.victory_msg)+'</span>' : '';
+    return '<div class="crow-row '+rankCls+'">'+
+      '<div class="crow-rank">'+(i+1)+'</div>'+
+      '<div class="crow-name">'+esc(r.user_name)+vm+'</div>'+
+      '<div class="crow-score">'+t+'<span class="crow-score-u">分</span></div>'+
+      '</div>';
   }).join('');
 }
 
-function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+/* 分类榜：中性卡片渲染 */
+function renderCatBoard(el, rows, scoreKey){
+  if(!rows||rows.length===0){
+    el.innerHTML='<div class="cat-empty">本周还没有人上榜</div>';
+    return;
+  }
+  var top6 = rows.slice(0,6);
+  el.innerHTML = top6.map(function(r,i){
+    var v = r[scoreKey]||0;
+    var vm = r.victory_msg ? '<span class="cat-vm">'+esc(r.victory_msg)+'</span>' : '';
+    return '<div class="cat-row '+(i===0?'first':'')+'">'+
+      '<div class="cat-rank">'+(i+1)+'</div>'+
+      '<div class="cat-name">'+esc(r.user_name)+vm+'</div>'+
+      '<div class="cat-score">'+v+'<span class="cat-score-u">分</span></div>'+
+      '</div>';
+  }).join('');
+}
+
+// 分类 tab 切换
+document.getElementById('catTabs').addEventListener('click', function(e){
+  var tab = e.target.closest('.cat-tab');
+  if(!tab) return;
+  document.querySelectorAll('.cat-tab').forEach(function(t){t.classList.remove('active');});
+  tab.classList.add('active');
+  var cat = tab.dataset.cat;
+  ['vocab','reading','speaking','programmer','grammar','writing'].forEach(function(c){
+    document.getElementById('board-'+c).style.display = (c===cat) ? '' : 'none';
+  });
+});
 
 // 胜利宣言编辑
 var myName = localStorage.getItem('jc_username')||'';
 if(myName){
-  document.getElementById('editTrigger').style.display = 'inline-block';
+  document.getElementById('editTrigger').style.display = 'inline-flex';
 }
 function showEdit(){
   document.getElementById('editBox').classList.add('on');
@@ -178,12 +254,11 @@ function showEdit(){
 }
 function hideEdit(){
   document.getElementById('editBox').classList.remove('on');
-  document.getElementById('editTrigger').style.display = 'inline-block';
+  document.getElementById('editTrigger').style.display = 'inline-flex';
 }
 async function saveEdit(){
   var msg = document.getElementById('editInp').value.trim();
   localStorage.setItem('jc_victory_msg', msg);
-  // 同步到 Supabase
   if(myName){
     var ws = getWeekStart();
     try{
@@ -210,59 +285,54 @@ async function load(){
   document.getElementById('week-label').textContent = '本周（'+formatWeek(ws)+'）';
 
   try{
-    // Fetch ALL entries for this week
     var r = await fetch(SB_URL+'/rest/v1/weekly_scores?week_start=eq.'+ws+'&select=user_name,reading_score,vocab_score,survival_score,programmer_score,grammar_score,writing_score,victory_msg&limit=100',
       {headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}});
     if(!r.ok) throw new Error('HTTP '+r.status);
     var data = await r.json();
 
     if(!data||data.length===0){
-      ['board-total','board-vocab','board-reading','board-speaking','board-programmer','board-grammar','board-writing'].forEach(function(id){
-        document.getElementById(id).innerHTML='<div class="empty">本周还没有人上榜！快去练习吧 &#128170;</div>';
+      document.getElementById('board-total').innerHTML='<div class="crow-empty">本周还没有人上榜，快去练习吧</div>';
+      ['vocab','reading','speaking','programmer','grammar','writing'].forEach(function(c){
+        document.getElementById('board-'+c).innerHTML='<div class="cat-empty">本周还没有人上榜</div>';
       });
       return;
     }
 
-    // Total board: sort by all scores desc
     var byTotal = data.slice().sort(function(a,b){
-      return ((b.reading_score||0)+(b.vocab_score||0)+(b.survival_score||0)+(b.programmer_score||0)+(b.grammar_score||0)+(b.writing_score||0)) - ((a.reading_score||0)+(a.vocab_score||0)+(a.survival_score||0)+(a.programmer_score||0)+(a.grammar_score||0)+(a.writing_score||0));
+      return ((b.reading_score||0)+(b.vocab_score||0)+(b.survival_score||0)+(b.programmer_score||0)+(b.grammar_score||0)+(b.writing_score||0)) -
+             ((a.reading_score||0)+(a.vocab_score||0)+(a.survival_score||0)+(a.programmer_score||0)+(a.grammar_score||0)+(a.writing_score||0));
     });
-    renderBoard(document.getElementById('board-total'), byTotal, null, true);
+    renderCrownBoard(document.getElementById('board-total'), byTotal);
 
-    // Vocab board: sort by vocab_score desc, only those with vocab>0
     var byVocab = data.slice().filter(function(r){return (r.vocab_score||0)>0;})
                   .sort(function(a,b){return (b.vocab_score||0)-(a.vocab_score||0);});
-    renderBoard(document.getElementById('board-vocab'), byVocab, 'vocab_score', false);
+    renderCatBoard(document.getElementById('board-vocab'), byVocab, 'vocab_score');
 
-    // Reading board: sort by reading_score desc, only those with reading>0
     var byReading = data.slice().filter(function(r){return (r.reading_score||0)>0;})
                      .sort(function(a,b){return (b.reading_score||0)-(a.reading_score||0);});
-    renderBoard(document.getElementById('board-reading'), byReading, 'reading_score', false);
+    renderCatBoard(document.getElementById('board-reading'), byReading, 'reading_score');
 
-    // Speaking board: survival_score desc
     var bySpeaking = data.slice().filter(function(r){return (r.survival_score||0)>0;})
                        .sort(function(a,b){return (b.survival_score||0)-(a.survival_score||0);});
-    renderBoard(document.getElementById('board-speaking'), bySpeaking, 'survival_score', false);
+    renderCatBoard(document.getElementById('board-speaking'), bySpeaking, 'survival_score');
 
-    // Programmer board: programmer_score desc
     var byProgrammer = data.slice().filter(function(r){return (r.programmer_score||0)>0;})
                           .sort(function(a,b){return (b.programmer_score||0)-(a.programmer_score||0);});
-    renderBoard(document.getElementById('board-programmer'), byProgrammer, 'programmer_score', false);
+    renderCatBoard(document.getElementById('board-programmer'), byProgrammer, 'programmer_score');
 
-    // Grammar board: grammar_score desc
     var byGrammar = data.slice().filter(function(r){return (r.grammar_score||0)>0;})
                        .sort(function(a,b){return (b.grammar_score||0)-(a.grammar_score||0);});
-    renderBoard(document.getElementById('board-grammar'), byGrammar, 'grammar_score', false);
+    renderCatBoard(document.getElementById('board-grammar'), byGrammar, 'grammar_score');
 
-    // Writing board: writing_score desc
     var byWriting = data.slice().filter(function(r){return (r.writing_score||0)>0;})
                        .sort(function(a,b){return (b.writing_score||0)-(a.writing_score||0);});
-    renderBoard(document.getElementById('board-writing'), byWriting, 'writing_score', false);
+    renderCatBoard(document.getElementById('board-writing'), byWriting, 'writing_score');
 
   }catch(e){
     console.error('weekly_stars 加载失败:', e);
-    ['board-total','board-vocab','board-reading','board-speaking','board-programmer','board-grammar','board-writing'].forEach(function(id){
-      document.getElementById(id).innerHTML='<div class="empty">加载失败，请检查网络</div>';
+    document.getElementById('board-total').innerHTML='<div class="crow-empty">加载失败，请检查网络</div>';
+    ['vocab','reading','speaking','programmer','grammar','writing'].forEach(function(c){
+      document.getElementById('board-'+c).innerHTML='<div class="cat-empty">加载失败，请检查网络</div>';
     });
   }
 }
