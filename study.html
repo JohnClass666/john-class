@@ -91,6 +91,9 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 #overlay{position:fixed;inset:0;background:var(--bg);z-index:999;opacity:0;pointer-events:none;transition:opacity .26s ease}
 #overlay.show{opacity:1;pointer-events:all}
 
+html[data-incoming-slide="1"] .page-wrap{transform:translateY(100%)}
+.page-wrap.enter{transition:transform .28s cubic-bezier(.32,.72,0,1);transform:translateY(0)}
+
 /* ══════ 桌面端：恢复左右分栏，照片固定在左侧 ══════ */
 @media (min-width:680px){
   .photo{position:fixed;top:0;left:0;width:42%;height:100vh;min-height:0;max-height:none}
@@ -108,11 +111,24 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 </head>
 <body>
 
+<script>
+(function(){
+  try{
+    if(sessionStorage.getItem('jc_transition')==='slide-up'){
+      sessionStorage.removeItem('jc_transition');
+      document.documentElement.setAttribute('data-incoming-slide','1');
+    }
+  }catch(e){}
+})();
+</script>
+
 <div id="overlay"></div>
 
+<div class="page-wrap" id="pageWrap">
 <div class="photo">
   <img src="bg.png" alt="John" onerror="this.style.display='none';this.parentElement.innerHTML+='&lt;div class=&quot;photo-ph&quot;&gt;替换为 bg.png&lt;/div&gt;'">
 </div>
+
 
 <div class="content">
   <div class="nav">
@@ -140,12 +156,9 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 
   <div class="foot">Growing Skills · Shaping Futures <span id="nameTag" onclick="changeName()"></span></div>
 </div>
+</div>
 
 <script>
-function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
-function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
-function lsRemove(k){try{localStorage.removeItem(k);}catch(e){}}
-
 const TOOLS = [
   { name:'单词', desc:'高效背词，大神榜，趣味游戏', href:'vocab.html',
     ic:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>' },
@@ -172,12 +185,12 @@ document.getElementById('toolGrid').innerHTML = TOOLS.map(t=>`
   </a>`).join('');
 
 (function(){
-  const n = lsGet('jc_username')||'';
+  const n = localStorage.getItem('jc_username')||'';
   if(n) document.getElementById('nameTag').textContent = '当前：'+n+' · 切换';
 })();
 function changeName(){
   if(confirm('要切换名字吗？进度和分数不会丢失。')){
-    lsRemove('jc_username');
+    localStorage.removeItem('jc_username');
     window.location.href='start.html';
   }
 }
@@ -187,6 +200,26 @@ function go(e, href){
   ov.classList.add('show');
   setTimeout(()=>{ window.location.href = href; }, 260);
 }
+
+// 入场动画：仅当从 index 跳转过来（带 sessionStorage 标记）时，
+// 整体从屏幕底部滑入，无缝接续 index 的上滑出场；其他入口（后退/直接访问）不播放
+(function(){
+  if(document.documentElement.getAttribute('data-incoming-slide')!=='1') return;
+  const wrap = document.getElementById('pageWrap');
+  if(!wrap) return;
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      wrap.classList.add('enter');
+    });
+  });
+  wrap.addEventListener('transitionend', function onEnd(e){
+    if(e.propertyName==='transform'){
+      wrap.classList.remove('enter');
+      document.documentElement.removeAttribute('data-incoming-slide');
+      wrap.removeEventListener('transitionend', onEnd);
+    }
+  });
+})();
 </script>
 </body>
 </html>
