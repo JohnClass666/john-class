@@ -2,256 +2,103 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>John Class</title>
-<!-- Google Fonts 已移除：大陆被墙导致加载阻塞，改用系统衬线字体 -->
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-height: 100%; overflow: hidden;
-background: #F5EDD8; -webkit-font-smoothing: antialiased;
+:root{
+  --bg:#FBF6EC;--bg2:#F0E2C4;--bg3:#F6EEDC;
+  --ink:#2A1D08;--soft:#8C6B35;--faint:#C2A26C;
+  --hair:#E2D0A4;--accent:#AD7A1E;--accent-deep:#7A5414;--accent-soft:#F5E8C8;
+  --r-sm:10px;--r-md:16px;--r-lg:22px;
+  --fnt:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
+  --fnt-display:Georgia,"Songti SC","STSong",serif;
 }
-.welcome {
-position: fixed; inset: 0; z-index: 50;
-background: #F5EDD8;
-display: flex; align-items: center; justify-content: center;
-animation: wFadeIn .6s ease both;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);-webkit-font-smoothing:antialiased}
+
+.page{display:flex;height:100vh;width:100vw;opacity:0;transition:opacity .5s ease}
+.page.show{opacity:1}
+
+.left{flex:0 0 58%;height:100vh;position:relative;overflow:hidden;background:var(--bg2)}
+.left img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.left::after{content:'';position:absolute;top:0;right:0;width:120px;height:100%;
+  background:linear-gradient(to right,transparent,var(--bg))}
+.left-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,var(--accent-soft),var(--accent));color:#FFF8E8;
+  font-family:var(--fnt-display);font-size:16px;letter-spacing:.04em}
+
+.right{flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:0 56px 0 48px;background:var(--bg);position:relative}
+
+.brand{position:absolute;top:42px;left:48px;font-family:var(--fnt-display);
+  font-size:16px;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+.greeting{position:absolute;top:44px;right:56px;font-size:13px;color:var(--soft);letter-spacing:.02em}
+
+.inner{opacity:0;animation:fadeIn .8s cubic-bezier(.22,1,.36,1) .15s forwards}
+.divider{width:32px;height:2px;background:var(--accent);margin-bottom:34px;border-radius:2px}
+
+.entry{display:block;text-decoration:none;margin-bottom:34px;cursor:pointer;position:relative}
+.entry:last-of-type{margin-bottom:0}
+.entry-title{font-family:var(--fnt-display);font-size:clamp(30px,3.6vw,44px);font-weight:600;
+  color:var(--ink);line-height:1.15;letter-spacing:-.01em;transition:color .2s,transform .2s;display:inline-block}
+.entry:active .entry-title{color:var(--accent-deep);transform:translateX(4px)}
+.entry-sub{font-size:clamp(13px,1.5vw,15px);color:var(--soft);margin-top:5px;letter-spacing:.01em}
+.entry::before{content:'';position:absolute;left:-18px;top:50%;transform:translateY(-50%) scaleX(0);
+  transform-origin:left;width:9px;height:2px;background:var(--accent);border-radius:1px;transition:transform .2s}
+.entry:active::before{transform:translateY(-50%) scaleX(1)}
+
+.foot{position:absolute;bottom:40px;left:48px;font-size:12px;color:var(--faint);letter-spacing:.04em}
+.foot span{text-decoration:underline;text-decoration-color:rgba(194,162,108,.5);cursor:pointer;font-size:11px}
+
+.overlay{position:fixed;inset:0;background:var(--bg);z-index:999;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.overlay.show{opacity:1;pointer-events:all}
+
+/* ── 欢迎彩花瞬间（只在「亲学生」首次回归时播放一次） ── */
+.splash{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;background:var(--bg);animation:wFadeIn .3s ease both}
+.splash.out{animation:wFadeOut .6s cubic-bezier(.4,0,1,1) forwards;pointer-events:none}
+@keyframes wFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes wFadeOut{from{opacity:1}to{opacity:0}}
+.splash-mark{width:64px;height:64px;border-radius:50%;margin-bottom:22px;
+  background:linear-gradient(160deg,var(--accent-soft),var(--accent));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 4px rgba(40,20,5,.1),0 10px 24px rgba(122,84,20,.26);
+  animation:splashPop .5s cubic-bezier(.22,1,.36,1) .1s both}
+.splash-mark svg{width:30px;height:30px;stroke:#FFF8E8}
+.splash-text{font-family:var(--fnt-display);font-size:clamp(22px,4vw,30px);font-weight:600;
+  color:var(--ink);text-align:center;line-height:1.5;animation:splashPop .5s cubic-bezier(.22,1,.36,1) .2s both}
+.splash-sub{font-size:14px;color:var(--soft);margin-top:10px;text-align:center;
+  animation:splashPop .5s cubic-bezier(.22,1,.36,1) .3s both}
+@keyframes splashPop{from{opacity:0;transform:scale(.85) translateY(10px)}to{opacity:1;transform:none}}
+.splash-stars{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.ss{position:absolute;animation:ssFly 1.2s ease-out forwards}
+.ss svg{width:18px;height:18px}
+@keyframes ssFly{
+  0%{opacity:0;transform:translate(0,0) scale(0) rotate(0deg)}
+  30%{opacity:1}
+  100%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(1.15) rotate(var(--sr))}
 }
-.welcome.hide {
-animation: wFadeOut .5s cubic-bezier(.4,0,1,1) forwards;
-pointer-events: none;
-}
-@keyframes wFadeIn { from { opacity:0 } to { opacity:1 } }
-@keyframes wFadeOut { from { opacity:1 } to { opacity:0 } }
-.wc-box {
-width: min(420px, 88vw);
-text-align: center;
-animation: wBoxIn .7s cubic-bezier(.22,1,.36,1) .15s both;
-}
-@keyframes wBoxIn {
-from { opacity:0; transform: translateY(24px) }
-to { opacity:1; transform: none }
-}
-.wc-logo {
-font-family: Georgia, "PingFang SC", serif;
-font-size: 13px; font-weight: 400;
-letter-spacing: .18em; text-transform: uppercase;
-color: rgba(160,120,70,.5);
-margin-bottom: 48px;
-}
-.wc-question {
-font-family: Georgia, "PingFang SC", serif;
-font-size: clamp(22px, 4vw, 30px);
-font-weight: 700; color: #2A1E08;
-line-height: 1.5; letter-spacing: .01em;
-margin-bottom: 8px;
-}
-.wc-sub {
-font-family: Georgia, "PingFang SC", serif;
-font-size: 15px; color: rgba(140,100,50,.6);
-margin-bottom: 36px; letter-spacing: .02em;
-}
-.wc-input-wrap { position: relative; margin-bottom: 20px; }
-.wc-input {
-width: 100%; padding: 16px 20px;
-font-family: Georgia, "PingFang SC", serif;
-font-size: 17px; color: #2A1E08;
-background: rgba(255,255,255,.7);
-border: 1.5px solid rgba(184,149,106,.35);
-border-radius: 14px; outline: none;
-transition: border-color .2s, box-shadow .2s;
-text-align: center; letter-spacing: .04em;
-}
-.wc-input::placeholder { color: rgba(160,120,70,.4); }
-.wc-input:focus {
-border-color: #B8956A;
-box-shadow: 0 0 0 3px rgba(184,149,106,.12);
-}
-.wc-btn {
-width: 100%; padding: 15px;
-font-family: Georgia, "PingFang SC", serif;
-font-size: 16px; font-weight: 700;
-color: #F5EDD8; background: #2A1E08;
-border: none; border-radius: 14px;
-cursor: pointer; letter-spacing: .06em;
-transition: background .2s, transform .15s;
-}
-.wc-btn:hover { background: #3D2E14; }
-.wc-btn:active { transform: scale(.97); }
-.wc-btn:disabled { opacity: .4; cursor: default; transform: none; }
-.wc-hint {
-margin-top: 14px;
-font-size: 12px; color: rgba(160,120,70,.45);
-font-family: Georgia, "PingFang SC", serif;
-letter-spacing: .04em;
-}
-.welcome-splash {
-position: fixed; inset: 0; z-index: 60;
-display: flex; flex-direction: column;
-align-items: center; justify-content: center;
-background: #F5EDD8;
-animation: wFadeIn .3s ease both;
-}
-.welcome-splash.out {
-animation: wFadeOut .6s cubic-bezier(.4,0,1,1) forwards;
-pointer-events: none;
-}
-.splash-emoji { font-size: 64px; margin-bottom: 24px; animation: splashPop .5s cubic-bezier(.22,1,.36,1) .1s both; }
-.splash-text {
-font-family: Georgia, "PingFang SC", serif;
-font-size: clamp(22px, 4vw, 32px); font-weight: 700;
-color: #2A1E08; text-align: center; line-height: 1.5;
-animation: splashPop .5s cubic-bezier(.22,1,.36,1) .2s both;
-}
-.splash-sub {
-font-family: Georgia, "PingFang SC", serif;
-font-size: 15px; color: rgba(140,100,50,.6);
-margin-top: 10px; text-align: center;
-animation: splashPop .5s cubic-bezier(.22,1,.36,1) .3s both;
-}
-.splash-stars { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-.ss { position: absolute; font-size: 20px; animation: ssFly 1.2s ease-out forwards; }
-@keyframes ssFly {
-0% { opacity: 0; transform: translate(0,0) scale(0) rotate(0deg); }
-30% { opacity: 1; }
-100% { opacity: 0; transform: translate(var(--sx),var(--sy)) scale(1.2) rotate(var(--sr)); }
-}
-@keyframes splashPop {
-from { opacity: 0; transform: scale(.85) translateY(10px); }
-to { opacity: 1; transform: none; }
-}
-@keyframes shake {
-0%,100% { transform: translateX(0) }
-20% { transform: translateX(-8px) }
-40% { transform: translateX(8px) }
-60% { transform: translateX(-5px) }
-80% { transform: translateX(5px) }
-}
-.wc-input.shake { animation: shake .4s ease; border-color: #C0392B; }
-.page {
-display: flex; height: 100vh; width: 100vw;
-opacity: 0; transition: opacity .5s ease;
-}
-.page.show { opacity: 1; }
-.left {
-flex: 0 0 58%; height: 100vh;
-position: relative; overflow: hidden;
-}
-.left img {
-width: 100%; height: 100%;
-object-fit: cover; object-position: center top; display: block;
-}
-.left::after {
-content: ''; position: absolute; top: 0; right: 0;
-width: 100px; height: 100%;
-background: linear-gradient(to right, transparent, #F5EDD8);
-}
-.right {
-flex: 1; display: flex; flex-direction: column;
-justify-content: center;
-padding: 0 52px 0 20px;
-background: #F5EDD8; position: relative;
-}
-.brand {
-position: absolute; top: 42px; left: 20px;
-font-family: Georgia, "PingFang SC", serif;
-font-size: 15px; font-weight: 400;
-letter-spacing: .06em; color: rgba(160,120,70,.5);
-}
-.greeting {
-position: absolute; top: 42px; right: 52px;
-font-family: Georgia, "PingFang SC", serif;
-font-size: 13px; color: rgba(160,120,70,.55);
-letter-spacing: .04em;
-}
-.inner { animation: fadeIn .8s cubic-bezier(.22,1,.36,1) .1s both; }
-.divider {
-width: 32px; height: 1px;
-background: rgba(160,120,70,.3); margin-bottom: 32px;
-}
-.entry {
-display: block; text-decoration: none;
-margin-bottom: 36px; cursor: pointer; position: relative;
-}
-.entry:last-of-type { margin-bottom: 0; }
-.entry-title {
-font-family: Georgia, "PingFang SC", serif;
-font-size: clamp(32px, 3.5vw, 46px);
-font-weight: 700; color: #2A1E08;
-line-height: 1.1; letter-spacing: .01em;
-transition: color .2s, transform .2s; display: inline-block;
-}
-.entry:hover .entry-title { color: #8A6030; transform: translateX(6px); }
-.entry-sub {
-font-family: Georgia, "PingFang SC", serif;
-font-size: clamp(14px, 1.6vw, 18px); font-weight: 400;
-color: rgba(140,100,50,.55); margin-top: 4px;
-letter-spacing: .02em; transition: color .2s;
-}
-.entry:hover .entry-sub { color: rgba(140,100,50,.8); }
-.entry::before {
-content: ''; position: absolute; left: -16px; top: 50%;
-transform: translateY(-50%) scaleX(0); transform-origin: left;
-width: 8px; height: 2px; background: #8A6030;
-border-radius: 1px; transition: transform .2s;
-}
-.entry:hover::before { transform: translateY(-50%) scaleX(1); }
-.foot {
-position: absolute; bottom: 40px; left: 20px;
-font-family: Georgia, "PingFang SC", serif;
-font-size: 13px; color: rgba(160,120,70,.35); letter-spacing: .06em;
-}
-.overlay {
-position: fixed; inset: 0; background: #F5EDD8; z-index: 999;
-opacity: 0; pointer-events: none; transition: opacity .3s ease;
-}
-.overlay.show { opacity: 1; pointer-events: all; }
-@keyframes fadeIn {
-from { opacity: 0; transform: translateX(20px); }
-to { opacity: 1; transform: none; }
-}
-@media (max-width: 640px) {
-html, body { overflow-y: auto; }
-.page { flex-direction: column; height: auto; min-height: 100vh; }
-.left { flex: none; width: 100%; height: 100vw; max-height: 480px; }
-.left::after {
-top: auto; bottom: 0; left: 0; right: 0;
-width: 100%; height: 80px;
-background: linear-gradient(to bottom, transparent, #F5EDD8);
-}
-.right { flex: none; padding: 32px 36px 64px; }
-.brand { position: static; margin-bottom: 8px; display: block; }
-.greeting { position: static; display: block; margin-bottom: 24px; }
-.foot { position: static; margin-top: 40px; display: block; }
-.entry::before { display: none; }
-.wc-question { font-size: 22px; }
+
+@media (max-width:640px){
+  html,body{overflow-y:auto}
+  .page{flex-direction:column;height:auto;min-height:100vh}
+  .left{flex:none;width:100%;height:100vw;max-height:420px}
+  .left::after{top:auto;bottom:0;left:0;right:0;width:100%;height:90px;
+    background:linear-gradient(to bottom,transparent,var(--bg))}
+  .right{flex:none;padding:30px 28px 56px}
+  .brand{position:static;margin-bottom:6px;display:block}
+  .greeting{position:static;display:block;margin-bottom:22px;text-align:left;right:auto}
+  .foot{position:static;margin-top:38px;display:block}
+  .entry::before{display:none}
 }
 </style>
 </head>
 <body>
 <div class="overlay" id="ov"></div>
 
-<!-- 欢迎屏 -->
-<div class="welcome" id="welcome">
-  <div class="wc-box">
-    <div class="wc-logo">John Class</div>
-    <div class="wc-question">你是 John 的亲学生吗？</div>
-    <div class="wc-sub">你的名字是什么？</div>
-    <div class="wc-input-wrap">
-      <input class="wc-input" id="nameInput" type="text"
-        placeholder="输入你的名字"
-        maxlength="20"
-        onkeydown="if(event.key==='Enter')submitName()">
-    </div>
-    <button class="wc-btn" id="enterBtn" onclick="submitName()">进入 →</button>
-    <div class="wc-hint">你的名字只保存在这台设备上</div>
-  </div>
-</div>
-
-<!-- 主页 -->
 <div class="page" id="mainPage">
   <div class="left">
-    <img src="bg.png" alt="John Class">
+    <img src="bg.png" alt="John Class" onerror="this.style.display='none';this.parentElement.innerHTML+='&lt;div class=&quot;left-ph&quot;&gt;替换为 bg.png&lt;/div&gt;'">
   </div>
   <div class="right">
     <div class="brand">John Class</div>
@@ -267,22 +114,25 @@ background: linear-gradient(to bottom, transparent, #F5EDD8);
         <div class="entry-sub">提问 · 炫耀 · 反馈 · 了解</div>
       </a>
     </div>
-    <div class="foot">Changsha · 2026　<span onclick="changeName()" style="text-decoration:underline;cursor:pointer;font-size:11px;color:rgba(160,120,70,.5)">切换名字</span></div>
-<a href="index-3d.html" onclick="localStorage.setItem('jc_home_mode','3d')" style="position:fixed;right:18px;bottom:18px;z-index:11;font-size:11px;color:#9A8060;text-decoration:none;background:rgba(255,252,245,.7);padding:5px 10px;border-radius:10px;border:1px solid rgba(184,149,106,.25)">🏰 切换3D书房</a>
+    <div class="foot">Changsha · 2026　<span onclick="changeName()">切换名字</span></div>
   </div>
 </div>
 
 <script>
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function lsRemove(k){try{localStorage.removeItem(k);}catch(e){}}
+
 const NAME_KEY = 'jc_username';
 
 function init() {
-  var saved = localStorage.getItem(NAME_KEY);
-  if(!saved) saved = localStorage.getItem('jc_student_name');
-  if(!saved) saved = localStorage.getItem('jc_reading_name');
+  var saved = lsGet(NAME_KEY);
+  if(!saved) saved = lsGet('jc_student_name');
+  if(!saved) saved = lsGet('jc_reading_name');
   if (saved && saved!=='同学') {
-    localStorage.setItem(NAME_KEY, saved);
-    var showWelcome = localStorage.getItem('jc_show_welcome');
-    if(showWelcome === '1'){ localStorage.removeItem('jc_show_welcome'); }
+    lsSet(NAME_KEY, saved);
+    var showWelcome = lsGet('jc_show_welcome');
+    if(showWelcome === '1'){ lsRemove('jc_show_welcome'); }
     showMain(saved, showWelcome === '1');
   } else {
     // 没名字 → 跳到门卫页统一走三问流程
@@ -328,30 +178,15 @@ function isStudent(input) {
   );
 }
 
-function submitName() {
-  const input = document.getElementById('nameInput');
-  const name = input.value.trim();
-  if (!name) {
-    input.classList.remove('shake');
-    void input.offsetWidth;
-    input.classList.add('shake');
-    setTimeout(() => input.classList.remove('shake'), 400);
-    input.focus();
-    return;
-  }
-  localStorage.setItem(NAME_KEY, name);
-  showMain(name, true);
-}
-
 // 后台同步检测：换设备时从 Supabase 恢复进度
 var _syncChecked = false;
 function backgroundSync(name){
   if(_syncChecked) return; _syncChecked = true;
-  if(localStorage.getItem('jc_synced')===name) return;
-  var hasLocal = localStorage.getItem('grammar_dual_mode') || localStorage.getItem('jc_daily_state');
-  if(hasLocal){ localStorage.setItem('jc_synced', name); return; }
+  if(lsGet('jc_synced')===name) return;
+  var hasLocal = lsGet('grammar_dual_mode') || lsGet('jc_daily_state');
+  if(hasLocal){ lsSet('jc_synced', name); return; }
   var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
-  var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
+  var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
   var sbH={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
   setTimeout(async function(){
     try{
@@ -370,16 +205,16 @@ function backgroundSync(name){
       if(hasData && confirm(name+'，检测到你在其他设备上有学习记录。\n\n要同步到这个设备吗？')){
         if(data[1].length>0){
           var rp = data[1][0];
-          if(rp.saved_ids && rp.saved_ids.length>0) localStorage.setItem('jc_reading_saved', JSON.stringify(rp.saved_ids));
-          if(rp.total_completed) localStorage.setItem('jc_reading_total', rp.total_completed);
+          if(rp.saved_ids && rp.saved_ids.length>0) lsSet('jc_reading_saved', JSON.stringify(rp.saved_ids));
+          if(rp.total_completed) lsSet('jc_reading_total', rp.total_completed);
         }
         if(data[2].length>0 && data[2][0].progress_data){
-          localStorage.setItem('jc_vocab_progress_sync', JSON.stringify(data[2][0].progress_data));
+          lsSet('jc_vocab_progress_sync', JSON.stringify(data[2][0].progress_data));
         }
-        localStorage.setItem('jc_synced', name);
+        lsSet('jc_synced', name);
         alert('同步完成！欢迎回来 🎉');
       }
-      localStorage.setItem('jc_synced', name);
+      lsSet('jc_synced', name);
     }catch(e){}
   }, 500);
 }
@@ -391,59 +226,62 @@ function showMain(name, animate) {
   backgroundSync(name);
   if (animate) {
     showSplash(name, matched, () => {
-      document.getElementById('welcome').classList.add('hide');
-      setTimeout(() => {
-        document.getElementById('welcome').style.display = 'none';
-        document.getElementById('mainPage').classList.add('show');
-      }, 500);
+      document.getElementById('mainPage').classList.add('show');
     });
   } else {
-    document.getElementById('welcome').style.display = 'none';
     document.getElementById('mainPage').classList.add('show');
   }
 }
 
+// 简单线性图标星花，配色统一用强调色系，不再是随机多色 emoji
+function sparkleIcon(){
+  const shapes = [
+    '<path d="M12 2l2.4 7.2H22l-6 4.4 2.4 7.2L12 16.4 5.6 20.8 8 13.6 2 9.2h7.6z"/>',
+    '<path d="M12 3v18M3 12h18"/>',
+    '<circle cx="12" cy="12" r="3"/>',
+  ];
+  return shapes[Math.floor(Math.random()*shapes.length)];
+}
+
 function showSplash(name, isKnown, then) {
   const splash = document.createElement('div');
-  splash.className = 'welcome-splash';
+  splash.className = 'splash';
   if (isKnown) {
-    const starsHtml = Array.from({length: 18}, (_, i) => {
-      const angle = (i / 18) * 360;
+    const starsHtml = Array.from({length: 14}, (_, i) => {
+      const angle = (i / 14) * 360;
       const dist = 120 + Math.random() * 100;
       const sx = Math.cos(angle * Math.PI/180) * dist + 'px';
       const sy = Math.sin(angle * Math.PI/180) * dist + 'px';
       const sr = (Math.random() * 360) + 'deg';
       const delay = (Math.random() * 0.4).toFixed(2);
-      const emojis = ['⭐','✨','🌟','💫','🎉','🎊'];
-      const e = emojis[Math.floor(Math.random()*emojis.length)];
-      return `<div class="ss" style="left:50%;top:50%;--sx:${sx};--sy:${sy};--sr:${sr};animation-delay:${delay}s">${e}</div>`;
+      return `<div class="ss" style="left:50%;top:50%;--sx:${sx};--sy:${sy};--sr:${sr};animation-delay:${delay}s">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${sparkleIcon()}</svg>
+      </div>`;
     }).join('');
     splash.innerHTML = `
       <div class="splash-stars">${starsHtml}</div>
-      <div class="splash-emoji">🎉</div>
+      <div class="splash-mark"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
       <div class="splash-text">哇塞，是我的亲学生<br>${name}！</div>
       <div class="splash-sub">欢迎回来，继续加油 💪</div>`;
   } else {
     splash.innerHTML = `
-      <div class="splash-emoji">👋</div>
+      <div class="splash-mark"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12h8M12 8v8"/><circle cx="12" cy="12" r="9"/></svg></div>
       <div class="splash-text">欢迎你，${name}</div>
       <div class="splash-sub">同样欢迎你来学习和分享</div>`;
   }
   document.body.appendChild(splash);
   setTimeout(() => {
     splash.classList.add('out');
-    document.getElementById('welcome').classList.add('hide');
     setTimeout(() => {
       splash.remove();
-      document.getElementById('welcome').style.display = 'none';
-      document.getElementById('mainPage').classList.add('show');
+      then();
     }, 600);
   }, 1800);
 }
 
 function changeName(){
   if(confirm('要切换成另一个名字吗？\n\n进度和分数不会丢失——换设备输入同一个名字就能找回来。')){
-    localStorage.removeItem('jc_username');
+    lsRemove('jc_username');
     window.location.href='start.html';
   }
 }
