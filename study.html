@@ -206,7 +206,18 @@ function go(e, href){
 (function(){
   if(document.documentElement.getAttribute('data-incoming-slide')!=='1') return;
   const wrap = document.getElementById('pageWrap');
-  if(!wrap) return;
+  if(!wrap){
+    document.documentElement.removeAttribute('data-incoming-slide');
+    return;
+  }
+  var cleaned = false;
+  function cleanup(){
+    if(cleaned) return;
+    cleaned = true;
+    // 注意：不移除 .enter —— 它代表的 translateY(0) 本身就是正确终态。
+    // 只清掉一次性标记属性，避免下次访问（无标记）时误触发滑出初始态。
+    document.documentElement.removeAttribute('data-incoming-slide');
+  }
   requestAnimationFrame(()=>{
     requestAnimationFrame(()=>{
       wrap.classList.add('enter');
@@ -214,11 +225,13 @@ function go(e, href){
   });
   wrap.addEventListener('transitionend', function onEnd(e){
     if(e.propertyName==='transform'){
-      wrap.classList.remove('enter');
-      document.documentElement.removeAttribute('data-incoming-slide');
+      cleanup();
       wrap.removeEventListener('transitionend', onEnd);
     }
   });
+  // 兜底：万一 transitionend 因为任何原因（动画被打断、图片加载导致布局跳动、
+  // 低端设备丢帧等）没有触发，420ms 后强制清理标记，确保页面绝不会卡在屏幕外白屏。
+  setTimeout(cleanup, 420);
 })();
 </script>
 </body>
