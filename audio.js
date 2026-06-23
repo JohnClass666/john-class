@@ -25,8 +25,8 @@
 
   /* ── 背景音乐 ── */
   let bgm = null;
-  let muted = localStorage.getItem("jc_muted") === "1";
   let started = false;
+  let muted = localStorage.getItem("jc_muted") === "1";
 
   function initBGM(){
     if(bgm) return;
@@ -57,32 +57,24 @@
   function toggleMute(){
     muted = !muted;
     if(bgm) bgm.volume = muted ? 0 : BGM_VOL;
-    const btn = document.getElementById("jc-mute-btn");
-    if(btn) btn.textContent = muted ? "🔇" : "🔉";
     localStorage.setItem("jc_muted", muted ? "1" : "0");
+    syncMuteButtons();
   }
 
-  /* ── 悬浮按钮 ── */
-  function injectBtn(){
-    if(document.getElementById("jc-mute-btn")) return;
-    const btn = document.createElement("button");
-    btn.id = "jc-mute-btn";
-    btn.textContent = muted ? "🔇" : "🔉";
-    btn.title = "背景音乐开关";
-    btn.style.cssText = `
-      position:fixed;bottom:22px;right:22px;z-index:9999;
-      width:38px;height:38px;border-radius:50%;
-      background:rgba(255,255,255,.18);backdrop-filter:blur(8px);
-      border:1px solid rgba(255,255,255,.25);
-      font-size:16px;cursor:pointer;
-      transition:transform .15s,background .15s;
-      display:flex;align-items:center;justify-content:center;
-      box-shadow:0 2px 12px rgba(0,0,0,.12);
-    `;
-    btn.onmouseenter = ()=>{ btn.style.transform="scale(1.12)"; btn.style.background="rgba(255,255,255,.3)"; };
-    btn.onmouseleave = ()=>{ btn.style.transform=""; btn.style.background="rgba(255,255,255,.18)"; };
-    btn.onclick = ()=>{ playClick(); toggleMute(); };
-    document.body.appendChild(btn);
+  function syncMuteButtons(){
+    document.querySelectorAll(".jc-mute").forEach(btn=>{
+      btn.classList.toggle("muted", muted);
+      btn.setAttribute("aria-pressed", muted ? "true" : "false");
+    });
+  }
+
+  function wireMuteButtons(){
+    syncMuteButtons();
+    document.querySelectorAll(".jc-mute").forEach(btn=>{
+      if(btn.dataset.jcWired) return;
+      btn.dataset.jcWired = "1";
+      btn.addEventListener("click", toggleMute);
+    });
   }
 
   /* ── 绑定点击音 ── */
@@ -105,8 +97,8 @@
   document.addEventListener("touchstart", onFirstInteract);
 
   if(document.readyState === "loading"){
-    document.addEventListener("DOMContentLoaded", ()=>{ injectBtn(); bindClicks(); });
+    document.addEventListener("DOMContentLoaded", ()=>{ bindClicks(); wireMuteButtons(); });
   } else {
-    injectBtn(); bindClicks();
+    bindClicks(); wireMuteButtons();
   }
 })();
