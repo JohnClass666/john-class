@@ -5,67 +5,89 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>语法学习 · John Class</title>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased;background:#F5EDD8;color:#2A1E08}
+:root{
+  --bg:#FBF6EC;--bg2:#F0E2C4;--bg3:#F6EEDC;
+  --ink:#2A1D08;--soft:#8C6B35;--faint:#C2A26C;
+  --hair:#E2D0A4;--accent:#AD7A1E;--accent-deep:#7A5414;--accent-soft:#F5E8C8;
+  --warn:#C2491E;--warn-soft:#FAEEE8;
+  --r-sm:10px;--r-md:16px;--r-lg:22px;--r-pill:999px;
+  --shadow-sm:0 1px 2px rgba(40,24,5,.10);
+  --shadow-md:0 3px 10px rgba(40,24,5,.12);
+  --shadow-lg:0 10px 28px rgba(40,24,5,.16);
+  --fnt:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
+  --fnt-display:Georgia,"Songti SC","STSong",serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:var(--fnt);-webkit-font-smoothing:antialiased;background:var(--bg);color:var(--ink)}
 
 /* ══════════════════════════════════════════ 入口页 ══════════════════════════════════════════ */
-.entry-page{position:fixed;inset:0;z-index:100;background:#F5EDD8;display:flex;align-items:center;justify-content:center;transition:opacity .4s,visibility .4s}
+.entry-page{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .4s,visibility .4s}
 .entry-page.hide{opacity:0;visibility:hidden;pointer-events:none}
 .entry-inner{text-align:center;padding:30px;max-width:700px}
-.entry-icon{font-size:56px;margin-bottom:8px}
-.entry-title{font-size:clamp(22px,3.5vw,34px);font-weight:700;color:#2A1E08;margin-bottom:4px;letter-spacing:-.4px}
-.entry-sub{font-size:13px;color:#9A8060;margin-bottom:28px}
+.entry-icon{width:52px;height:52px;margin:0 auto 14px;border-radius:50%;
+  background:linear-gradient(160deg,var(--accent-soft),var(--accent));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 4px rgba(40,20,5,.1),0 8px 18px rgba(122,84,20,.22)}
+.entry-icon svg{width:24px;height:24px;stroke:#FFF8E8}
+.entry-title{font-family:var(--fnt-display);font-size:clamp(22px,3.5vw,30px);font-weight:600;color:var(--ink);margin-bottom:4px;letter-spacing:-.01em}
+.entry-sub{font-size:13px;color:var(--soft);margin-bottom:28px}
 .mode-cards{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
-.mode-card{width:260px;background:rgba(255,255,255,.6);border:1.5px solid rgba(184,149,106,.25);border-radius:20px;padding:28px 20px 22px;cursor:pointer;transition:all .25s;text-align:center;backdrop-filter:blur(4px)}
-.mode-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(42,30,8,.1);border-color:#B8956A}
-.mode-card-icon{font-size:42px;margin-bottom:10px}
-.mode-card-title{font-size:17px;font-weight:700;color:#2A1E08;margin-bottom:4px}
-.mode-card-sub{font-size:11.5px;color:#9A8060;line-height:1.6}
-.mode-card-tag{display:inline-block;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:600;margin-top:10px;letter-spacing:.04em}
-.tag-forest{background:rgba(184,149,106,.15);color:#B8956A}
-.tag-normal{background:rgba(74,124,63,.1);color:#4A7C3F}
+.mode-card{width:260px;background:#FFFCF4;border:1px solid rgba(184,149,106,.16);border-radius:var(--r-lg);padding:26px 20px 22px;cursor:pointer;transition:transform .18s,box-shadow .18s;text-align:center;
+  box-shadow:0 1px 2px rgba(40,20,5,.05),0 6px 16px rgba(40,20,5,.08)}
+.mode-card:active{transform:scale(.97)}
+.mode-card-icon{width:46px;height:46px;margin:0 auto 12px;border-radius:50%;
+  background:var(--accent-soft);border:1.5px solid rgba(173,122,30,.22);
+  display:flex;align-items:center;justify-content:center}
+.mode-card-icon svg{width:21px;height:21px;stroke:var(--accent-deep)}
+.mode-card-title{font-family:var(--fnt-display);font-size:16.5px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.mode-card-sub{font-size:11.5px;color:var(--soft);line-height:1.6}
+.mode-card-tag{display:inline-block;padding:3px 10px;border-radius:var(--r-sm);font-size:10px;font-weight:700;margin-top:10px;letter-spacing:.04em}
+.tag-forest{background:var(--bg3);color:var(--soft);border:1px solid var(--hair)}
+.tag-normal{background:var(--accent-soft);color:var(--accent-deep)}
 
 /* ══════════════════════════════════════════ 普通模式 ══════════════════════════════════════════ */
-.normal-view{position:fixed;inset:0;z-index:90;background:#F5EDD8;display:none;flex-direction:row}
+.normal-view{position:fixed;inset:0;z-index:90;background:var(--bg);display:none;flex-direction:row}
 .normal-view.active{display:flex}
-.normal-topbar{position:absolute;top:0;left:0;right:0;z-index:10;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}
+.normal-topbar{position:absolute;top:0;left:0;right:0;z-index:10;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;pointer-events:none;background:var(--bg);box-shadow:0 1px 0 var(--hair)}
 .normal-topbar>*{pointer-events:all}
-.n-back{font-size:12px;color:#9A8060;cursor:pointer;background:none;border:none;font-family:inherit;display:flex;align-items:center;gap:4px;transition:color .2s;padding:6px 0}
-.n-back:hover{color:#2A1E08}
-.n-brand{font-size:12px;font-weight:600;letter-spacing:.14em;color:#B8956A}
-.n-challenge-btn{font-size:11px;padding:6px 14px;border-radius:14px;background:#4A7C3F;color:#fff;border:none;cursor:pointer;font-weight:600;font-family:inherit;display:none;transition:all .2s}
-.n-challenge-btn:hover{background:#3A6A30}
+.n-back{font-size:12px;color:var(--soft);cursor:pointer;background:none;border:none;font-family:inherit;display:flex;align-items:center;gap:4px;transition:color .2s;padding:6px 0}
+.n-back:active{opacity:.6}
+.n-brand{font-family:var(--fnt-display);font-size:14px;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+.n-challenge-btn{font-size:11px;padding:7px 14px;border-radius:var(--r-pill);background:var(--accent);color:#FFF8E8;border:none;cursor:pointer;font-weight:600;font-family:inherit;display:none;transition:transform .12s}
+.n-challenge-btn:active{transform:scale(.95)}
 .n-challenge-btn.show{display:block}
 
-.n-left{width:44%;height:100%;overflow-y:auto;padding:60px 20px 30px 28px;border-right:1px solid rgba(184,149,106,.15);background:linear-gradient(170deg,#EDE3D0,#F5EDD8 40%,#E8DCC8)}
+.n-left{width:44%;height:100%;overflow-y:auto;padding:60px 20px 30px 28px;border-right:1px solid var(--hair);background:var(--bg3)}
 .n-left::-webkit-scrollbar{width:3px}
-.n-left::-webkit-scrollbar-thumb{background:rgba(184,149,106,.25);border-radius:3px}
-.n-map-title{font-size:16px;font-weight:700;color:#2A1E08;margin-bottom:2px}
-.n-map-sub{font-size:11px;color:#9A8060;margin-bottom:18px}
+.n-left::-webkit-scrollbar-thumb{background:var(--hair);border-radius:3px}
+.n-map-title{font-family:var(--fnt-display);font-size:16px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.n-map-sub{font-size:11px;color:var(--soft);margin-bottom:18px}
 
 .n-chapter{margin-bottom:18px}
-.n-ch-title{font-size:12px;font-weight:700;color:#2A1E08;margin-bottom:6px;display:flex;align-items:center;gap:5px}
-.n-ch-count{font-size:10px;color:#B8956A;font-weight:500}
+.n-ch-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.n-ch-count{font-size:10px;color:var(--faint);font-weight:500}
 .n-ch-nodes{display:flex;flex-wrap:wrap;gap:5px;padding-left:18px}
-.n-node{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;cursor:pointer;border:2px solid rgba(184,149,106,.2);background:rgba(255,255,255,.5);color:#B8956A;transition:all .2s;flex-shrink:0}
-.n-node:hover{transform:scale(1.1)}
-.n-node.done{background:#4A7C3F;border-color:#4A7C3F;color:#fff}
-.n-node.current{background:#B8956A;border-color:#B8956A;color:#fff;box-shadow:0 0 10px rgba(184,149,106,.4);animation:pulse 2s infinite}
+.n-node{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;cursor:pointer;border:2px solid var(--hair);background:#FFFCF4;color:var(--soft);transition:transform .15s;flex-shrink:0}
+.n-node:active{transform:scale(1.1)}
+.n-node.done{background:var(--accent);border-color:var(--accent);color:#FFF8E8}
+.n-node.current{background:var(--accent-deep);border-color:var(--accent-deep);color:#FFF8E8;box-shadow:0 0 10px rgba(173,122,30,.4);animation:pulse 2s infinite}
 .n-node.locked{opacity:.35;cursor:not-allowed;filter:blur(1px)}
-.n-node.locked:hover{transform:none}
-@keyframes pulse{0%,100%{box-shadow:0 0 6px rgba(184,149,106,.4)}50%{box-shadow:0 0 16px rgba(184,149,106,.7)}}
+.n-node.locked:active{transform:none}
+@keyframes pulse{0%,100%{box-shadow:0 0 6px rgba(173,122,30,.4)}50%{box-shadow:0 0 16px rgba(173,122,30,.7)}}
 
 .n-right{flex:1;height:100%;overflow-y:auto;padding:60px 28px 40px 24px}
 .n-right::-webkit-scrollbar{width:3px}
-.n-right::-webkit-scrollbar-thumb{background:rgba(184,149,106,.2);border-radius:3px}
+.n-right::-webkit-scrollbar-thumb{background:var(--hair);border-radius:3px}
 .n-welcome{text-align:center;padding-top:60px}
-.n-welcome-icon{font-size:48px;margin-bottom:10px}
-.n-welcome-title{font-size:20px;font-weight:700;color:#2A1E08;margin-bottom:6px}
-.n-welcome-sub{font-size:13px;color:#9A8060;line-height:1.7}
+.n-welcome-icon{width:48px;height:48px;margin:0 auto 12px;border-radius:50%;
+  background:var(--accent-soft);display:flex;align-items:center;justify-content:center}
+.n-welcome-icon svg{width:22px;height:22px;stroke:var(--accent-deep)}
+.n-welcome-title{font-family:var(--fnt-display);font-size:18px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.n-welcome-sub{font-size:13px;color:var(--soft);line-height:1.7}
 
-.n-level-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:12px;background:rgba(184,149,106,.12);font-size:10px;font-weight:700;color:#B8956A;margin-bottom:8px}
-.n-level-title{font-size:clamp(18px,2.5vw,24px);font-weight:600;color:#2A1E08;margin-bottom:3px}
-.n-level-sub{font-size:12px;color:#9A8060;margin-bottom:18px}
+.n-level-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:var(--r-sm);background:var(--accent-soft);font-size:10px;font-weight:700;color:var(--accent-deep);margin-bottom:8px}
+.n-level-title{font-family:var(--fnt-display);font-size:clamp(18px,2.5vw,22px);font-weight:600;color:var(--ink);margin-bottom:3px}
+.n-level-sub{font-size:12px;color:var(--soft);margin-bottom:18px}
 
 /* ══════════════════════════════════════════ 森林模式 ══════════════════════════════════════════ */
 .forest-view{position:fixed;inset:0;z-index:90;background:#F5EDD8;display:none}
@@ -219,69 +241,75 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,"PingFang SC","H
 /* ══════════════════════════════════════════ 关卡弹窗（共用） ══════════════════════════════════════════ */
 .lvl-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .35s ease}
 .lvl-overlay.show{opacity:1;pointer-events:all}
-.lvl-overlay-bg{position:absolute;inset:0;background:rgba(42,30,8,.3);backdrop-filter:blur(3px)}
-.lvl-card{position:relative;background:rgba(255,255,255,.92);border:1px solid rgba(184,149,106,.25);border-radius:22px;width:min(560px,92vw);max-height:80vh;overflow-y:auto;padding:26px 24px 22px;box-shadow:0 20px 50px rgba(42,30,8,.15);animation:cardIn .4s cubic-bezier(.22,1,.36,1)}
+.lvl-overlay-bg{position:absolute;inset:0;background:rgba(40,24,5,.4)}
+.lvl-card{position:relative;background:var(--bg);border:1px solid var(--hair);border-radius:var(--r-lg);width:min(560px,92vw);max-height:80vh;overflow-y:auto;padding:26px 24px 22px;box-shadow:var(--shadow-lg);animation:cardIn .4s cubic-bezier(.22,1,.36,1)}
 .lvl-card::-webkit-scrollbar{width:3px}
-.lvl-card::-webkit-scrollbar-thumb{background:rgba(184,149,106,.25);border-radius:3px}
+.lvl-card::-webkit-scrollbar-thumb{background:var(--hair);border-radius:3px}
 @keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
-.lvl-close{position:absolute;top:14px;right:16px;width:30px;height:30px;border-radius:50%;border:1.5px solid rgba(184,149,106,.25);background:rgba(255,255,255,.8);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:#9A8060;transition:all .2s;z-index:2}
-.lvl-close:hover{background:#B8956A;color:#fff;border-color:#B8956A}
+.lvl-close{position:absolute;top:14px;right:16px;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--hair);background:#FFFCF4;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--soft);transition:transform .12s;z-index:2}
+.lvl-close:active{transform:scale(.9);background:var(--accent);color:#FFF8E8;border-color:var(--accent)}
 
-.c-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:12px;background:rgba(184,149,106,.12);font-size:10px;font-weight:700;color:#B8956A;margin-bottom:8px}
-.c-title{font-size:clamp(18px,2.5vw,23px);font-weight:600;color:#2A1E08;margin-bottom:2px}
-.c-sub{font-size:12px;color:#9A8060;margin-bottom:16px}
+.c-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:var(--r-sm);background:var(--accent-soft);font-size:10px;font-weight:700;color:var(--accent-deep);margin-bottom:8px}
+.c-title{font-family:var(--fnt-display);font-size:clamp(18px,2.5vw,21px);font-weight:600;color:var(--ink);margin-bottom:2px}
+.c-sub{font-size:12px;color:var(--soft);margin-bottom:16px}
 
-.kp-block{background:rgba(245,237,216,.5);border:1px solid rgba(184,149,106,.15);border-radius:14px;padding:14px;margin-bottom:9px}
-.kp-block h4{font-size:13px;font-weight:700;color:#2A1E08;margin-bottom:7px}
-.kp-block p{font-size:12.5px;color:#6A5030;line-height:1.8;margin-bottom:9px}
-.kp-eg{background:rgba(184,149,106,.08);border-left:3px solid #B8956A;padding:7px 11px;border-radius:0 8px 8px 0;margin-bottom:5px}
-.kp-eg .en{font-size:13px;color:#3A2010;font-style:italic;margin-bottom:1px}
-.kp-eg .zh{font-size:11.5px;color:#9A8060}
+.kp-block{background:var(--bg3);border:1px solid var(--hair);border-radius:var(--r-md);padding:14px;margin-bottom:9px}
+.kp-block h4{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:7px}
+.kp-block p{font-size:12.5px;color:var(--soft);line-height:1.8;margin-bottom:9px}
+.kp-eg{background:#FFFCF4;border-left:3px solid var(--accent);padding:7px 11px;border-radius:0 var(--r-sm) var(--r-sm) 0;margin-bottom:5px}
+.kp-eg .en{font-size:13px;color:var(--ink);font-style:italic;margin-bottom:1px}
+.kp-eg .zh{font-size:11.5px;color:var(--soft)}
 
-.qz-area{margin-top:16px;border-top:1px solid rgba(184,149,106,.2);padding-top:16px}
-.qz-title{font-size:13px;font-weight:700;color:#2A1E08;margin-bottom:10px}
-.qz-item{background:rgba(245,237,216,.4);border:1px solid rgba(184,149,106,.12);border-radius:12px;padding:12px;margin-bottom:8px}
-.qz-num{font-size:10px;font-weight:700;color:#B8956A;margin-bottom:3px}
-.qz-q{font-size:13px;color:#2A1E08;margin-bottom:8px;line-height:1.5}
+.qz-area{margin-top:16px;border-top:1px solid var(--hair);padding-top:16px}
+.qz-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px}
+.qz-item{background:var(--bg3);border:1px solid var(--hair);border-radius:var(--r-md);padding:12px;margin-bottom:8px}
+.qz-num{font-size:10px;font-weight:700;color:var(--accent-deep);margin-bottom:3px}
+.qz-q{font-size:13px;color:var(--ink);margin-bottom:8px;line-height:1.5}
 .qz-opts{display:flex;flex-direction:column;gap:4px}
-.qo{padding:7px 11px;border-radius:10px;font-size:12.5px;cursor:pointer;border:1.5px solid rgba(184,149,106,.2);background:rgba(255,255,255,.6);color:#3A2E18;transition:all .15s;text-align:left;font-family:inherit}
-.qo:hover{border-color:#B8956A;background:rgba(184,149,106,.08)}
-.qo.picked{border-color:#B8956A;background:rgba(184,149,106,.15);font-weight:600}
-.qo.correct{border-color:#4A7C3F!important;background:rgba(74,124,63,.1)!important;color:#2A5A1E!important}
-.qo.wrong{border-color:#C0392B!important;background:rgba(192,57,43,.06)!important;color:#8B1A10!important}
-.qz-input{width:100%;padding:8px 11px;border-radius:10px;font-size:13px;border:1.5px solid rgba(184,149,106,.3);background:rgba(255,255,255,.6);color:#2A1E08;outline:none;font-family:inherit;transition:border .2s}
-.qz-input:focus{border-color:#B8956A}
-.qz-explain{font-size:11.5px;color:#6A5030;margin-top:6px;padding:6px 9px;background:rgba(184,149,106,.06);border-radius:8px;display:none;line-height:1.5}
+.qo{padding:7px 11px;border-radius:var(--r-sm);font-size:12.5px;cursor:pointer;border:1.5px solid var(--hair);background:#FFFCF4;color:var(--ink);transition:background .15s;text-align:left;font-family:inherit}
+.qo:active{background:var(--accent-soft)}
+.qo.picked{border-color:var(--accent);background:var(--accent-soft);font-weight:600}
+.qo.correct{border-color:var(--accent)!important;background:var(--accent-soft)!important;color:var(--accent-deep)!important}
+.qo.wrong{border-color:var(--warn)!important;background:var(--warn-soft)!important;color:var(--warn)!important}
+.qz-input{width:100%;padding:8px 11px;border-radius:var(--r-sm);font-size:13px;border:1.5px solid var(--hair);background:#FFFCF4;color:var(--ink);outline:none;font-family:inherit;transition:border-color .2s}
+.qz-input:focus{border-color:var(--accent)}
+.qz-explain{font-size:11.5px;color:var(--soft);margin-top:6px;padding:6px 9px;background:#FFFCF4;border-radius:var(--r-sm);display:none;line-height:1.5}
 .qz-explain.show{display:block}
 .qz-item.graded .qo,.qz-item.graded .qz-input{pointer-events:none}
 
 .act-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
-.btn{padding:8px 16px;border-radius:18px;font-size:12.5px;font-weight:600;cursor:pointer;border:none;transition:all .18s;font-family:inherit;letter-spacing:.02em}
-.btn-p{background:#B8956A;color:#fff}.btn-p:hover{background:#9A7A52}
-.btn-o{background:transparent;color:#9A8060;border:1.5px solid rgba(184,149,106,.35)}.btn-o:hover{border-color:#B8956A;color:#B8956A}
-.btn-g{background:#4A7C3F;color:#fff}.btn-g:hover{background:#3A6A30}
-.btn-r{color:#C0392B;border:1.5px solid rgba(192,57,43,.22);background:transparent}.btn-r:hover{border-color:#C0392B;background:rgba(192,57,43,.06)}
+.btn{padding:9px 18px;border-radius:var(--r-pill);font-size:12.5px;font-weight:600;cursor:pointer;border:none;transition:transform .12s;font-family:inherit;letter-spacing:.01em}
+.btn:active{transform:scale(.95)}
+.btn-p{background:var(--accent);color:#FFF8E8}
+.btn-o{background:transparent;color:var(--soft);border:1.5px solid var(--hair)}
+.btn-g{background:var(--accent-deep);color:#FFF8E8}
+.btn-r{color:var(--warn);border:1.5px solid rgba(194,73,30,.25);background:transparent}
 
-.r-block{background:rgba(245,237,216,.5);border:1px solid rgba(184,149,106,.2);border-radius:14px;padding:16px;margin-top:12px;display:none}
+.r-block{background:var(--bg3);border:1px solid var(--hair);border-radius:var(--r-md);padding:16px;margin-top:12px;display:none}
 .r-block.show{display:block}
-.r-stars{font-size:26px;margin-bottom:2px}
-.r-score{font-size:28px;font-weight:700;color:#2A1E08}.r-score span{color:#B8956A}
-.r-msg{font-size:12.5px;color:#5A4020;margin-top:6px;line-height:1.6}
+.r-stars{font-size:24px;margin-bottom:2px}
+.r-score{font-family:var(--fnt-display);font-size:26px;font-weight:600;color:var(--ink)}
+.r-score span{color:var(--accent)}
+.r-msg{font-size:12.5px;color:var(--soft);margin-top:6px;line-height:1.6}
 
 /* ══════════════════════════════════════════ 终极挑战 ══════════════════════════════════════════ */
-.challenge-view{position:fixed;inset:0;z-index:95;background:#F5EDD8;overflow-y:auto;display:none}
+.challenge-view{position:fixed;inset:0;z-index:95;background:var(--bg);overflow-y:auto;display:none}
 .challenge-view.active{display:block}
 .ch-inner{max-width:700px;margin:0 auto;padding:40px 24px 60px}
 .ch-header{text-align:center;margin-bottom:28px}
-.ch-icon{font-size:48px;margin-bottom:8px}
-.ch-title{font-size:clamp(20px,3vw,28px);font-weight:700;color:#2A1E08;margin-bottom:4px}
-.ch-sub{font-size:12.5px;color:#9A8060;line-height:1.6}
-.ch-back{font-size:12px;color:#9A8060;cursor:pointer;background:none;border:none;font-family:inherit;display:inline-flex;align-items:center;gap:4px;margin-bottom:20px;transition:color .2s}
-.ch-back:hover{color:#2A1E08}
-.ch-card{background:rgba(255,255,255,.55);border:1px solid rgba(184,149,106,.2);border-radius:16px;padding:18px;margin-bottom:12px;backdrop-filter:blur(4px)}
-.ch-num{font-size:11px;font-weight:700;color:#B8956A;margin-bottom:4px}
-.ch-sentence{font-size:15px;color:#2A1E08;font-weight:600;margin-bottom:12px;padding:10px 14px;background:rgba(184,149,106,.08);border-radius:10px;line-height:1.6;font-style:italic}
-.ch-ask{font-size:12.5px;color:#5A4020;margin-bottom:8px}
+.ch-icon{width:48px;height:48px;margin:0 auto 12px;border-radius:50%;
+  background:linear-gradient(160deg,var(--accent-soft),var(--accent));
+  display:flex;align-items:center;justify-content:center}
+.ch-icon svg{width:22px;height:22px;stroke:#FFF8E8}
+.ch-title{font-family:var(--fnt-display);font-size:clamp(20px,3vw,26px);font-weight:600;color:var(--ink);margin-bottom:4px}
+.ch-sub{font-size:12.5px;color:var(--soft);line-height:1.6}
+.ch-back{font-size:12px;color:var(--soft);cursor:pointer;background:none;border:none;font-family:inherit;display:inline-flex;align-items:center;gap:4px;margin-bottom:20px;transition:color .2s}
+.ch-back:active{opacity:.6}
+.ch-card{background:#FFFCF4;border:1px solid rgba(184,149,106,.16);border-radius:var(--r-md);padding:18px;margin-bottom:12px;
+  box-shadow:0 1px 2px rgba(40,20,5,.05),0 4px 12px rgba(40,20,5,.06)}
+.ch-num{font-size:11px;font-weight:700;color:var(--accent-deep);margin-bottom:4px}
+.ch-sentence{font-size:15px;color:var(--ink);font-weight:600;margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:var(--r-sm);line-height:1.6;font-style:italic}
+.ch-ask{font-size:12.5px;color:var(--soft);margin-bottom:8px}
 
 @media(max-width:700px){
   .normal-view{flex-direction:column}
@@ -297,52 +325,55 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,"PingFang SC","H
 <!-- ═══════════════════════════════════════ 入口页 ═══════════════════════════════════════ -->
 <div class="entry-page" id="entryPage">
   <div class="entry-inner">
-    <div class="entry-icon">📖</div>
+    <div class="entry-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></div>
     <div class="entry-title">英语语法学习</div>
     <div class="entry-sub">选择一种方式，开始你的语法之旅</div>
     <div class="mode-cards">
       <div class="mode-card" onclick="startNormal()">
-        <div class="mode-card-icon">🗺️</div>
+        <div class="mode-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
         <div class="mode-card-title">普通模式</div>
         <div class="mode-card-sub">语法地图一览无余<br>所有知识点清晰可见<br>适合系统学习与复习</div>
         <span class="mode-card-tag tag-normal">系统学习</span>
       </div>
       <div class="mode-card" onclick="startForest()">
-        <div class="mode-card-icon">🏮</div>
+        <div class="mode-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h6M16 12h6M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg></div>
         <div class="mode-card-title">迷雾森林</div>
         <div class="mode-card-sub">一盏灯笼，一个语法点<br>迷雾中步步探索<br>适合沉浸式闯关体验</div>
         <span class="mode-card-tag tag-forest">闯关体验</span>
       </div>
     </div>
     <div style="text-align:center;margin-top:20px">
-      <button class="btn" style="background:rgba(74,124,63,.12);color:#2A5A1E;border:1.5px solid rgba(74,124,63,.3);padding:10px 24px;font-size:13px;cursor:pointer;border-radius:20px;font-family:inherit;font-weight:600" onclick="showGrammarBoard()">🏆 语法排行榜</button>
+      <button class="btn btn-o" onclick="showGrammarBoard()">语法排行榜</button>
     </div>
   </div>
 </div>
 
 <!-- 语法排行榜 overlay -->
-<div id="grammarBoardOverlay" style="display:none;position:fixed;inset:0;z-index:300;background:#F5EDD8;overflow-y:auto;padding:28px 20px">
+<div id="grammarBoardOverlay" style="display:none;position:fixed;inset:0;z-index:300;background:var(--bg);overflow-y:auto;padding:28px 20px">
   <div style="max-width:480px;margin:0 auto">
-    <a href="#" onclick="hideGrammarBoard();return false" style="font-size:12px;color:#B5A080;text-decoration:none;display:block;margin-bottom:24px">← 返回</a>
-    <div style="font-size:11px;letter-spacing:.18em;color:#B5A080;font-weight:600;margin-bottom:28px">JOHN CLASS · 语法排行榜</div>
-    <div style="font-size:22px;font-weight:700;margin-bottom:4px">🏆 语法累积榜</div>
-    <div style="font-size:12px;color:#B5A080;margin-bottom:20px">32关闯关 · 普通训练 20分/关 · 综合挑战 500分 · 永久累积</div>
-    <div id="grammarBoardList"><div style="font-size:13px;color:#B5A080;padding:20px;text-align:center">加载中...</div></div>
-    <a href="weekly_stars.html" style="display:inline-block;margin-top:16px;font-size:12px;color:#B8956A;text-decoration:none;font-weight:600">→ 查看每周大神榜</a>
+    <a href="#" onclick="hideGrammarBoard();return false" style="font-size:12px;color:var(--soft);text-decoration:none;display:block;margin-bottom:24px">← 返回</a>
+    <div style="font-size:10.5px;letter-spacing:.18em;color:var(--faint);font-weight:700;text-transform:uppercase;margin-bottom:24px">John Class · 语法排行榜</div>
+    <div style="font-family:var(--fnt-display);font-size:22px;font-weight:600;color:var(--ink);margin-bottom:4px">语法累积榜</div>
+    <div style="font-size:12px;color:var(--soft);margin-bottom:20px">32关闯关 · 普通训练 20分/关 · 综合挑战 500分 · 永久累积</div>
+    <div id="grammarBoardList"><div style="font-size:13px;color:var(--faint);padding:20px;text-align:center">加载中...</div></div>
+    <a href="weekly_stars.html" style="display:inline-block;margin-top:16px;font-size:12px;color:var(--accent-deep);text-decoration:none;font-weight:600">→ 查看每周大神榜</a>
   </div>
 </div>
 
 <!-- ═══════════════════════════════════════ 普通模式 ═══════════════════════════════════════ -->
 <div class="normal-view" id="normalView">
   <div class="normal-topbar">
-    <button class="n-back" onclick="window.location.href='index.html'">← 返回首页</button>
+    <button class="n-back" onclick="window.location.href='index.html'">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      返回首页
+    </button>
     <span class="n-brand">John Class</span>
-    <button class="n-challenge-btn" id="nChallengeBtn" onclick="startChallenge()">🏆 终极挑战</button>
+    <button class="n-challenge-btn" id="nChallengeBtn" onclick="startChallenge()">终极挑战</button>
   </div>
   <div class="n-left" id="nLeft"></div>
   <div class="n-right" id="nRight">
     <div class="n-welcome" id="nWelcome">
-      <div class="n-welcome-icon">🗺️</div>
+      <div class="n-welcome-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
       <div class="n-welcome-title">普通模式</div>
       <div class="n-welcome-sub">左侧是完整的语法地图。点击任意金色节点开始学习，或从头开始逐个攻克。</div>
     </div>
@@ -385,16 +416,19 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,"PingFang SC","H
 <!-- ═══════════════════════════════════════ 终极挑战 ═══════════════════════════════════════ -->
 <div class="challenge-view" id="challengeView">
   <div class="ch-inner">
-    <button class="ch-back" onclick="closeChallenge()">← 返回</button>
+    <button class="ch-back" onclick="closeChallenge()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      返回
+    </button>
     <div class="ch-header">
-      <div class="ch-icon">🏆</div>
+      <div class="ch-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#FFF8E8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l2-9 4 4 3-7 3 7 4-4 2 9z"/><path d="M5 20h14"/></svg></div>
       <div class="ch-title">终极挑战</div>
       <div class="ch-sub">恭喜你完成了全部 32 关！现在来挑战综合题目——分析句子结构并翻译句子。</div>
     </div>
     <div id="chContent"></div>
     <div class="act-row" style="justify-content:center;margin-top:20px">
-      <button class="btn btn-p" onclick="checkChallenge()">✓ 提交批改</button>
-      <button class="btn btn-r" onclick="resetChallenge()">↺ 重做</button>
+      <button class="btn btn-p" onclick="checkChallenge()">提交批改</button>
+      <button class="btn btn-r" onclick="resetChallenge()">重做</button>
     </div>
     <div class="r-block" id="chResult"></div>
   </div>
@@ -704,7 +738,7 @@ function renderNormalMap() {
     ch.levels.push(l);
   });
   document.getElementById('nLeft').innerHTML = `
-    <div class="n-map-title">🗺️ 语法地图</div>
+    <div class="n-map-title">语法地图</div>
     <div class="n-map-sub">点击节点开始学习 · 金色=当前可学 · 绿色=已掌握</div>
     ${chapters.map(ch => {
       const d = ch.levels.filter(l => isDone(l.id)).length;
@@ -744,16 +778,19 @@ function buildLvlContent(lvl, id) {
       <div class="kp-block">
         <h4>${c.subtitle}</h4>
         <p>${c.text}</p>
-        ${c.examples.map(e => `<div class="kp-eg"><div class="en">📝 ${e.en}</div>${e.zh ? `<div class="zh">${e.zh}</div>` : ''}</div>`).join('')}
+        ${c.examples.map(e => `<div class="kp-eg"><div class="en">${e.en}</div>${e.zh ? `<div class="zh">${e.zh}</div>` : ''}</div>`).join('')}
       </div>`).join('')}
     ${!isDone(id) ? `
       <div class="qz-area">
-        <div class="qz-title">⚔️ 闯关测验（答对 ${need}/${lvl.quiz.length} 题通关）</div>
+        <div class="qz-title">闯关测验（答对 ${need}/${lvl.quiz.length} 题通关）</div>
         ${lvl.quiz.map((q, qi) => buildQuizItem(q, qi)).join('')}
-      </div>` : `<p style="font-size:12px;color:#4A7C3F;margin-top:12px">✅ 此关已通关</p>`}
+      </div>` : `<p style="font-size:12px;color:var(--accent-deep);margin-top:12px">此关已通关</p>`}
     <div class="act-row">
-      ${!isDone(id) ? `<button class="btn btn-p" onclick="submitNormalQuiz(${id})">✓ 提交批改</button>` : ''}
-      <button class="btn btn-o" onclick="normalUndo()">← 返回列表</button>
+      ${!isDone(id) ? `<button class="btn btn-p" onclick="submitNormalQuiz(${id})">提交批改</button>` : ''}
+      <button class="btn btn-o" onclick="normalUndo()">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:2px"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        返回列表
+      </button>
     </div>
     <div class="r-block" id="normalResult"></div>`;
 }
@@ -765,7 +802,7 @@ function buildQuizItem(q, qi) {
     ${q.type==='choice' ? `
       <div class="qz-opts">${q.opts.map((o, oi) => `<button class="qo" id="nopt${qi}_${oi}" onclick="pickNormal(${qi},${oi},${q.ans})">${String.fromCharCode(65+oi)}. ${o}</button>`).join('')}</div>
     ` : `<input class="qz-input" id="nfill${qi}" placeholder="输入答案..." onkeydown="if(event.key==='Enter')submitQuiz(${normalOpenLevelId})">`}
-    <div class="qz-explain" id="nexplain${qi}">💡 ${q.explain}</div>
+    <div class="qz-explain" id="nexplain${qi}">${q.explain}</div>
   </div>`;
 }
 
@@ -776,7 +813,7 @@ function buildPopupQuizItem(q, qi) {
     ${q.type==='choice' ? `
       <div class="qz-opts">${q.opts.map((o, oi) => `<button class="qo" id="fopt${qi}_${oi}" onclick="pickForest(${qi},${oi})">${String.fromCharCode(65+oi)}. ${o}</button>`).join('')}</div>
     ` : `<input class="qz-input" id="ffill${qi}" placeholder="输入答案...">`}
-    <div class="qz-explain" id="fexplain${qi}">💡 ${q.explain}</div>
+    <div class="qz-explain" id="fexplain${qi}">${q.explain}</div>
   </div>`;
 }
 
@@ -798,15 +835,15 @@ function buildLvlContentPopup(lvl, id) {
       <div class="kp-block">
         <h4>${c.subtitle}</h4>
         <p>${c.text}</p>
-        ${c.examples.map(e => `<div class="kp-eg"><div class="en">📝 ${e.en}</div>${e.zh ? `<div class="zh">${e.zh}</div>` : ''}</div>`).join('')}
+        ${c.examples.map(e => `<div class="kp-eg"><div class="en">${e.en}</div>${e.zh ? `<div class="zh">${e.zh}</div>` : ''}</div>`).join('')}
       </div>`).join('')}
     ${!isDone(id) ? `
       <div class="qz-area">
-        <div class="qz-title">⚔️ 闯关测验（答对 ${need}/${lvl.quiz.length} 题通关）</div>
+        <div class="qz-title">闯关测验（答对 ${need}/${lvl.quiz.length} 题通关）</div>
         ${lvl.quiz.map((q, qi) => buildPopupQuizItem(q, qi)).join('')}
-      </div>` : `<p style="font-size:12px;color:#4A7C3F;margin-top:12px">✅ 此关已通关</p>`}
+      </div>` : `<p style="font-size:12px;color:var(--accent-deep);margin-top:12px">此关已通关</p>`}
     <div class="act-row">
-      ${!isDone(id) ? `<button class="btn btn-p" onclick="submitForestQuiz(${id})">✓ 提交批改</button>` : ''}
+      ${!isDone(id) ? `<button class="btn btn-p" onclick="submitForestQuiz(${id})">提交批改</button>` : ''}
       <button class="btn btn-o" onclick="closeLvlOverlay()">← 返回森林</button>
     </div>
     <div class="r-block" id="forestResult"></div>`;
@@ -862,9 +899,9 @@ function submitForestQuiz(levelId) {
       const val = (inp.value || '').trim().toLowerCase();
       inp.disabled = true;
       if (val === q.ans.toLowerCase()) {
-        inp.style.borderColor = '#4A7C3F'; inp.style.background = 'rgba(74,124,63,.1)'; correct++;
+        inp.style.borderColor = '#7A5414'; inp.style.background = '#F5E8C8'; correct++;
       } else {
-        inp.style.borderColor = '#C0392B'; inp.style.background = 'rgba(192,57,43,.06)';
+        inp.style.borderColor = '#C2491E'; inp.style.background = '#FAEEE8';
       }
     }
     item.classList.add('graded');
@@ -883,8 +920,8 @@ function submitForestQuiz(levelId) {
   if (block) {
     block.innerHTML = `<div class="r-stars">${pct===100?'🌟🌟🌟':pct>=80?'🌟🌟':pct>=60?'🌟':'💪'}</div>
       <div class="r-score">${correct}<span>/${total}</span></div>
-      <div style="font-size:11px;color:#9A8060">得分率 ${pct}% · ${passed?'✅ 通关':'❌ 未通过（需≥60%）'}</div>
-      <div class="r-msg">${passed?(pct===100?'满分通关！✨':'恭喜通关！🏮'):'再试一次吧📚'}</div>`;
+      <div style="font-size:11px;color:#8C6B35">得分率 ${pct}% · <span style="color:${passed?'#7A5414':'#C2491E'};font-weight:600">${passed?'通关':'未通过（需≥60%）'}</span></div>
+      <div class="r-msg">${passed?(pct===100?'满分通关！':'恭喜通关！'):'再试一次吧'}</div>`;
     block.classList.add('show');
     block.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
@@ -927,8 +964,8 @@ function gradeQuiz(lvl, prefix) {
       if (!inp) return;
       const val = (inp.value || '').trim().toLowerCase();
       inp.disabled = true;
-      if (val === q.ans.toLowerCase()) { inp.style.borderColor = '#4A7C3F'; inp.style.background = 'rgba(74,124,63,.1)'; correct++; }
-      else { inp.style.borderColor = '#C0392B'; inp.style.background = 'rgba(192,57,43,.06)'; }
+      if (val === q.ans.toLowerCase()) { inp.style.borderColor = '#7A5414'; inp.style.background = '#F5E8C8'; correct++; }
+      else { inp.style.borderColor = '#C2491E'; inp.style.background = '#FAEEE8'; }
     }
     item.classList.add('graded');
     if (explain) explain.classList.add('show');
@@ -947,8 +984,8 @@ function gradeQuiz(lvl, prefix) {
   if (block) {
     block.innerHTML = `<div class="r-stars">${pct===100?'🌟🌟🌟':pct>=80?'🌟🌟':pct>=60?'🌟':'💪'}</div>
       <div class="r-score">${correct}<span>/${total}</span></div>
-      <div style="font-size:11px;color:#9A8060">得分率 ${pct}% · ${passed?'✅ 通关':'❌ 未通过（需≥60%）'}</div>
-      <div class="r-msg">${passed?(pct===100?'满分通关！✨':'恭喜通关！🏮'):'再试一次吧📚'}</div>`;
+      <div style="font-size:11px;color:#8C6B35">得分率 ${pct}% · <span style="color:${passed?'#7A5414':'#C2491E'};font-weight:600">${passed?'通关':'未通过（需≥60%）'}</span></div>
+      <div class="r-msg">${passed?(pct===100?'满分通关！':'恭喜通关！'):'再试一次吧'}</div>`;
     block.classList.add('show');
     block.scrollIntoView({behavior:'smooth',block:'nearest'});
   }
@@ -986,7 +1023,7 @@ function restoreDoneState(lvl) {
       });
     } else {
       const inp = document.getElementById('nfill'+qi);
-      if (inp) { inp.value = q.ans; inp.disabled = true; inp.style.borderColor = '#4A7C3F'; inp.style.background = 'rgba(74,124,63,.1)'; }
+      if (inp) { inp.value = q.ans; inp.disabled = true; inp.style.borderColor = '#7A5414'; inp.style.background = '#F5E8C8'; }
     }
     item.classList.add('graded');
     if (explain) explain.classList.add('show');
@@ -1194,7 +1231,7 @@ function forestOpen(id) {
           });
         } else {
           const inp = document.getElementById('ffill' + qi);
-          if (inp) { inp.value = q.ans; inp.disabled = true; inp.style.borderColor = '#4A7C3F'; inp.style.background = 'rgba(74,124,63,.1)'; }
+          if (inp) { inp.value = q.ans; inp.disabled = true; inp.style.borderColor = '#7A5414'; inp.style.background = '#F5E8C8'; }
         }
         item.classList.add('graded');
         if (explain) explain.classList.add('show');
@@ -1257,7 +1294,7 @@ function renderChallenge() {
       `).join('')}</div>
       <div class="ch-ask" style="margin-top:10px"><b>② 翻译成中文：</b></div>
       <input class="qz-input" id="chtrans${ci}" placeholder="输入你的翻译...">
-      <div class="qz-explain" id="chexplain${ci}">💡 ${c.explain}</div>
+      <div class="qz-explain" id="chexplain${ci}">${c.explain}</div>
     </div>
   `).join('');
 }
@@ -1292,10 +1329,10 @@ function checkChallenge() {
       const score = matchCount / Math.max(1, keyChars.length);
       if (score >= 0.4 || trans === c.transAns) {
         transCorrect++;
-        document.getElementById('chtrans'+ci).style.borderColor = '#4A7C3F';
+        document.getElementById('chtrans'+ci).style.borderColor = '#7A5414';
         document.getElementById('chtrans'+ci).style.background = 'rgba(74,124,63,.1)';
       } else {
-        document.getElementById('chtrans'+ci).style.borderColor = '#C0392B';
+        document.getElementById('chtrans'+ci).style.borderColor = '#C2491E';
         document.getElementById('chtrans'+ci).style.background = 'rgba(192,57,43,.06)';
       }
     }
@@ -1315,8 +1352,8 @@ function checkChallenge() {
   block.innerHTML = `
     <div class="r-stars">${overallPct>=90?'🌟🌟🌟':overallPct>=70?'🌟🌟':overallPct>=50?'🌟':'💪'}</div>
     <div class="r-score">${structCorrect+transCorrect}<span>/${total*2}</span></div>
-    <div style="font-size:12px;color:#9A8060;margin-top:2px">结构分析 ${structPct}% · 翻译 ${transPct}% · 综合 ${overallPct}%</div>
-    <div class="r-msg">${overallPct>=80?'🏆 太厉害了！你已经完全掌握了英语语法体系！':overallPct>=50?'👍 不错！继续努力，分析错误的题目仔细看解析。':'📚 加油！认真看每道题的解析，再重做一遍。'}</div>
+    <div style="font-size:12px;color:#8C6B35;margin-top:2px">结构分析 ${structPct}% · 翻译 ${transPct}% · 综合 ${overallPct}%</div>
+    <div class="r-msg">${overallPct>=80?'太厉害了！你已经完全掌握了英语语法体系！':overallPct>=50?'不错！继续努力，分析错误的题目仔细看解析。':'加油！认真看每道题的解析，再重做一遍。'}</div>
     <div style="margin-top:12px;font-size:12px;color:#6A5030;background:rgba(184,149,106,.08);padding:10px 14px;border-radius:10px;line-height:1.7">
       <b>参考答案（翻译）：</b><br>
       ${CHALLENGE.map(c => `• ${c.transAns}`).join('<br>')}
