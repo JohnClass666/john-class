@@ -82,6 +82,17 @@ html,body{height:100%;overflow:hidden;background:var(--bg);-webkit-font-smoothin
 .foot{position:absolute;bottom:40px;left:48px;font-size:12px;color:var(--faint);letter-spacing:.04em}
 .foot span{text-decoration:underline;text-decoration-color:rgba(194,162,108,.5);cursor:pointer;font-size:11px}
 
+.jc-mute{display:inline-flex;align-items:center;justify-content:center;
+  width:1em;height:1em;padding:0;margin-left:5px;vertical-align:-1px;
+  background:none;border:none;cursor:pointer;color:inherit;opacity:.55;
+  transition:opacity .15s ease,transform .15s ease}
+.jc-mute svg{width:100%;height:100%;display:block}
+.jc-mute .jc-mute-off{display:none}
+.jc-mute.muted .jc-mute-on{display:none}
+.jc-mute.muted .jc-mute-off{display:block}
+.jc-mute:hover{opacity:.9}
+.jc-mute:active{transform:scale(.82)}
+
 .overlay{position:fixed;inset:0;background:var(--bg);z-index:999;opacity:0;pointer-events:none;transition:opacity .3s ease}
 .overlay.show{opacity:1;pointer-events:all}
 
@@ -181,7 +192,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);-webkit-font-smoothin
         <svg class="entry-arrow" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
       </a>
     </div>
-    <div class="foot">Changsha · 2026　<span onclick="changeName()">切换名字</span></div>
+    <div class="foot">Changsha · 2026　<span onclick="changeName()">切换名字</span><button class="jc-mute" aria-label="背景音乐开关" aria-pressed="false" title="背景音乐"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><g class="jc-mute-on"><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a8 8 0 0 1 0 12"/></g><path class="jc-mute-off" d="M14 9l6 6M20 9l-6 6"/></svg></button></div>
   </div>
 </div>
 
