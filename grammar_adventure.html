@@ -53,9 +53,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--fnt);-webkit-font-smooth
 .n-back{font-size:12px;color:var(--soft);cursor:pointer;background:none;border:none;font-family:inherit;display:flex;align-items:center;gap:4px;transition:color .2s;padding:6px 0}
 .n-back:active{opacity:.6}
 .n-brand{font-family:var(--fnt-display);font-size:14px;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
-.n-challenge-btn{font-size:11px;padding:7px 14px;border-radius:var(--r-pill);background:var(--accent);color:#FFF8E8;border:none;cursor:pointer;font-weight:600;font-family:inherit;display:none;transition:transform .12s}
+.n-challenge-btn{font-size:11px;padding:7px 14px;border-radius:var(--r-pill);background:var(--accent);color:#FFF8E8;border:none;font-weight:600;font-family:inherit;transition:transform .12s,opacity .3s}
 .n-challenge-btn:active{transform:scale(.95)}
-.n-challenge-btn.show{display:block}
 
 .n-left{width:44%;height:100%;overflow-y:auto;padding:60px 20px 30px 28px;border-right:1px solid var(--hair);background:var(--bg3)}
 .n-left::-webkit-scrollbar{width:3px}
@@ -354,7 +353,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--fnt);-webkit-font-smooth
     <a href="#" onclick="hideGrammarBoard();return false" style="font-size:12px;color:var(--soft);text-decoration:none;display:block;margin-bottom:24px">← 返回</a>
     <div style="font-size:10.5px;letter-spacing:.18em;color:var(--faint);font-weight:700;text-transform:uppercase;margin-bottom:24px">John Class · 语法排行榜</div>
     <div style="font-family:var(--fnt-display);font-size:22px;font-weight:600;color:var(--ink);margin-bottom:4px">语法累积榜</div>
-    <div style="font-size:12px;color:var(--soft);margin-bottom:20px">32关闯关 · 普通训练 20分/关 · 综合挑战 500分 · 永久累积</div>
+    <div style="font-size:12px;color:var(--soft);margin-bottom:20px">32关闯关 · 普通训练 20分/关 · 综合挑战 100分 · 终极挑战 1000分 · 永久累积</div>
     <div id="grammarBoardList"><div style="font-size:13px;color:var(--faint);padding:20px;text-align:center">加载中...</div></div>
     <a href="weekly_stars.html" style="display:inline-block;margin-top:16px;font-size:12px;color:var(--accent-deep);text-decoration:none;font-weight:600">→ 查看每周大神榜</a>
   </div>
@@ -368,7 +367,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--fnt);-webkit-font-smooth
       返回首页
     </button>
     <span class="n-brand">John Class</span>
-    <button class="n-challenge-btn" id="nChallengeBtn" onclick="startChallenge()">终极挑战</button>
+    <button class="n-challenge-btn" id="nChallengeBtn" onclick="if(allDone())startChallenge()" style="display:inline-block;opacity:0.4;cursor:default" title="需通关全部32关后解锁">终极挑战</button>
   </div>
   <div class="n-left" id="nLeft"></div>
   <div class="n-right" id="nRight">
@@ -654,6 +653,18 @@ function loadProg() {
 function saveProg() { progress.forestCurrentId = forestCurrentId; localStorage.setItem(SK, JSON.stringify(progress)); }
 function isDone(id) { return progress.completed.includes(id); }
 function allDone() { return LEVELS.every(l => isDone(l.id)); }
+function unlockChallengeBtn(){
+  var b = document.getElementById('nChallengeBtn');
+  if (!b) return;
+  b.style.opacity = '1'; b.style.cursor = 'pointer';
+  b.textContent = '终极挑战';
+  b.onclick = startChallenge;
+  b.title = '';
+}
+function onAllDone(){
+  unlockChallengeBtn();
+  document.getElementById('fInfo').textContent = '全部通关！点击首页终极挑战';
+}
 
 // ══════════════════════════════════════════════════════════
 //  Supabase — grammar scoring
@@ -710,7 +721,7 @@ function startNormal() {
   document.getElementById('nWelcome').style.display = 'block';
   document.getElementById('nContent').style.display = 'none';
   document.getElementById('nContent').innerHTML = ''; // 清空旧内容
-  if (allDone()) document.getElementById('nChallengeBtn').classList.add('show');
+  if (allDone()) unlockChallengeBtn();
 }
 function startForest() {
   currentMode = 'forest';
@@ -750,7 +761,12 @@ function renderNormalMap() {
         <div class="n-ch-title">${ch.icon} ${ch.name} <span class="n-ch-count">${d}/${ch.levels.length}</span></div>
         <div class="n-ch-nodes">${ch.levels.map(l => {
           let cls = isDone(l.id) ? 'done' : 'current';
-          return `<div class="n-node ${cls}" onclick="normalOpen(${l.id})" title="${l.title}">${l.id}</div>`;
+          // 第32关（综合挑战）需前31关全通才解锁
+          if (l.id === 32) {
+            const all31 = LEVELS.filter(x => x.id < 32).every(x => isDone(x.id));
+            if (!all31 && !isDone(32)) cls = 'locked';
+          }
+          return `<div class="n-node ${cls}" onclick="${cls==='locked'?'':`normalOpen(${l.id})`}" title="${cls==='locked'?'需前31关全部通关':l.title}">${l.id}</div>`;
         }).join('')}</div>
       </div>`;
     }).join('')}`;
@@ -802,7 +818,7 @@ function buildQuizItem(q, qi) {
     <div class="qz-q">${q.q}</div>
     ${q.type==='choice' ? `
       <div class="qz-opts">${q.opts.map((o, oi) => `<button class="qo" id="nopt${qi}_${oi}" onclick="pickNormal(${qi},${oi},${q.ans})">${String.fromCharCode(65+oi)}. ${o}</button>`).join('')}</div>
-    ` : `<input class="qz-input" id="nfill${qi}" placeholder="输入答案..." onkeydown="if(event.key==='Enter')submitQuiz(${normalOpenLevelId})">`}
+    ` : `<input class="qz-input" id="nfill${qi}" placeholder="输入答案...">`}
     <div class="qz-explain" id="nexplain${qi}">${q.explain}</div>
   </div>`;
 }
@@ -881,6 +897,17 @@ function submitForestQuiz(levelId) {
   const lvl = LEVELS.find(l => l.id === levelId);
   if (!lvl || isDone(levelId)) return;
 
+  // 允许重复批改：先清掉上次批改状态
+  lvl.quiz.forEach((q, qi) => {
+    const item = document.getElementById('fqItem' + qi);
+    if (!item) return;
+    item.classList.remove('graded');
+    item.querySelectorAll('.qo').forEach(o => { o.classList.remove('correct','wrong','picked'); o.disabled = false; });
+    const inp = document.getElementById('ffill' + qi);
+    if (inp) { inp.disabled = false; inp.style.borderColor = ''; inp.style.background = ''; }
+  });
+  document.getElementById('forestResult').classList.remove('show');
+
   let correct = 0;
   lvl.quiz.forEach((q, qi) => {
     const item = document.getElementById('fqItem' + qi);
@@ -899,7 +926,8 @@ function submitForestQuiz(levelId) {
       if (!inp) return;
       const val = (inp.value || '').trim().toLowerCase();
       inp.disabled = true;
-      if (val === q.ans.toLowerCase()) {
+      const accepted = Array.isArray(q.ans) ? q.ans : [q.ans];
+      if (accepted.some(a => val === a.toLowerCase())) {
         inp.style.borderColor = '#7A5414'; inp.style.background = '#F5E8C8'; correct++;
       } else {
         inp.style.borderColor = '#C2491E'; inp.style.background = '#FAEEE8';
@@ -928,14 +956,13 @@ function submitForestQuiz(levelId) {
   }
 
   if (passed) {
-    var pts = levelId === 32 ? 500 : 20;
+    var pts = levelId === 32 ? 100 : 20;
     awardGrammarScore(levelId, pts);
     forestCurrentId = 1;
     while (progress.completed.includes(forestCurrentId) && forestCurrentId < LEVELS.length) forestCurrentId++;
     saveProg();
     if (allDone()) {
-      document.getElementById('nChallengeBtn').classList.add('show');
-      document.getElementById('fInfo').textContent = '🏆 全部通关！点击首页终极挑战';
+      onAllDone();
     }
     // 添加手动"继续"按钮，不再自动关闭，让学生有时间看答案
     var block2 = document.getElementById('forestResult');
@@ -947,6 +974,18 @@ function submitForestQuiz(levelId) {
 }
 
 function gradeQuiz(lvl, prefix) {
+  // 允许重复批改：先清掉上次批改状态
+  lvl.quiz.forEach((q, qi) => {
+    const item = document.getElementById('nqItem'+qi);
+    if (!item) return;
+    item.classList.remove('graded');
+    item.querySelectorAll('.qo').forEach(o => { o.classList.remove('correct','wrong','picked'); o.disabled = false; });
+    const inp = document.getElementById('nfill'+qi);
+    if (inp) { inp.disabled = false; inp.style.borderColor = ''; inp.style.background = ''; }
+  });
+  var block = document.getElementById(prefix==='n'?'normalResult':'forestResult');
+  if (block) block.classList.remove('show');
+
   let correct = 0;
   lvl.quiz.forEach((q, qi) => {
     const item = document.getElementById('nqItem'+qi);
@@ -965,7 +1004,8 @@ function gradeQuiz(lvl, prefix) {
       if (!inp) return;
       const val = (inp.value || '').trim().toLowerCase();
       inp.disabled = true;
-      if (val === q.ans.toLowerCase()) { inp.style.borderColor = '#7A5414'; inp.style.background = '#F5E8C8'; correct++; }
+      const accepted = Array.isArray(q.ans) ? q.ans : [q.ans];
+      if (accepted.some(a => val === a.toLowerCase())) { inp.style.borderColor = '#7A5414'; inp.style.background = '#F5E8C8'; correct++; }
       else { inp.style.borderColor = '#C2491E'; inp.style.background = '#FAEEE8'; }
     }
     item.classList.add('graded');
@@ -994,12 +1034,9 @@ function gradeQuiz(lvl, prefix) {
 }
 
 function onLevelPassed(levelId, mode) {
-  var pts = levelId === 32 ? 500 : 20;
+  var pts = levelId === 32 ? 100 : 20;
   awardGrammarScore(levelId, pts);
-  if (allDone()) {
-    document.getElementById('nChallengeBtn').classList.add('show');
-    document.getElementById('fInfo').textContent = '🏆 全部通关！点击首页终极挑战';
-  }
+  if (allDone()) onAllDone();
   if (mode === 'normal') {
     renderNormalMap();
     // 在结果块里加「下一关」按钮，不自动跳，让学生有时间看答案
@@ -1349,7 +1386,7 @@ function checkChallenge() {
   const overallPct = Math.round((structCorrect + transCorrect) / (total * 2) * 100);
 
   // 终极挑战独立计分，用 'challenge' 作 ID，不与第 32 关冲突
-  awardGrammarScore('challenge', 500);
+  awardGrammarScore('challenge', 1000);
 
   const block = document.getElementById('chResult');
   block.innerHTML = `
@@ -1380,7 +1417,7 @@ function resetAll() {
     progress = { completed: [], quizResults: {} };
     forestCurrentId = 1;
     quizAnswers = {};
-    document.getElementById('nChallengeBtn').classList.remove('show');
+    var b = document.getElementById('nChallengeBtn'); if (b) { b.style.opacity = '0.4'; b.style.cursor = 'default'; b.textContent = '终极挑战'; b.title = '需通关全部32关后解锁'; }
     backToEntry();
   }
 }
@@ -1406,7 +1443,7 @@ async function grammarStartupSync(){
   if(!gw.length)return;
   // Calculate expected weekly score from completed levels
   var expected=0;
-  gw.forEach(function(id){expected+=id===32?500:20;});
+  gw.forEach(function(id){expected+=id===32?100:id==='challenge'?1000:20;});
   try{
     var ws=getWeekStart();
     var r=await fetch(SB_URL+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+ws+'&select=grammar_score',{headers:sbH()});
@@ -1444,7 +1481,7 @@ async function loadGrammarBoard(){
 //  初始化
 // ══════════════════════════════════════════════════════════
 loadProg();
-if (allDone()) document.getElementById('nChallengeBtn').classList.add('show');
+if (allDone()) unlockChallengeBtn();
 grammarStartupSync();
 </script>
 </body>
