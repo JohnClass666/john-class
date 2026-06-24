@@ -648,10 +648,10 @@ let forestCurrentId = 1;
 function loadProg() {
   try { const r = localStorage.getItem(SK); if (r) { const p = JSON.parse(r); progress = { ...progress, ...p }; } } catch(e) {}
   if (!progress.completed) progress.completed = [];
-  forestCurrentId = 1;
+  forestCurrentId = progress.forestCurrentId || 1;
   while (progress.completed.includes(forestCurrentId) && forestCurrentId < LEVELS.length) forestCurrentId++;
 }
-function saveProg() { localStorage.setItem(SK, JSON.stringify(progress)); }
+function saveProg() { progress.forestCurrentId = forestCurrentId; localStorage.setItem(SK, JSON.stringify(progress)); }
 function isDone(id) { return progress.completed.includes(id); }
 function allDone() { return LEVELS.every(l => isDone(l.id)); }
 
@@ -685,11 +685,15 @@ async function awardGrammarScore(levelId,pts){
     await sbUpsert('weekly_scores',wPayload);
     var gw=getGrammarWeek();gw.push(levelId);saveGrammarWeek(gw);
   }
-  // cumulative score
+  // cumulative score — 同时写 grammar_scores + leaderboard + weekly_scores
   if(!isGrammarCumuDone(levelId)){
     var cRows=await sbGet('grammar_scores','user_name=eq.'+encodeURIComponent(name)+'&select=score');
     var cCur=cRows&&cRows.length?cRows[0].score||0:0;
     await sbUpsert('grammar_scores',{user_name:name,score:cCur+pts,updated_at:new Date().toISOString()});
+    // ★ 同步写入 leaderboard 总榜
+    var lbRows=await sbGet('leaderboard','name=eq.'+encodeURIComponent(name)+'&select=score');
+    var lbCur=lbRows&&lbRows.length?lbRows[0].score||0:0;
+    await sbUpsert('leaderboard',{name:name,score:lbCur+pts,grade:'',updated_at:new Date().toISOString()});
     var gc=getGrammarCumu();gc.push(levelId);saveGrammarCumu(gc);
   }
 }
@@ -745,9 +749,7 @@ function renderNormalMap() {
       return `<div class="n-chapter">
         <div class="n-ch-title">${ch.icon} ${ch.name} <span class="n-ch-count">${d}/${ch.levels.length}</span></div>
         <div class="n-ch-nodes">${ch.levels.map(l => {
-          let cls = 'locked';
-          if (isDone(l.id)) cls = 'done';
-          else if (l.id === 1 || isDone(l.id - 1)) cls = 'current';
+          let cls = isDone(l.id) ? 'done' : 'current';
           return `<div class="n-node ${cls}" onclick="normalOpen(${l.id})" title="${l.title}">${l.id}</div>`;
         }).join('')}</div>
       </div>`;
@@ -755,7 +757,6 @@ function renderNormalMap() {
 }
 
 function normalOpen(id) {
-  if (id > 1 && !isDone(id - 1) && !isDone(id)) return;
   normalOpenLevelId = id;
   const lvl = LEVELS.find(l => l.id === id);
   quizAnswers = {};
@@ -927,21 +928,21 @@ function submitForestQuiz(levelId) {
   }
 
   if (passed) {
-    // award grammar score
     var pts = levelId === 32 ? 500 : 20;
     awardGrammarScore(levelId, pts);
-    // 推进 forestCurrentId 到下一个未完成的关卡
     forestCurrentId = 1;
     while (progress.completed.includes(forestCurrentId) && forestCurrentId < LEVELS.length) forestCurrentId++;
-
+    saveProg();
     if (allDone()) {
       document.getElementById('nChallengeBtn').classList.add('show');
       document.getElementById('fInfo').textContent = '🏆 全部通关！点击首页终极挑战';
     }
-    setTimeout(() => {
-      closeLvlOverlay();
-      setTimeout(() => { forestCelebrate(); setTimeout(() => buildForestScene(), 600); }, 300);
-    }, 1200);
+    // 添加手动"继续"按钮，不再自动关闭，让学生有时间看答案
+    var block2 = document.getElementById('forestResult');
+    if (block2) {
+      var curHTML = block2.innerHTML;
+      block2.innerHTML = curHTML + '<button class="btn btn-p" style="margin-top:16px;width:100%" onclick="var r=document.getElementById(\'forestResult\');r.classList.remove(\'show\');closeLvlOverlay();setTimeout(function(){forestCelebrate();setTimeout(function(){buildForestScene();},600);},300);">继续闯关 →</button>';
+    }
   }
 }
 
@@ -993,7 +994,6 @@ function gradeQuiz(lvl, prefix) {
 }
 
 function onLevelPassed(levelId, mode) {
-  // award grammar score: 20 for normal levels, 500 for comprehensive (level 32)
   var pts = levelId === 32 ? 500 : 20;
   awardGrammarScore(levelId, pts);
   if (allDone()) {
@@ -1002,10 +1002,13 @@ function onLevelPassed(levelId, mode) {
   }
   if (mode === 'normal') {
     renderNormalMap();
-    // 自动打开下一关
+    // 在结果块里加「下一关」按钮，不自动跳，让学生有时间看答案
     const nextId = levelId + 1;
     const nextLvl = LEVELS.find(l => l.id === nextId);
-    if (nextLvl) setTimeout(() => normalOpen(nextId), 600);
+    var block = document.getElementById('normalResult');
+    if (block && nextLvl) {
+      block.innerHTML += '<button class="btn btn-p" style="margin-top:12px;width:100%" onclick="normalOpen('+nextId+')">进入下一关（第'+nextId+'关）→</button>';
+    }
   }
 }
 
@@ -1345,8 +1348,8 @@ function checkChallenge() {
   const transPct = Math.round(transCorrect / total * 100);
   const overallPct = Math.round((structCorrect + transCorrect) / (total * 2) * 100);
 
-  // award 500 pts for completing comprehensive challenge
-  awardGrammarScore(32, 500);
+  // 终极挑战独立计分，用 'challenge' 作 ID，不与第 32 关冲突
+  awardGrammarScore('challenge', 500);
 
   const block = document.getElementById('chResult');
   block.innerHTML = `
