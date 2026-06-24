@@ -493,7 +493,10 @@ function checkAll(){
   });
   const s=filteredSets()[curIdx];
   const allCorrect=(got===gaps.length);
-  if(allCorrect)done[s.grade+'-'+s.id]=true;
+  if(allCorrect){
+    done[s.grade+'-'+s.id]=true;
+    awardGrammarScore(s.grade+'-'+s.id, 20);
+  }
   saveDone();
   renderSetBar();showResult(got,gaps.length,details,allCorrect);
 }
@@ -552,6 +555,46 @@ function go(e, href) {
   var ov = document.getElementById('overlay');
   ov.classList.add('show');
   setTimeout(function(){ window.location.href = href; }, 260);
+}
+
+// ══════════════════════════════════════════════════════
+//  Supabase — 语法分写入 leaderboard + weekly_scores
+// ══════════════════════════════════════════════════════
+var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
+function sbH(){return{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};}
+function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+async function sbGet(t,q){try{var r=await fetch(SB_URL+'/rest/v1/'+t+'?'+q,{headers:sbH()});return r.ok?await r.json():[];}catch(e){return[];}}
+async function sbUpsert(t,data){try{await fetch(SB_URL+'/rest/v1/'+t,{method:'POST',headers:Object.assign({},sbH(),{'Prefer':'resolution=merge-duplicates'}),body:JSON.stringify(data)});}catch(e){}}
+function getGrammarWeek(){try{return JSON.parse(localStorage.getItem('jc_grammar_week_'+getWeekStart())||'[]');}catch(e){return[];}}
+function saveGrammarWeek(a){localStorage.setItem('jc_grammar_week_'+getWeekStart(),JSON.stringify(a));}
+function getGrammarCumu(){try{return JSON.parse(localStorage.getItem('jc_grammar_cumulative')||'[]');}catch(e){return[];}}
+function saveGrammarCumu(a){localStorage.setItem('jc_grammar_cumulative',JSON.stringify(a));}
+function isGrammarWeekDone(id){return getGrammarWeek().indexOf(id)!==-1;}
+function isGrammarCumuDone(id){return getGrammarCumu().indexOf(id)!==-1;}
+
+async function awardGrammarScore(levelId,pts){
+  var name=localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name');
+  if(!name||name==='同学')return;
+  if(!isGrammarWeekDone(levelId)){
+    var ws=getWeekStart();
+    var wRows=await sbGet('weekly_scores','user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+ws+'&select=id,grammar_score');
+    var wCur=0,weid=null;
+    if(wRows&&wRows.length){wCur=wRows[0].grammar_score||0;weid=wRows[0].id;}
+    var wPayload={user_name:name,week_start:ws,grammar_score:wCur+pts,updated_at:new Date().toISOString()};
+    if(weid)wPayload.id=weid;
+    await sbUpsert('weekly_scores',wPayload);
+    var gw=getGrammarWeek();gw.push(levelId);saveGrammarWeek(gw);
+  }
+  if(!isGrammarCumuDone(levelId)){
+    var cRows=await sbGet('grammar_scores','user_name=eq.'+encodeURIComponent(name)+'&select=score');
+    var cCur=cRows&&cRows.length?cRows[0].score||0:0;
+    await sbUpsert('grammar_scores',{user_name:name,score:cCur+pts,updated_at:new Date().toISOString()});
+    var lbRows=await sbGet('leaderboard','name=eq.'+encodeURIComponent(name)+'&select=score');
+    var lbCur=lbRows&&lbRows.length?lbRows[0].score||0:0;
+    await sbUpsert('leaderboard',{name:name,score:lbCur+pts,grade:'',updated_at:new Date().toISOString()});
+    var gc=getGrammarCumu();gc.push(levelId);saveGrammarCumu(gc);
+  }
 }
 
 init();
