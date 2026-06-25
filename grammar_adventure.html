@@ -701,10 +701,6 @@ async function awardGrammarScore(levelId,pts){
     var cRows=await sbGet('grammar_scores','user_name=eq.'+encodeURIComponent(name)+'&select=score');
     var cCur=cRows&&cRows.length?cRows[0].score||0:0;
     await sbUpsert('grammar_scores',{user_name:name,score:cCur+pts,updated_at:new Date().toISOString()});
-    // ★ 同步写入 leaderboard 总榜
-    var lbRows=await sbGet('leaderboard','name=eq.'+encodeURIComponent(name)+'&select=score');
-    var lbCur=lbRows&&lbRows.length?lbRows[0].score||0:0;
-    await sbUpsert('leaderboard',{name:name,score:lbCur+pts,grade:'',updated_at:new Date().toISOString()});
     var gc=getGrammarCumu();gc.push(levelId);saveGrammarCumu(gc);
   }
 }
@@ -1417,7 +1413,7 @@ function resetAll() {
     progress = { completed: [], quizResults: {} };
     forestCurrentId = 1;
     quizAnswers = {};
-    var b = document.getElementById('nChallengeBtn'); if (b) { b.style.opacity = '0.4'; b.style.cursor = 'default'; b.textContent = '终极挑战'; b.title = '需通关全部32关后解锁'; }
+    var b = document.getElementById('nChallengeBtn'); if (b) { b.style.opacity = '0.4'; b.style.cursor = 'default'; b.textContent = '终极挑战'; b.title = '需通关全部32关后解锁'; b.onclick = function(){ if(allDone())startChallenge(); }; }
     backToEntry();
   }
 }
