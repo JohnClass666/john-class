@@ -3752,7 +3752,7 @@ function lbCacheSave(rows){try{lsSet(LB_KEY,JSON.stringify({rows,ts:Date.now()})
 function lbCacheLoad(){try{const r=JSON.parse(lsGet(LB_KEY)||"{}");return r.rows||[];}catch(e){return [];}}
 
 /* ---- 上传当前分数（每次得分时调用，带防抖） ---- */
-let _lbTimer=null;
+let _lbTimer=null,_stageAborted=false;
 function lbUpdate(){
  if(!S||!S.name)return;
  clearTimeout(_lbTimer);
@@ -4198,6 +4198,7 @@ function runSpellingQuiz(u,pool,i,acc,mode){
    const key=mode;
    return stageResult(u,key,mode==="R"?"第一关·拼写":mode==="W"?"第二关·拼写":"第三关·拼写",acc);
  }
+ _stageAborted=false;
  clear();const w=pool[i];
  const isEn=(mode==="W");
  const d=document.createElement("div");d.className="screen active";
@@ -4221,8 +4222,8 @@ function runSpellingQuiz(u,pool,i,acc,mode){
   <div class="spell-answer" id="sanswer"></div>
   <button class="spell-submit" id="ssubmit">确认</button>`;
  app.appendChild(d);
- if(mode==="L"){const play=()=>speak(w.en);d.querySelector("#bigspk").onclick=play;setTimeout(play,300);}
- d.querySelector("#bk").onclick=()=>{sfx.tap();go({name:mode==="R"?"reading":mode==="W"?"writing":"listening",arg:u.n});};
+ if(mode==="L"){const play=()=>speak(w.en);d.querySelector("#bigspk").onclick=play;setTimeout(()=>{if(!_stageAborted)play();},300);}
+ d.querySelector("#bk").onclick=()=>{sfx.tap();_stageAborted=true;go({name:mode==="R"?"reading":mode==="W"?"writing":"listening",arg:u.n});};
  const inp=d.querySelector("#sinput");
  const answerEl=d.querySelector("#sanswer");
  const submitBtn=d.querySelector("#ssubmit");
@@ -4238,13 +4239,13 @@ function runSpellingQuiz(u,pool,i,acc,mode){
      const base=PT_SPELL[mode]+(acc.combo>=PT.comboFrom?PT.comboStep:0);
      acc.gain+=base;addPoints(base);
      if(acc.combo>=PT.comboFrom){showCombo(acc.combo);sfx.combo(acc.combo);}else sfx.correct();
-     afterPoint(()=>setTimeout(()=>runSpellingQuiz(u,pool,i+1,acc,mode),700));
+     afterPoint(()=>setTimeout(()=>{if(!_stageAborted)runSpellingQuiz(u,pool,i+1,acc,mode);},700));
    }else{
      inp.classList.add('wrong');
      const correctStr=isEn?w.en:w.s.map(x=>`${x[0]?x[0]+" ":""}${x[1]}`).join("；");
      answerEl.style.color='var(--warn)';answerEl.textContent=`✗ 正确答案：${correctStr}`;
      markResult(w,false,mode);acc.combo=0;acc.wrong++;sfx.wrong();
-     setTimeout(()=>runSpellingQuiz(u,pool,i+1,acc,mode),1200);
+     setTimeout(()=>{if(!_stageAborted)runSpellingQuiz(u,pool,i+1,acc,mode);},1200);
    }
  };
  submitBtn.onclick=doSubmit;inp.addEventListener('keydown',e=>{if(e.key==='Enter')doSubmit();});
@@ -4719,7 +4720,7 @@ SCREENS.home=function(){clear();checkGodMaintained();
  d.querySelector('#jk-medalbadge').onclick=()=>{sfx.tap();go('milestones');};
  d.querySelector('#jk-lb').onclick=()=>{sfx.tap();go('leaderboard');};
  d.querySelector('#jk-rc').onclick=()=>{sfx.tap();go('reviewCenter');};
- d.querySelector('#jk-p2').onclick=()=>{if(!allUnitsCleared()&&!gd().pass2){sfx.wrong();return;}sfx.tap();confirmPass2();};
+ d.querySelector('#jk-p2').onclick=()=>{if(gd().pass2)return;if(!allUnitsCleared()){sfx.wrong();return;}sfx.tap();confirmPass2();};
  d.querySelector('#jk-eb').onclick=()=>{if(due){sfx.tap();go('review');}};
  d.querySelector('#jk-daily').onclick=()=>{if(!dailyDone()){sfx.tap();monsterUnlocked()?go('monster'):go('daily');}};
  d.querySelector('#jk-sp').onclick=()=>{sfx.tap();go('speed');};
@@ -4820,6 +4821,7 @@ SCREENS.reading=function(n){
 };
 function runReading(u,pool,i,acc){
  if(i>=pool.length)return stageResult(u,"R","第一关 · 阅读",acc);
+ _stageAborted=false;
  clear();const w=pool[i];const opts=build6cn(u,w);
  const d=document.createElement("div");d.className="screen active";
  const resumeMsg=i>0?`<div class="resumetip">↩ 已自动续上，从第 ${i+1} 题继续</div>`:"";
@@ -4833,17 +4835,17 @@ function runReading(u,pool,i,acc){
  app.appendChild(d);
  bindSpeak(d,w.en);
  if(i===0)clearQP(u.n,'R'); // 全新开始时清掉旧存档
- d.querySelector("#bk").onclick=()=>{sfx.tap();go({name:"unit",arg:u.n});};
+ d.querySelector("#bk").onclick=()=>{sfx.tap();_stageAborted=true;go({name:"unit",arg:u.n});};
  const wrap=d.querySelector("#opts");let answered=false;
  wrap.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>{if(answered)return;answered=true;const o=opts[+btn.dataset.k];
   wrap.querySelectorAll(".opt").forEach(b=>{const oo=opts[+b.dataset.k];if(oo.correct)b.classList.add("right");else if(b===btn)b.classList.add("wrong");else b.classList.add("dim");});
   speak(w.en);
   if(o.correct){markResult(w,true,"R");acc.got++;acc.combo++;acc.maxCombo=Math.max(acc.maxCombo||0,acc.combo);const add=Math.max(1,Math.round((PT.read+(acc.combo>=PT.comboFrom?PT.comboStep:0))*repeatMult(u.n,"R")));acc.gain+=add;addPoints(add);
     saveQP(u.n,'R',{pool:pool.map(x=>x.id),i:i+1,got:acc.got,gain:acc.gain,combo:acc.combo,maxCombo:acc.maxCombo,wrong:acc.wrong});
-    if(acc.combo>=PT.comboFrom){showCombo(acc.combo);sfx.combo(acc.combo);}else sfx.correct();afterPoint(()=>setTimeout(()=>runReading(u,pool,i+1,acc),600));}
+    if(acc.combo>=PT.comboFrom){showCombo(acc.combo);sfx.combo(acc.combo);}else sfx.correct();afterPoint(()=>setTimeout(()=>{if(!_stageAborted)runReading(u,pool,i+1,acc);},600));}
   else{markResult(w,false,"R");acc.combo=0;acc.wrong++;sfx.wrong();
     saveQP(u.n,'R',{pool:pool.map(x=>x.id),i:i+1,got:acc.got,gain:acc.gain,combo:acc.combo,maxCombo:acc.maxCombo||0,wrong:acc.wrong});
-    setTimeout(()=>runReading(u,pool,i+1,acc),950);}
+    setTimeout(()=>{if(!_stageAborted)runReading(u,pool,i+1,acc);},950);}
  });
 }
 
@@ -4862,6 +4864,7 @@ SCREENS.writing=function(n){
 };
 function runWriting(u,pool,i,acc){
  if(i>=pool.length)return stageResult(u,"W","第二关 · 写作",acc);
+ _stageAborted=false;
  clear();const w=pool[i];const opts=buildOptions(u,w);
  const cn=w.s.map(x=>`${x[0]?`<span class="qp">${x[0]}</span>`:""}${x[1]}`).join("　");
  const d=document.createElement("div");d.className="screen active";
@@ -4874,17 +4877,17 @@ function runWriting(u,pool,i,acc){
   <div class="opts" id="opts">${opts.map((o,k)=>`<button class="opt" data-k="${k}">${o.en}</button>`).join("")}</div>`;
  app.appendChild(d);
  if(i===0)clearQP(u.n,'W');
- d.querySelector("#bk").onclick=()=>{sfx.tap();go({name:"unit",arg:u.n});};
+ d.querySelector("#bk").onclick=()=>{sfx.tap();_stageAborted=true;go({name:"unit",arg:u.n});};
  const wrap=d.querySelector("#opts");let answered=false;
  wrap.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>{if(answered)return;answered=true;const o=opts[+btn.dataset.k];
   wrap.querySelectorAll(".opt").forEach(b=>{const oo=opts[+b.dataset.k];if(oo.correct)b.classList.add("right");else if(b===btn)b.classList.add("wrong");else b.classList.add("dim");});
   speak(w.en);
   if(o.correct){markResult(w,true,"W");acc.got++;acc.combo++;acc.maxCombo=Math.max(acc.maxCombo||0,acc.combo);const add=Math.max(1,Math.round((PT.write+(acc.combo>=PT.comboFrom?PT.comboStep:0))*repeatMult(u.n,"W")));acc.gain+=add;addPoints(add);
     saveQP(u.n,'W',{pool:pool.map(x=>x.id),i:i+1,got:acc.got,gain:acc.gain,combo:acc.combo,maxCombo:acc.maxCombo,wrong:acc.wrong});
-    if(acc.combo>=PT.comboFrom){showCombo(acc.combo);sfx.combo(acc.combo);}else sfx.correct();afterPoint(()=>setTimeout(()=>runWriting(u,pool,i+1,acc),600));}
+    if(acc.combo>=PT.comboFrom){showCombo(acc.combo);sfx.combo(acc.combo);}else sfx.correct();afterPoint(()=>setTimeout(()=>{if(!_stageAborted)runWriting(u,pool,i+1,acc);},600));}
   else{markResult(w,false,"W");acc.combo=0;acc.wrong++;sfx.wrong();
     saveQP(u.n,'W',{pool:pool.map(x=>x.id),i:i+1,got:acc.got,gain:acc.gain,combo:acc.combo,maxCombo:acc.maxCombo||0,wrong:acc.wrong});
-    setTimeout(()=>runWriting(u,pool,i+1,acc),950);}
+    setTimeout(()=>{if(!_stageAborted)runWriting(u,pool,i+1,acc);},950);}
  });
 }
 
@@ -4903,6 +4906,7 @@ SCREENS.listening=function(n){
 };
 function runListening(u,pool,i,acc){
  if(i>=pool.length)return stageResult(u,"L","第三关 · 听力",acc);
+ _stageAborted=false;
  clear();const w=pool[i];const opts=build6cn(u,w);
  const d=document.createElement("div");d.className="screen active";
  const resumeMsg=i>0?`<div class="resumetip">↩ 已自动续上，从第 ${i+1} 题继续</div>`:"";
@@ -4915,17 +4919,17 @@ function runListening(u,pool,i,acc){
   <div class="opts cn" id="opts">${opts.map((o,k)=>`<button class="opt" data-k="${k}">${o.cn}</button>`).join("")}</div>`;
  app.appendChild(d);
  if(i===0)clearQP(u.n,'L');
- d.querySelector("#bk").onclick=()=>{sfx.tap();go({name:"unit",arg:u.n});};
- const play=()=>speak(w.en);d.querySelector("#bigspk").onclick=play;setTimeout(play,300);
+ d.querySelector("#bk").onclick=()=>{sfx.tap();_stageAborted=true;go({name:"unit",arg:u.n});};
+ const play=()=>speak(w.en);d.querySelector("#bigspk").onclick=play;setTimeout(()=>{if(!_stageAborted)play();},300);
  const wrap=d.querySelector("#opts");let answered=false;
  wrap.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>{if(answered)return;answered=true;const o=opts[+btn.dataset.k];
   wrap.querySelectorAll(".opt").forEach(b=>{const oo=opts[+b.dataset.k];if(oo.correct)b.classList.add("right");else if(b===btn)b.classList.add("wrong");else b.classList.add("dim");});
   if(o.correct){markResult(w,true,"W");acc.got++;acc.combo++;acc.maxCombo=Math.max(acc.maxCombo||0,acc.combo);const add=Math.max(1,Math.round((PT.listen+(acc.combo>=PT.comboFrom?PT.comboStep:0))*repeatMult(u.n,"L")));acc.gain+=add;addPoints(add);
     saveQP(u.n,'L',{pool:pool.map(x=>x.id),i:i+1,got:acc.got,gain:acc.gain,combo:acc.combo,maxCombo:acc.maxCombo,wrong:acc.wrong});
-    if(acc.combo>=PT.comboFrom){showCombo(acc.combo);sfx.combo(acc.combo);}else sfx.correct();afterPoint(()=>setTimeout(()=>runListening(u,pool,i+1,acc),650));}
+    if(acc.combo>=PT.comboFrom){showCombo(acc.combo);sfx.combo(acc.combo);}else sfx.correct();afterPoint(()=>setTimeout(()=>{if(!_stageAborted)runListening(u,pool,i+1,acc);},650));}
   else{markResult(w,false,"W");acc.combo=0;acc.wrong++;sfx.wrong();
     saveQP(u.n,'L',{pool:pool.map(x=>x.id),i:i+1,got:acc.got,gain:acc.gain,combo:acc.combo,maxCombo:acc.maxCombo||0,wrong:acc.wrong});
-    setTimeout(()=>runListening(u,pool,i+1,acc),1000);}
+    setTimeout(()=>{if(!_stageAborted)runListening(u,pool,i+1,acc);},1000);}
  });
 }
 
@@ -5080,12 +5084,13 @@ function buildMixedQueue(pool, use8opts, useSeedRng, seedExtra){
 function runMixedQuiz(queue,i,acc,cfg){
  // cfg = {title, n_opts:6|8, backFn, doneFn}
  if(i>=queue.length){return cfg.doneFn(acc);}
+ _stageAborted=false;
  clear();const {w,mode}=queue[i];
  const use8=cfg.n_opts===8;
  const hud=`<div class="bar"><button class="back" id="bk">‹</button><div class="htitle">${cfg.title}</div></div>
   <div class="qhud"><div class="tk"><i style="width:${i/queue.length*100}%"></i></div><div class="ct">${i+1} / ${queue.length}</div></div>`;
  const d=document.createElement("div");d.className="screen active";
- const next=(delay)=>setTimeout(()=>runMixedQuiz(queue,i+1,acc,cfg),delay);
+ const next=(delay)=>setTimeout(()=>{if(!_stageAborted)runMixedQuiz(queue,i+1,acc,cfg);},delay);
  if(mode==="L"){
   const opts=use8?build8cn(w):build6cn(unitOf(w)||UNITS[0],w);
   const cls=use8?"cn cn8":"cn";
@@ -5093,8 +5098,8 @@ function runMixedQuiz(queue,i,acc,cfg){
     <button class="bigspk" id="bigspk">▶</button><div class="replay">点击重听</div></div>
    <div class="opts ${cls}" id="opts">${opts.map((o,k)=>`<button class="opt" data-k="${k}">${o.cn}</button>`).join("")}</div>`;
   app.appendChild(d);
-  const play=()=>speak(w.en);d.querySelector("#bigspk").onclick=play;setTimeout(play,300);
-  d.querySelector("#bk").onclick=()=>{sfx.tap();cfg.backFn();};
+  const play=()=>speak(w.en);d.querySelector("#bigspk").onclick=play;setTimeout(()=>{if(!_stageAborted)play();},300);
+  d.querySelector("#bk").onclick=()=>{sfx.tap();_stageAborted=true;cfg.backFn();};
   const wrap=d.querySelector("#opts");let answered=false;
   wrap.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>{if(answered)return;answered=true;const o=opts[+btn.dataset.k];
    wrap.querySelectorAll(".opt").forEach(b=>{const oo=opts[+b.dataset.k];if(oo.correct)b.classList.add("right");else if(b===btn)b.classList.add("wrong");else b.classList.add("dim");});
@@ -5109,7 +5114,7 @@ function runMixedQuiz(queue,i,acc,cfg){
   d.innerHTML=hud+`<div class="qcn"><div class="ql">哪个单词是这个意思</div><div class="qt">${cn}</div></div>
    <div class="opts ${cls}" id="opts">${opts.map((o,k)=>`<button class="opt" data-k="${k}">${o.en}</button>`).join("")}</div>`;
   app.appendChild(d);
-  d.querySelector("#bk").onclick=()=>{sfx.tap();cfg.backFn();};
+  d.querySelector("#bk").onclick=()=>{sfx.tap();_stageAborted=true;cfg.backFn();};
   const wrap=d.querySelector("#opts");let answered=false;
   wrap.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>{if(answered)return;answered=true;const o=opts[+btn.dataset.k];
    wrap.querySelectorAll(".opt").forEach(b=>{const oo=opts[+b.dataset.k];if(oo.correct)b.classList.add("right");else if(b===btn)b.classList.add("wrong");else b.classList.add("dim");});
@@ -5125,7 +5130,7 @@ function runMixedQuiz(queue,i,acc,cfg){
      ${TTS.ok?`<div class="q-spk">${speakBtn()}</div>`:""}</div>
    <div class="opts ${cls}" id="opts">${opts.map((o,k)=>`<button class="opt" data-k="${k}">${o.cn}</button>`).join("")}</div>`;
   app.appendChild(d);bindSpeak(d,w.en);
-  d.querySelector("#bk").onclick=()=>{sfx.tap();cfg.backFn();};
+  d.querySelector("#bk").onclick=()=>{sfx.tap();_stageAborted=true;cfg.backFn();};
   const wrap=d.querySelector("#opts");let answered=false;
   wrap.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>{if(answered)return;answered=true;const o=opts[+btn.dataset.k];
    wrap.querySelectorAll(".opt").forEach(b=>{const oo=opts[+b.dataset.k];if(oo.correct)b.classList.add("right");else if(b===btn)b.classList.add("wrong");else b.classList.add("dim");});
