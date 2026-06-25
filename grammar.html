@@ -590,9 +590,6 @@ async function awardGrammarScore(levelId,pts){
     var cRows=await sbGet('grammar_scores','user_name=eq.'+encodeURIComponent(name)+'&select=score');
     var cCur=cRows&&cRows.length?cRows[0].score||0:0;
     await sbUpsert('grammar_scores',{user_name:name,score:cCur+pts,updated_at:new Date().toISOString()});
-    var lbRows=await sbGet('leaderboard','name=eq.'+encodeURIComponent(name)+'&select=score');
-    var lbCur=lbRows&&lbRows.length?lbRows[0].score||0:0;
-    await sbUpsert('leaderboard',{name:name,score:lbCur+pts,grade:'',updated_at:new Date().toISOString()});
     var gc=getGrammarCumu();gc.push(levelId);saveGrammarCumu(gc);
   }
 }
