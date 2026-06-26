@@ -849,7 +849,7 @@ const levelOf=p=>{let lv=LEVELS[0];for(const l of LEVELS)if(p>=l.min)lv=l;return
 const nextLv=p=>LEVELS.find(l=>l.min>p)||null;
 const getErrors=()=>JSON.parse(localStorage.getItem('jc_prog_errors')||'[]');
 const saveErrors=arr=>localStorage.setItem('jc_prog_errors',JSON.stringify(arr));
-const todayKey=()=>'jc_prog_daily_'+new Date().toISOString().split('T')[0];
+const todayKey=()=>'jc_prog_daily_'+(function(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
 const dailyDone=()=>!!localStorage.getItem(todayKey());
 
 // ── AUDIO ──
@@ -869,7 +869,10 @@ function shuf(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor
 function lev(a,b){const m=a.length,n=b.length,d=[];for(let i=0;i<=m;i++){d[i]=Array(n+1);for(let j=0;j<=n;j++)d[i][j]=i?j?0:i:j;}for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=a[i-1]===b[j-1]?d[i-1][j-1]:1+Math.min(d[i-1][j],d[i][j-1],d[i-1][j-1]);return d[m][n];}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function seededShuf(arr,seed){const a=[...arr];let s=seed;for(let i=a.length-1;i>0;i--){s=(s*1664525+1013904223)&0xFFFFFFFF;const j=Math.abs(s)%(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
-function showV(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById(id).classList.add('on');}
+let _firstV=true;function showV(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById(id).classList.add('on');
+ if(_firstV){_firstV=false;history.replaceState({view:id},'','');}
+ else history.pushState({view:id},'','');}
+window.addEventListener('popstate',function(e){if(e.state&&e.state.view){document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById(e.state.view).classList.add('on');}});
 
 // ── SUPABASE ──
 async function syncScore(add){
@@ -884,7 +887,7 @@ async function syncScore(add){
     headers:{...SH,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},
     body:JSON.stringify({user_name:nm,score:spk+oral+nv})});}catch(e){}
   // weekly_scores
-  try{var d=new Date();d.setDate(d.getDate()-d.getDay());var ws=d.toISOString().split('T')[0];
+  try{var d=new Date();d.setDate(d.getDate()-d.getDay());var ws=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   var wr=await fetch(SB+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(nm)+'&week_start=eq.'+ws+'&select=id,programmer_score',{headers:SH});
   var wRows=wr.ok?await wr.json():[];var wCur=0,wEid=null;
   if(wRows&&wRows.length){wCur=wRows[0].programmer_score||0;wEid=wRows[0].id;}
@@ -1144,7 +1147,7 @@ function showDaily(){
     alert('今天的挑战已经完成了，明天再来！');return;
   }
   // 用日期作为种子选20个词
-  const seed=parseInt(new Date().toISOString().split('T')[0].replace(/-/g,''));
+  const seed=parseInt((function(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})().replace(/-/g,''));
   const pool=seededShuf([...WORDS],seed).slice(0,20);
   G={...G,pool,cur:0,score:0,combo:0,maxCombo:0,got:0,wrong:0,
      mode:'mcq',cat:'daily',flipped:false,answered:false,_daily:true};
