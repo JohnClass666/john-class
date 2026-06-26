@@ -3905,9 +3905,17 @@ function bindSpeak(scope,text){const b=scope.querySelector("#spk");if(b)b.onclic
 /* ============ ROUTER ============ */
 const app=document.getElementById("app");
 function go(s){render(s);}
-let _curScreenName=null;
+let _curScreenName=null,_firstRender=true;
 function render(s){window.scrollTo(0,0);_curScreenName=(typeof s==="string")?s:s.name;
+ var state=typeof s==="string"?{screen:s}:{screen:s.name,arg:s.arg};
+ if(_firstRender){_firstRender=false;history.replaceState(state,'','');}
+ else history.pushState(state,'','');
  if(typeof s==="string")SCREENS[s]();else SCREENS[s.name](s.arg);}
+window.addEventListener('popstate',function(e){
+ if(e.state&&e.state.screen){window.scrollTo(0,0);_curScreenName=e.state.screen;
+  if(e.state.arg!==undefined)SCREENS[e.state.screen](e.state.arg);
+  else SCREENS[e.state.screen]();}
+});
 
 /* ============ HELPERS ============ */
 function levelOf(p){let l=LEVELS[0];for(const x of LEVELS)if(p>=x.min)l=x;return l;}
