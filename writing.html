@@ -1193,10 +1193,14 @@ async function loadLB(){
 //  VIEWS
 // ──────────────────────────────────────────
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+let _firstV=true;
 function showV(id){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
   document.getElementById('v-'+id).classList.add('on');
+  if(_firstV){_firstV=false;history.replaceState({view:id},'','');}
+  else history.pushState({view:id},'','');
 }
+window.addEventListener('popstate',function(e){if(e.state&&e.state.view){document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById('v-'+e.state.view).classList.add('on');}});
 
 function switchTab(t){
   ['home','errors','lb','submit'].forEach(x=>{const el=document.getElementById('nb-'+x);if(el)el.classList.remove('on');});
