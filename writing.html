@@ -1137,15 +1137,9 @@ function dispAns(ans){
 // ──────────────────────────────────────────
 //  SUPABASE SYNC
 // ──────────────────────────────────────────
-function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.toISOString().split('T')[0];}
+function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 async function syncScore(){
   if(!username)return;
-  // grammar_scores (cumulative, never resets)
-  try{await fetch(`${SB}/rest/v1/grammar_scores`,{method:'POST',
-    headers:{...SH,'Content-Type':'application/json',
-      Prefer:'resolution=merge-duplicates,return=minimal'},
-    body:JSON.stringify({name:username,score:prog.totalScore,
-      updated_at:new Date().toISOString()})});}catch(e){}
   // weekly_scores (weekly leaderboard)
   try{
     var ws=getWeekStart();
