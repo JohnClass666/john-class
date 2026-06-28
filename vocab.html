@@ -4231,7 +4231,7 @@ function runSpellingQuiz(u,pool,i,acc,mode){
   <button class="spell-submit" id="ssubmit">确认</button>`;
  app.appendChild(d);
  if(mode==="L"){const play=()=>speak(w.en);d.querySelector("#bigspk").onclick=play;setTimeout(()=>{if(!_stageAborted)play();},300);}
- d.querySelector("#bk").onclick=()=>{sfx.tap();_stageAborted=true;go({name:mode==="R"?"reading":mode==="W"?"writing":"listening",arg:u.n});};
+ d.querySelector("#bk").onclick=()=>{sfx.tap();_stageAborted=true;go({name:"unit",arg:u.n});};
  const inp=d.querySelector("#sinput");
  const answerEl=d.querySelector("#sanswer");
  const submitBtn=d.querySelector("#ssubmit");
@@ -4944,7 +4944,7 @@ function runListening(u,pool,i,acc){
 /* ---------- 关卡结算：通关点亮 + 免考检查 ---------- */
 function stageResult(u,key,title,acc){
  clearQP(u.n,key); // 关卡做完，清掉进度存档
- const passed=acc.wrong===0?true:(acc.got/(acc.got+acc.wrong)>=0.6); // 正确率≥60%即通关
+ const passed=acc.wrong===0?true:(acc.got/(acc.got+acc.wrong)>=0.8); // 正确率≥80%即通关
  const firstClear=passed&&!unitStage(u.n)[key];
  const repeatN=unitStage(u.n)[key+"n"]||0; // 通关前的次数（clearStage后会+1）
  if(passed){clearStage(u.n,key);lbUpdate();} // 通关立即同步云端
@@ -4955,7 +4955,7 @@ function stageResult(u,key,title,acc){
   <div class="stagebadge ${passed?'pass':'fail'}">${passed?"✓":"✗"}</div>
   <div class="huge big">+${acc.gain}</div><div class="rl">本关获得积分</div>
   <div class="stats"><div class="st"><b>${acc.got}</b><span>答对</span></div><div class="st"><b>${acc.wrong}</b><span>答错</span></div><div class="st"><b>${Math.round(acc.got/Math.max(1,acc.got+acc.wrong)*100)}%</b><span>正确率</span></div></div>
-  ${passed?(firstClear?'<div class="passmsg">🎉 新关卡点亮！</div>':(repeatN>=2?'<div class="passmsg warn">🔁 重刷模式：积分已降至 10%</div>':'<div class="passmsg warn">🔁 重刷模式：积分已降至 30%</div>')):'<div class="passmsg warn">正确率达 60% 才能通关，再来一次吧</div>'}
+  ${passed?(firstClear?'<div class="passmsg">🎉 新关卡点亮！</div>':(repeatN>=2?'<div class="passmsg warn">🔁 重刷模式：积分已降至 10%</div>':'<div class="passmsg warn">🔁 重刷模式：积分已降至 30%</div>')):'<div class="passmsg warn">正确率达 80% 才能通关，再来一次吧</div>'}
   <button class="btn accent" id="cont">${passed?"返回单元":"再试一次"}</button>
   <button class="btn ghost" id="home">回到首页</button>`;
  app.appendChild(d);
