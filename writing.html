@@ -1193,14 +1193,18 @@ async function loadLB(){
 //  VIEWS
 // ──────────────────────────────────────────
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-let _firstV=true;
 function showV(id){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
   document.getElementById('v-'+id).classList.add('on');
-  if(_firstV){_firstV=false;history.replaceState({view:id},'','');}
-  else history.pushState({view:id},'','');
+  var hash='#v-'+id;
+  if(location.hash!==hash)location.hash=hash;
 }
-window.addEventListener('popstate',function(e){if(e.state&&e.state.view){document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById('v-'+e.state.view).classList.add('on');}});
+function _handleWHash(){
+  var h=location.hash.slice(1);
+  var el=h?document.getElementById(h):null;
+  if(el){document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));el.classList.add('on');}
+}
+window.addEventListener('hashchange',_handleWHash);
 
 function switchTab(t){
   ['home','errors','lb','submit'].forEach(x=>{const el=document.getElementById('nb-'+x);if(el)el.classList.remove('on');});
