@@ -708,22 +708,19 @@ async function awardGrammarScore(levelId,pts){
 // ══════════════════════════════════════════════════════════
 //  路由（浏览器返回键支持）
 // ══════════════════════════════════════════════════════════
-let _gFirst=true,_gPop=false;
 function goGView(name){
- if(!_gPop){
-  if(_gFirst){_gFirst=false;history.replaceState({gview:name},'','');}
-  else history.pushState({gview:name},'','');
- }
- _gPop=false;
+  var hash='#'+name;
+  if(location.hash===hash)return;
+  location.hash=hash;
 }
-window.addEventListener('popstate',function(e){
- if(e.state&&e.state.gview){_gPop=true;
-  if(e.state.gview==='entry')backToEntry();
-  else if(e.state.gview==='normal')startNormal();
-  else if(e.state.gview==='forest')startForest();
-  else if(e.state.gview==='challenge')startChallenge();
- }
-});
+function _handleGHash(){
+  var name=location.hash.slice(1);
+  if(name==='normal')startNormal();
+  else if(name==='forest')startForest();
+  else if(name==='challenge')startChallenge();
+  else backToEntry();
+}
+window.addEventListener('hashchange',_handleGHash);
 
 // ══════════════════════════════════════════════════════════
 //  入口
@@ -1503,6 +1500,7 @@ async function loadGrammarBoard(){
 loadProg();
 if (allDone()) unlockChallengeBtn();
 grammarStartupSync();
+if(location.hash&&location.hash.length>1){_handleGHash();}
 </script>
 </body>
   <script src="audio.js"></script>
