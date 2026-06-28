@@ -111,6 +111,109 @@ html[data-incoming-slide="1"] .page-wrap{transform:translateY(100%)}
   .tool-ic{width:46px;height:46px}
   .tool-name{font-size:15px}
 }
+
+/* ══════ 公共栏 · Bulletin Board ══════ */
+.bulletin{
+  position:relative;margin-top:28px;margin-bottom:0;padding:12px 14px 15px;
+  border-radius:var(--r-lg);cursor:default;user-select:none;
+  background:
+    repeating-linear-gradient(0deg,rgba(0,0,0,.022) 0,rgba(0,0,0,.022) 1px,transparent 1px,transparent 6px),
+    repeating-linear-gradient(90deg,rgba(0,0,0,.016) 0,rgba(0,0,0,.016) 1px,transparent 1px,transparent 9px),
+    linear-gradient(148deg,#C9962A,#A87820 55%,#8A6018);
+  box-shadow:
+    inset 0 1px 0 rgba(255,210,110,.22),
+    0 2px 0 rgba(0,0,0,.10),
+    0 6px 20px rgba(80,48,8,.22);
+}
+.bulletin-pin{
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+  width:28px;height:28px;z-index:3;
+  display:flex;align-items:center;justify-content:center;
+  filter:drop-shadow(0 3px 5px rgba(0,0,0,.35)) drop-shadow(0 1px 2px rgba(0,0,0,.2));
+}
+.bulletin-paper{
+  background:linear-gradient(160deg,#FFFEF7,#FFF9EC);
+  border-radius:6px;
+  padding:12px 14px 13px;
+  transform:rotate(-0.5deg);
+  transform-origin:center top;
+  box-shadow:
+    1px 2px 0 rgba(0,0,0,.04),
+    3px 6px 12px rgba(40,20,5,.16),
+    inset 0 1px 0 rgba(255,255,255,.9);
+  position:relative;
+}
+.bulletin-paper::before{
+  content:'';display:block;height:1.5px;
+  background:linear-gradient(90deg,transparent,rgba(173,122,30,.18),transparent);
+  margin:0 -14px 10px;
+}
+.bulletin-hd{
+  display:flex;align-items:center;gap:6px;
+  font-size:10px;font-weight:700;letter-spacing:.20em;
+  color:var(--faint);text-transform:uppercase;margin-bottom:8px;
+}
+.bulletin-hd-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--accent);flex:0 0 auto;
+  box-shadow:0 0 0 2px rgba(173,122,30,.18);
+}
+.bulletin-body{
+  font-size:15px;line-height:1.9;color:var(--ink);
+  min-height:20px;word-break:break-word;white-space:pre-wrap;
+  font-family:"STXingkai","KaiTi","楷体","STKaiti",Georgia,"Palatino Linotype","Book Antiqua",Palatino,serif;
+  letter-spacing:.05em;
+}
+.bulletin-body.empty{
+  color:var(--faint);font-style:italic;font-size:13px;
+  font-family:var(--fnt);letter-spacing:0;
+}
+.bulletin-hint{display:none;}
+/* Edit modal */
+.bulletin-modal{
+  position:fixed;inset:0;z-index:200;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding:0 0 env(safe-area-inset-bottom);
+  background:rgba(43,29,8,.5);backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  opacity:0;pointer-events:none;transition:opacity .22s;
+}
+.bulletin-modal.show{opacity:1;pointer-events:all;}
+.bulletin-box{
+  background:var(--bg);border:1.5px solid var(--hair);
+  border-radius:var(--r-lg) var(--r-lg) 0 0;
+  padding:28px 22px calc(28px + env(safe-area-inset-bottom));
+  width:100%;max-width:480px;
+  box-shadow:0 -8px 32px rgba(40,20,5,.16);
+  transform:translateY(30px);transition:transform .28s cubic-bezier(.22,1,.36,1);
+}
+.bulletin-modal.show .bulletin-box{transform:translateY(0);}
+.bulletin-box-title{font-size:17px;font-weight:600;color:var(--ink);margin-bottom:16px;letter-spacing:-.01em;}
+.bulletin-input{
+  width:100%;padding:12px 14px;border:1.5px solid var(--hair);
+  border-radius:var(--r-sm);font-size:16px;font-family:var(--fnt);
+  color:var(--ink);background:var(--bg3);outline:none;
+  transition:border-color .18s;-webkit-appearance:none;margin-bottom:8px;
+}
+.bulletin-input:focus{border-color:var(--accent);}
+.bulletin-textarea{
+  width:100%;padding:12px 14px;border:1.5px solid var(--hair);
+  border-radius:var(--r-sm);font-size:14px;font-family:var(--fnt);
+  color:var(--ink);background:var(--bg3);outline:none;
+  transition:border-color .18s;-webkit-appearance:none;
+  resize:none;height:120px;line-height:1.7;margin-bottom:8px;
+}
+.bulletin-textarea:focus{border-color:var(--accent);}
+.bulletin-btns{display:flex;gap:10px;margin-top:4px;}
+.bulletin-btn{
+  flex:1;padding:14px;border:none;border-radius:var(--r-md);
+  font-family:var(--fnt);font-size:16px;font-weight:600;cursor:pointer;
+  transition:opacity .12s,transform .1s;
+}
+.bulletin-btn:active{opacity:.78;transform:scale(.98);}
+.bulletin-btn.primary{background:var(--accent);color:#FFF8E8;}
+.bulletin-btn.sec{background:var(--bg3);color:var(--soft);border:1.5px solid var(--hair);}
+.bulletin-err{font-size:12px;color:var(--warn);min-height:18px;margin-bottom:6px;}
 </style>
 </head>
 <body>
@@ -158,8 +261,49 @@ html[data-incoming-slide="1"] .page-wrap{transform:translateY(100%)}
   <div class="slbl">学习工具</div>
   <div class="grid" id="toolGrid"></div>
 
+  <div class="bulletin" id="bulletin" ondblclick="bulletinDblClick()">
+    <div class="bulletin-pin">
+      <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="starFace" cx="42%" cy="32%" r="62%">
+            <stop offset="0%" stop-color="#FFE85A"/>
+            <stop offset="45%" stop-color="#FFD000"/>
+            <stop offset="100%" stop-color="#C98A00"/>
+          </radialGradient>
+          <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FFE85A" stop-opacity=".7"/>
+            <stop offset="100%" stop-color="#FFD000" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="starBlur" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="1.2"/>
+          </filter>
+        </defs>
+        <ellipse cx="14" cy="15" rx="10" ry="9" fill="url(#starGlow)" filter="url(#starBlur)" opacity=".6"/>
+        <path d="M14 5.5l2.1 5.2 5.6.5-4.1 3.6 1.3 5.4L14 17.4l-4.9 2.8 1.3-5.4-4.1-3.6 5.6-.5z"
+              fill="rgba(0,0,0,.22)" transform="translate(0.6,1.4)" filter="url(#starBlur)"/>
+        <path d="M14 5.5l2.1 5.2 5.6.5-4.1 3.6 1.3 5.4L14 17.4l-4.9 2.8 1.3-5.4-4.1-3.6 5.6-.5z"
+              fill="url(#starFace)"/>
+        <path d="M14 5.5l1.4 3.5-1.4.1-1.4-.1z" fill="rgba(255,255,255,.55)"/>
+        <path d="M14 5.5l2.1 5.2 5.6.5-4.1 3.6 1.3 5.4L14 17.4l-4.9 2.8 1.3-5.4-4.1-3.6 5.6-.5z"
+              fill="none" stroke="rgba(160,100,0,.35)" stroke-width=".6"/>
+        <line x1="14" y1="20" x2="14" y2="26" stroke="rgba(100,60,0,.55)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="14" y1="20" x2="14" y2="23" stroke="rgba(200,160,60,.5)" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="bulletin-paper">
+      <div class="bulletin-hd"><div class="bulletin-hd-dot"></div>公告栏</div>
+      <div class="bulletin-body" id="bulletinBody"></div>
+      <div class="bulletin-hint">双击编辑</div>
+    </div>
+  </div>
+
   <div class="foot">Growing Skills · Shaping Futures <span id="nameTag" onclick="changeName()"></span><button class="jc-mute" aria-label="背景音乐开关" aria-pressed="false" title="背景音乐"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><g class="jc-mute-on"><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a8 8 0 0 1 0 12"/></g><path class="jc-mute-off" d="M14 9l6 6M20 9l-6 6"/></svg></button></div>
 </div>
+</div>
+
+<!-- 公共栏编辑弹窗 -->
+<div class="bulletin-modal" id="bulletinModal" onclick="bulletinModalBg(event)">
+  <div class="bulletin-box" id="bulletinBox"></div>
 </div>
 
 <script>
@@ -198,6 +342,56 @@ function changeName(){
     window.location.href='start.html';
   }
 }
+// ── 公共栏 ──
+const BULLETIN_KEY='jc_bulletin';
+const BULLETIN_PWD='sw745896';
+function bulletinInit(){
+  var text=localStorage.getItem(BULLETIN_KEY)||'';
+  var el=document.getElementById('bulletinBody');
+  if(!el)return;
+  if(text){el.textContent=text;el.classList.remove('empty');}
+  else{el.textContent='（暂无公告）';el.classList.add('empty');}
+}
+function bulletinDblClick(){
+  var box=document.getElementById('bulletinBox');
+  box.innerHTML=`<div class="bulletin-box-title">🔒 请输入编辑密码</div>
+    <input class="bulletin-input" id="bPwd" type="password" placeholder="密码" autocomplete="off">
+    <div class="bulletin-err" id="bErr"></div>
+    <div class="bulletin-btns">
+      <button class="bulletin-btn sec" onclick="bulletinClose()">取消</button>
+      <button class="bulletin-btn primary" onclick="bulletinCheckPwd()">确认</button>
+    </div>`;
+  document.getElementById('bulletinModal').classList.add('show');
+  setTimeout(()=>{var i=document.getElementById('bPwd');if(i)i.focus();},180);
+  document.getElementById('bPwd').onkeydown=function(e){if(e.key==='Enter')bulletinCheckPwd();};
+}
+function bulletinCheckPwd(){
+  var val=document.getElementById('bPwd').value;
+  if(val!==BULLETIN_PWD){
+    document.getElementById('bErr').textContent='密码错误，请重试';
+    document.getElementById('bPwd').value='';
+    document.getElementById('bPwd').focus();return;
+  }
+  var box=document.getElementById('bulletinBox');
+  var cur=localStorage.getItem(BULLETIN_KEY)||'';
+  box.innerHTML=`<div class="bulletin-box-title">✏️ 编辑公告栏</div>
+    <textarea class="bulletin-textarea" id="bText" placeholder="输入公告内容，支持换行...">${cur}</textarea>
+    <div class="bulletin-btns">
+      <button class="bulletin-btn sec" onclick="bulletinClose()">取消</button>
+      <button class="bulletin-btn primary" onclick="bulletinSave()">保存</button>
+    </div>`;
+  setTimeout(()=>{var t=document.getElementById('bText');if(t){t.focus();t.setSelectionRange(t.value.length,t.value.length);}},80);
+}
+function bulletinSave(){
+  var val=document.getElementById('bText').value.trim();
+  if(val)localStorage.setItem(BULLETIN_KEY,val);
+  else localStorage.removeItem(BULLETIN_KEY);
+  bulletinInit();bulletinClose();
+}
+function bulletinClose(){document.getElementById('bulletinModal').classList.remove('show');}
+function bulletinModalBg(e){if(e.target===document.getElementById('bulletinModal'))bulletinClose();}
+bulletinInit();
+
 function go(e, href){
   if(e) e.preventDefault();
   const ov = document.getElementById('overlay');
