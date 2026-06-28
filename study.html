@@ -343,14 +343,29 @@ function changeName(){
   }
 }
 // ── 公共栏 ──
-const BULLETIN_KEY='jc_bulletin';
 const BULLETIN_PWD='sw745896';
-function bulletinInit(){
-  var text=localStorage.getItem(BULLETIN_KEY)||'';
+const BULLETIN_CACHE='jc_bulletin_cache';
+var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
+var _bulletinCurText='';
+
+function _bulletinRender(text){
+  _bulletinCurText=text||'';
   var el=document.getElementById('bulletinBody');
   if(!el)return;
   if(text){el.textContent=text;el.classList.remove('empty');}
   else{el.textContent='（暂无公告）';el.classList.add('empty');}
+}
+function bulletinInit(){
+  // 先用缓存快速渲染，再从 Supabase 拉最新
+  _bulletinRender(localStorage.getItem(BULLETIN_CACHE)||'');
+  fetch(SB_URL+'/rest/v1/bulletin?id=eq.global&select=content',{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  }).then(function(r){return r.json();}).then(function(rows){
+    var text=(rows&&rows[0])?rows[0].content||'':'';
+    localStorage.setItem(BULLETIN_CACHE,text);
+    _bulletinRender(text);
+  }).catch(function(){/* 离线时保留缓存 */});
 }
 function bulletinDblClick(){
   var box=document.getElementById('bulletinBox');
@@ -373,20 +388,38 @@ function bulletinCheckPwd(){
     document.getElementById('bPwd').focus();return;
   }
   var box=document.getElementById('bulletinBox');
-  var cur=localStorage.getItem(BULLETIN_KEY)||'';
+  var escaped=_bulletinCurText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   box.innerHTML=`<div class="bulletin-box-title">✏️ 编辑公告栏</div>
-    <textarea class="bulletin-textarea" id="bText" placeholder="输入公告内容，支持换行...">${cur}</textarea>
+    <textarea class="bulletin-textarea" id="bText" placeholder="输入公告内容，支持换行...">${escaped}</textarea>
+    <div class="bulletin-err" id="bSaveErr"></div>
     <div class="bulletin-btns">
       <button class="bulletin-btn sec" onclick="bulletinClose()">取消</button>
-      <button class="bulletin-btn primary" onclick="bulletinSave()">保存</button>
+      <button class="bulletin-btn primary" id="bSaveBtn" onclick="bulletinSave()">保存</button>
     </div>`;
   setTimeout(()=>{var t=document.getElementById('bText');if(t){t.focus();t.setSelectionRange(t.value.length,t.value.length);}},80);
 }
 function bulletinSave(){
   var val=document.getElementById('bText').value.trim();
-  if(val)localStorage.setItem(BULLETIN_KEY,val);
-  else localStorage.removeItem(BULLETIN_KEY);
-  bulletinInit();bulletinClose();
+  var saveBtn=document.getElementById('bSaveBtn');
+  var errEl=document.getElementById('bSaveErr');
+  if(saveBtn)saveBtn.disabled=true;
+  fetch(SB_URL+'/rest/v1/bulletin',{
+    method:'POST',
+    headers:{
+      'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,
+      'Content-Type':'application/json',
+      'Prefer':'resolution=merge-duplicates'
+    },
+    body:JSON.stringify({id:'global',content:val,updated_at:new Date().toISOString()})
+  }).then(function(r){
+    if(!r.ok)throw new Error('保存失败 '+r.status);
+    localStorage.setItem(BULLETIN_CACHE,val);
+    _bulletinRender(val);
+    bulletinClose();
+  }).catch(function(err){
+    if(errEl)errEl.textContent='网络错误，请重试';
+    if(saveBtn)saveBtn.disabled=false;
+  });
 }
 function bulletinClose(){document.getElementById('bulletinModal').classList.remove('show');}
 function bulletinModalBg(e){if(e.target===document.getElementById('bulletinModal'))bulletinClose();}
@@ -398,6 +431,10 @@ function go(e, href){
   ov.classList.add('show');
   setTimeout(()=>{ window.location.href = href; }, 260);
 }
+window.addEventListener('pageshow',function(){
+  var ov=document.getElementById('overlay');
+  if(ov)ov.classList.remove('show');
+});
 
 // 入场动画：仅当从 index 跳转过来（带 sessionStorage 标记）时，
 // 整体从屏幕底部滑入，无缝接续 index 的上滑出场；其他入口（后退/直接访问）不播放
