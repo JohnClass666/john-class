@@ -2,712 +2,518 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <title>写作七宗醉 · John Class</title>
-<!--
-  Supabase SQL（首次部署执行）:
-  create table if not exists grammar_scores (
-    name text primary key, score integer not null default 0, updated_at timestamptz default now()
-  );
-  alter table grammar_scores enable row level security;
-  create policy "pa" on grammar_scores for all using(true) with check(true);
--->
 <style>
 :root{
-  --bg:#FDF8F0;--bg2:#F5EDD8;--ink:#3A2A10;--soft:#A08040;
-  --faint:#C8A870;--hair:#D8C8A0;--accent:#C89030;
-  --warn:#C85A2A;--fnt:-apple-system,"SF Pro Display","PingFang SC",sans-serif;
+  --bg:#FBF6EC;
+  --bg2:#F0E2C4;
+  --bg3:#F6EEDC;
+  --ink:#2A1D08;
+  --soft:#8C6B35;
+  --faint:#C2A26C;
+  --hair:#E2D0A4;
+  --hair2:#F0E8D0;
+  --accent:#AD7A1E;
+  --accent-deep:#7A5414;
+  --accent-soft:#F5E8C8;
+  --warn:#C2491E;
+  --warn-soft:#FAEEE8;
+  --ok:#4E7A28;
+  --fnt:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
+  --fnt-serif:Georgia,"Songti SC","STSong",serif;
+  --r-sm:10px;--r-md:16px;--r-lg:22px;--r-pill:999px;
+  --shadow-sm:0 1px 2px rgba(40,24,5,.10);
+  --shadow-md:0 3px 10px rgba(40,24,5,.12);
+  --shadow-lg:0 10px 28px rgba(40,24,5,.16);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:var(--bg);font-family:var(--fnt);
-  color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html,body{height:100%;background:var(--bg)}
+body{font-family:var(--fnt);color:var(--ink);-webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;overflow-x:hidden;user-select:none;letter-spacing:-.01em}
 
-/* ── 3D BUTTON SYSTEM ── */
-.jk{display:inline-flex;align-items:center;justify-content:center;
-  font-family:var(--fnt);cursor:pointer;font-size:11.5px;font-weight:600;
-  letter-spacing:-.01em;white-space:nowrap;-webkit-user-select:none;user-select:none;
-  background:linear-gradient(180deg,#EEB878 0%,#E89038 100%);
-  border:1px solid #C87828;border-bottom:3px solid #A05018;border-radius:10px;
-  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 5px rgba(40,20,5,.09);
-  color:#5A3000;transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
-.jk:active{transform:translateY(2px);border-bottom-width:1px;
-  box-shadow:inset 0 1px 3px rgba(40,20,5,.12),0 1px 2px rgba(40,20,5,.08);
-  background:linear-gradient(180deg,#E89038 0%,#EE8020 100%)}
+#app{max-width:480px;margin:0 auto;min-height:100%;position:relative;
+  padding:calc(env(safe-area-inset-top) + 18px) 20px calc(env(safe-area-inset-bottom) + 90px)}
 
-/* ── HEADER (transparent) ── */
-.hud{position:sticky;top:0;z-index:100;
-  padding:14px 20px;padding-top:calc(14px + env(safe-area-inset-top))}
-.hud-row{display:flex;align-items:center;justify-content:space-between}
-.brand{font-size:22px;font-weight:700;letter-spacing:-.04em;color:var(--ink);
-  text-shadow:0 2px 4px rgba(40,20,5,.18),0 5px 14px rgba(40,20,5,.09);
-  text-decoration:none}
-.back-lnk{padding:7px 13px;text-decoration:none;color:var(--ink)}
+/* screens */
+.screen{display:none}
+.screen.active{display:block;animation:fade .35s cubic-bezier(.22,1,.36,1) both}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.5)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
 
-/* ── SCORE STRIP ── */
-.score-block{padding:16px 20px 6px;display:flex;align-items:baseline;gap:0}
-.jc-num{font-size:44px;font-weight:200;letter-spacing:-.07em;color:var(--ink);
-  text-shadow:0 3px 6px rgba(40,20,5,.12),0 6px 18px rgba(40,20,5,.07);line-height:1}
-.jc-unit{font-size:15px;color:var(--soft);margin-left:4px;margin-bottom:2px}
-.jc-pills{margin-left:auto;display:flex;align-items:center;gap:7px;align-self:center}
-.jc-pill{font-size:11px;font-weight:700;padding:5px 11px;border-radius:10px;
-  white-space:nowrap;cursor:default;
-  background:linear-gradient(180deg,#EED870 0%,#E8C428 100%);
-  border:1px solid #C89010;border-bottom:2.5px solid #A07008;
-  box-shadow:inset 0 1px 0 rgba(255,255,200,.6),0 2px 4px rgba(40,20,5,.1);color:#5A3800}
-.jc-pill-red{
-  background:linear-gradient(180deg,#E89878 0%,#E85848 100%);
-  border-color:#D04030;border-bottom-color:#B02818;color:#5A1008;
-  box-shadow:inset 0 1px 0 rgba(255,255,210,.4),0 2px 4px rgba(40,20,5,.1)}
-.jc-pw{padding:8px 20px 14px}
-.jc-pt{height:3px;background:rgba(58,42,16,.12);border-radius:99px;overflow:hidden}
-.jc-pf{height:100%;background:linear-gradient(90deg,var(--accent),#E8A830);border-radius:99px}
+/* typography */
+.kicker{font-size:11px;font-weight:600;letter-spacing:.3em;color:var(--faint);text-transform:uppercase}
+.muted{color:var(--soft)}
 
-/* ── SHELF SYSTEM ── */
-.jc-shelf{margin-bottom:0}
-.jc-slbl{padding:0 20px 10px;font-size:9.5px;font-weight:700;letter-spacing:.2em;
-  color:var(--faint);text-transform:uppercase}
+/* ── BUTTONS ── */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;cursor:pointer;
+  font-family:var(--fnt);font-size:17px;font-weight:600;letter-spacing:-.01em;padding:17px;
+  border-radius:var(--r-md);background:var(--ink);color:#FDF8F0;
+  border:1px solid rgba(0,0,0,.4);border-bottom:3px solid rgba(0,0,0,.7);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+  transition:transform .08s,border-bottom-width .08s,box-shadow .08s}
+.btn:active{transform:translateY(2px);border-bottom-width:1px;box-shadow:none}
+.btn.line{background:linear-gradient(180deg,#FFFFFF 0%,#F8F0E0 100%);color:var(--ink);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 6px rgba(40,20,5,.08)}
+.btn.line:active{background:linear-gradient(180deg,#F8F0E0 0%,#EEE0C0 100%);transform:translateY(2px);border-bottom-width:1px;box-shadow:none}
+.btn.accent{background:linear-gradient(180deg,#D4A030 0%,#9A6810 100%);color:#FDF8F0;
+  border:1px solid #B88020;border-bottom:3px solid #7A4808;
+  box-shadow:inset 0 1px 0 rgba(255,240,160,.35),0 2px 6px rgba(40,20,5,.15)}
+.btn.accent:active{transform:translateY(2px);border-bottom-width:1px;box-shadow:none}
+.btn.sm{font-size:15px;padding:13px 16px;width:auto}
+.btn.ghost{background:transparent;color:var(--soft);font-weight:500;border:none;box-shadow:none}
+
+/* ── TOP BAR ── */
+.bar{position:sticky;top:0;z-index:50;background:var(--bg);box-shadow:0 1px 0 var(--hair);
+  display:flex;align-items:center;gap:10px;margin:0 -20px 20px;padding:12px 20px}
+.bar .back{width:36px;height:36px;flex:0 0 auto;border-radius:50%;cursor:pointer;
+  font-size:24px;font-family:var(--fnt);font-weight:300;color:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#FDF8F0 0%,#E8D8B4 100%);
+  border:1px solid #C8A860;border-bottom:3px solid #9A7830;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 4px rgba(40,20,5,.10);
+  transition:transform .08s,border-bottom-width .08s}
+.bar .back:active{transform:translateY(2px);border-bottom-width:1px}
+.bar .htitle{font-size:18px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.bar .sp{flex:1}
+.bar .meta{font-size:14px;font-weight:600;color:var(--accent)}
+
+/* ── HOME HEAD ── */
+.hhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
+.hhead-left .greet{font-size:13px;color:var(--soft);font-weight:500}
+.hhead-left .name{font-size:22px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin-top:2px}
+.switch-btn{font-size:12px;color:var(--faint);cursor:pointer;text-decoration:underline}
+
+/* ── SCORE BLOCK ── */
+.num{font-size:68px;font-weight:200;letter-spacing:-.04em;line-height:1;color:var(--ink)}
+.num small{font-size:18px;font-weight:400;color:var(--soft);margin-left:6px;letter-spacing:0}
+.scoreblk .pills{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.pill{font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);
+  padding:4px 12px;border-radius:var(--r-pill);border:1px solid var(--hair)}
+.pill.red{color:var(--warn);background:var(--warn-soft);border-color:var(--hair)}
+
+/* ── PROGRESS TRACK ── */
+.track{height:4px;background:var(--hair);border-radius:2px;margin-bottom:28px;overflow:hidden}
+.track>i{display:block;height:100%;background:var(--accent);width:0;transition:width .6s cubic-bezier(.22,1,.36,1)}
+
+/* ── SECTION LABEL ── */
+.slabel{font-size:11px;font-weight:600;letter-spacing:.22em;color:var(--faint);
+  text-transform:uppercase;margin:0 0 10px}
+
+/* ── BOOK SHELF GRID (home) ── */
 .jc-sgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 16px}
+.jc-card{border-radius:var(--r-md);overflow:hidden;aspect-ratio:3/4.5;position:relative;cursor:pointer;
+  box-shadow:0 1px 2px rgba(40,20,5,.08),0 3px 8px rgba(40,20,5,.10),
+    0 9px 20px rgba(40,20,5,.08),0 16px 32px rgba(40,20,5,.05);
+  transition:transform .18s cubic-bezier(.34,1.4,.64,1),box-shadow .18s}
+.jc-card:active{transform:scale(.96) translateY(2px);
+  box-shadow:0 2px 6px rgba(40,20,5,.12),0 5px 14px rgba(40,20,5,.1)}
+.jc-bookbg{position:absolute;inset:0;pointer-events:none}
+.jc-bookbg svg{width:100%;height:100%;display:block}
 .jc-sbar{height:14px;background:linear-gradient(180deg,#B07030 0%,#8A4E18 100%);
   box-shadow:0 5px 16px rgba(80,40,10,.25),0 2px 4px rgba(80,40,10,.15);position:relative}
 .jc-sbar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,rgba(255,220,120,.6) 30%,rgba(255,220,120,.75) 50%,rgba(255,220,120,.6) 70%,transparent)}
-.jc-sgap{height:20px}
+  background:linear-gradient(90deg,transparent,rgba(255,220,120,.55) 30%,rgba(255,220,120,.7) 50%,rgba(255,220,120,.55) 70%,transparent)}
+.jc-sgap{height:28px}
+.cat-shelves{margin-bottom:28px}
 
-/* ── CARDS ── */
-.jc-card{border-radius:20px;overflow:hidden;aspect-ratio:3/4;position:relative;cursor:pointer;
-  box-shadow:0 1px 2px rgba(40,20,5,.08),0 3px 8px rgba(40,20,5,.09),
-    0 8px 18px rgba(40,20,5,.06),0 14px 28px rgba(40,20,5,.04);
-  transition:transform .18s cubic-bezier(.34,1.4,.64,1),box-shadow .18s}
-.jc-card:active{transform:scale(.96) translateY(2px);
-  box-shadow:0 2px 6px rgba(40,20,5,.08),0 5px 14px rgba(40,20,5,.07)}
-.jc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;
-  background:linear-gradient(180deg,rgba(255,235,180,.16) 0%,transparent 100%);
-  border-radius:20px 20px 0 0;pointer-events:none;z-index:5}
-.jc-ci{position:absolute;inset:0;padding:12px 10px;
-  display:flex;flex-direction:column;justify-content:space-between;z-index:6}
-.jc-csubtitle{font-size:7.5px;font-weight:700;letter-spacing:.1em;
-  color:rgba(255,255,255,.75);text-transform:uppercase;margin-bottom:2px}
-.jc-bignum{font-size:40px;font-weight:200;color:rgba(255,255,255,1);
-  letter-spacing:-.06em;line-height:1;text-shadow:0 4px 16px rgba(0,0,0,.18);
-  flex:1;display:flex;align-items:center}
-.jc-ctitle{font-size:12px;font-weight:700;color:#fff;line-height:1.2;letter-spacing:-.02em;
-  text-shadow:0 1px 4px rgba(0,0,0,.2)}
-.jc-cwords{font-size:9.5px;color:rgba(255,255,255,.85);margin-bottom:4px;font-weight:600;letter-spacing:-.01em}
-.jc-cp{height:2px;background:rgba(255,255,255,.2);border-radius:2px;overflow:hidden;margin-bottom:4px}
-.jc-cpf{height:100%;background:rgba(255,255,255,.85);border-radius:2px}
-.jc-cpct{font-size:9px;font-weight:700;color:rgba(255,255,255,.75)}
-.jc-cbadge{position:absolute;top:11px;right:11px;z-index:8;
-  font-size:7px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  padding:3px 7px;border-radius:6px;color:var(--warn);
-  background:linear-gradient(180deg,#FDF8F0 0%,#E8D8B4 100%);
-  border:1px solid #C8A860;border-bottom:2px solid #9A7830;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 4px rgba(40,20,5,.12)}
-
-/* Card palette (warm bright) */
-.jcg1{background:linear-gradient(145deg,#E89878,#E86248)}
-.jcg2{background:linear-gradient(145deg,#EED068,#E8A020)}
-.jcg3{background:linear-gradient(145deg,#EEC888,#E89040)}
-.jcg4{background:linear-gradient(145deg,#E8A870,#D07840)}
-.jcg5{background:linear-gradient(145deg,#EED870,#E8C428)}
-.jcg6{background:linear-gradient(145deg,#EE9280,#E85838)}
-.jcg7{background:linear-gradient(145deg,#EEB878,#E89038)}
-
-/* ── BOTTOM BAR ── */
-.jc-btm{position:fixed;bottom:0;left:0;right:0;z-index:200;
-  background:rgba(253,248,240,.95);
-  backdrop-filter:saturate(160%) blur(20px);-webkit-backdrop-filter:saturate(160%) blur(20px);
-  border-top:.5px solid var(--hair);padding:12px 20px;
-  padding-bottom:calc(12px + env(safe-area-inset-bottom))}
-.jc-keys{display:flex;gap:8px}
-.jc-key{flex:1;font-family:var(--fnt);cursor:pointer;padding:10px 8px;border-radius:10px;
-  font-size:12px;font-weight:600;letter-spacing:-.01em;text-align:center;
+/* ── LEVEL LIST ── */
+.lvls{display:flex;flex-direction:column}
+.lvl{display:flex;align-items:center;gap:16px;padding:18px 16px;
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;border-radius:20px;cursor:pointer;
   background:linear-gradient(180deg,#FFFFFF 0%,#F8F0E0 100%);
-  border:1px solid #D8C090;border-bottom:3px solid #B09050;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 5px rgba(40,20,5,.08);
-  color:var(--ink);transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
-.jc-key:active{transform:translateY(2px);border-bottom-width:1px;
-  box-shadow:inset 0 1px 3px rgba(40,20,5,.1)}
-.jc-key.on{background:linear-gradient(180deg,#EEB878 0%,#E89038 100%);
-  border-color:#C87828;border-bottom-color:#A05018;color:#5A3000;
-  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 5px rgba(40,20,5,.10)}
-.jc-key.on:active{background:linear-gradient(180deg,#E89038 0%,#EE8020 100%)}
-.jc-key-red{background:linear-gradient(180deg,#E89878 0%,#E85848 100%);
-  border-color:#D04030;border-bottom-color:#B02818;color:#5A1008;
-  box-shadow:inset 0 1px 0 rgba(255,255,220,.4),0 2px 5px rgba(40,20,5,.10)}
-.jc-key-red:active{background:linear-gradient(180deg,#E85848 0%,#EE4030 100%)}
-.jc-key-amber{background:linear-gradient(180deg,#EED068 0%,#E8A020 100%);
-  border-color:#C88808;border-bottom-color:#986008;color:#4A3000;
-  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 5px rgba(40,20,5,.10)}
-.jc-key-amber:active{background:linear-gradient(180deg,#E8A020 0%,#EE9018 100%)}
-.jc-key-dim{background:linear-gradient(180deg,#EEE2C4 0%,#D8C8A0 100%);
-  border-color:#C0A870;border-bottom-color:#C0A870;color:rgba(58,42,16,.3);
-  cursor:not-allowed;pointer-events:none;box-shadow:none}
-
-/* ── VIEWS ── */
-.main{padding-bottom:90px;min-height:100vh}
-.view{display:none}.view.on{display:block}
-
-/* ── BAR (二级页面顶栏，无背景) ── */
-.bar{position:sticky;top:0;z-index:50;
-  display:flex;align-items:center;gap:0;padding:10px 16px;min-height:52px}
-.back-btn{width:36px;height:36px;border-radius:50%;flex:0 0 auto;cursor:pointer;
-  background:linear-gradient(180deg,#FFFFFF 0%,#F8F0E0 100%);
-  border:1px solid #D8C090;border-bottom:3px solid #B09050;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 5px rgba(40,20,5,.09);
-  font-size:20px;color:var(--ink);display:flex;align-items:center;justify-content:center;
-  transition:transform .08s,box-shadow .08s,border-bottom-width .08s;font-family:var(--fnt)}
-.back-btn:active{transform:translateY(2px);border-bottom-width:1px}
-.bar-title{flex:1;text-align:center;font-size:16px;font-weight:700;color:var(--ink);
-  text-shadow:0 1px 2px rgba(40,20,5,.14),0 3px 8px rgba(40,20,5,.08);
-  letter-spacing:-.02em;margin:0 8px}
-.bar-right{width:36px;flex:0 0 auto;text-align:right;
-  font-size:13px;font-weight:700;color:var(--accent)}
-
-/* ── PROGRESS HUD (in bar area) ── */
-.drill-hud{padding:0 20px 10px;display:flex;align-items:center;gap:12px}
-.dhud-prog{flex:1;height:3px;background:rgba(58,42,16,.1);border-radius:99px;overflow:hidden}
-.dhud-fill{height:100%;background:linear-gradient(90deg,var(--accent),#E8A830);
-  border-radius:99px;transition:width .3s}
-.dhud-label{font-size:11px;font-weight:700;color:var(--soft);letter-spacing:.04em;white-space:nowrap}
-.dhud-score{font-size:14px;font-weight:700;color:var(--warn);white-space:nowrap}
-
-/* ── LEVEL CARDS (3-up in category view) ── */
-.lev-list{display:flex;flex-direction:column;gap:10px;padding:10px 20px 20px}
-.lev-card{display:flex;align-items:center;gap:16px;padding:18px 16px;border-radius:18px;cursor:pointer;
-  background:linear-gradient(180deg,#FFFFFF 0%,#F8F0E0 100%);
-  border:1px solid #D8C090;border-bottom:3px solid #B09050;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 6px rgba(40,20,5,.08),0 6px 18px rgba(40,20,5,.04);
-  transition:transform .1s,box-shadow .1s,border-bottom-width .1s}
-.lev-card:active{transform:translateY(2px);border-bottom-width:1px;
-  box-shadow:inset 0 1px 3px rgba(40,20,5,.08)}
-.lev-dot{width:42px;height:42px;border-radius:50%;flex:0 0 auto;
-  display:flex;align-items:center;justify-content:center;
-  font-size:16px;font-weight:700;color:#FDF8F0;
-  box-shadow:0 2px 6px rgba(40,20,5,.16),inset 0 1px 0 rgba(255,240,160,.35)}
-.lev-tx{flex:1;min-width:0}
-.lev-name{font-size:16px;font-weight:600;color:var(--ink);display:block;letter-spacing:-.02em}
-.lev-sub{font-size:12px;color:var(--soft);margin-top:3px}
-.lev-arrow{font-size:20px;color:var(--faint);font-weight:200;flex:0 0 auto}
-.lev-done-tag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;
-  background:linear-gradient(180deg,#EED870,#E8C428);
-  border:1px solid #C89010;border-bottom:2px solid #A07008;color:#4A3000;
-  box-shadow:inset 0 1px 0 rgba(255,255,200,.5)}
+  transition:transform .08s,border-bottom-width .08s,box-shadow .08s}
+.lvl:active{transform:translateY(2px);border-bottom-width:1px;box-shadow:inset 0 1px 3px rgba(40,20,5,.1)}
+.lvl-dot{width:44px;height:44px;flex:0 0 auto;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;
+  background:linear-gradient(145deg,#D4A030,#9A6810);
+  border:1px solid #B88020;border-bottom:2px solid #7A4808;color:#FDF8F0;
+  box-shadow:0 2px 6px rgba(40,20,5,.18),inset 0 1px 0 rgba(255,240,160,.35)}
+.lvl-done .lvl-dot{animation:pop .4s}
+.lvl-tx{flex:1;min-width:0}
+.lvl-no{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--accent);text-transform:uppercase}
+.lvl-tx b{display:block;font-size:18px;font-weight:600;letter-spacing:-.01em;margin-top:1px;color:var(--ink)}
+.lvl-tx p{font-size:13px;color:var(--soft);margin-top:3px}
+.lvl-tag{font-size:12px;font-weight:600;color:var(--accent-deep);padding:4px 10px;border-radius:var(--r-sm);
+  background:linear-gradient(180deg,#FDF8F0 0%,#F0E4C0 100%);
+  border:1px solid #C8A860;border-bottom:2px solid #9A7830;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}
+.lvl-done{background:linear-gradient(180deg,#FDF8F0 0%,#F0E4C0 100%);border-color:#C8A860;border-bottom-color:#9A7830}
+.lvl-link{width:2px;height:16px;background:var(--hair);margin:2px 0 2px 35px}
+.lvl-link.lit{background:var(--accent)}
+.lvl .chev{color:var(--faint);font-size:20px;font-weight:300}
 
-/* ── DRILL CARD ── */
-.dcard{margin:8px 20px;background:#FFFFFF;border:1px solid #D8C090;
-  border-bottom:3px solid #B09050;border-radius:20px;padding:20px 18px 16px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 8px rgba(40,20,5,.08),
-    0 8px 24px rgba(40,20,5,.05)}
-.dcat-label{font-size:9.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--faint);margin-bottom:10px}
-.dq-text{font-size:18px;line-height:1.9;color:var(--ink);
-  font-family:Georgia,"Times New Roman",serif;margin-bottom:16px}
-.dinrow{display:flex;gap:8px;align-items:stretch}
-.din{flex:1;font-size:16px;padding:11px 14px;
-  background:var(--bg2);border:1px solid var(--hair);
-  border-bottom:2.5px solid #C8A870;border-radius:12px;
-  color:var(--ink);font-family:var(--fnt);outline:none;
-  transition:border-color .2s,box-shadow .2s}
-.din:focus{border-color:var(--accent);border-bottom-color:var(--accent-dark,#A07018);
-  box-shadow:0 0 0 3px rgba(200,144,48,.12);background:#FFFBF0}
-.din:disabled{opacity:.55;cursor:default}
-.subbtn{padding:11px 18px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;
-  font-family:var(--fnt);white-space:nowrap;
-  background:linear-gradient(180deg,#EED068 0%,#E8A020 100%);
-  border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
-  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 5px rgba(40,20,5,.10);
-  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
-.subbtn:active{transform:translateY(2px);border-bottom-width:1px}
-.subbtn:disabled{background:linear-gradient(180deg,#EEE2C4,#D8C8A0);
-  border-color:#C0A870;border-bottom-color:#C0A870;color:rgba(58,42,16,.3);cursor:default}
+/* ── DRILL HUD ── */
+.qhud{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.qhud .tk{flex:1;height:4px;background:var(--hair);border-radius:2px;overflow:hidden}
+.qhud .tk>i{display:block;height:100%;background:var(--accent);width:0;transition:width .35s cubic-bezier(.22,1,.36,1)}
+.qhud .ct{font-size:13px;color:var(--soft);font-weight:500;font-variant-numeric:tabular-nums}
+.qhud .pts{font-size:14px;font-weight:700;color:var(--accent)}
+
+/* ── QUESTION CARD ── */
+.qcard{border:2px solid var(--hair);border-radius:24px;background:var(--bg3);padding:28px 22px 22px;margin-bottom:16px}
+.qcard .qlabel{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--faint);margin-bottom:16px}
+.qcard .qtext{font-size:19px;line-height:1.85;color:var(--ink);font-family:var(--fnt-serif);margin-bottom:20px}
+
+/* ── INPUT ── */
+.spell-input-wrap{position:relative;margin-bottom:10px}
+.spell-input{width:100%;padding:14px 16px;border:2px solid var(--hair);border-radius:var(--r-md);
+  font-size:17px;font-family:var(--fnt);color:var(--ink);background:var(--bg);
+  outline:none;transition:border-color .2s;-webkit-appearance:none}
+.spell-input:focus{border-color:var(--accent)}
+.spell-input:disabled{opacity:.55}
 
 /* ── FEEDBACK ── */
-.fbk{margin-top:12px;border-radius:14px;padding:12px 14px;display:none}
-.fbk.ok{background:linear-gradient(180deg,#F5EEC8,#EED868);
-  border:1px solid #C89010;border-bottom:2px solid #A07008}
-.fbk.no{background:linear-gradient(180deg,#FEF0E8,#F5D8C8);
-  border:1px solid #D8A080;border-bottom:2px solid #B07050}
-.fbk-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.fbk-icon{font-size:14px;font-weight:900;
-  width:22px;height:22px;border-radius:50%;
-  display:inline-flex;align-items:center;justify-content:center}
+.fbk{border-radius:var(--r-md);padding:14px 16px;margin-bottom:12px;display:none;font-size:14px}
+.fbk.ok{background:var(--accent-soft);border:1.5px solid var(--accent);color:var(--accent-deep)}
+.fbk.no{background:var(--warn-soft);border:1.5px solid var(--warn);color:var(--warn)}
+.fbk-row{display:flex;align-items:center;gap:10px;margin-bottom:3px}
+.fbk-icon{width:22px;height:22px;border-radius:50%;font-size:12px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex:0 0 auto}
 .fbk.ok .fbk-icon{background:var(--accent);color:#FDF8F0}
 .fbk.no .fbk-icon{background:var(--warn);color:#FDF8F0}
-.fbk-txt{font-size:14px;font-weight:700;color:var(--ink)}
-.fbk-ans{font-size:13px;color:var(--soft);margin-top:3px}
+.fbk-title{font-size:15px;font-weight:700}
+.fbk-ans{font-size:13px;margin-top:3px;opacity:.8}
 
-/* ── DRILL ACTION BUTTONS ── */
-.dacts{margin-top:14px;display:flex;gap:8px}
-.skipbtn{padding:11px 16px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;
-  font-family:var(--fnt);
-  background:linear-gradient(180deg,#FFFFFF 0%,#F8F0E0 100%);
-  border:1px solid #D8C090;border-bottom:3px solid #B09050;color:var(--soft);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 4px rgba(40,20,5,.07);
-  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
-.skipbtn:active{transform:translateY(2px);border-bottom-width:1px}
-.nxtbtn{flex:1;padding:12px;border-radius:12px;font-size:15px;font-weight:700;
-  cursor:pointer;font-family:var(--fnt);display:none;
-  background:linear-gradient(180deg,#E89878 0%,#E86248 100%);
-  border:1px solid #D04030;border-bottom:3px solid #A82818;color:#FDF8F0;
-  box-shadow:inset 0 1px 0 rgba(255,255,220,.3),0 2px 5px rgba(40,20,5,.12);
-  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
-.nxtbtn:active{transform:translateY(2px);border-bottom-width:1px}
+/* ── DRILL ACTIONS ── */
+.drill-acts{display:flex;gap:10px}
 
 /* ── COMPLETE ── */
-.cp-card{margin:20px;background:#FFFFFF;
-  border:1px solid #D8C090;border-bottom:4px solid #B09050;border-radius:24px;
-  padding:32px 24px;text-align:center;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 4px 16px rgba(40,20,5,.08),
-    0 12px 32px rgba(40,20,5,.05)}
-.cp-badge{width:72px;height:72px;border-radius:50%;margin:0 auto 18px;
-  background:linear-gradient(145deg,#EED870,#E8C428);
-  border:1px solid #C89010;border-bottom:4px solid #A07008;
-  box-shadow:0 4px 14px rgba(40,20,5,.14),inset 0 1px 0 rgba(255,255,200,.6);
-  display:flex;align-items:center;justify-content:center;
-  font-size:28px;animation:popIn .5s cubic-bezier(.34,1.4,.64,1)}
-@keyframes popIn{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
-.cp-title{font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.03em;margin-bottom:8px}
-.cp-score{font-size:52px;font-weight:200;letter-spacing:-.07em;color:var(--ink);
-  text-shadow:0 3px 8px rgba(40,20,5,.12);margin:4px 0}
-.cp-label{font-size:11px;font-weight:700;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--soft);margin-bottom:18px}
-.cp-sub{font-size:13px;color:var(--soft);margin-bottom:20px}
-.homebtn{padding:14px 24px;border-radius:14px;font-size:15px;font-weight:700;
-  cursor:pointer;font-family:var(--fnt);
-  background:linear-gradient(180deg,#EED068 0%,#E8A020 100%);
-  border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
-  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 6px rgba(40,20,5,.12);
-  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
-.homebtn:active{transform:translateY(2px);border-bottom-width:1px}
+.stagebadge{width:88px;height:88px;border-radius:50%;margin:8px auto 22px;
+  display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:700}
+.stagebadge.pass{background:linear-gradient(145deg,#D4A030,#9A6810);color:#FDF8F0;
+  border:2px solid #B88020;border-bottom:4px solid #7A4808;
+  box-shadow:0 4px 12px rgba(40,20,5,.20),inset 0 1px 0 rgba(255,240,160,.35);
+  animation:pop .5s}
+.stagebadge.great{background:var(--ink);color:#FDF8F0;animation:pop .5s}
+.cp-card{border:2px solid var(--hair);border-radius:24px;padding:32px 24px;
+  text-align:center;background:var(--bg3);margin-top:10px}
+.cp-kicker{margin-bottom:14px}
+.cp-score{font-size:72px;font-weight:200;letter-spacing:-.05em;line-height:1;
+  color:var(--accent);margin:4px 0 6px}
+.cp-lbl{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-bottom:6px}
+.cp-sub{font-size:14px;color:var(--soft);margin-bottom:24px}
 
 /* ── ERROR BANK ── */
-.eitem{background:#FFFFFF;border:1px solid #D8C090;border-bottom:3px solid #B09050;
-  border-radius:18px;padding:16px 16px 14px;margin-bottom:10px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 8px rgba(40,20,5,.07)}
-.ecat{font-size:9.5px;color:var(--faint);font-weight:700;
-  text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}
-.eq{font-size:15px;line-height:1.7;color:var(--ink);
-  font-family:Georgia,serif;margin-bottom:5px}
-.ewrong{font-size:12px;color:var(--warn);margin-top:4px;font-weight:500}
-.ecorrect{font-size:12px;color:#5A7030;margin-top:3px;font-weight:700}
-.retrybtn{margin-top:11px;padding:7px 16px;border-radius:10px;
-  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
-  border:1px solid #D8C090;border-bottom:2.5px solid #B09050;
-  font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fnt);
-  color:var(--ink);transition:transform .08s,box-shadow .08s,border-bottom-width .08s;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 4px rgba(40,20,5,.07)}
-.retrybtn:active{transform:translateY(1px);border-bottom-width:1px}
+.rc-card{border:1.5px solid var(--hair);border-radius:18px;background:var(--bg3);padding:16px;margin-bottom:12px}
+.rc-cat{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.rc-q{font-size:15px;line-height:1.7;color:var(--ink);font-family:var(--fnt-serif);margin-bottom:6px}
+.rc-wrong{font-size:13px;color:var(--warn);margin-top:3px;font-weight:500}
+.rc-right{font-size:13px;color:var(--ok);margin-top:2px;font-weight:700}
+.rc-retry{margin-top:12px;font-size:13px;font-weight:600;padding:9px 18px;border-radius:var(--r-sm);
+  border:1.5px solid var(--hair);background:var(--bg);color:var(--ink);cursor:pointer;
+  font-family:var(--fnt);transition:background .15s}
+.rc-retry:active{background:var(--hair2)}
+.empty{text-align:center;padding:48px 20px}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:.4}
+.empty-txt{font-size:14px;color:var(--soft)}
 
 /* ── LEADERBOARD ── */
-.lbrow{display:flex;align-items:center;gap:12px;padding:12px 16px;
-  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
-  border:1px solid #D8C090;border-bottom:2px solid #B09050;border-radius:14px;
-  margin-bottom:8px;box-shadow:0 2px 6px rgba(40,20,5,.06)}
-.lbrow.me{background:linear-gradient(180deg,#F5F0D8,#E8D8A0);
-  border-color:#C8A860;border-bottom-color:#9A7830;box-shadow:0 2px 8px rgba(40,20,5,.1)}
-.lbrank{width:32px;height:32px;border-radius:50%;flex:0 0 auto;
-  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;
-  background:linear-gradient(145deg,#C8A870,#A08040);color:#FDF8F0;
-  border:1px solid #906828;box-shadow:0 1px 4px rgba(40,20,5,.14)}
-.lbrank.r1{background:linear-gradient(145deg,#F5C820,#C09010);border-color:#A07010}
-.lbrank.r2{background:linear-gradient(145deg,#D8D8D0,#909088);border-color:#707068}
-.lbrank.r3{background:linear-gradient(145deg,#D08830,#8A4810);border-color:#7A4010}
-.lbname{flex:1;font-size:15px;font-weight:600;color:var(--ink);letter-spacing:-.02em}
-.lbsco{font-size:15px;font-weight:300;color:var(--accent);letter-spacing:-.04em}
-.lb-refresh{display:block;text-align:center;margin:16px;
-  font-size:13px;font-weight:600;color:var(--faint);cursor:pointer;
-  text-decoration:none;letter-spacing:.04em}
+.lb-row{display:flex;align-items:center;gap:12px;padding:12px 0;
+  border-bottom:1px solid var(--hair2)}
+.lb-rank{width:30px;height:30px;border-radius:50%;background:var(--hair);
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:0 0 auto;color:var(--soft)}
+.lb-rank.r1{background:linear-gradient(135deg,#FFD700,#FFA500);color:#fff}
+.lb-rank.r2{background:linear-gradient(135deg,#C0C0C0,#A0A0A0);color:#fff}
+.lb-rank.r3{background:linear-gradient(135deg,#CD7F32,#A05010);color:#fff}
+.lb-row.me .lb-rank{background:var(--accent);color:#FDF8F0}
+.lb-name{flex:1;font-size:15px;font-weight:500;color:var(--ink)}
+.lb-row.me .lb-name{font-weight:700}
+.lb-score{font-size:18px;font-weight:300;letter-spacing:-.03em;color:var(--accent)}
+.lb-refresh{text-align:center;margin-top:18px;font-size:13px;color:var(--faint);cursor:pointer;
+  font-weight:600;letter-spacing:.04em}
 
-/* ── EMPTY STATES ── */
-.empty{text-align:center;padding:48px 20px;color:var(--soft)}
-.em-icon{font-size:44px;margin-bottom:12px;opacity:.5}
-.em-txt{font-size:14px;color:var(--soft)}
+/* ── BOTTOM NAV (vocab 同款 jc-key) ── */
+.jc-btm{position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:var(--bg);border-top:1px solid var(--hair);
+  padding:12px 20px;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+.jc-keys{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:1px;
+  max-width:480px;margin:0 auto;justify-content:center}
+.jc-keys::-webkit-scrollbar{display:none}
+.jc-key{flex:0 0 auto;font-family:var(--fnt);cursor:pointer;padding:9px 15px;border-radius:var(--r-sm);
+  font-size:11.5px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;position:relative;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F5EDD8 100%);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 5px rgba(40,20,5,.08);
+  color:var(--ink);transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.jc-key:active{transform:translateY(2px);border-bottom-width:1px;box-shadow:inset 0 1px 3px rgba(40,20,5,.1)}
+.jc-key.on{background:linear-gradient(180deg,#2A1D08 0%,#1A0D00 100%);
+  border-color:#1A0D00;border-bottom-color:#0A0500;color:#FDF8F0}
+.jc-key.on:active{background:linear-gradient(180deg,#1A0D00 0%,#0A0500 100%)}
+.jc-key-badge{position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;
+  background:var(--warn);color:#FDF8F0;font-size:9px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;border:1.5px solid #FDF8F0}
 
-/* ── SECTION LABEL ── */
-.stitle{font-size:9.5px;font-weight:700;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--faint);padding:16px 20px 8px}
+/* ── SUBMIT PAGE ── */
+.step-list{display:flex;flex-direction:column;gap:10px;margin:18px 0}
+.step-row{display:flex;align-items:center;gap:14px}
+.step-num{width:28px;height:28px;border-radius:50%;flex:0 0 auto;
+  background:var(--ink);color:#FDF8F0;
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.step-txt{font-size:14px;color:var(--ink);line-height:1.5}
 
-/* ── USER BAR (在score-block上方) ── */
-.ubar{display:flex;align-items:center;justify-content:space-between;
-  padding:14px 20px 0}
-.uname{font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
-.uswitch{font-size:11px;color:var(--soft);cursor:pointer;text-decoration:underline}
+.wx-block{background:var(--accent-soft);border:1.5px solid var(--hair);border-radius:var(--r-md);
+  padding:16px 18px;text-align:center;margin:18px 0}
+.wx-lbl{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--soft);margin-bottom:6px}
+.wx-id{font-size:22px;font-weight:200;letter-spacing:.04em;color:var(--ink)}
 
-/* ── RETRY OVERLAY ── */
-.ret-ov{position:fixed;inset:0;z-index:400;
-  background:rgba(42,30,8,.5);
-  display:none;align-items:flex-end;justify-content:center;padding:12px}
-.ret-ov.on{display:flex}
-.ret-box{background:var(--bg);border-radius:24px 24px 18px 18px;
-  width:100%;max-width:480px;padding:22px 20px;
-  box-shadow:0 -4px 40px rgba(42,30,8,.28)}
-.ret-cat{font-size:9.5px;color:var(--faint);font-weight:700;
-  text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px}
-.ret-q{font-size:17px;line-height:1.8;color:var(--ink);
-  font-family:Georgia,serif;margin-bottom:14px}
-.ret-in{width:100%;font-size:16px;padding:11px 14px;
-  background:var(--bg2);border:1px solid var(--hair);
-  border-bottom:2.5px solid #C8A870;border-radius:12px;
-  color:var(--ink);font-family:var(--fnt);outline:none;margin-bottom:12px;
-  transition:border-color .2s}
-.ret-in:focus{border-color:var(--accent)}
-.ret-in:disabled{opacity:.55}
-.ret-btns{display:flex;gap:8px}
-.ret-sub{flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:700;
-  cursor:pointer;font-family:var(--fnt);
-  background:linear-gradient(180deg,#EED068 0%,#E8A020 100%);
-  border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
-  box-shadow:inset 0 1px 0 rgba(255,255,200,.5);
-  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
-.ret-sub:active{transform:translateY(2px);border-bottom-width:1px}
-.ret-sub:disabled{background:linear-gradient(180deg,#EEE2C4,#D8C8A0);
-  border-color:#C0A870;border-bottom-color:#C0A870;color:rgba(58,42,16,.3);cursor:default}
-.ret-can{padding:12px 16px;border-radius:12px;font-size:13px;cursor:pointer;
-  font-family:var(--fnt);font-weight:600;
-  background:linear-gradient(180deg,#FFFFFF,#F8F0E0);
-  border:1px solid #D8C090;border-bottom:3px solid #B09050;color:var(--soft);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95);
-  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
-.ret-can:active{transform:translateY(2px);border-bottom-width:1px}
-.ret-fbk{display:none;margin-top:12px;padding:11px 14px;
-  font-size:13px;font-weight:600;border-radius:12px}
-.ret-fbk.ok{background:linear-gradient(180deg,#F5EEC8,#EED868);
-  border:1px solid #C89010;border-bottom:2px solid #A07008;color:#4A3000}
-.ret-fbk.no{background:linear-gradient(180deg,#FEF0E8,#F5D8C8);
-  border:1px solid #D8A080;border-bottom:2px solid #B07050;color:#6A2810}
-.ret-nxt{display:none;margin-top:10px;width:100%;padding:12px;
-  border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;
-  font-family:var(--fnt);
-  background:linear-gradient(180deg,#E89878 0%,#E86248 100%);
-  border:1px solid #D04030;border-bottom:3px solid #A82818;color:#FDF8F0;
-  box-shadow:inset 0 1px 0 rgba(255,255,220,.3);
-  transition:transform .08s,border-bottom-width .08s}
-.ret-nxt:active{transform:translateY(2px);border-bottom-width:1px}
+/* ── MODAL (overlay) ── */
+.modal{position:fixed;inset:0;z-index:200;display:none;align-items:flex-end;
+  justify-content:center;padding:12px;
+  background:rgba(42,29,8,.5);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.modal.show{display:flex;animation:fadeIn .25s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-box{background:var(--bg);border-radius:28px 28px 20px 20px;
+  width:100%;max-width:480px;padding:28px 22px 24px;
+  box-shadow:var(--shadow-lg);animation:slideUp .32s cubic-bezier(.22,1,.36,1)}
+@keyframes slideUp{from{transform:translateY(40px)}to{transform:none}}
+.modal-kicker{margin-bottom:14px}
+.modal-title{font-size:26px;font-weight:700;font-family:var(--fnt-serif);
+  letter-spacing:-.02em;color:var(--ink);margin-bottom:4px}
+.modal-en{font-size:11px;color:var(--faint);font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;margin-bottom:16px}
+.modal-body{font-size:14px;line-height:1.85;color:var(--soft);
+  background:var(--bg3);border-radius:var(--r-md);padding:14px 16px;margin-bottom:16px;
+  border:1.5px solid var(--hair)}
+.modal-body strong{color:var(--ink)}
+.modal-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.mstat{text-align:center;background:var(--bg3);border-radius:var(--r-md);padding:12px 8px;
+  border:1.5px solid var(--hair)}
+.mstat-n{font-size:24px;font-weight:200;letter-spacing:-.04em;color:var(--ink)}
+.mstat-l{font-size:10px;color:var(--soft);margin-top:2px;font-weight:600}
 
-/* ── INTRO OVERLAY ── */
-.intro-ov{position:fixed;inset:0;z-index:500;
-  background:rgba(42,30,8,.55);
-  display:none;align-items:flex-end;justify-content:center;padding:12px}
-.intro-ov.on{display:flex}
-.intro-box{background:var(--bg);border-radius:28px 28px 20px 20px;
-  width:100%;max-width:480px;overflow:hidden;
-  box-shadow:0 -4px 40px rgba(42,30,8,.32)}
-.intro-top{padding:28px 24px 22px;text-align:center}
-.intro-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--warn);
-  background:rgba(200,90,42,.1);border:1.5px solid rgba(200,90,42,.25);
-  border-radius:20px;padding:4px 14px;margin-bottom:16px}
-.intro-title{font-size:28px;font-weight:900;font-family:Georgia,serif;
-  color:var(--ink);letter-spacing:-.02em;margin-bottom:5px;
-  text-shadow:0 2px 6px rgba(40,20,5,.12)}
-.intro-en{font-size:11px;color:var(--faint);font-weight:700;letter-spacing:.12em;
-  text-transform:uppercase;margin-bottom:18px}
-.intro-body{font-size:14px;line-height:1.85;color:#5A4420;text-align:left;
-  background:rgba(200,168,112,.1);border-radius:14px;
-  padding:14px 16px;margin-bottom:16px;
-  border:1px solid rgba(200,168,112,.2)}
-.intro-body strong{color:var(--ink)}
-.intro-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-.istat{text-align:center;background:#FFFFFF;border-radius:14px;padding:12px 8px;
-  border:1px solid #D8C090;border-bottom:2px solid #B09050;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 4px rgba(40,20,5,.07)}
-.istat-n{font-size:24px;font-weight:200;letter-spacing:-.04em;color:var(--ink)}
-.istat-l{font-size:10px;color:var(--soft);margin-top:2px;font-weight:600}
-.intro-btn{width:100%;padding:15px;border-radius:14px;font-size:16px;font-weight:800;
-  cursor:pointer;font-family:var(--fnt);letter-spacing:.02em;
-  background:linear-gradient(180deg,#EED068 0%,#E8A020 100%);
-  border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
-  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 8px rgba(40,20,5,.14);
-  transition:transform .1s,box-shadow .1s,border-bottom-width .1s}
-.intro-btn:active{transform:translateY(2px);border-bottom-width:1px}
+/* ── RETRY MODAL ── */
+.ret-kicker{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:10px}
+.ret-q{font-size:17px;line-height:1.8;color:var(--ink);font-family:var(--fnt-serif);margin-bottom:14px}
+.ret-acts{display:flex;gap:10px;margin-top:10px}
+.ret-fbk{display:none;margin-top:12px;padding:12px 14px;font-size:13px;font-weight:600;
+  border-radius:var(--r-md)}
+.ret-fbk.ok{background:var(--accent-soft);border:1.5px solid var(--accent);color:var(--accent-deep)}
+.ret-fbk.no{background:var(--warn-soft);border:1.5px solid var(--warn);color:var(--warn)}
 
-/* ── CAT-HEAD in category view ── */
-.cat-head{padding:0 20px 16px;display:flex;align-items:center;gap:12px}
-.cat-head-color{width:10px;height:40px;border-radius:5px;flex:0 0 auto}
-.cat-head-name{font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.03em}
-.cat-head-en{font-size:11px;color:var(--faint);font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+/* ── CARD (generic container) ── */
+.card{border:2px solid var(--hair);border-radius:24px;padding:22px 20px;background:var(--bg3)}
 
-.page-wrap{padding:0 20px 20px}
-.foot{font-size:11px;color:var(--faint);text-align:center;
-  padding:12px 20px;letter-spacing:.04em}
+/* ── FOOT ── */
+.foot{text-align:center;font-size:11px;color:var(--faint);margin-top:30px;letter-spacing:.04em}
 </style>
 </head>
 <body>
 
-<!-- ── INTRO ── -->
-<div class="intro-ov" id="intro-ov">
-<div class="intro-box">
-  <div class="intro-top">
-    <div class="intro-badge">写作专项训练</div>
-    <div class="intro-title">写作七宗醉</div>
-    <div class="intro-en">The Seven Dizzying Sins of Writing</div>
-    <div class="intro-body">
-      <strong>为什么叫「七宗醉」？</strong><br>
-      因为这七种错误，几乎是中国学生英语写作的「集体无意识」——犯得太自然、太顺手，连自己都没察觉，但每犯一次，阅卷老师就头昏眼花。<br><br>
-      主谓不一致、时态乱飞、冠词乱用、单复数混淆、介词全靠猜、词性随意穿、连词凭感觉——<strong>七醉入魂，分数悄悄流走。</strong>
-    </div>
-    <div class="intro-stats">
-      <div class="istat"><div class="istat-n">7</div><div class="istat-l">错误类型</div></div>
-      <div class="istat"><div class="istat-n">315</div><div class="istat-l">练习句子</div></div>
-      <div class="istat"><div class="istat-n">+15</div><div class="istat-l">每题得分</div></div>
-    </div>
-    <button class="intro-btn" onclick="dismissIntro()">清醒了，开练 →</button>
+<!-- ── INTRO MODAL ── -->
+<div class="modal show" id="intro-ov">
+<div class="modal-box">
+  <div class="kicker modal-kicker">写作专项训练</div>
+  <div class="modal-title">写作七宗醉</div>
+  <div class="modal-en">The Seven Dizzying Sins of Writing</div>
+  <div class="modal-body">
+    <strong>为什么叫「七宗醉」？</strong><br>
+    因为这七种错误，几乎是中国学生英语写作的「集体无意识」——犯得太自然，连自己都没察觉，但每犯一次，阅卷老师就头昏眼花。<br><br>
+    主谓不一致、时态乱飞、冠词乱用、单复数混淆、介词全靠猜、词性随意穿、连词凭感觉——<strong>七醉入魂，分数悄悄流走。</strong>
   </div>
+  <div class="modal-stats">
+    <div class="mstat"><div class="mstat-n">7</div><div class="mstat-l">错误类型</div></div>
+    <div class="mstat"><div class="mstat-n">315</div><div class="mstat-l">练习句子</div></div>
+    <div class="mstat"><div class="mstat-n">+15</div><div class="mstat-l">每题得分</div></div>
+  </div>
+  <button class="btn accent" onclick="dismissIntro()">清醒了，开练 →</button>
 </div>
 </div>
 
-<!-- ── HUD ── -->
-<div class="hud">
-  <div class="hud-row">
-    <a class="brand" href="study.html">John Class</a>
-    <a class="back-lnk jk" href="writing.html" style="text-decoration:none">← 写作</a>
+<!-- ── RETRY MODAL ── -->
+<div class="modal" id="ret-ov">
+<div class="modal-box">
+  <div class="ret-kicker" id="ret-cat"></div>
+  <div class="ret-q" id="ret-q"></div>
+  <div class="spell-input-wrap">
+    <input class="spell-input" id="ret-in" type="text" placeholder="填入答案…"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
   </div>
+  <div class="ret-acts">
+    <button class="btn line sm" onclick="closeRetry()">取消</button>
+    <button class="btn accent sm" id="ret-sub" onclick="submitRetry()" style="flex:1">提交</button>
+  </div>
+  <div class="ret-fbk" id="ret-fbk"></div>
+  <button class="btn sm" id="ret-nxt" onclick="closeRetry()" style="display:none;margin-top:10px">完成，关闭</button>
+</div>
 </div>
 
-<div class="main">
+<div id="app">
 
 <!-- ══ HOME ══ -->
-<div id="v-home" class="view on">
-  <div class="ubar">
-    <div>
-      <div class="uname" id="disp-name">未登录</div>
-    </div>
-    <span class="uswitch" onclick="switchUser()">切换账号</span>
+<div class="screen active" id="s-home">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <a href="study.html" style="font-size:20px;font-weight:700;letter-spacing:-.03em;color:var(--ink);text-decoration:none;font-family:var(--fnt-serif)">John Class</a>
+    <a href="writing.html" style="font-size:13px;font-weight:600;color:var(--accent);text-decoration:none">← 写作</a>
   </div>
-  <!-- Score strip -->
-  <div class="score-block">
-    <div class="jc-num" id="disp-score-num">0</div>
-    <div class="jc-unit">分</div>
-    <div class="jc-pills">
-      <div class="jc-pill" id="home-pill">写作特训</div>
-      <div class="jc-pill-red" id="home-err-pill" style="display:none"></div>
-    </div>
+
+  <div style="margin-bottom:6px">
+    <div class="num"><span id="disp-score">0</span><small>分</small></div>
   </div>
-  <div class="jc-pw"><div class="jc-pt"><div class="jc-pf" id="home-prog-fill" style="width:0%"></div></div></div>
-  <!-- Category shelves -->
-  <div id="cat-shelves"></div>
+
+  <div class="track" style="margin-bottom:32px"><i id="home-track"></i></div>
+
+  <div class="slabel">七大错误类型</div>
+  <div class="cat-shelves" id="cat-shelves"></div>
+
   <div class="foot">每题 +15 分 · 错题自动入库</div>
 </div>
 
-<!-- ══ CATEGORY LEVEL SELECTION ══ -->
-<div id="v-cat" class="view">
+<!-- ══ CATEGORY ══ -->
+<div class="screen" id="s-cat">
   <div class="bar">
-    <button class="back-btn" onclick="showHome()">‹</button>
-    <div class="bar-title" id="cat-bar-title"></div>
-    <div class="bar-right" id="cat-bar-score"></div>
+    <button class="back" onclick="showHome()">‹</button>
+    <span class="htitle" id="cat-title"></span>
+    <span class="sp"></span>
+    <span class="meta" id="cat-score"></span>
   </div>
-  <div class="cat-head" id="cat-head-block">
-    <div class="cat-head-color" id="cat-head-color"></div>
-    <div>
-      <div class="cat-head-name" id="cat-title"></div>
-      <div class="cat-head-en" id="cat-en"></div>
-    </div>
-  </div>
-  <div class="stitle">选择难度，开始闯关</div>
-  <div class="lev-list" id="lev-grid"></div>
+  <div class="slabel" id="cat-en-lbl"></div>
+  <div style="margin-bottom:20px;font-size:13px;color:var(--soft)" id="cat-note"></div>
+  <div class="slabel">选择难度，开始闯关</div>
+  <div class="lvls" id="lev-list"></div>
 </div>
 
 <!-- ══ DRILL ══ -->
-<div id="v-drill" class="view">
+<div class="screen" id="s-drill">
   <div class="bar">
-    <button class="back-btn" onclick="exitDrill()">‹</button>
-    <div class="bar-title" id="drill-bar-title"></div>
-    <div class="bar-right" id="dscorelab">+0</div>
+    <button class="back" onclick="exitDrill()">‹</button>
+    <span class="htitle" id="drill-title"></span>
+    <span class="sp"></span>
   </div>
-  <div class="drill-hud">
-    <div class="dhud-prog"><div class="dhud-fill" id="dfill" style="width:0%"></div></div>
-    <div class="dhud-label" id="dprog">1 / 15</div>
+  <div class="qhud">
+    <div class="tk"><i id="drill-fill"></i></div>
+    <span class="ct" id="drill-prog">1/15</span>
+    <span class="pts" id="drill-pts">+0</span>
   </div>
-  <div class="dcard">
-    <div class="dcat-label" id="dnote"></div>
-    <div class="dq-text" id="dq"></div>
-    <div class="dinrow">
-      <input class="din" id="din" type="text" placeholder="在此输入答案…"
+
+  <div class="qcard">
+    <div class="qlabel" id="drill-note"></div>
+    <div class="qtext" id="drill-q"></div>
+    <div class="spell-input-wrap">
+      <input class="spell-input" id="din" type="text" placeholder="在此输入答案…"
         autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-      <button class="subbtn" id="subbtn" onclick="submitAns()">提交</button>
     </div>
     <div class="fbk" id="fbk">
       <div class="fbk-row">
-        <span class="fbk-icon" id="fbkemo"></span>
-        <span class="fbk-txt" id="fbktxt"></span>
+        <span class="fbk-icon" id="fbk-icon"></span>
+        <span class="fbk-title" id="fbk-title"></span>
       </div>
-      <div class="fbk-ans" id="fbkans"></div>
+      <div class="fbk-ans" id="fbk-ans"></div>
     </div>
-    <div class="dacts">
-      <button class="skipbtn" id="skipbtn" onclick="skipQ()">跳过这题</button>
-      <button class="nxtbtn" id="nxtbtn" onclick="nextQ()">下一题 →</button>
+    <div class="drill-acts" style="margin-top:10px">
+      <button class="btn accent" id="sub-btn" onclick="submitAns()" style="flex:1">提交答案</button>
+      <button class="btn line" id="skip-btn" onclick="skipQ()" style="flex:1;white-space:nowrap">跳过</button>
+      <button class="btn" id="nxt-btn" onclick="nextQ()" style="display:none;flex:1">下一题 →</button>
     </div>
   </div>
 </div>
 
 <!-- ══ COMPLETE ══ -->
-<div id="v-done" class="view">
+<div class="screen" id="s-done">
+  <div class="bar">
+    <span class="htitle">本轮结束</span>
+  </div>
   <div class="cp-card">
-    <div class="cp-badge" id="cp-badge">★</div>
-    <div class="cp-title" id="cp-tit">本轮完成！</div>
-    <div class="cp-score" id="cp-sco">+0</div>
-    <div class="cp-label">本轮得分</div>
+    <div class="kicker cp-kicker">本轮得分</div>
+    <div class="stagebadge pass" id="cp-badge">✓</div>
+    <div class="cp-score" id="cp-score">+0</div>
+    <div class="cp-lbl">分</div>
     <div class="cp-sub" id="cp-sub"></div>
-    <button class="homebtn" onclick="showHome()">返回首页</button>
+    <button class="btn" onclick="showHome()">返回首页</button>
   </div>
 </div>
 
 <!-- ══ ERRORS ══ -->
-<div id="v-errors" class="view">
+<div class="screen" id="s-errors">
   <div class="bar">
-    <div class="bar-title" style="text-align:left;margin-left:4px">错题本</div>
-    <div class="bar-right" id="errcnt" style="font-size:12px;color:var(--soft)"></div>
+    <span class="htitle">错题本</span>
+    <span class="sp"></span>
+    <span class="meta" id="err-cnt"></span>
   </div>
-  <div class="stitle">点击「重做」在弹窗里挑战该题</div>
-  <div class="page-wrap" id="elist"></div>
+  <div class="slabel">点击「重做」在弹窗挑战</div>
+  <div id="err-list"></div>
 </div>
 
 <!-- ══ LEADERBOARD ══ -->
-<div id="v-lb" class="view">
+<div class="screen" id="s-lb">
   <div class="bar">
-    <div class="bar-title" style="text-align:left;margin-left:4px">大神榜</div>
-    <div class="bar-right" style="font-size:12px;color:var(--soft)">写作积分</div>
+    <span class="htitle">大神榜</span>
+    <span class="sp"></span>
+    <span class="meta">写作积分</span>
   </div>
-  <div class="page-wrap">
-    <div id="lbwrap">
-      <div class="empty"><div class="em-txt">加载中…</div></div>
-    </div>
-    <span class="lb-refresh" onclick="loadLB()">↻ 刷新排行</span>
+  <div id="lb-wrap">
+    <div class="empty"><div class="empty-txt">加载中…</div></div>
   </div>
+  <div class="lb-refresh" onclick="loadLB()">↻ 刷新排行</div>
 </div>
 
-
-<!-- ══ 写作投稿 ══ -->
-<div id="v-submit" class="view">
+<!-- ══ SUBMIT ══ -->
+<div class="screen" id="s-submit">
   <div class="bar">
-    <div class="bar-title" style="text-align:left;margin-left:4px">写作批改</div>
+    <span class="htitle">写作批改</span>
   </div>
-  <div class="page-wrap">
-
-    <!-- 说明卡 -->
-    <div style="background:#FFFFFF;border:1px solid #D8C090;border-bottom:3px solid #B09050;
-      border-radius:20px;padding:24px 20px 20px;margin-bottom:16px;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 8px rgba(40,20,5,.07),
-        0 8px 24px rgba(40,20,5,.04)">
-      <div style="font-size:9.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
-        color:var(--faint);margin-bottom:14px">Writing Feedback</div>
-      <div style="font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.03em;
-        margin-bottom:6px;text-shadow:0 2px 6px rgba(40,20,5,.1)">发作文给 John 批改</div>
-      <div style="font-size:13px;color:var(--soft);line-height:1.75;margin-bottom:20px">
-        任何英语作文都可以发给 John<br>语法纠错 · 结构优化 · 高分建议
-      </div>
-
-      <!-- 步骤 -->
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:28px;height:28px;border-radius:50%;flex:0 0 auto;
-            background:linear-gradient(145deg,#EED068,#E8A020);
-            border:1px solid #C88808;border-bottom:2px solid #986008;
-            box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 4px rgba(40,20,5,.1);
-            display:flex;align-items:center;justify-content:center;
-            font-size:12px;font-weight:700;color:#4A3000">1</div>
-          <div style="font-size:14px;color:var(--ink);line-height:1.5">在纸上写好英语作文</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:28px;height:28px;border-radius:50%;flex:0 0 auto;
-            background:linear-gradient(145deg,#EEB878,#E89038);
-            border:1px solid #C87828;border-bottom:2px solid #A05018;
-            box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 4px rgba(40,20,5,.1);
-            display:flex;align-items:center;justify-content:center;
-            font-size:12px;font-weight:700;color:#5A3000">2</div>
-          <div style="font-size:14px;color:var(--ink);line-height:1.5">拍照或截图</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:28px;height:28px;border-radius:50%;flex:0 0 auto;
-            background:linear-gradient(145deg,#E89878,#E86248);
-            border:1px solid #D04030;border-bottom:2px solid #A82818;
-            box-shadow:inset 0 1px 0 rgba(255,255,220,.3),0 2px 4px rgba(40,20,5,.1);
-            display:flex;align-items:center;justify-content:center;
-            font-size:12px;font-weight:700;color:#FDF8F0">3</div>
-          <div style="font-size:14px;color:var(--ink);line-height:1.5">通过微信发给 John</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:28px;height:28px;border-radius:50%;flex:0 0 auto;
-            background:linear-gradient(145deg,#E8A870,#D07840);
-            border:1px solid #D06080;border-bottom:2px solid #B04060;
-            box-shadow:inset 0 1px 0 rgba(255,255,230,.4),0 2px 4px rgba(40,20,5,.1);
-            display:flex;align-items:center;justify-content:center;
-            font-size:12px;font-weight:700;color:#5A0828">4</div>
-          <div style="font-size:14px;color:var(--ink);line-height:1.5">John 批改后发回给你</div>
-        </div>
-      </div>
-
-      <!-- 微信号 -->
-      <div style="background:linear-gradient(180deg,#FFF8D8,#F5EEB8);
-        border:1px solid #D8B828;border-bottom:2.5px solid #B09010;border-radius:14px;
-        padding:16px 18px;text-align:center;margin-bottom:16px;
-        box-shadow:inset 0 1px 0 rgba(255,255,200,.6),0 2px 6px rgba(40,20,5,.08)">
-        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-          color:var(--soft);margin-bottom:6px">John 老师微信</div>
-        <div id="wxId" style="font-size:22px;font-weight:200;letter-spacing:.04em;
-          color:var(--ink);text-shadow:0 2px 6px rgba(40,20,5,.1)">JiahaoLee6666</div>
-      </div>
-
-      <!-- 复制按钮 -->
-      <button id="copyBtn" onclick="copyWx()" style="width:100%;padding:14px;border-radius:14px;
-        font-size:15px;font-weight:700;cursor:pointer;font-family:var(--fnt);
-        background:linear-gradient(180deg,#EED068 0%,#E8A020 100%);
-        border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
-        box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 8px rgba(40,20,5,.12);
-        transition:transform .08s,box-shadow .08s,border-bottom-width .08s">
-        复制微信号，去发作文
-      </button>
+  <div class="card" style="margin-bottom:16px">
+    <div class="kicker" style="margin-bottom:14px">Writing Feedback</div>
+    <div style="font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin-bottom:6px">发作文给 John 批改</div>
+    <div style="font-size:13px;color:var(--soft);line-height:1.7;margin-bottom:18px">
+      任何英语作文都可以发给 John<br>语法纠错 · 结构优化 · 高分建议
     </div>
-
-    <div class="foot">Writing Feedback · John Class · Changsha 2026</div>
+    <div class="step-list">
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-txt">在纸上写好英语作文</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-txt">拍照或截图</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-txt">通过微信发给 John</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">4</div>
+        <div class="step-txt">John 批改后发回给你</div>
+      </div>
+    </div>
+    <div class="wx-block">
+      <div class="wx-lbl">John 老师微信</div>
+      <div class="wx-id" id="wx-id">JiahaoLee6666</div>
+    </div>
+    <button class="btn accent" id="copy-btn" onclick="copyWx()">复制微信号，去发作文</button>
   </div>
+  <div class="foot">Writing Feedback · John Class · Changsha 2026</div>
 </div>
 
-</div><!-- .main -->
+</div><!-- #app -->
 
-<!-- ── BOTTOM NAV ── -->
+<!-- ── BOTTOM TAB BAR ── -->
 <div class="jc-btm">
   <div class="jc-keys">
-    <button class="jc-key on" id="nb-home" onclick="switchTab('home')">练习</button>
-    <button class="jc-key" id="nb-errors" onclick="switchTab('errors')">错题本</button>
-    <button class="jc-key" id="nb-lb" onclick="switchTab('lb')">大神榜</button>
-    <button class="jc-key jc-key-amber" id="nb-submit" onclick="switchTab('submit')">投稿批改</button>
-  </div>
-</div>
-
-<!-- ── RETRY OVERLAY ── -->
-<div class="ret-ov" id="ret-ov">
-  <div class="ret-box">
-    <div class="ret-cat" id="ret-cat"></div>
-    <div class="ret-q" id="ret-q"></div>
-    <input class="ret-in" id="ret-in" type="text" placeholder="填入答案…"
-      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-    <div class="ret-btns">
-      <button class="ret-can" onclick="closeRetry()">取消</button>
-      <button class="ret-sub" id="ret-sub" onclick="submitRetry()">提交</button>
-    </div>
-    <div class="ret-fbk" id="ret-fbk"></div>
-    <button class="ret-nxt" id="ret-nxt" onclick="closeRetry()">完成，关闭</button>
+    <button class="jc-key on" id="tab-home" onclick="switchTab('home')">练习</button>
+    <button class="jc-key" id="tab-errors" onclick="switchTab('errors')" style="position:relative">错题本</button>
+    <button class="jc-key" id="tab-lb" onclick="switchTab('lb')">大神榜</button>
+    <button class="jc-key" id="tab-submit" onclick="switchTab('submit')">投稿批改</button>
   </div>
 </div>
 
 <script>
-// ──────────────────────────────────────────
-//  SUPABASE
-// ──────────────────────────────────────────
+/* ── SUPABASE ── */
 const SB='https://ghunrrtrdgicbmixsqrc.supabase.co';
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
 const SH={apikey:SK,Authorization:`Bearer ${SK}`};
 
-// ──────────────────────────────────────────
-//  DATA  (7 × 3 × 15 = 315 题)
-// ──────────────────────────────────────────
+/* ── DATA ── */
 const CATS=[
-{name:'主谓不一致',en:'Subject-Verb Agreement',cardClass:'jcg1',
- note:'填入括号内动词的正确形式',
+{name:'主谓不一致',en:'Subject-Verb Agreement',note:'填入括号内动词的正确形式',
  levels:[
-  {name:'简单',dotBg:'linear-gradient(145deg,#E89878,#E86248)',qs:[
+  {name:'简单',sub:'基础主谓搭配',qs:[
     [`She ______ (like) apples.`,['likes']],
     [`They ______ (be) students.`,['are']],
     [`My brother ______ (play) football.`,['plays']],
@@ -724,7 +530,7 @@ const CATS=[
     [`They ______ (do) homework.`,['do']],
     [`He ______ (watch) TV.`,['watches']],
   ]},
-  {name:'中等',dotBg:'linear-gradient(145deg,#EEC888,#E89040)',qs:[
+  {name:'中等',sub:'复杂主语结构',qs:[
     [`The teacher with many students ______ (be) in the classroom.`,['is']],
     [`Each of the boys ______ (have) a ball.`,['has']],
     [`Neither the students nor the teacher ______ (be) in the lab.`,['is']],
@@ -741,7 +547,7 @@ const CATS=[
     [`Some of the water ______ (be) polluted.`,['is']],
     [`The pair of shoes ______ (fit) me well.`,['fits']],
   ]},
-  {name:'困难',dotBg:'linear-gradient(145deg,#E89878,#EE4828)',qs:[
+  {name:'困难',sub:'主语判断难点',qs:[
     [`What he said ______ (be) true.`,['is']],
     [`To learn languages ______ (require) patience.`,['requires']],
     [`Growing vegetables ______ (need) water.`,['needs']],
@@ -759,10 +565,9 @@ const CATS=[
     [`Half of the students ______ (be) from China.`,['are']],
   ]},
  ]},
-{name:'时态混用',en:'Tense Confusion',cardClass:'jcg2',
- note:'填入括号内动词的正确时态形式',
+{name:'时态混用',en:'Tense Confusion',note:'填入括号内动词的正确时态形式',
  levels:[
-  {name:'简单',dotBg:'linear-gradient(145deg,#EED068,#E8A020)',qs:[
+  {name:'简单',sub:'常用时态',qs:[
     [`He usually ______ (get) up at 7.`,['gets']],
     [`Look! The bus ______ (come).`,['is coming']],
     [`She ______ (visit) her grandma last Sunday.`,['visited']],
@@ -779,7 +584,7 @@ const CATS=[
     [`Tom ______ (write) a letter yesterday.`,['wrote']],
     [`The earth ______ (move) around the sun.`,['moves']],
   ]},
-  {name:'中等',dotBg:'linear-gradient(145deg,#EEB878,#E89038)',qs:[
+  {name:'中等',sub:'完成时 & 过去进行时',qs:[
     [`I ______ (finish) my homework already.`,['have finished']],
     [`She ______ (live) here since 2010.`,['has lived']],
     [`While I ______ (walk) home, I met a friend.`,['was walking']],
@@ -796,7 +601,7 @@ const CATS=[
     [`He ______ (just leave).`,['has just left']],
     [`When I got home, my mom ______ (cook).`,['was cooking']],
   ]},
-  {name:'困难',dotBg:'linear-gradient(145deg,#EED068,#EE8A18)',qs:[
+  {name:'困难',sub:'虚拟语气 & 复杂时态',qs:[
     [`By next month, I ______ (work) here for 10 years.`,['will have worked']],
     [`She looked tired because she ______ (work) all day.`,['had been working']],
     [`If I ______ (be) you, I would accept the offer.`,['were']],
@@ -814,10 +619,9 @@ const CATS=[
     [`I ______ (think) of going, but I changed my mind.`,['had thought']],
   ]},
  ]},
-{name:'冠词误用',en:'Article Misuse',cardClass:'jcg3',
- note:'填入 a / an / the，零冠词填 /',
+{name:'冠词误用',en:'Article Misuse',note:'填入 a / an / the，零冠词填 /',
  levels:[
-  {name:'简单',dotBg:'linear-gradient(145deg,#EEC888,#E89040)',qs:[
+  {name:'简单',sub:'基础冠词用法',qs:[
     [`I have ______ apple.`,['an']],
     [`She is ______ doctor.`,['a']],
     [`______ sun rises in the east.`,['the']],
@@ -834,7 +638,7 @@ const CATS=[
     [`He is in ______ hospital (he is ill).`,['/','']],
     [`______ Great Wall is famous.`,['the']],
   ]},
-  {name:'中等',dotBg:'linear-gradient(145deg,#EED068,#E8A020)',qs:[
+  {name:'中等',sub:'特殊情境冠词',qs:[
     [`I want to become ______ engineer.`,['an']],
     [`They are playing ______ football.`,['/','']],
     [`She went to ______ bed late last night.`,['/','']],
@@ -851,7 +655,7 @@ const CATS=[
     [`She studies ______ Chinese history.`,['/','']],
     [`He plays ______ violin very well.`,['the']],
   ]},
-  {name:'困难',dotBg:'linear-gradient(145deg,#EEC888,#EE7830)',qs:[
+  {name:'困难',sub:'难点冠词辨析',qs:[
     [`He is ______ Newton of our age.`,['the']],
     [`______ more you read, the more you know.`,['the']],
     [`She is by far ______ better student.`,['the']],
@@ -869,10 +673,9 @@ const CATS=[
     [`I saw ______ one-eyed dog.`,['a']],
   ]},
  ]},
-{name:'名词单复数',en:'Singular / Plural Nouns',cardClass:'jcg4',
- note:'填入括号内名词的正确形式',
+{name:'名词单复数',en:'Singular / Plural Nouns',note:'填入括号内名词的正确形式',
  levels:[
-  {name:'简单',dotBg:'linear-gradient(145deg,#E8A870,#D07840)',qs:[
+  {name:'简单',sub:'规则变化',qs:[
     [`There are two ______ (cat).`,['cats']],
     [`She has many ______ (book).`,['books']],
     [`I bought some ______ (apple).`,['apples']],
@@ -889,7 +692,7 @@ const CATS=[
     [`I'd like three ______ (glass) of water.`,['glasses']],
     [`Those ______ (family) are happy.`,['families']],
   ]},
-  {name:'中等',dotBg:'linear-gradient(145deg,#EED068,#E8A020)',qs:[
+  {name:'中等',sub:'不规则与集合名词',qs:[
     [`I saw two ______ (passer-by).`,['passers-by']],
     [`The ______ (police) are coming.`,['police']],
     [`He bought a pair of ______ (shoe).`,['shoes']],
@@ -906,7 +709,7 @@ const CATS=[
     [`I have two ______ (scissor).`,['scissors']],
     [`They bought new ______ (furniture).`,['furniture']],
   ]},
-  {name:'困难',dotBg:'linear-gradient(145deg,#E8A870,#C85820)',qs:[
+  {name:'困难',sub:'学术 & 难点名词',qs:[
     [`The ______ (crisis) are severe.`,['crises']],
     [`Three ______ (analysis) were presented.`,['analyses']],
     [`He has several ______ (medium) of communication.`,['media']],
@@ -924,10 +727,9 @@ const CATS=[
     [`His ______ (thesis) are well-written.`,['theses']],
   ]},
  ]},
-{name:'介词误用',en:'Preposition Errors',cardClass:'jcg5',
- note:'填入正确的介词',
+{name:'介词误用',en:'Preposition Errors',note:'填入正确的介词',
  levels:[
-  {name:'简单',dotBg:'linear-gradient(145deg,#EED870,#E8C428)',qs:[
+  {name:'简单',sub:'常用介词搭配',qs:[
     [`I was born ______ May.`,['in']],
     [`She lives ______ Beijing.`,['in']],
     [`Let's meet ______ 5 o'clock.`,['at']],
@@ -944,7 +746,7 @@ const CATS=[
     [`I agree ______ you.`,['with']],
     [`It depends ______ the weather.`,['on']],
   ]},
-  {name:'中等',dotBg:'linear-gradient(145deg,#EEB878,#E89038)',qs:[
+  {name:'中等',sub:'固定搭配难点',qs:[
     [`She insisted ______ paying.`,['on']],
     [`He succeeded ______ passing the exam.`,['in']],
     [`I apologized ______ being late.`,['for']],
@@ -961,7 +763,7 @@ const CATS=[
     [`They are busy ______ their homework.`,['with']],
     [`He is addicted ______ video games.`,['to']],
   ]},
-  {name:'困难',dotBg:'linear-gradient(145deg,#EED870,#EEA010)',qs:[
+  {name:'困难',sub:'高级介词辨析',qs:[
     [`______ regard to your letter, we have made a decision.`,['with','in']],
     [`I'm writing ______ behalf of the committee.`,['on']],
     [`He is superior ______ others.`,['to']],
@@ -979,10 +781,9 @@ const CATS=[
     [`We must comply ______ the rules.`,['with']],
   ]},
  ]},
-{name:'词性混淆',en:'Word Form Confusion',cardClass:'jcg6',
- note:'用括号内词的正确形式填空',
+{name:'词性混淆',en:'Word Form Confusion',note:'用括号内词的正确形式填空',
  levels:[
-  {name:'简单',dotBg:'linear-gradient(145deg,#EE9280,#E85838)',qs:[
+  {name:'简单',sub:'形容词 & 副词',qs:[
     [`She sings ______ (beautiful).`,['beautifully']],
     [`He is a ______ (care) driver.`,['careful']],
     [`The girl looks ______ (happy).`,['happy']],
@@ -999,7 +800,7 @@ const CATS=[
     [`He gave a ______ (wonder) speech.`,['wonderful']],
     [`She solved the problem ______ (wise).`,['wisely']],
   ]},
-  {name:'中等',dotBg:'linear-gradient(145deg,#EED068,#E8A020)',qs:[
+  {name:'中等',sub:'名词化 & 动词变形',qs:[
     [`We must ______ (strength) our unity.`,['strengthen']],
     [`There is a ______ (possible) that he will come.`,['possibility']],
     [`He is a very ______ (create) person.`,['creative']],
@@ -1016,7 +817,7 @@ const CATS=[
     [`She is ______ (respond) for the project.`,['responsible']],
     [`His ______ (ill) is serious.`,['illness']],
   ]},
-  {name:'困难',dotBg:'linear-gradient(145deg,#E89878,#EE4828)',qs:[
+  {name:'困难',sub:'高频混淆辨析',qs:[
     [`The government introduced new ______ (economy) policies.`,['economic']],
     [`We need to be more ______ (sense) with money.`,['sensible']],
     [`This is a ______ (history) event.`,['historic']],
@@ -1034,10 +835,9 @@ const CATS=[
     [`She is a ______ (lead) in the field.`,['leader']],
   ]},
  ]},
-{name:'连词缺失',en:'Conjunctions & Connectors',cardClass:'jcg7',
- note:'填入恰当的连接词或关系词',
+{name:'连词缺失',en:'Conjunctions & Connectors',note:'填入恰当的连接词或关系词',
  levels:[
-  {name:'简单',dotBg:'linear-gradient(145deg,#EEB878,#E89038)',qs:[
+  {name:'简单',sub:'基础并列连词',qs:[
     [`I was tired, ______ I went to bed early.`,['so']],
     [`She likes coffee, ______ he likes tea.`,['but']],
     [`We can go by bus, ______ we can walk.`,['or']],
@@ -1054,7 +854,7 @@ const CATS=[
     [`I can't swim, ______ my brother can.`,['but']],
     [`We didn't have a map, ______ we got lost.`,['so']],
   ]},
-  {name:'中等',dotBg:'linear-gradient(145deg,#EED068,#E8A020)',qs:[
+  {name:'中等',sub:'从属连词 & 关系词',qs:[
     [`I stayed home ______ it was raining.`,['because','since','as']],
     [`______ it was cold, he went out without a coat.`,['although','though']],
     [`She was reading ______ the doorbell rang.`,['when']],
@@ -1071,7 +871,7 @@ const CATS=[
     [`This is the house ______ I was born.`,['where']],
     [`______ there is a will, there is a way.`,['where']],
   ]},
-  {name:'困难',dotBg:'linear-gradient(145deg,#EEB878,#EE7830)',qs:[
+  {name:'困难',sub:'关系从句 & 高级连接',qs:[
     [`The project, ______ we had worked on for months, was a success.`,['which']],
     [`He passed the exam, ______ surprised everyone.`,['which']],
     [`She has three brothers, two of ______ are doctors.`,['whom']],
@@ -1091,9 +891,7 @@ const CATS=[
  ]},
 ];
 
-// ──────────────────────────────────────────
-//  STATE
-// ──────────────────────────────────────────
+/* ── STATE ── */
 let username=localStorage.getItem('jc_username')||'';
 let prog={correct:new Set(),errors:[],totalScore:0};
 let ds={catI:0,levI:0,qs:[],qi:0,sessScore:0,answered:false};
@@ -1101,20 +899,18 @@ let retryIdx=-1;
 
 function save(){
   if(!username)return;
-  localStorage.setItem('jc_grammar_'+username,JSON.stringify({
+  localStorage.setItem('jc_writing_'+username,JSON.stringify({
     correct:[...prog.correct],errors:prog.errors,totalScore:prog.totalScore}));
 }
 function load(){
   if(!username)return;
-  try{const d=JSON.parse(localStorage.getItem('jc_grammar_'+username)||'{}');
+  try{const d=JSON.parse(localStorage.getItem('jc_writing_'+username)||'{}');
     prog.correct=new Set(d.correct||[]);
     prog.errors=d.errors||[];
     prog.totalScore=d.totalScore||0;}catch(e){}
 }
 
-// ──────────────────────────────────────────
-//  ANSWER CHECKING
-// ──────────────────────────────────────────
+/* ── ANSWER CHECKING ── */
 function norm(s){
   return s.trim().toLowerCase()
     .replace(/didn't/g,'did not').replace(/don't/g,'do not')
@@ -1134,13 +930,10 @@ function dispAns(ans){
   return ans.filter(a=>a!=='').join(' 或 ');
 }
 
-// ──────────────────────────────────────────
-//  SUPABASE SYNC
-// ──────────────────────────────────────────
+/* ── SUPABASE SYNC ── */
 function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 async function syncScore(){
   if(!username)return;
-  // weekly_scores (weekly leaderboard)
   try{
     var ws=getWeekStart();
     var r=await fetch(`${SB}/rest/v1/weekly_scores?user_name=eq.${encodeURIComponent(username)}&week_start=eq.${ws}&select=id,writing_score`,{headers:SH});
@@ -1171,166 +964,169 @@ async function startupSync(){
   }catch(e){}
 }
 async function loadLB(){
-  const w=document.getElementById('lbwrap');
-  w.innerHTML='<div class="empty"><div class="em-txt">加载中…</div></div>';
+  const w=document.getElementById('lb-wrap');
+  w.innerHTML='<div class="empty"><div class="empty-txt">加载中…</div></div>';
   try{
     const r=await fetch(`${SB}/rest/v1/weekly_scores?select=user_name,writing_score&order=writing_score.desc&limit=20`,{headers:SH});
     const d=await r.json();
-    const valid=(d||[]).filter(function(r){return (r.writing_score||0)>0;});
+    const valid=(d||[]).filter(row=>(row.writing_score||0)>0);
     if(!valid.length){
-      w.innerHTML='<div class="empty"><div class="em-icon">○</div><div class="em-txt">还没人上榜，抢第一！</div></div>';
+      w.innerHTML='<div class="empty"><div class="empty-icon">○</div><div class="empty-txt">还没人上榜，抢第一！</div></div>';
       return;
     }
-    const rankClass=['r1','r2','r3'];
-    w.innerHTML=valid.map((row,i)=>`<div class="lbrow${row.user_name===username?' me':''}">
-      <div class="lbrank ${rankClass[i]||''}">${i+1}</div>
-      <span class="lbname">${esc(row.user_name)}</span>
-      <span class="lbsco">${row.writing_score||0}</span></div>`).join('');
-  }catch(e){w.innerHTML='<div class="empty"><div class="em-txt">加载失败，请重试</div></div>';}
+    const rc=['r1','r2','r3'];
+    w.innerHTML=valid.map((row,i)=>`<div class="lb-row${row.user_name===username?' me':''}">
+      <div class="lb-rank ${rc[i]||''}">${i+1}</div>
+      <span class="lb-name">${esc(row.user_name)}</span>
+      <span class="lb-score">${row.writing_score||0}</span></div>`).join('');
+  }catch(e){w.innerHTML='<div class="empty"><div class="empty-txt">加载失败，请重试</div></div>';}
 }
 
-// ──────────────────────────────────────────
-//  VIEWS
-// ──────────────────────────────────────────
+/* ── SCREENS ── */
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function showV(id){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
-  document.getElementById('v-'+id).classList.add('on');
-  var hash='#v-'+id;
-  if(location.hash!==hash)location.hash=hash;
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-'+id).classList.add('active');
 }
-function _handleWHash(){
-  var h=location.hash.slice(1);
-  var el=h?document.getElementById(h):null;
-  if(el){document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));el.classList.add('on');}
-}
-window.addEventListener('hashchange',_handleWHash);
 
 function switchTab(t){
-  ['home','errors','lb','submit'].forEach(x=>{const el=document.getElementById('nb-'+x);if(el)el.classList.remove('on');});
-  const tEl=document.getElementById('nb-'+t);if(tEl)tEl.classList.add('on');
-  if(t==='home'){showHome();}
-  else if(t==='errors'){renderErrors();showV('errors');}
-  else if(t==='submit'){showV('submit');}
-  else{showV('lb');loadLB();}
+  ['home','errors','lb','submit'].forEach(x=>{
+    const el=document.getElementById('tab-'+x);
+    if(el)el.classList.remove('on');
+  });
+  document.getElementById('tab-'+t).classList.add('on');
+  if(t==='home')showHome();
+  else if(t==='errors'){renderErrors();showScreen('errors');}
+  else if(t==='submit')showScreen('submit');
+  else{showScreen('lb');loadLB();}
 }
 
 function showHome(){
   load();
-  document.getElementById('disp-name').textContent=username||'未登录';
-  document.getElementById('disp-score-num').textContent=prog.totalScore;
-  const errCount=prog.errors.length;
-  const errPill=document.getElementById('home-err-pill');
-  if(errCount>0){errPill.textContent='错题 '+errCount;errPill.style.display='';}
-  else errPill.style.display='none';
-  // Total progress
+  document.getElementById('disp-score').textContent=prog.totalScore;
   const total=CATS.reduce((s,c)=>s+c.levels.reduce((ss,l)=>ss+l.qs.length,0),0);
-  const done=prog.correct.size;
-  document.getElementById('home-prog-fill').style.width=(total?Math.round(done/total*100):0)+'%';
+  document.getElementById('home-track').style.width=(total?Math.round(prog.correct.size/total*100):0)+'%';
   renderCatShelves();
-  showV('home');
-  document.getElementById('nb-home').classList.add('on');
+  showScreen('home');
+  document.getElementById('tab-home').classList.add('on');
+}
+
+function catBookSVG(d){
+  const uid='wrc'+Math.floor(Math.random()*1e6);
+  const pbarW=90;
+  const pfillW=d.percent>0?Math.max(2,Math.round(pbarW*d.percent/100)):0;
+  const statusText=d.done?'✓ 全部掌握':d.percent>0?(d.percent+'%'):'开始挑战';
+  const badge=d.done?{txt:'通关'}:d.active?{txt:'进行中'}:null;
+  const enShort=(d.titleEn||'').toUpperCase().replace(/\s+/g,'-').substring(0,13);
+  return `<svg viewBox="60 46 162 228" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <clipPath id="wrc_cl_${uid}"><rect x="60" y="58" width="144" height="216" rx="16"/></clipPath>
+  <linearGradient id="wrc_cv_${uid}" x1="0%" y1="0%" x2="100%" y2="100%">
+   <stop offset="0%" stop-color="#E2B469"/><stop offset="45%" stop-color="#C8943C"/><stop offset="100%" stop-color="#8B5E1F"/>
+  </linearGradient>
+  <linearGradient id="wrc_sp_${uid}" x1="0%" y1="0%" x2="100%" y2="0%">
+   <stop offset="0%" stop-color="#5C3D10"/><stop offset="100%" stop-color="#8B5E1F"/>
+  </linearGradient>
+ </defs>
+ <rect x="60" y="46" width="162" height="228" fill="#6E4A16"/>
+ <rect x="78" y="46" width="144" height="216" rx="16" fill="#6E4A16"/>
+ <rect x="72.6" y="49.6" width="144" height="216" rx="16" fill="#D8C794"/>
+ <rect x="68.1" y="52.6" width="144" height="216" rx="16" fill="#EDE0BE"/>
+ <rect x="63.6" y="55.6" width="144" height="216" rx="16" fill="#FBF3E2"/>
+ <rect x="60" y="58" width="144" height="216" rx="16" fill="url(#wrc_cv_${uid})"/>
+ <rect x="60" y="58" width="144" height="216" rx="16" fill="none" stroke="#6B4812" stroke-width="0.7" opacity="0.4"/>
+ <rect x="60" y="58" width="13" height="216" fill="url(#wrc_sp_${uid})" opacity="0.85" clip-path="url(#wrc_cl_${uid})"/>
+ <rect x="77" y="76" width="108" height="180" rx="6" fill="none" stroke="#FFE9B0" stroke-width="1" opacity="0.4"/>
+ <rect x="81" y="80" width="100" height="172" rx="5" fill="none" stroke="#FFE9B0" stroke-width="0.5" opacity="0.3"/>
+ <path d="M76,58 L188,58 Q204,58 204,74 L204,90 L76,90 Z" fill="#FFFFFF" opacity="0.10"/>
+ <text x="86" y="92" font-family="-apple-system,sans-serif" font-size="9.5" font-weight="700" letter-spacing="1.5" fill="#FFE9B0" opacity="0.85">${enShort}</text>
+ <text x="86" y="196" font-family="Georgia,serif" font-size="66" font-weight="600" fill="#FFF8E8" opacity="0.97">${d.num}</text>
+ <text x="86" y="218" font-family="-apple-system,sans-serif" font-size="15" font-weight="700" fill="#FFF8E8" opacity="0.9">${d.titleCn}</text>
+ <text x="86" y="234" font-family="-apple-system,sans-serif" font-size="9.5" fill="#FFF8E8" opacity="0.55">${d.subText||''}</text>
+ ${d.percent>0?`<rect x="86" y="245" width="${pbarW}" height="3" rx="1.5" fill="#FFFFFF" opacity="0.2"/>
+ <rect x="86" y="245" width="${pfillW}" height="3" rx="1.5" fill="#FFFFFF" opacity="0.85"/>`:''}
+ <text x="86" y="262" font-family="-apple-system,sans-serif" font-size="9.5" font-weight="700" fill="#FFF8E8" opacity="0.7">${statusText}</text>
+ ${badge?`<rect x="150" y="58" width="38" height="15" rx="7.5" fill="#F0E0B8" stroke="#9A7830" stroke-width="0.6"/>
+ <text x="169" y="68.3" font-family="-apple-system,sans-serif" font-size="7.3" font-weight="700" letter-spacing="0.3" fill="#7A5414" text-anchor="middle">${badge.txt}</text>`:''}
+</svg>`;
 }
 
 function renderCatShelves(){
   const container=document.getElementById('cat-shelves');
-  const gradClasses=['jcg1','jcg2','jcg3','jcg4','jcg5','jcg6','jcg7'];
-  let html='';
-  for(let i=0;i<CATS.length;i+=3){
-    const trio=CATS.slice(i,i+3);
-    let cards='';
-    trio.forEach((c,idx)=>{
-      const ci=i+idx;
+  const rows=[];
+  for(let i=0;i<CATS.length;i+=3) rows.push(CATS.slice(i,i+3).map((c,j)=>({c,ci:i+j})));
+  container.innerHTML=rows.map((row,ri)=>{
+    const cards=row.map(({c,ci})=>{
       const total=c.levels.reduce((s,l)=>s+l.qs.length,0);
       const done=[...prog.correct].filter(id=>id.startsWith(ci+'_')).length;
       const pct=total?Math.round(done/total*100):0;
-      const badge=done===total&&total>0?'<div class="jc-cbadge">通关</div>':'';
-      cards+=`<div class="jc-card ${gradClasses[ci]}" data-ci="${ci}" onclick="showCat(${ci})">
-        ${badge}
-        <div class="jc-ci">
-          <div style="font-size:9px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.65);text-transform:uppercase">${ci+1}</div>
-          <div style="flex:1;display:flex;align-items:center;font-size:15px;font-weight:700;
-            color:#fff;line-height:1.3;letter-spacing:-.02em;
-            text-shadow:0 1px 4px rgba(0,0,0,.2);padding:4px 0">${c.name}</div>
-          <div>
-            <div style="height:2px;background:rgba(255,255,255,.22);border-radius:2px;overflow:hidden;margin-bottom:3px">
-              <div style="height:100%;width:${pct}%;background:rgba(255,255,255,.85);border-radius:2px"></div>
-            </div>
-            <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,.75)">${done}/${total}</div>
-          </div>
-        </div>
-      </div>`;
-    });
-    html+=`<section class="jc-shelf">
-      <div class="jc-sgrid">${cards}</div>
-      <div class="jc-sbar"></div>
-    </section>${i+3<CATS.length?'<div class="jc-sgap"></div>':''}`;
-  }
-  container.innerHTML=html;
+      const allDone=done===total&&total>0;
+      const active=done>0&&!allDone;
+      return `<div class="jc-card" onclick="showCat(${ci})">\
+<div class="jc-bookbg">${catBookSVG({num:ci+1,titleEn:c.en,titleCn:c.name,subText:total+'题',percent:pct,done:allDone,active})}</div></div>`;
+    }).join('');
+    return `<section class="jc-shelf"><div class="jc-sgrid">${cards}</div><div class="jc-sbar"></div></section>${ri<rows.length-1?'<div class="jc-sgap"></div>':''}`;
+  }).join('');
 }
 
 function showCat(ci){
   const c=CATS[ci];
-  document.getElementById('cat-bar-title').textContent=c.name;
-  const catScore=[...prog.correct].filter(id=>id.startsWith(ci+'_')).length*15;
-  document.getElementById('cat-bar-score').textContent=catScore?'+'+catScore+'分':'';
   document.getElementById('cat-title').textContent=c.name;
-  document.getElementById('cat-en').textContent=c.en;
-  // Color accent strip using card gradient
-  const gradMap={jcg1:'#E89878',jcg2:'#EED068',jcg3:'#EEC888',jcg4:'#D09060',
-    jcg5:'#EED870',jcg6:'#EE9280',jcg7:'#EEB878'};
-  document.getElementById('cat-head-color').style.background=gradMap[c.cardClass]||'var(--accent)';
-  const g=document.getElementById('lev-grid');
+  document.getElementById('cat-en-lbl').textContent=c.en;
+  document.getElementById('cat-note').textContent=c.note;
+  const catScore=[...prog.correct].filter(id=>id.startsWith(ci+'_')).length*15;
+  document.getElementById('cat-score').textContent=catScore?'+'+catScore+'分':'';
+  const g=document.getElementById('lev-list');
   g.innerHTML=c.levels.map((l,li)=>{
     const done=l.qs.filter((_,qi)=>prog.correct.has(ci+'_'+li+'_'+qi)).length;
     const rem=l.qs.length-done;
-    const pct=l.qs.length?Math.round(done/l.qs.length*100):0;
     const allDone=done===l.qs.length;
-    const tag=allDone?`<div class="lev-done-tag">已通关</div>`:
-      done>0?`<div style="font-size:12px;color:var(--soft)">进行中 · ${pct}%</div>`:'';
-    return `<div class="lev-card" onclick="startDrill(${ci},${li})">
-      <div class="lev-dot" style="background:${l.dotBg}">
-        ${li+1}
+    const pct=l.qs.length?Math.round(done/l.qs.length*100):0;
+    const tagHtml=allDone
+      ?`<span class="lvl-tag">已通关</span>`
+      :done>0?`<span style="font-size:12px;color:var(--soft)">进行中 · ${pct}%</span>`:'';
+    const link=li<c.levels.length-1?`<div class="lvl-link${done>0?' lit':''}"></div>`:'';
+    return `<div>
+      <div class="lvl${allDone?' lvl-done':''}" onclick="startDrill(${ci},${li})">
+        <div class="lvl-dot">${li+1}</div>
+        <div class="lvl-tx">
+          <div class="lvl-no">Level ${li+1}</div>
+          <b>${l.name}</b>
+          <p>${l.sub} · ${rem>0?'剩 '+rem+' 题':'全部掌握'}</p>
+          ${tagHtml}
+        </div>
+        <span class="chev">›</span>
       </div>
-      <div class="lev-tx">
-        <span class="lev-name">${l.name}</span>
-        <div class="lev-sub">${rem>0?'剩 '+rem+' 题':'全部掌握'} · ${l.qs.length} 题</div>
-        ${tag}
-      </div>
-      <div class="lev-arrow">›</div>
+      ${link}
     </div>`;
   }).join('');
-  showV('cat');
+  showScreen('cat');
 }
 
-// ──────────────────────────────────────────
-//  DRILL
-// ──────────────────────────────────────────
+/* ── DRILL ── */
 function startDrill(ci,li){
   const lev=CATS[ci].levels[li];
   const todo=lev.qs.map((q,qi)=>({q,qi})).filter(({qi})=>!prog.correct.has(ci+'_'+li+'_'+qi));
   if(!todo.length){showComplete(ci,li,0);return;}
-  // Fisher-Yates shuffle
   for(let i=todo.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[todo[i],todo[j]]=[todo[j],todo[i]];}
   ds={catI:ci,levI:li,qs:todo,qi:0,sessScore:0,answered:false};
-  document.getElementById('drill-bar-title').textContent=CATS[ci].name+' · '+lev.name;
-  renderQ();showV('drill');
+  document.getElementById('drill-title').textContent=CATS[ci].name+' · '+lev.name;
+  renderQ();showScreen('drill');
 }
 
 function renderQ(){
   const {qs,qi,sessScore}=ds,item=qs[qi],total=qs.length;
-  document.getElementById('dprog').textContent=`${qi+1}/${total}`;
-  document.getElementById('dscorelab').textContent=`+${sessScore}`;
-  document.getElementById('dfill').style.width=(qi/total*100)+'%';
-  document.getElementById('dnote').textContent=CATS[ds.catI].note;
-  document.getElementById('dq').textContent=item.q[0];
+  document.getElementById('drill-prog').textContent=`${qi+1}/${total}`;
+  document.getElementById('drill-pts').textContent=`+${sessScore}`;
+  document.getElementById('drill-fill').style.width=(qi/total*100)+'%';
+  document.getElementById('drill-note').textContent=CATS[ds.catI].note;
+  document.getElementById('drill-q').textContent=item.q[0];
   const inp=document.getElementById('din');
-  inp.value='';inp.disabled=false;
-  const sub=document.getElementById('subbtn');
-  sub.disabled=false;
+  inp.value='';inp.disabled=false;inp.className='spell-input';
+  document.getElementById('sub-btn').disabled=false;document.getElementById('sub-btn').style.display='';
+  document.getElementById('nxt-btn').style.display='none';
+  document.getElementById('skip-btn').style.display='';
   document.getElementById('fbk').style.display='none';
-  document.getElementById('nxtbtn').style.display='none';
-  document.getElementById('skipbtn').style.display='';
   ds.answered=false;
   setTimeout(()=>inp.focus(),120);
 }
@@ -1338,26 +1134,26 @@ function renderQ(){
 function submitAns(){
   if(ds.answered)return;
   const val=document.getElementById('din').value;
-  // BUG FIX: don't submit empty — prompt user to fill in
   if(!val.trim()&&!CATS[ds.catI].levels[ds.levI].qs[0][1].some(a=>a===''||a==='/')){
     document.getElementById('din').focus();return;
   }
   const item=ds.qs[ds.qi];
   const isOk=ok(val,item.q[1]);
   ds.answered=true;
-  document.getElementById('din').disabled=true;
-  document.getElementById('subbtn').disabled=true;
-  document.getElementById('skipbtn').style.display='none';
-  document.getElementById('nxtbtn').style.display='block';
+  const inp=document.getElementById('din');
+  inp.disabled=true;
+  inp.className='spell-input'+(isOk?' correct':' wrong');
+  document.getElementById('sub-btn').style.display='none';
+  document.getElementById('skip-btn').style.display='none';
+  document.getElementById('nxt-btn').style.display='';
   const fbk=document.getElementById('fbk');
   fbk.className='fbk '+(isOk?'ok':'no');fbk.style.display='block';
-  document.getElementById('fbkemo').textContent=isOk?'✓':'✗';
-  document.getElementById('fbktxt').textContent=isOk?'正确！+15 分':'答案不对';
-  // BUG FIX: only show correct answer when wrong
-  document.getElementById('fbkans').textContent=isOk?'':('正确答案：'+dispAns(item.q[1]));
+  document.getElementById('fbk-icon').textContent=isOk?'✓':'✗';
+  document.getElementById('fbk-title').textContent=isOk?'正确！+15 分':'答案不对';
+  document.getElementById('fbk-ans').textContent=isOk?'':('正确答案：'+dispAns(item.q[1]));
   if(isOk){
     const id=ds.catI+'_'+ds.levI+'_'+item.qi;
-    if(!prog.correct.has(id)){prog.correct.add(id);prog.totalScore+=15;ds.sessScore+=10;
+    if(!prog.correct.has(id)){prog.correct.add(id);prog.totalScore+=15;ds.sessScore+=15;
       prog.errors=prog.errors.filter(e=>e.id!==id);}
   }else{
     const id=ds.catI+'_'+ds.levI+'_'+item.qi;
@@ -1368,22 +1164,21 @@ function submitAns(){
       catName:CATS[ds.catI].name+' · '+CATS[ds.catI].levels[ds.levI].name,
       wrong:val||'（空）'});
   }
-  save();syncScore();
+  save();if(isOk)syncScore();
 }
 
 function skipQ(){
   if(ds.answered)return;
-  const item=ds.qs[ds.qi];
-  ds.answered=true;
+  const item=ds.qs[ds.qi];ds.answered=true;
   document.getElementById('din').disabled=true;
-  document.getElementById('subbtn').disabled=true;
-  document.getElementById('skipbtn').style.display='none';
-  document.getElementById('nxtbtn').style.display='block';
+  document.getElementById('sub-btn').style.display='none';
+  document.getElementById('skip-btn').style.display='none';
+  document.getElementById('nxt-btn').style.display='';
   const fbk=document.getElementById('fbk');
   fbk.className='fbk no';fbk.style.display='block';
-  document.getElementById('fbkemo').textContent='→';
-  document.getElementById('fbktxt').textContent='已跳过';
-  document.getElementById('fbkans').textContent='正确答案：'+dispAns(item.q[1]);
+  document.getElementById('fbk-icon').textContent='→';
+  document.getElementById('fbk-title').textContent='已跳过';
+  document.getElementById('fbk-ans').textContent='正确答案：'+dispAns(item.q[1]);
   const id=ds.catI+'_'+ds.levI+'_'+item.qi;
   if(!prog.errors.find(e=>e.id===id))
     prog.errors.unshift({id,catI:ds.catI,levI:ds.levI,qi:item.qi,
@@ -1402,36 +1197,32 @@ function nextQ(){
 function showComplete(ci,li,ss){
   const done=[...prog.correct].filter(id=>id.startsWith(ci+'_'+li+'_')).length;
   const total=CATS[ci].levels[li].qs.length;
-  const isFullDone=done===total;
-  document.getElementById('cp-badge').textContent=isFullDone?'★':'✓';
-  document.getElementById('cp-tit').textContent=isFullDone?
-    `${CATS[ci].name} ${CATS[ci].levels[li].name}全部掌握！`:
-    `本轮结束`;
-  document.getElementById('cp-sco').textContent=ss>0?'+'+ss:'0';
+  const allDone=done===total;
+  const badge=document.getElementById('cp-badge');
+  badge.textContent=allDone?'★':'✓';
+  badge.className='stagebadge '+(allDone?'great':'pass');
+  document.getElementById('cp-score').textContent=ss>0?'+'+ss:'0';
   document.getElementById('cp-sub').textContent=
     `累计总分 ${prog.totalScore} 分 · 已掌握 ${done}/${total}`;
-  showV('done');
+  showScreen('done');
 }
 
 function exitDrill(){showCat(ds.catI);}
 
-// ──────────────────────────────────────────
-//  ERROR BANK
-// ──────────────────────────────────────────
+/* ── ERROR BANK ── */
 function renderErrors(){
-  const list=document.getElementById('elist');
-  const cnt=document.getElementById('errcnt');
-  cnt.textContent=prog.errors.length?prog.errors.length+' 题':'';
+  const list=document.getElementById('err-list');
+  document.getElementById('err-cnt').textContent=prog.errors.length?prog.errors.length+' 题':'';
   if(!prog.errors.length){
-    list.innerHTML='<div class="empty"><div class="em-icon" style="font-size:36px;opacity:.4">○</div><div class="em-txt">错题本是空的，实力超群！</div></div>';
+    list.innerHTML='<div class="empty"><div class="empty-icon">○</div><div class="empty-txt">错题本是空的，实力超群！</div></div>';
     return;
   }
-  list.innerHTML=prog.errors.map((e,i)=>`<div class="eitem">
-    <div class="ecat">${esc(e.catName)}</div>
-    <div class="eq">${esc(e.q)}</div>
-    <div class="ewrong">你的答案：${esc(e.wrong)}</div>
-    <div class="ecorrect">正确答案：${esc(dispAns(e.a))}</div>
-    <button class="retrybtn" onclick="openRetry(${i})">重做这题</button>
+  list.innerHTML=prog.errors.map((e,i)=>`<div class="rc-card">
+    <div class="rc-cat">${esc(e.catName)}</div>
+    <div class="rc-q">${esc(e.q)}</div>
+    <div class="rc-wrong">你的答案：${esc(e.wrong)}</div>
+    <div class="rc-right">正确答案：${esc(dispAns(e.a))}</div>
+    <button class="rc-retry" onclick="openRetry(${i})">重做这题</button>
   </div>`).join('');
 }
 
@@ -1441,12 +1232,11 @@ function openRetry(idx){
   document.getElementById('ret-q').textContent=e.q;
   const inp=document.getElementById('ret-in');
   inp.value='';inp.disabled=false;
-  const sub=document.getElementById('ret-sub');
-  sub.disabled=false;
+  document.getElementById('ret-sub').disabled=false;
   document.getElementById('ret-fbk').style.display='none';
   document.getElementById('ret-fbk').className='ret-fbk';
   document.getElementById('ret-nxt').style.display='none';
-  document.getElementById('ret-ov').classList.add('on');
+  document.getElementById('ret-ov').classList.add('show');
   setTimeout(()=>inp.focus(),200);
 }
 
@@ -1456,7 +1246,6 @@ function submitRetry(){
   const isOk=ok(val,e.a);
   const fbk=document.getElementById('ret-fbk');
   fbk.style.display='block';
-  // BUG FIX: disable submit button after attempting
   document.getElementById('ret-sub').disabled=true;
   document.getElementById('ret-in').disabled=true;
   if(isOk){
@@ -1471,7 +1260,6 @@ function submitRetry(){
     fbk.textContent='还不对，正确答案：'+dispAns(e.a);
     prog.errors[retryIdx].wrong=val||'（空）';
     save();
-    // Allow retry: re-enable after showing answer
     setTimeout(()=>{
       document.getElementById('ret-in').disabled=false;
       document.getElementById('ret-sub').disabled=false;
@@ -1479,17 +1267,36 @@ function submitRetry(){
       document.getElementById('ret-in').focus();
     },1800);
   }
-  document.getElementById('ret-nxt').style.display='block';
+  document.getElementById('ret-nxt').style.display='';
 }
 
 function closeRetry(){
-  document.getElementById('ret-ov').classList.remove('on');
+  document.getElementById('ret-ov').classList.remove('show');
   renderErrors();
 }
 
-// ──────────────────────────────────────────
-//  KEYBOARD
-// ──────────────────────────────────────────
+/* ── INTRO ── */
+function dismissIntro(){
+  document.getElementById('intro-ov').classList.remove('show');
+  sessionStorage.setItem('intro_seen','1');
+}
+
+/* ── MISC ── */
+function switchUser(){
+  if(confirm('切换账号？本机进度不会丢失。')){
+    localStorage.removeItem('jc_username');
+    location.href='study.html';
+  }
+}
+function copyWx(){
+  const wx=document.getElementById('wx-id').textContent;
+  const btn=document.getElementById('copy-btn');
+  if(navigator.clipboard)navigator.clipboard.writeText(wx);
+  btn.textContent='已复制！去微信发给 John';
+  setTimeout(()=>{btn.textContent='复制微信号，去发作文';},2500);
+}
+
+/* ── KEYBOARD ── */
 document.getElementById('din').addEventListener('keydown',e=>{
   if(e.key==='Enter'){if(!ds.answered)submitAns();else nextQ();}
 });
@@ -1497,39 +1304,8 @@ document.getElementById('ret-in').addEventListener('keydown',e=>{
   if(e.key==='Enter'&&!document.getElementById('ret-sub').disabled)submitRetry();
 });
 
-// ──────────────────────────────────────────
-//  INTRO
-// ──────────────────────────────────────────
-function dismissIntro(){
-  document.getElementById('intro-ov').classList.remove('on');
-  sessionStorage.setItem('intro_seen','1');
-}
-function showIntro(){
-  if(!sessionStorage.getItem('intro_seen'))
-    document.getElementById('intro-ov').classList.add('on');
-}
-
-// ──────────────────────────────────────────
-//  MISC
-// ──────────────────────────────────────────
-function switchUser(){
-  if(confirm('切换账号？本机进度不会丢失。')){
-    localStorage.removeItem('jc_username');
-    location.href='study.html';
-  }
-}
-
-function copyWx(){
-  const wx=document.getElementById('wxId').textContent;
-  const btn=document.getElementById('copyBtn');
-  if(navigator.clipboard){navigator.clipboard.writeText(wx);}
-  btn.textContent='已复制！去微信发给 John';
-  setTimeout(()=>{btn.textContent='复制微信号，去发作文';},2500);
-}
-
-// ── INIT ──
+/* ── INIT ── */
 if(!username){
-  // Try to get username from jc_username (shared with vocab.html)
   const saved=localStorage.getItem('jc_username');
   if(saved&&saved.trim()){username=saved.trim();}
   else{
@@ -1537,7 +1313,10 @@ if(!username){
     if(n&&n.trim()){username=n.trim();localStorage.setItem('jc_username',username);}
   }
 }
-load();showHome();showIntro();startupSync();
+load();showHome();
+if(!sessionStorage.getItem('intro_seen'))
+  document.getElementById('intro-ov').classList.add('show');
+startupSync();
 </script>
 </body>
 </html>
