@@ -5,103 +5,205 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>口语 · 码神训练营</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#F5EDD8;color:#2A1E08;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
-body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 20px}
-.pane{display:none;flex-direction:column;align-items:center;width:100%;max-width:480px;text-align:center}
+:root{
+  --bg:#FBF6EC;--bg2:#F0E2C4;--bg3:#F6EEDC;
+  --ink:#2A1D08;--soft:#8C6B35;--faint:#C2A26C;
+  --hair:#E2D0A4;--hair2:#F0E8D0;
+  --accent:#AD7A1E;--accent-deep:#7A5414;--accent-soft:#F5E8C8;
+  --warn:#C2491E;--warn-soft:#FAEEE8;
+  --fnt:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
+  --fnt-display:Georgia,"Songti SC","STSong",serif;
+  --shadow-sm:0 1px 2px rgba(40,24,5,.10);
+  --shadow-md:0 3px 10px rgba(40,24,5,.12);
+  --r-sm:10px;--r-md:16px;--r-lg:22px;--r-pill:999px}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg)}
+body{font-family:var(--fnt);color:var(--ink);-webkit-font-smoothing:antialiased;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:24px 20px;user-select:none;letter-spacing:-.01em}
+
+.pane{display:none;flex-direction:column;align-items:center;
+  width:100%;max-width:480px;text-align:center}
 .pane.on{display:flex}
-.logo{font-size:11px;letter-spacing:.18em;color:#B5A080;font-weight:600;margin-bottom:28px}
-.back-link{font-size:12px;color:#B5A080;text-decoration:none;align-self:flex-start;margin-bottom:20px}
-.btn{display:block;width:100%;padding:15px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none;margin-bottom:10px}
-.btn:active{opacity:.8}
-.btn:disabled{opacity:.35;cursor:default}
-.btn-ghost{display:block;width:100%;padding:14px;background:transparent;color:#7A6040;border:1.5px solid rgba(42,30,8,.2);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none;margin-bottom:10px}
-.btn-ghost:active{opacity:.7}
-.prog-row{display:flex;justify-content:space-between;font-size:11px;color:#B5A080;margin-bottom:5px;width:100%}
-.prog-track{width:100%;height:4px;background:rgba(42,30,8,.08);border-radius:2px;overflow:hidden;margin-bottom:16px}
-.prog-fill{height:4px;background:#2A1E08;border-radius:2px;transition:width .4s}
-/* sentence card */
-.sent-card{width:100%;background:rgba(255,252,245,.92);border:1.5px solid rgba(184,149,106,.2);border-radius:16px;padding:20px 18px;margin-bottom:14px;text-align:left}
+
+.logo{font-size:10px;letter-spacing:.26em;color:var(--faint);font-weight:700;
+  text-transform:uppercase;margin-bottom:20px}
+
+.back-link{display:inline-flex;align-items:center;justify-content:center;
+  width:36px;height:36px;border-radius:50%;text-decoration:none;
+  background:linear-gradient(180deg,#FDF8F0 0%,#E8D8B4 100%);
+  border:1px solid #C8A860;border-bottom:3px solid #9A7830;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 2px 5px rgba(40,20,5,.12);
+  font-size:20px;color:#3A2A10;cursor:pointer;align-self:flex-start;margin-bottom:16px;
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.back-link:active{transform:translateY(2px);border-bottom-width:1px}
+
+.btn{display:block;width:100%;padding:15px;
+  background:linear-gradient(180deg,#3A2A14 0%,#2A1D08 100%);
+  color:#F8F0DC;border:1px solid rgba(255,255,255,.06);border-bottom:3px solid rgba(0,0,0,.4);
+  border-radius:var(--r-md);font-size:16px;font-weight:600;cursor:pointer;
+  font-family:var(--fnt);-webkit-appearance:none;margin-bottom:10px;
+  box-shadow:0 3px 10px rgba(30,15,3,.28),inset 0 1px 0 rgba(255,220,140,.05);
+  transition:transform .08s,border-bottom-width .08s}
+.btn:active{transform:translateY(2px);border-bottom-width:1px}
+.btn:disabled{opacity:.3;cursor:default}
+
+.btn-ghost{display:block;width:100%;padding:14px;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F5EDD8 100%);
+  color:#5A4020;border:1px solid #D8C090;border-bottom:3px solid #B09050;
+  border-radius:var(--r-md);font-size:15px;font-weight:600;cursor:pointer;
+  font-family:var(--fnt);-webkit-appearance:none;margin-bottom:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),var(--shadow-sm);
+  transition:transform .08s,border-bottom-width .08s}
+.btn-ghost:active{transform:translateY(2px);border-bottom-width:1px}
+
+.prog-row{display:flex;justify-content:space-between;font-size:11px;
+  color:var(--faint);margin-bottom:6px;width:100%}
+.prog-track{width:100%;height:5px;background:var(--hair2);border-radius:3px;
+  overflow:hidden;margin-bottom:16px}
+.prog-fill{height:5px;background:var(--ink);border-radius:3px;transition:width .4s}
+
+.entry-card{width:100%;background:linear-gradient(180deg,#FFFFFF,#F8F1DF);
+  border:1px solid #DDD0A8;border-bottom:3px solid #C0A868;
+  border-radius:var(--r-md);padding:16px 18px;margin-bottom:24px;text-align:left;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),var(--shadow-md)}
+.entry-card-title{font-size:10px;font-weight:700;letter-spacing:.18em;
+  color:var(--faint);text-transform:uppercase;margin-bottom:12px}
+
+/* ── Sentence card ── */
+.sent-card{width:100%;background:linear-gradient(180deg,#FFFFFF,#FBF4E4);
+  border:1px solid #E0CFA0;border-bottom:2px solid #CDB870;
+  border-radius:var(--r-md);padding:20px 18px;margin-bottom:14px;text-align:left;
+  box-shadow:0 2px 8px rgba(40,20,5,.09),inset 0 1px 0 rgba(255,255,255,.95)}
 .sent-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.sent-num{font-size:11px;color:#B5A080;font-weight:600}
-.sent-scene{font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:10px}
-.scene-meeting{background:rgba(74,124,184,.1);color:#1A3A7A}
-.scene-bug{background:rgba(200,70,60,.1);color:#7A1A10}
-.scene-dev{background:rgba(200,140,50,.12);color:#5A3000}
-.scene-qa{background:rgba(60,150,90,.1);color:#1A4A28}
-.scene-product{background:rgba(140,80,200,.1);color:#4A1A7A}
-.scene-sprint{background:rgba(42,30,8,.07);color:#5A4A30}
-.scene-opinion{background:rgba(212,136,42,.12);color:#5A3000}
-.scene-deadline{background:rgba(184,149,106,.15);color:#7A5A30}
-.scene-everymatrix{background:rgba(42,30,8,.1);color:#2A1E08}
+.sent-num{font-size:11px;color:var(--faint);font-weight:600}
+.sent-scene{font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:var(--r-pill)}
+.scene-meeting{background:var(--accent-soft);color:var(--accent-deep)}
+.scene-bug{background:var(--warn-soft);color:var(--warn)}
+.scene-dev{background:var(--accent-soft);color:var(--accent-deep)}
+.scene-qa{background:var(--bg2);color:var(--soft)}
+.scene-product{background:var(--accent-soft);color:var(--accent-deep)}
+.scene-sprint{background:var(--bg2);color:var(--soft)}
+.scene-opinion{background:var(--accent-soft);color:var(--accent-deep)}
+.scene-deadline{background:var(--warn-soft);color:var(--warn)}
+.scene-everymatrix{background:var(--bg2);color:var(--ink)}
+
 /* Chinese prompt */
-.cn-text{font-size:17px;font-weight:600;color:#2A1E08;line-height:1.6;margin-bottom:12px}
-/* blanked sentence */
-.blank-text{font-family:Georgia,serif;font-size:16px;line-height:2;color:#6A5040;word-break:break-word}
-.blank-slot{display:inline-block;border-bottom:2px solid rgba(184,149,106,.5);min-width:32px;height:1.1em;vertical-align:bottom;margin:0 2px}
-/* attempt dots */
+.cn-text{font-size:17px;font-weight:600;color:var(--ink);line-height:1.6;margin-bottom:12px}
+
+/* Blanked sentence */
+.blank-text{font-family:var(--fnt-display);font-size:16px;line-height:2;
+  color:var(--soft);word-break:break-word}
+.blank-slot{display:inline-block;border-bottom:2px solid var(--hair);
+  min-width:32px;height:1.1em;vertical-align:bottom;margin:0 2px}
+
+/* Attempt dots */
 .attempt-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px}
-.attempt-dot{width:10px;height:10px;border-radius:50%;background:rgba(184,149,106,.2);border:1.5px solid rgba(184,149,106,.3);transition:all .2s}
-.attempt-dot.used-pass{background:rgba(60,150,90,.5);border-color:rgba(60,150,90,.7)}
-.attempt-dot.used-fail{background:rgba(200,70,60,.4);border-color:rgba(200,70,60,.6)}
-.attempt-dot.current{background:#2A1E08;border-color:#2A1E08;transform:scale(1.2)}
-.attempt-label{font-size:11px;color:#B5A080}
-/* transcript */
-.transcript-box{width:100%;background:rgba(255,252,245,.85);border:1.5px solid rgba(184,149,106,.18);border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.8;min-height:52px;text-align:left;margin-bottom:12px;font-family:Georgia,serif;color:#2A1E08}
-.transcript-box.empty{color:#B5A080;font-family:inherit;font-size:13px;text-align:center;padding:16px}
-.transcript-box.listening{border-color:rgba(200,70,60,.4)}
-/* score */
+.attempt-dot{width:10px;height:10px;border-radius:50%;
+  background:var(--hair2);border:1.5px solid var(--hair);transition:all .2s}
+.attempt-dot.used-pass{background:var(--accent);border-color:var(--accent-deep)}
+.attempt-dot.used-fail{background:var(--warn);border-color:var(--warn)}
+.attempt-dot.current{background:var(--ink);border-color:var(--ink);transform:scale(1.2)}
+.attempt-label{font-size:11px;color:var(--faint)}
+
+/* Transcript box */
+.transcript-box{width:100%;background:linear-gradient(180deg,#FFFFFF,#FBF4E4);
+  border:1px solid #E0CFA0;border-radius:var(--r-md);
+  padding:14px 16px;font-size:14px;line-height:1.8;min-height:52px;
+  text-align:left;margin-bottom:12px;
+  font-family:var(--fnt-display);color:var(--ink);
+  box-shadow:inset 0 1px 4px rgba(40,20,5,.05)}
+.transcript-box.empty{color:var(--faint);font-family:var(--fnt);font-size:13px;text-align:center;padding:16px}
+.transcript-box.listening{border-color:rgba(194,73,30,.45);
+  box-shadow:0 0 0 2px rgba(194,73,30,.12)}
+
+/* Score */
 .score-wrap{display:flex;align-items:center;gap:12px;margin-bottom:10px;width:100%}
-.score-circle{width:68px;height:68px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;border:2px solid;flex-shrink:0}
-.score-A{background:rgba(60,150,90,.12);border-color:rgba(60,150,90,.4);color:#1A4A28}
-.score-B{background:rgba(74,124,184,.12);border-color:rgba(74,124,184,.35);color:#1A3A7A}
-.score-C{background:rgba(200,140,50,.12);border-color:rgba(200,140,50,.35);color:#5A3000}
-.score-D{background:rgba(200,70,60,.1);border-color:rgba(200,70,60,.3);color:#7A1A10}
+.score-circle{width:68px;height:68px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-weight:700;border:2px solid;flex-shrink:0;font-family:var(--fnt-display)}
+.score-A{background:var(--accent-soft);border-color:rgba(173,122,30,.5);color:var(--accent-deep)}
+.score-B{background:var(--bg2);border-color:var(--hair);color:var(--soft)}
+.score-C{background:var(--warn-soft);border-color:rgba(194,73,30,.3);color:var(--warn)}
+.score-D{background:var(--warn-soft);border-color:rgba(194,73,30,.5);color:var(--warn)}
 .score-num{font-size:20px;line-height:1}
 .score-lbl{font-size:10px;margin-top:2px}
-.score-msg{font-size:14px;font-weight:600;color:#2A1E08;line-height:1.4;text-align:left;flex:1}
-/* diff */
-.diff-box{width:100%;background:rgba(255,252,245,.85);border:1.5px solid rgba(184,149,106,.15);border-radius:12px;padding:12px 14px;font-family:Georgia,serif;font-size:14px;line-height:1.9;text-align:left;margin-bottom:8px}
-.w-correct{color:#1A5C28}
-.w-wrong{color:#A03020;text-decoration:underline wavy rgba(200,70,60,.5);text-underline-offset:3px}
-.w-missing{color:#A03020;font-style:italic;opacity:.6}
-/* reference answer */
-.ref-box{width:100%;background:rgba(61,107,46,.06);border:1.5px solid rgba(61,107,46,.18);border-radius:12px;padding:12px 14px;margin-bottom:12px;text-align:left}
-.ref-label{font-size:10px;font-weight:700;letter-spacing:.1em;color:#5A8040;text-transform:uppercase;margin-bottom:6px}
-.ref-text{font-family:Georgia,serif;font-size:14px;line-height:1.7;color:#1A3A14}
-/* rec btn */
-.rec-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:14px;font-size:17px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none;margin-bottom:12px;transition:background .2s}
-.rec-btn.recording{background:#A03020}
-.rec-btn:disabled{opacity:.35;cursor:default}
-.rec-dot{width:9px;height:9px;border-radius:50%;background:#F5EDD8;animation:blink 1s infinite}
+.score-msg{font-size:14px;font-weight:600;color:var(--ink);line-height:1.4;text-align:left;flex:1}
+
+/* Diff box */
+.diff-box{width:100%;background:linear-gradient(180deg,#FFFFFF,#FBF4E4);
+  border:1px solid #E0CFA0;border-radius:var(--r-md);
+  padding:12px 14px;font-family:var(--fnt-display);font-size:14px;
+  line-height:1.9;text-align:left;margin-bottom:8px}
+.w-correct{color:var(--accent-deep)}
+.w-wrong{color:var(--warn);text-decoration:underline wavy rgba(194,73,30,.5);text-underline-offset:3px}
+.w-missing{color:var(--warn);font-style:italic;opacity:.6}
+
+/* Reference answer */
+.ref-box{width:100%;background:var(--accent-soft);
+  border:1px solid rgba(173,122,30,.28);
+  border-radius:var(--r-md);padding:12px 14px;margin-bottom:12px;text-align:left}
+.ref-label{font-size:10px;font-weight:700;letter-spacing:.12em;
+  color:var(--accent-deep);text-transform:uppercase;margin-bottom:6px}
+.ref-text{font-family:var(--fnt-display);font-size:14px;line-height:1.75;color:var(--ink)}
+
+/* Recording button */
+.rec-btn{display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;padding:16px;
+  background:linear-gradient(180deg,#3A2A14 0%,#2A1D08 100%);
+  color:#F8F0DC;border:1px solid rgba(255,255,255,.06);
+  border-bottom:3px solid rgba(0,0,0,.4);
+  border-radius:var(--r-md);font-size:17px;font-weight:600;cursor:pointer;
+  font-family:var(--fnt);-webkit-appearance:none;margin-bottom:12px;
+  box-shadow:0 3px 10px rgba(30,15,3,.28),inset 0 1px 0 rgba(255,220,140,.05);
+  transition:background .2s,transform .08s,border-bottom-width .08s}
+.rec-btn.recording{background:linear-gradient(180deg,#C04428,#8A2810);
+  border-bottom-color:rgba(0,0,0,.5)}
+.rec-btn:disabled{opacity:.3;cursor:default}
+.rec-btn:active{transform:translateY(2px);border-bottom-width:1px}
+.rec-dot{width:9px;height:9px;border-radius:50%;background:#F8C090;
+  animation:blink 1s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-.pts-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:#2A1E08;color:#F5EDD8;padding:10px 22px;border-radius:20px;font-size:14px;font-weight:600;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:99;white-space:nowrap}
+
+.pts-toast{position:fixed;bottom:32px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:linear-gradient(180deg,#3A2A14,#2A1D08);color:#F8F0DC;
+  padding:10px 24px;border-radius:var(--r-pill);font-size:14px;font-weight:600;
+  opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:99;
+  white-space:nowrap;box-shadow:0 6px 20px rgba(30,15,3,.30)}
 .pts-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.done-emoji{font-size:48px;margin-bottom:14px}
-.done-title{font-size:22px;font-weight:700;margin-bottom:8px}
-.done-sub{font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:24px}
+
+.done-emoji{font-size:52px;margin-bottom:14px;filter:drop-shadow(0 4px 8px rgba(80,40,5,.22))}
+.done-title{font-size:24px;font-weight:700;margin-bottom:8px;letter-spacing:-.02em}
+.done-sub{font-size:13px;color:var(--soft);line-height:1.75;margin-bottom:24px}
 .stat-row{display:flex;gap:10px;width:100%;margin-bottom:24px}
-.stat-item{flex:1;padding:14px 10px;background:rgba(255,252,245,.9);border:1.5px solid rgba(184,149,106,.2);border-radius:12px;text-align:center}
-.stat-num{font-size:24px;font-weight:700;color:#2A1E08;line-height:1}
-.stat-lbl{font-size:11px;color:#8A7050;margin-top:4px}
+.stat-item{flex:1;padding:16px 10px;
+  background:linear-gradient(180deg,#FFFFFF,#F8F1DF);
+  border:1px solid #DDD0A8;border-bottom:3px solid #C0A868;
+  border-radius:var(--r-md);text-align:center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),var(--shadow-sm)}
+.stat-num{font-size:26px;font-weight:700;color:var(--ink);
+  line-height:1;font-family:var(--fnt-display)}
+.stat-lbl{font-size:11px;color:var(--soft);margin-top:5px}
 </style>
 </head>
 <body>
 
 <!-- ENTRY -->
 <div id="p-entry" class="pane on">
-  <a class="back-link" href="programmer.html">← 程序员专区</a>
-  <div class="logo">JOHN CLASS · 口语 <span style="font-size:10px">(请用Safari打开)</span></div>
-  <div style="font-size:44px;margin-bottom:16px">💬</div>
-  <div style="font-size:22px;font-weight:700;margin-bottom:8px">口语训练</div>
-  <div style="font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:28px;text-align:center">看中文提示，说出对应英文<br>挖空 70%+，朗读后对比答案<br>每句 <strong>20 分</strong> · 共 100 句 · 满分 2000</div>
-  <div style="width:100%;background:rgba(255,252,245,.9);border:1.5px solid rgba(184,149,106,.2);border-radius:14px;padding:16px 18px;margin-bottom:24px;text-align:left">
-    <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#B5A080;text-transform:uppercase;margin-bottom:10px">本周进度</div>
+  <a class="back-link" href="programmer.html">‹</a>
+  <div class="logo">JOHN CLASS · 口语 <span style="font-size:9px">(请用Safari打开)</span></div>
+  <div style="font-size:48px;margin-bottom:16px;filter:drop-shadow(0 4px 8px rgba(80,40,5,.22))">💬</div>
+  <div style="font-size:22px;font-weight:700;margin-bottom:8px;letter-spacing:-.02em">口语训练</div>
+  <div style="font-size:13px;color:var(--soft);line-height:1.75;margin-bottom:24px;text-align:center">看中文提示，说出对应英文<br>挖空 70%+，朗读后对比答案<br>每句 <strong>20 分</strong> · 共 100 句 · 满分 2000</div>
+  <div class="entry-card">
+    <div class="entry-card-title">本周进度</div>
     <div class="prog-row"><span>已完成</span><span id="entrySentDone">0 / 100 句</span></div>
     <div class="prog-track"><div class="prog-fill" id="entryProgFill" style="width:0%"></div></div>
     <div style="display:flex;justify-content:space-between;font-size:13px">
-      <span style="color:#6A5040">本周积分</span>
-      <span style="font-weight:700" id="entryPts">0 分</span>
+      <span style="color:var(--soft)">本周积分</span>
+      <span style="font-weight:700;font-family:var(--fnt-display)" id="entryPts">0 分</span>
     </div>
   </div>
   <button class="btn" id="btnStart">开始训练 →</button>
@@ -110,7 +212,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
 
 <!-- PRACTICE -->
 <div id="p-practice" class="pane">
-  <a class="back-link" href="#" id="backToEntry">← 返回</a>
+  <a class="back-link" href="#" id="backToEntry">‹</a>
   <div class="logo">JOHN CLASS · 口语</div>
   <div class="prog-row" style="width:100%"><span>本周进度</span><span id="progText">0 / 100</span></div>
   <div class="prog-track" style="width:100%"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
@@ -120,9 +222,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
       <span class="sent-num" id="sentNum">句子 1 / 100</span>
       <span class="sent-scene" id="sentScene"></span>
     </div>
-    <!-- Chinese prompt -->
     <div class="cn-text" id="cnText"></div>
-    <!-- Blanked English -->
     <div class="blank-text" id="blankText"></div>
   </div>
 
@@ -140,9 +240,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
       <div class="score-circle" id="scoreCircle"><div class="score-num" id="scoreNum">—</div><div class="score-lbl">分</div></div>
       <div class="score-msg" id="scoreMsg"></div>
     </div>
-    <!-- diff of spoken vs reference -->
     <div class="diff-box" id="diffBox"></div>
-    <!-- reference answer always shown after attempt -->
     <div class="ref-box">
       <div class="ref-label">参考答案</div>
       <div class="ref-text" id="refText"></div>
@@ -162,7 +260,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
   <div class="logo">JOHN CLASS · 口语</div>
   <div class="done-emoji">🏆</div>
   <div class="done-title">全部完成！</div>
-  <div class="done-sub">100 句口语训练全部搞定！</div>
+  <div class="done-sub">100 句口语训练全部搞定<br>你已经是码神了！</div>
   <div class="stat-row">
     <div class="stat-item"><div class="stat-num" id="doneTotal">2000</div><div class="stat-lbl">本周总分</div></div>
     <div class="stat-item"><div class="stat-num" id="doneAvg">—</div><div class="stat-lbl">平均得分</div></div>
@@ -174,7 +272,7 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
 
 <script>
 var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
-var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
 var POINTS=20, PASS_SCORE=80, MAX_ATTEMPTS=3;
 
 // ── SENTENCE BANK with Chinese translations ──
@@ -291,7 +389,7 @@ var currentIdx=0;
 
 // ── SUPABASE ──
 function sbHeaders(){return{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};}
-function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.toISOString().split('T')[0];}
+function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 async function sbGet(t,q){try{var r=await fetch(SB_URL+'/rest/v1/'+t+'?'+q,{headers:sbHeaders()});return r.ok?await r.json():[];}catch(e){return[];}}
 async function sbUpsert(t,data){try{await fetch(SB_URL+'/rest/v1/'+t,{method:'POST',headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),body:JSON.stringify(data)});}catch(e){}}
 
@@ -642,3 +740,4 @@ init();
 </script>
 </body>
 </html>
+
