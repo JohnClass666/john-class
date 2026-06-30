@@ -5,52 +5,130 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>程序员专区 · John Class</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#F5EDD8;color:#2A1E08;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
-body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px 20px}
-.wrap{width:100%;max-width:480px}
-.back-link{font-size:12px;color:#B5A080;text-decoration:none;display:block;margin-bottom:24px}
-.back-link:hover{color:#2A1E08}
-.logo{font-size:11px;letter-spacing:.18em;color:#B5A080;font-weight:600;margin-bottom:32px}
-.hero{margin-bottom:32px}
-.hero-icon{font-size:44px;margin-bottom:12px}
-.hero-title{font-size:26px;font-weight:700;color:#2A1E08;margin-bottom:6px}
-.hero-sub{font-size:13px;color:#8A7050;line-height:1.7}
-.sec-label{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#B8956A;padding-bottom:8px;border-bottom:1px solid rgba(184,149,106,.2);margin-bottom:4px}
-.tool-list{margin-bottom:28px}
-.tool-item{display:flex;align-items:center;gap:14px;padding:15px 0;border-bottom:1px solid rgba(184,149,106,.1);text-decoration:none;color:#2A1E08;cursor:pointer;transition:transform .15s}
-.tool-item:last-child{border-bottom:none}
-.tool-item:hover{transform:translateX(4px)}
-.tool-item:active{opacity:.7}
-.tool-item.disabled{opacity:.45;cursor:default;pointer-events:none}
-.tool-circle{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.c-green{background:rgba(60,150,90,.12);border:1.5px solid rgba(60,150,90,.22)}
-.c-blue{background:rgba(74,124,184,.12);border:1.5px solid rgba(74,124,184,.22)}
-.c-orange{background:rgba(200,140,50,.12);border:1.5px solid rgba(200,140,50,.22)}
-.c-gold{background:rgba(201,169,110,.14);border:1.5px solid rgba(201,169,110,.28)}
-.tool-info{flex:1}
-.tool-name{font-size:15px;font-weight:700;margin-bottom:2px}
-.tool-desc{font-size:12px;color:#8A7050;line-height:1.5}
-.tool-badge{font-size:10px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:10px;flex-shrink:0}
-.badge-live{background:rgba(60,150,90,.12);color:#1A4A28;border:1px solid rgba(60,150,90,.2)}
-.badge-soon{background:rgba(184,149,106,.1);color:#B8956A;border:1px solid rgba(184,149,106,.2)}
-.arrow{color:rgba(184,149,106,.4);flex-shrink:0}
-/* score card */
-.score-card{background:rgba(255,252,245,.9);border:1.5px solid rgba(184,149,106,.2);border-radius:14px;padding:18px 20px;margin-bottom:28px}
-.score-card-title{font-size:11px;font-weight:700;letter-spacing:.1em;color:#B5A080;text-transform:uppercase;margin-bottom:12px}
-.score-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.score-row:last-child{margin-bottom:0}
-.score-name{font-size:13px;color:#6A5040}
-.score-val{font-size:15px;font-weight:700;color:#2A1E08}
-.score-total{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid rgba(184,149,106,.15);margin-top:4px}
-.score-total-lbl{font-size:12px;font-weight:700;color:#2A1E08}
-.score-total-val{font-size:20px;font-weight:700;color:#C85A2A}
+:root{
+  --bg:#FBF6EC;--bg2:#F0E2C4;--bg3:#F6EEDC;
+  --ink:#2A1D08;--soft:#8C6B35;--faint:#C2A26C;
+  --hair:#E2D0A4;--hair2:#F0E8D0;
+  --accent:#AD7A1E;--accent-deep:#7A5414;--accent-soft:#F5E8C8;
+  --warn:#C2491E;--warn-soft:#FAEEE8;
+  --fnt:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
+  --fnt-display:Georgia,"Songti SC","STSong",serif;
+  --shadow-sm:0 1px 2px rgba(40,24,5,.10);
+  --shadow-md:0 3px 10px rgba(40,24,5,.12);
+  --r-sm:10px;--r-md:16px;--r-lg:22px;--r-pill:999px}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg)}
+body{font-family:var(--fnt);color:var(--ink);-webkit-font-smoothing:antialiased;
+  user-select:none;letter-spacing:-.01em}
+
+/* ── Bar ── */
+.bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;
+  padding:10px 16px;min-height:52px;
+  background:var(--bg);box-shadow:0 1px 0 var(--hair)}
+.htitle{flex:1;text-align:center;font-size:16px;font-weight:700;color:#3A2A10;
+  text-shadow:0 1px 2px rgba(40,20,5,.14);letter-spacing:-.02em}
+.sp{flex:1}
+.back{width:36px;height:36px;border-radius:50%;flex:0 0 auto;text-decoration:none;
+  background:linear-gradient(180deg,#FDF8F0 0%,#E8D8B4 100%);
+  border:1px solid #C8A860;border-bottom:3px solid #9A7830;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 2px 5px rgba(40,20,5,.12);
+  font-size:20px;color:#3A2A10;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.back:active{transform:translateY(2px);border-bottom-width:1px}
+
+/* ── Scroll wrap ── */
+.wrap{width:100%;max-width:480px;margin:0 auto;padding:20px 20px 48px}
+
+/* ── Hero ── */
+.hero{text-align:center;padding:20px 0 22px}
+.hero-icon{font-size:48px;margin-bottom:12px;
+  filter:drop-shadow(0 4px 8px rgba(80,40,5,.22))}
+.hero-title{font-size:26px;font-weight:700;letter-spacing:-.03em;margin-bottom:6px}
+.hero-sub{font-size:13px;color:var(--soft);line-height:1.75}
+
+/* ── Kicker ── */
+.kicker{font-size:10px;font-weight:700;letter-spacing:.28em;color:var(--faint);
+  text-transform:uppercase;text-align:center;margin-bottom:0;padding-top:4px}
+
+/* ── Notice banner ── */
+.notice{display:flex;align-items:flex-start;gap:12px;
+  background:var(--accent-soft);border:1px solid rgba(173,122,30,.28);
+  border-radius:var(--r-md);padding:14px 16px;margin-bottom:20px}
+.notice-icon{font-size:18px;flex-shrink:0;line-height:1.4}
+.notice-title{font-size:13px;font-weight:700;color:var(--accent-deep);margin-bottom:3px}
+.notice-body{font-size:12px;color:var(--soft);line-height:1.65}
+
+/* ── Score card ── */
+.score-card{background:linear-gradient(180deg,#FFFFFF,#F8F1DF);
+  border:1px solid #DDD0A8;border-bottom:3px solid #C0A868;
+  border-radius:var(--r-md);padding:18px 20px;margin-bottom:20px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),var(--shadow-md)}
+.score-card-title{font-size:10px;font-weight:700;letter-spacing:.20em;
+  color:var(--faint);text-transform:uppercase;margin-bottom:14px}
+.score-row{display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:10px}
+.score-row:last-of-type{margin-bottom:0}
+.score-name{font-size:13px;color:var(--soft)}
+.score-val{font-size:15px;font-weight:700;color:var(--ink);font-family:var(--fnt-display)}
+.score-divider{height:1px;background:var(--hair2);margin:12px 0}
+.score-total{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.score-total:last-child{margin-bottom:0}
+.score-total-lbl{font-size:13px;font-weight:700;color:var(--ink)}
+.score-total-val{font-size:22px;font-weight:700;color:var(--warn);font-family:var(--fnt-display)}
+
+/* ── Section label ── */
+.sec-label{font-size:10px;font-weight:700;letter-spacing:.20em;text-transform:uppercase;
+  color:var(--faint);padding-bottom:10px;border-bottom:1px solid var(--hair2);
+  margin-bottom:4px}
+
+/* ── Tool list ── */
+.tool-list{margin-bottom:32px;display:flex;flex-direction:column;gap:10px;padding-top:10px}
+.tool-item{display:flex;align-items:center;gap:14px;padding:16px;
+  text-decoration:none;color:var(--ink);cursor:pointer;
+  background:linear-gradient(180deg,#FFFFFF 0%,#F8F1DF 100%);
+  border:1px solid #DDD0A8;border-bottom:3px solid #C0A868;
+  border-radius:var(--r-md);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),var(--shadow-sm);
+  transition:transform .1s,box-shadow .1s,border-bottom-width .1s}
+.tool-item:active{transform:translateY(2px);border-bottom-width:1px;
+  box-shadow:inset 0 1px 3px rgba(40,20,5,.10)}
+.tool-item.disabled{opacity:.4;cursor:default;pointer-events:none}
+
+.tool-circle{width:50px;height:50px;border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6),var(--shadow-sm)}
+.c-green{background:linear-gradient(145deg,#F0EDD8,#E4D8A8);border:1.5px solid #C8B870}
+.c-blue{background:linear-gradient(145deg,#EEE8D8,#E0D4B4);border:1.5px solid #C4B068}
+.c-gold{background:linear-gradient(145deg,#FFF4DC,#F0E0B0);border:1.5px solid #D4B870}
+.c-orange{background:linear-gradient(145deg,#F8EDD8,#ECD8A8);border:1.5px solid #D0A860}
+
+.tool-info{flex:1;min-width:0}
+.tool-name{font-size:15px;font-weight:700;margin-bottom:3px}
+.tool-desc{font-size:12px;color:var(--soft);line-height:1.55}
+.tool-badge{font-size:10px;font-weight:700;letter-spacing:.06em;
+  padding:4px 9px;border-radius:var(--r-pill);flex-shrink:0}
+.badge-live{background:var(--accent-soft);color:var(--accent-deep);
+  border:1px solid rgba(173,122,30,.25)}
+.badge-soon{background:var(--bg2);color:var(--faint);border:1px solid var(--hair)}
+
+.arrow{color:var(--faint);flex-shrink:0}
+
+/* ── Leaderboard board subtitle ── */
+.board-sub{font-size:11px;color:var(--faint);margin-bottom:14px}
 </style>
 </head>
 <body>
+
+<div class="bar">
+  <a class="back" href="study.html">‹</a>
+  <div class="htitle">码神训练营</div>
+  <div class="sp"></div>
+</div>
+
 <div class="wrap">
-  <a class="back-link" href="study.html">← 返回学习中心</a>
-  <div class="logo">JOHN CLASS · 程序员专区</div>
+  <div class="kicker">JOHN CLASS · 程序员专区</div>
   <div class="hero">
     <div class="hero-icon">💻</div>
     <div class="hero-title">码神训练营</div>
@@ -58,15 +136,15 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
   </div>
 
   <!-- 浏览器提醒 -->
-	  <div style="background:rgba(255,240,210,.85);border:1.5px solid rgba(200,140,50,.25);border-radius:12px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:flex-start;gap:10px">
-	    <span style="font-size:18px;flex-shrink:0;line-height:1.4">⚠️</span>
-	    <div>
-	      <div style="font-size:13px;font-weight:700;color:#8A5A10;margin-bottom:4px">浏览器提示</div>
-	      <div style="font-size:12px;color:#8A6A30;line-height:1.6">发音和口语模块需要用到语音识别功能，请使用 <strong>Safari 浏览器</strong>打开才能正常使用。安卓用户敬请期待！</div>
-	    </div>
-	  </div>
+  <div class="notice">
+    <span class="notice-icon">⚠️</span>
+    <div>
+      <div class="notice-title">浏览器提示</div>
+      <div class="notice-body">发音和口语模块需要语音识别，请使用 <strong>Safari 浏览器</strong>打开才能正常使用。安卓用户敬请期待！</div>
+    </div>
+  </div>
 
-	  <!-- 个人积分 -->
+  <!-- 个人积分 -->
   <div class="score-card" id="scoreCard">
     <div class="score-card-title">⚡ 我的码神积分</div>
     <div class="score-row">
@@ -77,13 +155,14 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
       <span class="score-name">💬 口语</span>
       <span class="score-val" id="oralScore">—</span>
     </div>
+    <div class="score-divider"></div>
     <div class="score-total">
       <span class="score-total-lbl">本周总分</span>
       <span class="score-total-val" id="weekTotal">—</span>
     </div>
-    <div class="score-total" style="border-top:1px dashed rgba(184,149,106,.12);margin-top:6px;padding-top:8px">
-      <span class="score-total-lbl" style="font-size:11px">🏆 累积总分</span>
-      <span class="score-total-val" style="font-size:18px;color:#2A1E08" id="cumTotal">—</span>
+    <div class="score-total" style="margin-top:8px">
+      <span class="score-total-lbl" style="font-size:11px;font-weight:600;color:var(--soft)">🏆 累积总分</span>
+      <span class="score-total-val" style="font-size:18px;color:var(--ink)" id="cumTotal">—</span>
     </div>
   </div>
 
@@ -127,18 +206,18 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;pad
     </a>
   </div>
 
-  <!-- 码神累积榜（永久） -->
-  <div class="sec-label" style="margin-top:28px">🏆 码神累积榜</div>
-  <div style="font-size:11px;color:#B5A080;margin-bottom:12px">发音 15分/句 + 口语 20分/句 · 永久累积</div>
-  <div id="boardList"><div style="font-size:13px;color:#B5A080;padding:20px;text-align:center">加载中...</div></div>
+  <!-- 码神累积榜 -->
+  <div class="sec-label" style="margin-top:4px">🏆 码神累积榜</div>
+  <div class="board-sub">发音 15分/句 + 口语 20分/句 · 永久累积</div>
+  <div id="boardList"><div style="font-size:13px;color:var(--faint);padding:20px;text-align:center">加载中...</div></div>
 </div>
 
 <script>
 var SB_URL = 'https://ghunrrtrdgicbmixsqrc.supabase.co';
-var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MDYyMTAsImV4cCI6MjA2MDE4MjIxMH0.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
 
 function sbHeaders(){ return {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}; }
-function getWeekStart(){ var d=new Date(); d.setDate(d.getDate()-d.getDay()); return d.toISOString().split('T')[0]; }
+function getWeekStart(){ var d=new Date(); d.setDate(d.getDate()-d.getDay()); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
 async function sbGet(table,qs){
   try{ var r=await fetch(SB_URL+'/rest/v1/'+table+'?'+qs,{headers:sbHeaders()}); return r.ok?await r.json():[]; }catch(e){ return []; }
@@ -151,11 +230,9 @@ async function loadMyScore(){
   var oral = parseInt(localStorage.getItem('jc_prog_oral_pts')||'0');
   document.getElementById('speakScore').textContent = spk + ' 分';
   document.getElementById('oralScore').textContent = oral + ' 分';
-  // Try Supabase first, fallback to localStorage total
   var rows = await sbGet('weekly_scores','user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+getWeekStart()+'&select=programmer_score');
   var ps = rows&&rows.length ? (rows[0].programmer_score||0) : (spk + oral);
   document.getElementById('weekTotal').textContent = ps + ' 分';
-  // cumulative total
   var cRows = await sbGet('programmer_scores','user_name=eq.'+encodeURIComponent(name)+'&select=score');
   var cs = cRows&&cRows.length ? (cRows[0].score||0) : (spk + oral);
   document.getElementById('cumTotal').textContent = cs + ' 分';
@@ -172,14 +249,14 @@ async function loadBoard(){
     var oral = parseInt(localStorage.getItem('jc_prog_oral_pts')||'0');
     var myTotal = spk + oral;
     if(myTotal > 0 && name){
-      el.innerHTML = '<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,252,245,.88);border-radius:10px;margin-bottom:8px">'
-        +'<div style="font-size:16px;width:28px;text-align:center;flex-shrink:0">🥇</div>'
-        +'<div style="flex:1"><div style="font-size:15px;font-weight:600">'+name+'（你）</div>'
-        +'<div style="margin-top:4px;height:4px;background:rgba(42,30,8,.08);border-radius:2px;overflow:hidden"><div style="height:4px;background:#C85A2A;border-radius:2px;width:'+Math.round(myTotal/3500*100)+'%"></div></div></div>'
-        +'<div style="font-size:14px;font-weight:700;color:#C85A2A;flex-shrink:0">'+myTotal+'</div>'
+      el.innerHTML = '<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:linear-gradient(180deg,#FFFFFF,#F8F1DF);border:1px solid #DDD0A8;border-radius:12px;margin-bottom:8px">'
+        +'<div style="font-size:17px;width:30px;text-align:center;flex-shrink:0">🥇</div>'
+        +'<div style="flex:1"><div style="font-size:14px;font-weight:600">'+name+'（你）</div>'
+        +'<div style="margin-top:5px;height:4px;background:rgba(42,29,8,.08);border-radius:2px;overflow:hidden"><div style="height:4px;background:var(--warn);border-radius:2px;width:'+Math.round(myTotal/3500*100)+'%"></div></div></div>'
+        +'<div style="font-size:15px;font-weight:700;color:var(--warn);flex-shrink:0;font-family:Georgia,serif">'+myTotal+'</div>'
         +'</div>';
     } else {
-      el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:20px;text-align:center">还没有人上榜，快去练习！</div>';
+      el.innerHTML='<div style="font-size:13px;color:var(--faint);padding:20px;text-align:center">还没有人上榜，快去练习！</div>';
     }
     return;
   }
@@ -187,11 +264,11 @@ async function loadBoard(){
     var medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
     var pct = Math.round((r.score||0)/Math.max(maxScore,3500)*100);
     var isMe = r.user_name === name;
-    return '<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,252,245,.88);border-radius:10px;margin-bottom:8px'+(isMe?';border:2px solid rgba(201,169,110,.5)':'')+'">'
-      +'<div style="font-size:16px;width:28px;text-align:center;flex-shrink:0">'+medal+'</div>'
-      +'<div style="flex:1"><div style="font-size:15px;font-weight:600">'+r.user_name+(isMe?' （你）':'')+'</div>'
-      +'<div style="margin-top:4px;height:4px;background:rgba(42,30,8,.08);border-radius:2px;overflow:hidden"><div style="height:4px;background:#C85A2A;border-radius:2px;width:'+pct+'%"></div></div></div>'
-      +'<div style="font-size:14px;font-weight:700;color:#C85A2A;flex-shrink:0">'+(r.score||0)+'</div>'
+    return '<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:linear-gradient(180deg,#FFFFFF,#F8F1DF);border:1px solid #DDD0A8;border-radius:12px;margin-bottom:8px'+(isMe?';outline:2px solid rgba(173,122,30,.35);outline-offset:1px':'')+'">'
+      +'<div style="font-size:17px;width:30px;text-align:center;flex-shrink:0">'+medal+'</div>'
+      +'<div style="flex:1"><div style="font-size:14px;font-weight:600">'+r.user_name+(isMe?' （你）':'')+'</div>'
+      +'<div style="margin-top:5px;height:4px;background:rgba(42,29,8,.08);border-radius:2px;overflow:hidden"><div style="height:4px;background:var(--warn);border-radius:2px;width:'+pct+'%"></div></div></div>'
+      +'<div style="font-size:15px;font-weight:700;color:var(--warn);flex-shrink:0;font-family:Georgia,serif">'+(r.score||0)+'</div>'
       +'</div>';
   }).join('');
 }
