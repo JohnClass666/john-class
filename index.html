@@ -17,19 +17,6 @@
 html,body{height:100%;overflow:hidden;background:var(--bg);-webkit-font-smoothing:antialiased}
 
 .page{position:relative;height:100vh;height:100dvh;width:100vw;opacity:0;transition:opacity .5s ease;overflow:hidden}
-
-/* ── 桌面端：约束为手机宽度居中，避免横屏裁图 ── */
-@media (min-width:520px){
-  html{background:#100C06;display:flex;justify-content:center;align-items:flex-start}
-  body{max-width:430px;width:100%;height:100dvh;overflow:hidden;position:relative;
-    box-shadow:0 0 60px rgba(0,0,0,.6)}
-  /* 背景图和覆盖层改为 absolute，被 body 容器限制住 */
-  .bgphoto{position:absolute!important}
-  .overlay{position:absolute!important}
-  .splash{position:absolute!important}
-  /* page 宽度跟着 body 走 */
-  .page{width:100%!important}
-}
 .page.show{opacity:1}
 .page.slide-up{transition:transform .28s cubic-bezier(.32,.72,0,1);transform:translateY(-100%)}
 
