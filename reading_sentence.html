@@ -2,37 +2,152 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <title>长难句训练 · John Class</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#F5EDD8;color:#2A1E08;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
-body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:28px 20px}
-.pane{display:none;flex-direction:column;align-items:center;width:100%;max-width:560px;text-align:center}
-.pane.on{display:flex}
-.dots{display:flex;gap:7px;margin-bottom:28px}
-.dot{width:7px;height:7px;border-radius:50%;background:rgba(42,30,8,.15)}
-.dot.done{background:rgba(42,30,8,.38)}
-.dot.now{background:#2A1E08;width:20px;border-radius:4px}
-.logo{font-size:11px;letter-spacing:.18em;color:#B5A080;font-weight:600;margin-bottom:40px}
-.back-link{font-size:12px;color:#B5A080;text-decoration:none;align-self:flex-start;margin-bottom:16px;display:block}
-.back-link:hover{color:#2A1E08}
-.step-n{font-size:11px;letter-spacing:.16em;color:#B5A080;font-weight:600;text-transform:uppercase;margin-bottom:8px}
-.inst{font-size:22px;font-weight:700;color:#2A1E08;line-height:1.35;margin-bottom:24px}
-.tag{font-size:11px;letter-spacing:.12em;color:#B5A080;font-weight:500;margin-bottom:16px}
-.sent{font-family:Georgia,serif;font-size:18px;line-height:2.3;color:#2A1E08;text-align:left;width:100%;margin-bottom:28px;letter-spacing:.01em}
-.cd{display:flex;flex-direction:column;align-items:center;margin-bottom:28px}
-.cd-num{font-size:72px;font-weight:700;color:#2A1E08;line-height:1;margin-bottom:6px}
-.cd-msg{font-size:12px;color:#B5A080;letter-spacing:.08em}
-/* color highlights */
-.hl-subj{background:rgba(74,124,184,.18);color:#1A3A7A;border-radius:3px;padding:0 3px;border-bottom:2px solid rgba(74,124,184,.40)}
-.hl-pred{background:rgba(200,140,50,.20);color:#5A3000;border-radius:3px;padding:0 3px;border-bottom:2px solid rgba(200,140,50,.45)}
-.hl-obj{background:rgba(60,150,90,.16);color:#1A4A28;border-radius:3px;padding:0 3px;border-bottom:2px solid rgba(60,150,90,.40)}
-.hl-adv{background:rgba(200,85,75,.14);color:#7A1A10;border-radius:3px;padding:0 3px;border-bottom:2px solid rgba(200,85,75,.35)}
-.hl-attr{background:rgba(140,80,200,.14);color:#4A1A7A;border-radius:3px;padding:0 3px;border-bottom:2px solid rgba(140,80,200,.35)}
-.hl-conj{background:rgba(42,30,8,.08);color:#5A4A30;border-radius:3px;padding:0 3px;font-weight:700}
-/* inline segment labels */
-.il-wrap{text-align:left;width:100%;line-height:2.8;margin-bottom:16px;font-family:Georgia,serif;font-size:18px}
+/* ═══ CSS VARIABLES ═══ */
+:root{
+  --bg:#FBF6EC;
+  --bg2:#F0E2C4;
+  --bg3:#F6EEDC;
+  --ink:#2A1D08;
+  --soft:#8C6B35;
+  --faint:#C2A26C;
+  --hair:#E2D0A4;
+  --hair2:#F0E8D0;
+  --accent:#AD7A1E;
+  --accent-deep:#7A5414;
+  --accent-soft:#F5E8C8;
+  --warn:#C2491E;
+  --warn-soft:#FAEEE8;
+  --fnt:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
+  --fnt-display:Georgia,"Songti SC","STSong",serif;
+  --r-sm:10px;--r-md:16px;--r-lg:22px;--r-pill:999px;
+  --shadow-sm:0 1px 2px rgba(40,24,5,.10);
+  --shadow-md:0 3px 10px rgba(40,24,5,.12);
+  --shadow-lg:0 10px 28px rgba(40,24,5,.16);
+}
+
+/* ═══ RESET ═══ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-x:hidden;user-select:none;letter-spacing:-0.01em}
+
+/* ═══ APP CONTAINER ═══ */
+#app{max-width:480px;margin:0 auto;}
+
+/* ═══ PANE SYSTEM ═══ */
+.pane{display:none;flex-direction:column;width:100%;min-height:100svh;}
+.pane.on{display:flex;animation:fade .35s cubic-bezier(.22,1,.36,1) both}
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+@keyframes ringPop{from{transform:scale(.6) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+@keyframes tap-blink{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes mario-pulse{
+  0%,100%{box-shadow:0 4px 12px rgba(42,30,8,.28),0 0 0 3px rgba(42,30,8,.10);}
+  50%{box-shadow:0 6px 18px rgba(42,30,8,.38),0 0 0 5px rgba(42,30,8,.08);}}
+@keyframes mario-bounce{
+  from{transform:scaleX(-1) translateY(0px) scaleY(1);
+       filter:drop-shadow(0 4px 6px rgba(80,40,5,.52)) drop-shadow(0 -1px 3px rgba(255,210,120,.22));}
+  to{transform:scaleX(-1) translateY(-7px) scaleY(1.06);
+     filter:drop-shadow(0 10px 12px rgba(80,40,5,.22)) drop-shadow(0 -1px 3px rgba(255,210,120,.22));}}
+@keyframes mario-shadow{
+  from{transform:translateX(-50%) scaleX(1);opacity:.45;}
+  to{transform:translateX(-50%) scaleX(.45);opacity:.12;}}
+
+/* ═══ TOP BAR ═══ */
+.bar{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;
+  padding:10px 16px;min-height:52px;
+  background:var(--bg);box-shadow:0 1px 0 var(--hair);width:100%;}
+.htitle{flex:1;text-align:center;font-size:16px;font-weight:700;color:#3A2A10;
+  text-shadow:0 1px 2px rgba(40,20,5,.14);letter-spacing:-.02em}
+.sp{flex:1}
+
+/* ═══ BACK BUTTON ═══ */
+.back{
+  width:36px;height:36px;border-radius:50%;flex:0 0 auto;
+  background:linear-gradient(180deg,#FDF8F0 0%,#E8D8B4 100%);
+  border:1px solid #C8A860;border-bottom:3px solid #9A7830;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 2px 5px rgba(40,20,5,.12);
+  font-size:20px;color:#3A2A10;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  text-decoration:none;
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s}
+.back:active{transform:translateY(2px);border-bottom-width:1px;
+  box-shadow:inset 0 1px 3px rgba(40,20,5,.12)}
+
+/* ═══ BUTTONS ═══ */
+.btn{display:inline-flex;align-items:center;justify-content:center;
+  font-family:var(--fnt);cursor:pointer;font-size:15px;font-weight:600;
+  padding:14px 20px;border-radius:14px;width:100%;
+  transition:transform .08s,box-shadow .08s,border-bottom-width .08s;margin-bottom:8px}
+.btn.accent{
+  background:linear-gradient(180deg,#EED068 0%,#EEAA28 100%);
+  border:1px solid #C88808;border-bottom:3px solid #986008;color:#4A3000;
+  box-shadow:inset 0 1px 0 rgba(255,255,200,.5),0 2px 6px rgba(40,20,5,.12)}
+.btn.accent:active{transform:translateY(2px);border-bottom-width:1px}
+.btn.line{
+  background:linear-gradient(180deg,#FFFFFF 0%,#F5EDD8 100%);
+  border:1px solid #D8C090;border-bottom:3px solid #B09050;color:#3A2A10;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 5px rgba(40,20,5,.07)}
+.btn.line:active{transform:translateY(2px);border-bottom-width:1px}
+.btn.ghost{background:none;border:1px solid #D8C8A0;border-bottom-width:1px;
+  color:#A08040;box-shadow:none}
+.btn.ghost:active{background:rgba(58,42,16,.05)}
+
+/* ═══ LOGO ═══ */
+.logo{font-size:10px;letter-spacing:.22em;color:var(--faint);font-weight:600;
+  text-transform:uppercase;text-align:center;padding:16px 0 10px;}
+
+/* ═══ STEP DOTS ═══ */
+.dots{display:flex;gap:7px;justify-content:center;padding:10px 0 6px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--hair)}
+.dot.done{background:var(--accent)}
+.dot.now{background:var(--ink);width:20px;border-radius:4px}
+
+/* ═══ LABELS / TAGS ═══ */
+.tag{font-size:11px;letter-spacing:.12em;color:var(--faint);font-weight:600;
+  text-transform:uppercase;margin-bottom:6px;text-align:center;display:block;}
+.step-n{font-size:11px;letter-spacing:.16em;color:var(--faint);font-weight:600;
+  text-transform:uppercase;margin-bottom:4px;text-align:center;display:block;}
+.inst{font-size:22px;font-weight:700;color:var(--ink);line-height:1.35;
+  margin-bottom:20px;text-align:center;}
+.inst small{font-size:13px;color:var(--soft);font-weight:400;display:block;margin-top:4px}
+
+/* ═══ DIFF BADGE ═══ */
+.diff-badge{display:inline-block;font-size:10px;font-weight:700;
+  padding:3px 10px;border-radius:var(--r-pill);margin-bottom:12px;letter-spacing:.06em}
+.diff-basic{background:var(--accent-soft);color:var(--accent-deep);}
+.diff-medium{background:#F0E0B0;color:#6A4000;}
+.diff-challenge{background:var(--warn-soft);color:var(--warn);}
+
+/* ═══ SENTENCE DISPLAY ═══ */
+.sent{font-family:var(--fnt-display);font-size:17px;line-height:2.2;color:var(--ink);
+  text-align:left;width:100%;margin-bottom:20px;letter-spacing:.01em;
+  background:var(--bg3);border:1px solid var(--hair);
+  border-radius:var(--r-md);padding:16px 18px;}
+
+/* ═══ COUNTDOWN ═══ */
+.cd{display:flex;flex-direction:column;align-items:center;margin-bottom:24px}
+.cd-num{font-family:var(--fnt-display);font-size:72px;font-weight:200;
+  color:var(--ink);line-height:1;margin-bottom:6px}
+.cd-msg{font-size:12px;color:var(--faint);letter-spacing:.08em}
+
+/* ═══ TRANSLATION ═══ */
+.trans{width:100%;background:var(--accent-soft);border:1px solid var(--hair);
+  border-radius:var(--r-md);padding:18px 18px;
+  font-family:var(--fnt-display);font-size:17px;line-height:1.95;
+  color:var(--ink);text-align:left;margin-bottom:20px}
+
+/* ═══ SENTENCE COMPONENT ANNOTATION ═══ */
+.il-wrap{text-align:left;width:100%;line-height:2.8;margin-bottom:16px;
+  font-family:var(--fnt-display);font-size:17px;}
 .sg{display:inline;padding:3px 5px;border-radius:5px;margin:0 1px;line-height:2.6}
 .sg-subj{background:rgba(74,124,184,.14);border-bottom:2px solid rgba(74,124,184,.35)}
 .sg-pred{background:rgba(200,140,50,.16);border-bottom:2px solid rgba(200,140,50,.35)}
@@ -40,14 +155,16 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
 .sg-adv{background:rgba(200,85,75,.12);border-bottom:2px solid rgba(200,85,75,.30)}
 .sg-attr{background:rgba(140,80,200,.11);border-bottom:2px solid rgba(140,80,200,.30)}
 .sg-conj{background:rgba(42,30,8,.05);color:#6A5A40}
-.sg-lbl{font-size:9px;font-weight:700;padding:0 4px;border-radius:3px;margin-right:3px;vertical-align:middle;position:relative;top:-1px}
+.sg-lbl{font-size:9px;font-weight:700;padding:0 4px;border-radius:3px;
+  margin-right:3px;vertical-align:middle;position:relative;top:-1px}
 .sg-lbl.lbl-subj{background:rgba(74,124,184,.22);color:#1A3A7A}
 .sg-lbl.lbl-pred{background:rgba(200,140,50,.25);color:#5A3000}
 .sg-lbl.lbl-obj{background:rgba(60,150,90,.20);color:#1A4A28}
 .sg-lbl.lbl-adv{background:rgba(200,85,75,.18);color:#7A1A10}
 .sg-lbl.lbl-attr{background:rgba(140,80,200,.18);color:#4A1A7A}
 .sg-lbl.lbl-conj{background:rgba(42,30,8,.10);color:#5A4A30}
-.nest{display:inline;border:1.5px dashed rgba(184,149,106,.35);border-radius:8px;padding:4px 2px;margin:0 1px;background:rgba(255,252,245,.45)}
+.nest{display:inline;border:1.5px dashed rgba(184,149,106,.35);border-radius:8px;
+  padding:4px 2px;margin:0 1px;background:rgba(255,252,245,.45)}
 .nest .sg-lbl{font-size:8px!important}
 .legend{display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-bottom:4px}
 .chip{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
@@ -57,359 +174,356 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh;pad
 .chip-adv{background:rgba(200,85,75,.12);color:#7A1A10}
 .chip-attr{background:rgba(140,80,200,.12);color:#4A1A7A}
 .chip-conj{background:rgba(42,30,8,.07);color:#5A4A30}
-.short-note{width:100%;background:rgba(201,169,110,.08);border:1px solid rgba(201,169,110,.22);border-radius:10px;padding:10px 14px;font-size:12px;color:#6A5030;text-align:left;line-height:1.6;margin-bottom:20px}
-.trans{width:100%;background:rgba(61,107,46,.08);border:1px solid rgba(61,107,46,.22);border-radius:14px;padding:18px 20px;font-family:Georgia,serif;font-size:19px;line-height:1.95;color:#1A3A14;text-align:left;margin-bottom:28px}
-.btn{display:block;width:100%;padding:15px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none;letter-spacing:.01em}
-.btn:active{opacity:.8}
-.btn-row{display:flex;gap:10px;width:100%}
-.btn-ghost{flex:1;padding:15px;background:transparent;color:#7A6040;border:1.5px solid rgba(42,30,8,.22);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none}
-.btn-save{flex:1;padding:15px;background:rgba(200,70,60,.1);color:#7A1A10;border:1.5px solid rgba(200,70,60,.25);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none}
-.btn-gold{display:block;width:100%;padding:17px;background:#2A1E08;color:#F5EDD8;border:none;border-radius:12px;font-size:17px;font-weight:700;cursor:pointer;font-family:inherit;-webkit-appearance:none;margin-bottom:10px}
-.btn-outline{display:block;width:100%;padding:13px;background:transparent;color:#7A6040;border:1.5px solid rgba(42,30,8,.2);border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-appearance:none}
-.slogan{font-size:21px;font-weight:700;color:#2A1E08;line-height:1.55;margin-bottom:8px}
-.slogan-sub{font-size:13px;color:#8A7050;margin-bottom:12px;line-height:1.6}
-.progress-bar-wrap{width:100%;background:rgba(42,30,8,.08);border-radius:8px;height:6px;margin-bottom:6px;overflow:hidden}
-.progress-bar-fill{height:6px;background:#2A1E08;border-radius:8px;transition:width .4s}
-.progress-label{font-size:12px;color:#B5A080;margin-bottom:32px;text-align:left;width:100%}
-.board-row{display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px;background:rgba(255,252,245,.85);border-radius:10px;margin-bottom:8px;text-align:left}
-.board-rank{font-size:15px;font-weight:700;width:26px;color:#B5A080;flex-shrink:0}
-.board-rank.top3{color:#2A1E08}
-.board-name{flex:1;font-size:15px;font-weight:500}
-.board-pts{font-size:13px;color:#8A7050;font-weight:600}
-.diff-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-bottom:12px;letter-spacing:.06em}
-.diff-basic{background:rgba(60,150,90,.12);color:#1A4A28}
-.diff-medium{background:rgba(200,140,50,.15);color:#5A3000}
-.diff-challenge{background:rgba(200,70,60,.12);color:#7A1A10}
-.done-big{font-size:52px;line-height:1;margin-bottom:14px}
-.done-h{font-size:23px;font-weight:700;margin-bottom:8px}
-.done-rest{font-size:14px;color:#8A7050;line-height:1.7;margin-bottom:32px}
-.name-input{width:100%;padding:14px 16px;background:rgba(255,252,245,.9);border:1.5px solid rgba(42,30,8,.2);border-radius:12px;font-size:17px;font-family:inherit;color:#2A1E08;outline:none;text-align:center;margin-bottom:14px}
-.name-input:focus{border-color:#2A1E08}
-.overlay{display:none;position:fixed;inset:0;background:rgba(42,30,8,.5);z-index:100;align-items:center;justify-content:center;padding:24px}
-.overlay.on{display:flex}
-.modal{background:#F5EDD8;border-radius:18px;padding:28px 24px;max-width:340px;width:100%;text-align:center}
-.modal-h{font-size:19px;font-weight:700;margin-bottom:8px}
-.modal-body{font-size:13px;color:#7A6040;line-height:1.7;margin-bottom:20px}
-.modal-wechat{font-size:22px;font-weight:700;letter-spacing:.05em;margin-bottom:18px;color:#2A1E08}
-/* lock screen */
-.lock-icon{font-size:64px;line-height:1;margin-bottom:16px}
-.lock-title{font-size:22px;font-weight:700;color:#2A1E08;margin-bottom:8px}
-.lock-sub{font-size:13px;color:#8A7050;line-height:1.7;margin-bottom:24px}
-.lock-countdown{font-size:12px;color:#B5A080;margin-bottom:28px}
-.daily-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(60,150,90,.1);border:1px solid rgba(60,150,90,.25);padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;color:#1A4A28;margin-bottom:24px}
-/* ── MARIO MAP ── */
-.mario-scroll-wrap{
-  width:100%;overflow-x:auto;overflow-y:visible;
-  margin-bottom:16px;
-  /* hide scrollbar on iOS/WebKit */
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
-  padding-bottom:8px;
-}
+.hl-subj{background:rgba(74,124,184,.18);color:#1A3A7A;border-radius:3px;padding:0 3px;border-bottom:2px solid rgba(74,124,184,.40)}
+.hl-pred{background:rgba(200,140,50,.20);color:#5A3000;border-radius:3px;padding:0 3px;border-bottom:2px solid rgba(200,140,50,.45)}
+.hl-obj{background:rgba(60,150,90,.16);color:#1A4A28;border-radius:3px;padding:0 3px;border-bottom:2px solid rgba(60,150,90,.40)}
+.hl-adv{background:rgba(200,85,75,.14);color:#7A1A10;border-radius:3px;padding:0 3px;border-bottom:2px solid rgba(200,85,75,.35)}
+.hl-attr{background:rgba(140,80,200,.14);color:#4A1A7A;border-radius:3px;padding:0 3px;border-bottom:2px solid rgba(140,80,200,.35)}
+.hl-conj{background:rgba(42,30,8,.08);color:#5A4A30;border-radius:3px;padding:0 3px;font-weight:700}
+.short-note{width:100%;background:var(--bg3);border:1px solid var(--hair);
+  border-radius:var(--r-md);padding:12px 16px;
+  font-size:12px;color:var(--soft);text-align:left;line-height:1.6;margin-bottom:16px}
+
+/* ═══ PROGRESS TRACK ═══ */
+.track{height:5px;background:var(--hair);border-radius:3px;
+  margin:4px 0 2px;overflow:hidden;width:100%}
+.track > i{display:block;height:100%;background:var(--accent);width:0;
+  transition:width .7s cubic-bezier(.22,1,.36,1)}
+.progress-label{font-size:12px;color:var(--faint);margin-bottom:16px;
+  text-align:left;width:100%;}
+
+/* ═══ DAILY BADGE ═══ */
+.daily-badge{display:inline-flex;align-items:center;gap:6px;
+  background:var(--accent-soft);border:1px solid var(--accent);
+  padding:8px 14px;border-radius:var(--r-pill);
+  font-size:12px;font-weight:600;color:var(--accent-deep);margin-bottom:16px;}
+
+/* ═══ LEADERBOARD ═══ */
+.board-row{display:flex;align-items:center;gap:12px;padding:12px 14px;
+  background:var(--bg3);border:1px solid var(--hair);
+  border-radius:var(--r-md);margin-bottom:7px;}
+.board-rank{font-size:15px;font-weight:700;width:26px;color:var(--faint);}
+.board-rank.top3{color:var(--accent-deep);}
+.board-name{flex:1;font-size:15px;font-weight:500;color:var(--ink);}
+.board-pts{font-size:13px;color:var(--soft);font-weight:600;}
+
+/* ═══ DONE / BADGE ═══ */
+.stagebadge{width:72px;height:72px;border-radius:50%;margin:0 auto 20px;
+  display:flex;align-items:center;justify-content:center;font-size:28px;}
+.stagebadge.pass{
+  background:linear-gradient(145deg,#EED068,#EEAA28);
+  border:1px solid #C88808;border-bottom:4px solid #986008;
+  box-shadow:0 4px 14px rgba(40,20,5,.14),inset 0 1px 0 rgba(255,255,200,.6);
+  animation:ringPop .5s cubic-bezier(.34,1.4,.64,1)}
+.done-h{font-size:23px;font-weight:700;color:var(--ink);margin-bottom:8px;text-align:center;}
+.done-rest{font-size:14px;color:var(--soft);line-height:1.7;margin-bottom:28px;text-align:center;}
+
+/* ═══ LOCK SCREEN ═══ */
+.lock-icon{font-size:56px;line-height:1;margin-bottom:16px}
+.lock-title{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.lock-sub{font-size:13px;color:var(--soft);line-height:1.7;margin-bottom:24px}
+.lock-countdown{font-size:12px;color:var(--faint);margin-bottom:28px}
+
+/* ═══ CENTERED SCREEN BODY ═══ */
+.center-body{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:40px 20px;text-align:center;width:100%;}
+
+/* ═══ INPUT ═══ */
+.name-input{width:100%;padding:14px 16px;background:var(--bg3);
+  border:2px solid var(--hair);border-radius:var(--r-md);
+  font-size:17px;font-family:var(--fnt);color:var(--ink);outline:none;
+  text-align:center;margin-bottom:14px;-webkit-appearance:none;}
+.name-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(173,122,30,.15)}
+
+/* ═══ MODAL ═══ */
+.overlay{display:none;position:fixed;inset:0;z-index:100;
+  align-items:center;justify-content:center;padding:30px;
+  background:rgba(253,248,240,.88);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.overlay.on{display:flex;animation:fade .3s}
+.modal-box{
+  text-align:center;max-width:300px;width:100%;
+  animation:scaleIn .5s cubic-bezier(.22,1,.36,1);
+  background:var(--bg);border:1.5px solid var(--hair);border-radius:28px;padding:32px 24px}
+.modal-wechat{font-size:22px;font-weight:700;letter-spacing:.05em;
+  margin-bottom:18px;color:var(--ink);display:block;}
+
+/* ═══ SPLASH ═══ */
+#splash{position:fixed;inset:0;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:200;padding:40px 32px;cursor:pointer;transition:opacity .5s ease;}
+#splash.fade-out{opacity:0;pointer-events:none;}
+.splash-logo{font-size:10px;letter-spacing:.22em;color:var(--faint);font-weight:600;
+  text-transform:uppercase;margin-bottom:48px}
+.splash-quote{font-family:var(--fnt-display);font-size:26px;font-weight:600;
+  color:var(--ink);line-height:1.6;text-align:center;margin-bottom:16px;}
+.splash-sub{font-size:13px;color:var(--soft);margin-bottom:56px;line-height:1.6;text-align:center}
+.splash-tap{font-size:11px;letter-spacing:.18em;color:var(--faint);font-weight:600;
+  text-transform:uppercase;animation:tap-blink 1.4s ease-in-out infinite;}
+.main-reveal{opacity:0;transition:opacity .4s ease .1s;}
+.main-reveal.shown{opacity:1;}
+
+/* ═══ MARIO MAP ═══ */
+.mario-scroll-wrap{width:100%;overflow-x:auto;overflow-y:visible;
+  margin-bottom:12px;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;padding-bottom:8px;}
 .mario-scroll-wrap::-webkit-scrollbar{display:none}
-
-.mario-track{
-  display:flex;align-items:flex-end;
-  gap:0;
-  padding:36px 20px 4px 20px;
-  /* wide enough so all 100 nodes fit – each node ~52px */
-  width:max-content;
-  position:relative;
-}
-
-/* winding path line below nodes */
-.mario-track::before{
-  content:'';
-  position:absolute;
-  bottom:22px; left:20px; right:20px;
-  height:4px;
-  border-radius:2px;
+.mario-track{display:flex;align-items:flex-end;gap:0;
+  padding:36px 20px 4px 20px;width:max-content;position:relative;}
+.mario-track::before{content:'';position:absolute;
+  bottom:22px;left:20px;right:20px;height:4px;border-radius:2px;
   background:repeating-linear-gradient(90deg,
-    rgba(184,149,106,.35) 0 8px,
-    transparent 8px 14px
-  );
-  pointer-events:none;
-}
-
-/* each day node */
-.m-node{
-  display:flex;flex-direction:column;align-items:center;
-  gap:4px;
-  flex-shrink:0;
-  width:52px;
-  cursor:default;
-  position:relative;
-}
-
-/* wave rhythm via inline --wave var set in JS */
-.m-node .m-coin{
-  transform:translateY(var(--wave,0px));
-}
-
-/* connector strip between nodes */
-.m-node::after{
-  content:'';
-  position:absolute;
-  bottom:18px; left:calc(50% + 16px);
-  width:calc(52px - 32px + 0px);
-  height:3px;
-  border-radius:2px;
-  background:rgba(184,149,106,.20);
-}
+    rgba(184,149,106,.35) 0 8px,transparent 8px 14px);
+  pointer-events:none;}
+.m-node{display:flex;flex-direction:column;align-items:center;
+  gap:4px;flex-shrink:0;width:52px;cursor:default;position:relative;}
+.m-node .m-coin{transform:translateY(var(--wave,0px));}
+.m-node::after{content:'';position:absolute;bottom:18px;left:calc(50% + 16px);
+  width:20px;height:3px;border-radius:2px;background:rgba(184,149,106,.20);}
 .m-node:last-child::after{display:none}
-
-.m-coin{
-  width:38px;height:38px;border-radius:50%;
+.m-coin{width:38px;height:38px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   font-size:11px;font-weight:700;
-  border:2px solid rgba(184,149,106,.22);
-  background:rgba(255,252,245,.6);
-  color:#C4A070;
-  transition:transform .15s, box-shadow .15s;
-  position:relative;z-index:1;
-}
-.m-node.done .m-coin{
-  background:rgba(60,150,90,.22);
-  border-color:rgba(60,150,90,.45);
-  color:#1A5C28;
-}
-/* star inside done nodes */
-.m-node.done .m-coin::after{
-  content:'★';font-size:9px;
-  position:absolute;top:1px;right:2px;
-  color:rgba(60,150,90,.7);
-}
-
-.m-node.current .m-coin{
-  background:#2A1E08;
-  border-color:#2A1E08;
-  color:#F5EDD8;
-  cursor:pointer;
-  transform:translateY(0)!important;
-  box-shadow:0 4px 12px rgba(42,30,8,.30), 0 0 0 3px rgba(42,30,8,.10);
-  animation:mario-pulse 1.6s ease-in-out infinite;
-}
+  border:2px solid var(--hair2);background:var(--bg3);color:var(--faint);
+  transition:transform .15s,box-shadow .15s;position:relative;z-index:1;}
+.m-node.done .m-coin{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-deep);}
+.m-node.done .m-coin::after{content:'★';font-size:9px;position:absolute;
+  top:1px;right:2px;color:var(--accent);}
+.m-node.current .m-coin{background:var(--ink);border-color:var(--ink);color:var(--bg);
+  cursor:pointer;transform:translateY(0)!important;
+  box-shadow:0 4px 12px rgba(42,30,8,.30),0 0 0 3px rgba(42,30,8,.10);
+  animation:mario-pulse 1.6s ease-in-out infinite;}
 .m-node.current:active .m-coin{transform:scale(.88)!important;}
+.m-lbl{font-size:9px;font-weight:600;color:var(--faint);letter-spacing:.04em;line-height:1;}
+.m-node.done .m-lbl{color:var(--accent-deep);}
+.m-node.current .m-lbl{color:var(--ink);font-weight:700;}
+.m-mario{font-size:24px;line-height:1;margin-bottom:6px;
+  display:inline-block;position:relative;
+  animation:mario-bounce 0.55s ease-in-out infinite alternate;}
+.m-mario::after{content:'';position:absolute;
+  bottom:-5px;left:50%;
+  width:16px;height:5px;
+  background:radial-gradient(ellipse,rgba(80,40,5,.32) 0%,transparent 72%);
+  border-radius:50%;
+  animation:mario-shadow 0.55s ease-in-out infinite alternate;}
+.m-node.done .m-mario,.m-node.locked .m-mario{display:none}
+.m-node.milestone .m-coin{border-radius:10px;width:42px;height:42px;}
+.m-node.milestone.done .m-coin::before{content:'🏁';font-size:13px;
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%);}
+.m-node.milestone:not(.done):not(.current) .m-coin::before{content:'⛳';font-size:12px;
+  position:absolute;top:-13px;left:50%;transform:translateX(-50%);opacity:.25;}
 
-.m-node.locked .m-coin{
-  background:rgba(255,252,245,.25);
-  border-color:rgba(184,149,106,.08);
-  color:rgba(196,160,112,.25);
-}
-
-/* day label under coin */
-.m-lbl{
-  font-size:9px;font-weight:600;
-  color:#C4A070;letter-spacing:.04em;
-  line-height:1;
-}
-.m-node.done .m-lbl{color:#3A8050;}
-.m-node.current .m-lbl{color:#2A1E08;font-weight:700;}
-.m-node.locked .m-lbl{color:rgba(196,160,112,.22);}
-
-/* mario character riding the current node */
-.m-mario{
-  font-size:22px;line-height:1;
-  margin-bottom:2px;
-  animation:mario-bounce 0.6s ease-in-out infinite alternate;
-}
-.m-node.done .m-mario,
-.m-node.locked .m-mario{display:none}
-
-/* milestone flags every 10 days */
-.m-node.milestone .m-coin{
-  border-radius:10px;
-  width:42px;height:42px;
-}
-.m-node.milestone.done .m-coin::before{
-  content:'🏁';font-size:13px;
-  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
-}
-.m-node.milestone:not(.done):not(.current) .m-coin::before{
-  content:'⛳';font-size:12px;
-  position:absolute;top:-13px;left:50%;transform:translateX(-50%);
-  opacity:.25;
-}
-
-@keyframes mario-pulse{
-  0%,100%{box-shadow:0 4px 12px rgba(42,30,8,.28), 0 0 0 3px rgba(42,30,8,.10);}
-  50%{box-shadow:0 6px 18px rgba(42,30,8,.38), 0 0 0 5px rgba(42,30,8,.08);}
-}
-@keyframes mario-bounce{
-  from{transform:translateY(0px)}
-  to{transform:translateY(-5px)}
-}
-
-/* ── SPLASH INTRO ── */
-#splash{
-  position:fixed;inset:0;
-  background:#F5EDD8;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  z-index:200;
-  padding:40px 32px;
-  cursor:pointer;
-  transition:opacity .5s ease;
-}
-#splash.fade-out{opacity:0;pointer-events:none;}
-.splash-logo{font-size:11px;letter-spacing:.18em;color:#B5A080;font-weight:600;margin-bottom:48px}
-.splash-quote{
-  font-size:26px;font-weight:700;color:#2A1E08;
-  line-height:1.5;text-align:center;
-  margin-bottom:16px;
-}
-.splash-sub{font-size:13px;color:#8A7050;margin-bottom:56px;line-height:1.6;text-align:center}
-.splash-tap{
-  font-size:12px;letter-spacing:.12em;color:#B5A080;font-weight:600;
-  animation:tap-blink 1.4s ease-in-out infinite;
-}
-@keyframes tap-blink{
-  0%,100%{opacity:.3}
-  50%{opacity:1}
-}
-/* elements to reveal after splash */
-.main-reveal{
-  opacity:0;
-  transition:opacity .4s ease .1s;
-}
-.main-reveal.shown{opacity:1;}
+/* ═══ LAYOUT HELPERS ═══ */
+.sc-body{padding:0 20px;width:100%;flex:1;}
+.sc-foot{padding:0 20px 28px;width:100%;}
 </style>
 </head>
 <body>
 
-<!-- SPLASH INTRO -->
+<!-- SPLASH -->
 <div id="splash">
-  <div class="splash-logo">JOHN CLASS &middot; 长难句训练</div>
-  <div class="splash-quote">&ldquo;做完这二百句，<br>你北大都考得上！&rdquo;</div>
+  <div class="splash-logo">John Class &middot; 长难句训练</div>
+  <div class="splash-quote">&ldquo;做完这二百句，<br>北大都考得上！&rdquo;</div>
   <div class="splash-sub">共 200 句长难句 · 每句 50 分</div>
   <div class="splash-tap">▶ &nbsp;点击屏幕开始</div>
 </div>
 
+<div id="app">
+
 <!-- WELCOME / HALL -->
 <div id="p-welcome" class="pane on">
-  <a class="back-link main-reveal" href="study.html">&larr; 返回学习中心</a>
-  <div class="logo main-reveal">JOHN CLASS &middot; 长难句训练</div>
-  <div class="mario-scroll-wrap main-reveal" id="mario-scroll-wrap">
-    <div class="mario-track" id="hall-grid"></div>
+  <div class="bar main-reveal">
+    <a class="back" href="study.html">‹</a>
+    <div class="htitle">长难句训练</div>
+    <div class="sp"></div>
   </div>
-  <div class="progress-bar-wrap main-reveal"><div class="progress-bar-fill" id="prog-fill"></div></div>
-  <div class="progress-label main-reveal" id="prog-label"></div>
-  <div class="daily-badge main-reveal" id="daily-badge" style="display:none"></div>
-  <div class="main-reveal" style="display:flex;flex-direction:column;gap:10px;width:100%">
-    <button class="btn" id="btn-start">开始训练</button>
-    <button class="btn-outline" id="btn-board-open">&#127942; 阅读大王排行榜</button>
+  <div class="sc-body">
+    <div class="logo main-reveal">JOHN CLASS</div>
+    <div class="mario-scroll-wrap main-reveal" id="mario-scroll-wrap">
+      <div class="mario-track" id="hall-grid"></div>
+    </div>
+    <div class="track main-reveal"><i id="prog-fill"></i></div>
+    <div class="progress-label main-reveal" id="prog-label"></div>
+    <div class="daily-badge main-reveal" id="daily-badge" style="display:none"></div>
+    <div class="main-reveal">
+      <button class="btn accent" id="btn-start">开始训练</button>
+      <button class="btn line" id="btn-board-open">&#127942; 阅读大王排行榜</button>
+    </div>
   </div>
 </div>
 
 <!-- LOCKED -->
 <div id="p-locked" class="pane">
-  <div class="logo">JOHN CLASS &middot; 长难句训练</div>
-  <div class="lock-icon">&#128274;</div>
-  <div class="lock-title">今日训练已完成</div>
-  <div class="lock-sub">你已完成今天的 2 句长难句训练。<br>保持节奏，明天继续！</div>
-  <div class="lock-countdown" id="lock-cd"></div>
-  <div style="display:flex;flex-direction:column;gap:10px;width:100%">
-    <button class="btn-outline" id="btn-lock-board">&#127942; 查看排行榜</button>
-    <button class="btn-outline" id="btn-lock-back" style="margin-top:0">&#128218; 返回学习中心</button>
+  <div class="bar">
+    <div class="htitle">长难句训练</div>
+  </div>
+  <div class="center-body">
+    <div class="lock-icon">&#128274;</div>
+    <div class="lock-title">今日训练已完成</div>
+    <div class="lock-sub">你已完成今天的 2 句长难句训练。<br>保持节奏，明天继续！</div>
+    <div class="lock-countdown" id="lock-cd"></div>
+    <div style="width:100%">
+      <button class="btn line" id="btn-lock-board">&#127942; 查看排行榜</button>
+      <button class="btn ghost" id="btn-lock-back">&#128218; 返回学习中心</button>
+    </div>
   </div>
 </div>
 
 <!-- LEADERBOARD -->
 <div id="p-board" class="pane">
-  <div class="tag" style="margin-bottom:4px">本周阅读榜</div>
-  <div style="font-size:19px;font-weight:700;margin-bottom:6px">&#127942; 阅读大王</div>
-  <div style="font-size:12px;color:#B5A080;margin-bottom:20px">每句 50 分 · 仅统计长难句阅读</div>
-  <div id="board-list" style="width:100%"><div style="font-size:13px;color:#B5A080;padding:20px">加载中...</div></div>
-  <button class="btn" id="btn-board-back" style="margin-top:20px">&larr; 返回</button>
-</div>
-
-<!-- STEP 1 COPY -->
-<div id="p1" class="pane">
-  <a class="back-link" href="study.html">&larr; 返回</a>
-  <div class="dots" id="dt1"></div>
-  <div class="tag" id="tg1"></div>
-  <div class="diff-badge" id="db1"></div>
-  <div class="step-n">第一步</div>
-  <div class="inst">把这句话<br>完整抄写在纸上</div>
-  <div class="sent" id="sn1"></div>
-  <div class="cd" id="cd1"><div class="cd-num" id="cd1n">10</div><div class="cd-msg">秒后可以继续</div></div>
-  <button class="btn" id="b1" style="display:none">抄好了，开始分析 &rarr;</button>
-</div>
-
-<!-- STEP 2 ANALYZE -->
-<div id="p2" class="pane">
-  <a class="back-link" href="study.html">&larr; 返回</a>
-  <div class="dots" id="dt2"></div>
-  <div class="tag" id="tg2"></div>
-  <div class="diff-badge" id="db2"></div>
-  <div class="step-n">第二步</div>
-  <div class="inst">在纸上独立<br>分析句子成分<br><span style="font-size:13px;color:#B5A080;font-weight:400">找出主谓宾、定状补、从句</span></div>
-  <div class="sent" id="sn2"></div>
-  <button class="btn" id="b2">分析好了，看答案 &rarr;</button>
-</div>
-
-<!-- STEP 3 STRUCTURE -->
-<div id="p3" class="pane">
-  <a class="back-link" href="study.html">&larr; 返回</a>
-  <div class="dots" id="dt3"></div>
-  <div class="tag" id="tg3"></div>
-  <div class="diff-badge" id="db3"></div>
-  <div class="step-n">第三步</div>
-  <div class="inst">对照句子成分分析</div>
-  <div id="structure-area" style="width:100%">
-    <div class="il-wrap" id="sn3"></div>
-    <div class="legend" id="lgd"></div>
-    <div class="short-note" id="nt"></div>
+  <div class="bar">
+    <button class="back" id="btn-board-back">‹</button>
+    <div class="htitle">阅读大王榜</div>
+    <div class="sp"></div>
   </div>
-  <button class="btn" id="b3">明白了，去翻译 &rarr;</button>
+  <div class="sc-body" style="padding-top:16px">
+    <div style="font-size:11px;letter-spacing:.16em;color:var(--faint);font-weight:600;text-transform:uppercase;text-align:center;margin-bottom:4px">本周阅读榜</div>
+    <div style="font-size:12px;color:var(--faint);text-align:center;margin-bottom:20px">每句 50 分 · 仅统计长难句阅读</div>
+    <div id="board-list"><div style="font-size:13px;color:var(--faint);padding:20px;text-align:center">加载中...</div></div>
+  </div>
 </div>
 
-<!-- STEP 4 TRANSLATE -->
+<!-- STEP 1: COPY -->
+<div id="p1" class="pane">
+  <div class="bar">
+    <button class="back" onclick="backToHome()">‹</button>
+    <div class="htitle">第一步</div>
+    <div class="sp"></div>
+  </div>
+  <div class="dots" id="dt1"></div>
+  <div class="sc-body">
+    <div class="tag" id="tg1"></div>
+    <div class="diff-badge" id="db1"></div>
+    <p class="step-n">第一步</p>
+    <h2 class="inst">把这句话<br>完整抄写在纸上</h2>
+    <div class="sent" id="sn1"></div>
+    <div class="cd" id="cd1">
+      <div class="cd-num" id="cd1n">10</div>
+      <div class="cd-msg">秒后可以继续</div>
+    </div>
+  </div>
+  <div class="sc-foot">
+    <button class="btn accent" id="b1" style="display:none">抄好了，开始分析 &rarr;</button>
+  </div>
+</div>
+
+<!-- STEP 2: ANALYZE -->
+<div id="p2" class="pane">
+  <div class="bar">
+    <button class="back" onclick="backToHome()">‹</button>
+    <div class="htitle">第二步</div>
+    <div class="sp"></div>
+  </div>
+  <div class="dots" id="dt2"></div>
+  <div class="sc-body">
+    <div class="tag" id="tg2"></div>
+    <div class="diff-badge" id="db2"></div>
+    <p class="step-n">第二步</p>
+    <h2 class="inst">在纸上独立<br>分析句子成分<small>找出主谓宾、定状补、从句</small></h2>
+    <div class="sent" id="sn2"></div>
+  </div>
+  <div class="sc-foot">
+    <button class="btn accent" id="b2">分析好了，看答案 &rarr;</button>
+  </div>
+</div>
+
+<!-- STEP 3: STRUCTURE -->
+<div id="p3" class="pane">
+  <div class="bar">
+    <button class="back" onclick="backToHome()">‹</button>
+    <div class="htitle">第三步</div>
+    <div class="sp"></div>
+  </div>
+  <div class="dots" id="dt3"></div>
+  <div class="sc-body">
+    <div class="tag" id="tg3"></div>
+    <div class="diff-badge" id="db3"></div>
+    <p class="step-n">第三步</p>
+    <h2 class="inst">对照句子成分分析</h2>
+    <div id="structure-area" style="width:100%">
+      <div class="il-wrap" id="sn3"></div>
+      <div class="legend" id="lgd"></div>
+      <div class="short-note" id="nt"></div>
+    </div>
+  </div>
+  <div class="sc-foot">
+    <button class="btn accent" id="b3">明白了，去翻译 &rarr;</button>
+  </div>
+</div>
+
+<!-- STEP 4: TRANSLATE -->
 <div id="p4" class="pane">
-  <a class="back-link" href="study.html">&larr; 返回</a>
+  <div class="bar">
+    <button class="back" onclick="backToHome()">‹</button>
+    <div class="htitle">第四步</div>
+    <div class="sp"></div>
+  </div>
   <div class="dots" id="dt4"></div>
-  <div class="tag" id="tg4"></div>
-  <div class="diff-badge" id="db4"></div>
-  <div class="step-n">第四步</div>
-  <div class="inst">在纸上翻译<br>这句话</div>
-  <div class="sent" id="sn4"></div>
-  <button class="btn" id="b4">翻译好了，看答案 &rarr;</button>
+  <div class="sc-body">
+    <div class="tag" id="tg4"></div>
+    <div class="diff-badge" id="db4"></div>
+    <p class="step-n">第四步</p>
+    <h2 class="inst">在纸上翻译<br>这句话</h2>
+    <div class="sent" id="sn4"></div>
+  </div>
+  <div class="sc-foot">
+    <button class="btn accent" id="b4">翻译好了，看答案 &rarr;</button>
+  </div>
 </div>
 
-<!-- STEP 5 ANSWER -->
+<!-- STEP 5: ANSWER -->
 <div id="p5" class="pane">
-  <a class="back-link" href="study.html">&larr; 返回</a>
+  <div class="bar">
+    <button class="back" onclick="backToHome()">‹</button>
+    <div class="htitle">第五步</div>
+    <div class="sp"></div>
+  </div>
   <div class="dots" id="dt5"></div>
-  <div class="tag" id="tg5"></div>
-  <div class="diff-badge" id="db5"></div>
-  <div class="step-n">第五步</div>
-  <div class="inst">对照参考译文</div>
-  <div class="trans" id="tr"></div>
-  <div class="btn-row">
-    <button class="btn-ghost" id="b-next">下一句</button>
-    <button class="btn-save" id="b-save">&#128278; 存入错题集</button>
+  <div class="sc-body">
+    <div class="tag" id="tg5"></div>
+    <div class="diff-badge" id="db5"></div>
+    <p class="step-n">第五步</p>
+    <h2 class="inst">对照参考译文</h2>
+    <div class="trans" id="tr"></div>
+  </div>
+  <div class="sc-foot" style="display:flex;gap:10px">
+    <button class="btn line" style="margin-bottom:0" id="b-next">下一句</button>
+    <button class="btn ghost" style="margin-bottom:0" id="b-save">&#128278; 存入错题集</button>
   </div>
 </div>
 
 <!-- DONE -->
 <div id="p-done" class="pane">
-  <a class="back-link" href="study.html">&larr; 返回</a>
-  <div class="done-big" id="done-icon">&#127769;</div>
-  <div class="done-h" id="done-title">今天先休息一下</div>
-  <div class="done-rest" id="done-msg">两句已完成。大脑需要时间消化，明天继续。</div>
-  <button class="btn-gold" id="btn-xuao">&#127942;&nbsp; 炫耀一下</button>
-  <div style="font-size:12px;color:#B5A080;text-align:center;margin-bottom:14px">拍下写好的句子找 John 打卡</div>
+  <div class="bar">
+    <button class="back" onclick="backToHome()">‹</button>
+    <div class="htitle">完成</div>
+    <div class="sp"></div>
+  </div>
+  <div class="center-body">
+    <div class="stagebadge pass" id="done-icon">&#127769;</div>
+    <div class="done-h" id="done-title">今天先休息一下</div>
+    <div class="done-rest" id="done-msg">两句已完成。大脑需要时间消化，明天继续。</div>
+    <div style="width:100%">
+      <button class="btn accent" id="btn-xuao">&#127942;&nbsp; 炫耀一下</button>
+      <div style="font-size:12px;color:var(--faint);text-align:center;margin-bottom:14px">拍下写好的句子找 John 打卡</div>
+    </div>
+  </div>
 </div>
+
+</div><!-- #app -->
 
 <!-- MODAL -->
 <div class="overlay" id="modal">
-  <div class="modal">
-    <div class="modal-h">&#127942; 炫耀一下</div>
-    <div class="modal-body">拍下你在纸上写好的句子<br>截图发给 John 老师打卡！</div>
-    <div class="modal-wechat">JiahaoLee6666</div>
-    <button class="btn" id="btn-copy-wx" style="margin-bottom:10px">复制微信号</button>
-    <button class="btn-outline" id="btn-modal-close">关闭</button>
+  <div class="modal-box">
+    <div style="font-size:32px;margin-bottom:12px">&#127942;</div>
+    <div style="font-size:18px;font-weight:700;color:var(--ink);margin-bottom:8px">炫耀一下</div>
+    <div style="font-size:13px;color:var(--soft);line-height:1.7;margin-bottom:16px">拍下你在纸上写好的句子<br>截图发给 John 老师打卡！</div>
+    <span class="modal-wechat">JiahaoLee6666</span>
+    <button class="btn accent" id="btn-copy-wx" style="margin-bottom:8px">复制微信号</button>
+    <button class="btn ghost" id="btn-modal-close">关闭</button>
   </div>
 </div>
+
 
 <script>
 // ═══════════ SUPABASE ═══════════
@@ -1016,10 +1130,10 @@ function appendSpans(spans, comps, fullText){
 }
 
 // ═══════════ 每日打卡限制 ═══════════
-var DAILY_LIMIT = 999; // 不再限制，学生可以一直做
+var DAILY_LIMIT = 2; // 每天最多做2句新句子
 
 function getToday(){
-  return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  return (function(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})(); // YYYY-MM-DD
 }
 
 function getDailyState(){
@@ -1040,7 +1154,7 @@ function saveDailyState(state){
 }
 
 function isDailyLocked(){
-  return false; // 不再限制每日数量，学生可以一直做
+  return getDailyState().count >= DAILY_LIMIT;
 }
 
 function incrementDailyCount(){
@@ -1066,6 +1180,7 @@ function updateLockScreen(){
 
 // ═══════════ STATE ═══════════
 var userName='', currentId=1, step=1, cdTimer=null, savedIds=[], sessionCompleted=0;
+var isReview=false, realCurrentId=null; // 复习模式：复习已做句子，不消耗每日名额
 
 function $(id){return document.getElementById(id);}
 function show(id){
@@ -1085,7 +1200,7 @@ function getWeekStart(){
   // 周日为每周第一天（周六晚12点一过自动重置）
   var d=new Date();
   d.setDate(d.getDate()-d.getDay());
-  return d.toISOString().split('T')[0];
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
 
 // ── SUPABASE ──
@@ -1224,29 +1339,76 @@ function showStructure(s){
   $('structure-area').style.display='block';
 }
 
+// ── 返回首页（训练步骤 / 完成屏 → p-welcome）──
+function backToHome(){
+  if(cdTimer){ clearInterval(cdTimer); cdTimer=null; }
+  if(isReview){ currentId=realCurrentId; isReview=false; realCurrentId=null; }
+  startWithUser();
+}
+
 // ── FLOW ──
 function goToPractice(){
+  isReview = false; realCurrentId = null;
+  var s = getSentence(currentId);
+  setTag(s); setDots(1); startCD();
+  show('p1'); step=1;
+}
+
+// 复习模式：点击已完成的 day 节点进入，不消耗每日名额，不推进 currentId
+function startReview(sentId){
+  isReview = true;
+  realCurrentId = currentId;
+  currentId = sentId;
   var s = getSentence(currentId);
   setTag(s); setDots(1); startCD();
   show('p1'); step=1;
 }
 
 async function completeAndNext(save){
-  if(save) savedIds.push(currentId);
+  if(isReview){
+    // 复习模式：可存错题，但不计入每日名额、不上传排行榜
+    if(save && savedIds.indexOf(currentId)===-1) savedIds.push(currentId);
+    // 如果下一句也在已完成范围内，继续复习；否则回首页
+    var nextId = currentId + 1;
+    if(nextId < realCurrentId){
+      currentId = nextId;
+      var s = getSentence(currentId);
+      setTag(s); setDots(1); startCD();
+      show('p1'); step=1;
+    } else {
+      currentId = realCurrentId;
+      isReview = false; realCurrentId = null;
+      startWithUser();
+    }
+    return;
+  }
+
+  // 正常模式：推进新句子
+  if(save && savedIds.indexOf(currentId)===-1) savedIds.push(currentId);
   sessionCompleted++;
+  incrementDailyCount();
   var totalCompleted = currentId;
   await saveProgress(totalCompleted);
 
-  if(currentId < 200){
-    currentId++;
-    var s = getSentence(currentId);
-    setTag(s); setDots(1); startCD();
-    show('p1'); step=1;
-  } else {
+  if(currentId >= 200){
     $('done-icon').textContent = '\u{1F389}';
     $('done-title').textContent = '全部完成！';
     $('done-msg').textContent = '恭喜！你已完成全部 200 句！真的很厉害！';
     show('p-done');
+    return;
+  }
+
+  currentId++;
+  if(isDailyLocked()){
+    // 今日名额用完，展示完成屏
+    $('done-icon').textContent = '\u{1F319}';
+    $('done-title').textContent = '今天先休息一下';
+    $('done-msg').textContent = '今日两句已完成！大脑需要时间消化，明天继续新句子。\n已完成的句子随时可以在地图上复习。';
+    show('p-done');
+  } else {
+    var s = getSentence(currentId);
+    setTag(s); setDots(1); startCD();
+    show('p1'); step=1;
   }
 }
 
@@ -1324,16 +1486,29 @@ async function startWithUser(){
     }
   }, 100);
 
-  // Click handler for current day
+  // Click handler for current day（新句子，受每日限制）
   var curNode2 = $('hall-grid').querySelector('.current');
-  if(curNode2) curNode2.addEventListener('click',function(){clickSound();goToPractice();});
+  if(curNode2) curNode2.addEventListener('click',function(){
+    clickSound();
+    if(isDailyLocked()){ show('p-locked'); updateLockScreen(); } else { goToPractice(); }
+  });
+
+  // Click handlers for done days（复习，不受每日限制）
+  document.querySelectorAll('#hall-grid .m-node.done').forEach(function(node){
+    node.style.cursor='pointer';
+    node.addEventListener('click',function(){
+      var day=parseInt(this.getAttribute('data-day'));
+      var sentId=(day-1)*2+1; // 该天第一句
+      if(sentId>=1 && sentId<currentId){ clickSound(); startReview(sentId); }
+    });
+  });
 
   show('p-welcome');
 }
 
 // ── EVENTS ──
 $('btn-start').addEventListener('click',function(){
-  goToPractice();
+  if(isDailyLocked()){ show('p-locked'); updateLockScreen(); } else { goToPractice(); }
 });
 $('btn-board-open').addEventListener('click',function(){loadLeaderboard();show('p-board');});
 $('btn-lock-board').addEventListener('click',function(){loadLeaderboard();show('p-board');});
@@ -1382,5 +1557,6 @@ $('btn-modal-close').addEventListener('click',function(){$('modal').classList.re
 
 init();
 </script>
+
 </body>
 </html>
