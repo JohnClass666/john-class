@@ -263,14 +263,17 @@ body{font-family:var(--fnt);color:var(--ink);-webkit-font-smoothing:antialiased;
 .wx-id{font-size:22px;font-weight:200;letter-spacing:.04em;color:var(--ink)}
 
 /* ── MODAL (overlay) ── */
-.modal{position:fixed;inset:0;z-index:200;display:none;align-items:flex-end;
-  justify-content:center;padding:12px;
+.modal{position:fixed;inset:0;z-index:500;display:none;align-items:flex-end;
+  justify-content:center;padding:12px;padding-bottom:calc(18px + env(safe-area-inset-bottom));
   background:rgba(42,29,8,.5);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .modal.show{display:flex;animation:fadeIn .25s}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .modal-box{background:var(--bg);border-radius:28px 28px 20px 20px;
-  width:100%;max-width:480px;padding:28px 22px 24px;
+  width:100%;max-width:480px;max-height:calc(100dvh - 36px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  padding:28px 22px calc(26px + env(safe-area-inset-bottom));
   box-shadow:var(--shadow-lg);animation:slideUp .32s cubic-bezier(.22,1,.36,1)}
+.modal-box::-webkit-scrollbar{display:none}
 @keyframes slideUp{from{transform:translateY(40px)}to{transform:none}}
 .modal-kicker{margin-bottom:14px}
 .modal-title{font-size:26px;font-weight:700;font-family:var(--fnt-serif);
@@ -286,6 +289,17 @@ body{font-family:var(--fnt);color:var(--ink);-webkit-font-smoothing:antialiased;
   border:1.5px solid var(--hair)}
 .mstat-n{font-size:24px;font-weight:200;letter-spacing:-.04em;color:var(--ink)}
 .mstat-l{font-size:10px;color:var(--soft);margin-top:2px;font-weight:600}
+@media (max-height:720px){
+  .modal{padding-top:10px;align-items:center}
+  .modal-box{border-radius:24px;padding-top:22px}
+  .modal-kicker{margin-bottom:10px}
+  .modal-title{font-size:24px}
+  .modal-en{margin-bottom:12px}
+  .modal-body{font-size:13.5px;line-height:1.72;margin-bottom:12px}
+  .modal-stats{margin-bottom:14px}
+  .mstat{padding:9px 6px}
+  .mstat-n{font-size:22px}
+}
 
 /* ── RETRY MODAL ── */
 .ret-kicker{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
@@ -955,6 +969,7 @@ async function restoreWritingProgress(){
     prog.errors=w.errors||[];
     prog.totalScore=cloudScore;
     localStorage.setItem('jc_writing_'+username,JSON.stringify({correct:[...prog.correct],errors:prog.errors,totalScore:prog.totalScore}));
+    syncWritingTotal();
     showHome();
   }else syncWritingProgress();}catch(e){}
 }
@@ -1012,9 +1027,26 @@ async function loadLB(){
   const w=document.getElementById('lb-wrap');
   w.innerHTML='<div class="empty"><div class="empty-txt">加载中…</div></div>';
   try{
-    const r=await fetch(`${SB}/rest/v1/writing_scores?select=user_name,score&order=score.desc&limit=20`,{headers:SH});
-    const d=await r.json();
-    const valid=(d||[]).filter(row=>(row.score||0)>0);
+    await syncWritingTotal();
+    const resp=await Promise.all([
+      fetch(`${SB}/rest/v1/writing_scores?select=user_name,score&order=score.desc&limit=1000`,{headers:SH}),
+      fetch(`${SB}/rest/v1/user_progress?select=user_name,progress_data&limit=1000`,{headers:SH})
+    ]);
+    const data=await Promise.all(resp.map(r=>r.ok?r.json():Promise.resolve([])));
+    const merged={};
+    (data[0]||[]).forEach(row=>{
+      const name=row.user_name;
+      const score=row.score||0;
+      if(name&&score>0)merged[name]=Math.max(merged[name]||0,score);
+    });
+    (data[1]||[]).forEach(row=>{
+      let root=row.progress_data||{};
+      if(typeof root==='string'){try{root=JSON.parse(root)||{};}catch(e){root={};}}
+      const score=root.writing&&root.writing.totalScore?root.writing.totalScore:0;
+      if(row.user_name&&score>0)merged[row.user_name]=Math.max(merged[row.user_name]||0,score);
+    });
+    const valid=Object.keys(merged).map(name=>({user_name:name,score:merged[name]}))
+      .sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,20);
     if(!valid.length){
       w.innerHTML='<div class="empty"><div class="empty-icon">○</div><div class="empty-txt">还没人上榜，抢第一！</div></div>';
       return;
@@ -1359,10 +1391,9 @@ if(!username){
   }
 }
 load();showHome();
-restoreWritingProgress();
+restoreWritingProgress().then(startupSync);
 if(!sessionStorage.getItem('intro_seen'))
   document.getElementById('intro-ov').classList.add('show');
-startupSync();
 </script>
 </body>
 </html>
