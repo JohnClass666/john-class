@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS weekly_scores (
   id             UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_name      TEXT NOT NULL,
   week_start     DATE NOT NULL,
-  reading_score   INTEGER DEFAULT 0,   -- 每句 500，每周上限 1000
+  reading_score   INTEGER DEFAULT 0,   -- 阅读本周新增分
   vocab_score     INTEGER DEFAULT 0,   -- 词汇训练写入
   survival_score  INTEGER DEFAULT 0,   -- 生存英语，每场景 +500
   updated_at     TIMESTAMPTZ DEFAULT NOW(),
@@ -28,9 +28,11 @@ CREATE TABLE IF NOT EXISTS weekly_scores (
 ALTER TABLE reading_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE weekly_scores    ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "allow_all_reading_progress" ON reading_progress;
 CREATE POLICY "allow_all_reading_progress" ON reading_progress
   FOR ALL USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "allow_all_weekly_scores" ON weekly_scores;
 CREATE POLICY "allow_all_weekly_scores" ON weekly_scores
   FOR ALL USING (true) WITH CHECK (true);
 
@@ -85,15 +87,35 @@ ALTER TABLE messages       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE leaderboard    ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vocab_progress ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "allow_all_messages" ON messages;
 CREATE POLICY "allow_all_messages"       ON messages       FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "allow_all_leaderboard" ON leaderboard;
 CREATE POLICY "allow_all_leaderboard"    ON leaderboard    FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "allow_all_vocab_progress" ON vocab_progress;
 CREATE POLICY "allow_all_vocab_progress" ON vocab_progress FOR ALL USING (true) WITH CHECK (true);
+
+-- ════════════════════════════════════════
+-- 6.1 统一云端进度表
+-- 每个学生一行；每个板块一个独立格子：
+-- vocab / reading / grammar / writing / survival / programmer
+-- ════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS user_progress (
+  user_name      TEXT PRIMARY KEY,
+  progress_data  JSONB DEFAULT '{}',
+  updated_at     TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE user_progress ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "allow_all_user_progress" ON user_progress;
+CREATE POLICY "allow_all_user_progress" ON user_progress FOR ALL USING (true) WITH CHECK (true);
 
 -- ════════════════════════════════════════
 -- 7. weekly_scores 加列（如尚未添加）
 -- ════════════════════════════════════════
 ALTER TABLE weekly_scores ADD COLUMN IF NOT EXISTS programmer_score INTEGER DEFAULT 0;
 ALTER TABLE weekly_scores ADD COLUMN IF NOT EXISTS grammar_score    INTEGER DEFAULT 0;
+ALTER TABLE weekly_scores ADD COLUMN IF NOT EXISTS writing_score    INTEGER DEFAULT 0;
+ALTER TABLE weekly_scores ADD COLUMN IF NOT EXISTS vocab_round      INTEGER DEFAULT 0;
 ALTER TABLE weekly_scores ADD COLUMN IF NOT EXISTS victory_msg     TEXT;
 
 -- ════════════════════════════════════════
@@ -106,13 +128,15 @@ CREATE TABLE IF NOT EXISTS speaking_scores (
 );
 
 -- ════════════════════════════════════════
--- 9. 码神累积榜（发音+口语，永久不清零）
+-- 9. 码神累积榜（发音+口语+程序员单词，永久不清零）
 -- ════════════════════════════════════════
 CREATE TABLE IF NOT EXISTS programmer_scores (
   user_name  TEXT PRIMARY KEY,
   score      INTEGER DEFAULT 0,
+  vocab_score INTEGER DEFAULT 0,
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+ALTER TABLE programmer_scores ADD COLUMN IF NOT EXISTS vocab_score INTEGER DEFAULT 0;
 
 -- ════════════════════════════════════════
 -- 10. 语法累积榜（永久不清零）
@@ -130,6 +154,52 @@ ALTER TABLE speaking_scores    ENABLE ROW LEVEL SECURITY;
 ALTER TABLE programmer_scores  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE grammar_scores     ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "allow_all_speaking_scores" ON speaking_scores;
 CREATE POLICY "allow_all_speaking_scores"    ON speaking_scores    FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "allow_all_programmer_scores" ON programmer_scores;
 CREATE POLICY "allow_all_programmer_scores"  ON programmer_scores  FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "allow_all_grammar_scores" ON grammar_scores;
 CREATE POLICY "allow_all_grammar_scores"     ON grammar_scores     FOR ALL USING (true) WITH CHECK (true);
+
+-- ════════════════════════════════════════
+-- 11. 写作累积榜（永久不清零）
+-- ════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS writing_scores (
+  user_name  TEXT PRIMARY KEY,
+  score      INTEGER DEFAULT 0,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE writing_scores ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "allow_all_writing_scores" ON writing_scores;
+CREATE POLICY "allow_all_writing_scores" ON writing_scores FOR ALL USING (true) WITH CHECK (true);
+
+-- ════════════════════════════════════════
+-- 12. 词汇速度挑战榜（按年级分榜）
+-- ════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS speed_scores (
+  grade      TEXT NOT NULL,
+  name       TEXT NOT NULL,
+  score      INTEGER DEFAULT 0,
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (grade, name)
+);
+
+ALTER TABLE speed_scores ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "allow_all_speed_scores" ON speed_scores;
+CREATE POLICY "allow_all_speed_scores" ON speed_scores FOR ALL USING (true) WITH CHECK (true);
+
+-- ════════════════════════════════════════
+-- 13. 公告栏
+-- teacher.html 使用 id='1'：论坛公告
+-- study.html 使用 id='global'：学习中心表扬公告
+-- ════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS bulletin (
+  id         TEXT PRIMARY KEY,
+  content   TEXT DEFAULT '',
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE bulletin ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "allow_all_bulletin" ON bulletin;
+CREATE POLICY "allow_all_bulletin" ON bulletin FOR ALL USING (true) WITH CHECK (true);
