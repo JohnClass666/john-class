@@ -436,18 +436,46 @@ var SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
 var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
 function sbHeaders(){return{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};}
 function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-async function sbUpsertScore(name,addPts){
-  if(!name)return;
+async function getWeeklySurvivalScore(name,ws){
+  var url=SB_URL+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+ws+'&select=survival_score&limit=1';
+  var r=await fetch(url,{headers:sbHeaders()});
+  if(!r.ok)throw new Error('weekly_scores read '+r.status);
+  var rows=await r.json();
+  return rows&&rows.length?(rows[0].survival_score||0):0;
+}
+async function writeWeeklySurvivalScore(name,ws,score){
+  var payload={user_name:name,week_start:ws,survival_score:score,updated_at:new Date().toISOString()};
+  var r=await fetch(SB_URL+'/rest/v1/weekly_scores?on_conflict=user_name,week_start',{
+    method:'POST',
+    headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates,return=minimal'}),
+    body:JSON.stringify(payload)
+  });
+  if(!r.ok)throw new Error('weekly_scores write '+r.status);
+}
+async function addWeeklySurvivalScore(name,addPts){
+  if(!name||name==='guest'||!addPts)return;
   var ws=getWeekStart();
-  var url=SB_URL+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+ws+'&select=id,survival_score';
-  try{var r=await fetch(url,{headers:sbHeaders()});var rows=r.ok?await r.json():[];}catch(e){return;}
-  var cur=0,eid=null;
-  if(rows&&rows.length){cur=rows[0].survival_score||0;eid=rows[0].id;}
-  var payload={user_name:name,week_start:ws,survival_score:cur+addPts,updated_at:new Date().toISOString()};
-  if(eid)payload.id=eid;
-  try{await fetch(SB_URL+'/rest/v1/weekly_scores',{method:'POST',headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),body:JSON.stringify(payload)});}catch(e){}
+  var cur=await getWeeklySurvivalScore(name,ws);
+  await writeWeeklySurvivalScore(name,ws,cur+addPts);
+}
+async function ensureWeeklySurvivalScore(name,expectedScore){
+  if(!name||name==='guest'||!expectedScore)return;
+  try{
+    var ws=getWeekStart();
+    var cur=await getWeeklySurvivalScore(name,ws);
+    if(cur<expectedScore)await writeWeeklySurvivalScore(name,ws,expectedScore);
+  }catch(e){console.warn('survival weekly score sync failed',e);}
+}
+async function sbUpsertScore(name,addPts){
+  if(!name||name==='guest'||!addPts)return;
+  try{
+    await addWeeklySurvivalScore(name,addPts);
+  }catch(e){
+    console.warn('survival weekly score upload failed, retrying',e);
+    setTimeout(function(){addWeeklySurvivalScore(name,addPts).catch(function(err){console.warn('survival weekly score retry failed',err);});},1200);
+  }
   // cumulative speaking_scores (permanent, never resets)
-  try{var spUrl=SB_URL+'/rest/v1/speaking_scores?user_name=eq.'+encodeURIComponent(name)+'&select=score';var spR=await fetch(spUrl,{headers:sbHeaders()});var spRows=spR.ok?await spR.json():[];var spCur=spRows&&spRows.length?spRows[0].score||0:0;await fetch(SB_URL+'/rest/v1/speaking_scores',{method:'POST',headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),body:JSON.stringify({user_name:name,score:spCur+addPts,updated_at:new Date().toISOString()})});}catch(e){}
+  try{var spUrl=SB_URL+'/rest/v1/speaking_scores?user_name=eq.'+encodeURIComponent(name)+'&select=score';var spR=await fetch(spUrl,{headers:sbHeaders()});var spRows=spR.ok?await spR.json():[];var spCur=spRows&&spRows.length?spRows[0].score||0:0;await fetch(SB_URL+'/rest/v1/speaking_scores?on_conflict=user_name',{method:'POST',headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),body:JSON.stringify({user_name:name,score:spCur+addPts,updated_at:new Date().toISOString()})});}catch(e){console.warn('survival cumulative score upload failed',e);}
 }
 
 // ═══════════════════════════════════════
@@ -765,14 +793,16 @@ function getDoneCount(){var p=getProgress(),c=0;Object.keys(p).forEach(function(
 // ── Progress sync & Leaderboard ──
 async function syncProgressToCloud(){
   if(!userName||userName==='guest')return;
-  try{var p=getProgress();var payload={user_name:userName,progress_data:JSON.stringify(p),updated_at:new Date().toISOString()};
+  try{var p={week_start:getWeekStart(),scenes:getProgress()};var payload={user_name:userName,progress_data:JSON.stringify(p),updated_at:new Date().toISOString()};
   await fetch(SB_URL+'/rest/v1/vocab_progress',{method:'POST',headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates','Content-Type':'application/json'}),body:JSON.stringify(payload)});}catch(e){}
 }
 async function restoreProgressFromCloud(){
   if(!userName||userName==='guest')return false;
   try{var r=await fetch(SB_URL+'/rest/v1/vocab_progress?user_name=eq.'+encodeURIComponent(userName)+'&select=progress_data&limit=1',{headers:sbHeaders()});
   if(!r.ok)return false;var rows=await r.json();if(!rows[0]||!rows[0].progress_data)return false;
-  var cloud=JSON.parse(rows[0].progress_data);var local=getProgress(),merged=false;
+  var raw=typeof rows[0].progress_data==='string'?JSON.parse(rows[0].progress_data):rows[0].progress_data;
+  if(!raw||raw.week_start!==getWeekStart()||!raw.scenes)return false;
+  var cloud=raw.scenes;var local=getProgress(),merged=false;
   for(var k in cloud){if(!local[k]||(cloud[k].done&&!local[k].done)){local[k]=cloud[k];merged=true;}}
   if(merged)saveProgress(local);return merged;}catch(e){return false;}
 }
@@ -1232,7 +1262,10 @@ function init(){
     document.getElementById('chatSafariNote').innerHTML='⚠️ 你的浏览器不支持语音识别，请使用 <strong>Safari</strong> 或 <strong>Chrome</strong> 打开';
   }
 
-  restoreProgressFromCloud().then(function(){buildTimeline();});
+  restoreProgressFromCloud().then(function(){
+    ensureWeeklySurvivalScore(userName,getTotalPts());
+    buildTimeline();
+  });
 
   document.getElementById('backToEntry').addEventListener('click',function(e){
     e.preventDefault();stopRecognition();showPane('p-entry');buildTimeline();
