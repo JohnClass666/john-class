@@ -204,7 +204,7 @@ function renderBars(rows, scoreFn){
     return '<div class="bar-row '+(i===0?'first':'')+'">'+
       '<div class="bar-meta">'+
         '<div class="bar-rank">'+(i+1)+'</div>'+
-        '<div class="bar-name">'+esc(r.user_name)+'</div>'+
+        '<div class="bar-name">'+esc(r.user_name)+(_curCat==='vocab'&&r.vocab_round>1?' <span style="font-size:10px;background:rgba(255,248,232,.25);padding:1px 6px;border-radius:99px;vertical-align:middle">'+['','一','二','三','四','五','六','七'][r.vocab_round]+'刷</span>':'')+'</div>'+
         '<div class="bar-score">'+v+'<span class="bar-score-u">分</span></div>'+
       '</div>'+
       '<div class="bar-fill" style="width:'+pct+'%"></div>'+
@@ -292,7 +292,7 @@ async function load(){
   document.getElementById('week-label').textContent = '本周（'+formatWeek(ws)+'）';
 
   try{
-    var r = await fetch(SB_URL+'/rest/v1/weekly_scores?week_start=eq.'+ws+'&select=user_name,reading_score,vocab_score,survival_score,programmer_score,grammar_score,writing_score,victory_msg&limit=100',
+    var r = await fetch(SB_URL+'/rest/v1/weekly_scores?week_start=eq.'+ws+'&select=user_name,reading_score,vocab_score,vocab_round,survival_score,programmer_score,grammar_score,writing_score,victory_msg&limit=100',
       {headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}});
     if(!r.ok) throw new Error('HTTP '+r.status);
     _data = await r.json();
