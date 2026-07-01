@@ -3699,7 +3699,8 @@ const _sb = {
     {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}});
    var vm = lsGet('jc_victory_msg')||'';
    var finalVocab = weekScore||0;
-   var wkPayload={user_name:name, week_start:ws, vocab_score:finalVocab, victory_msg:vm, updated_at:new Date().toISOString()};
+	   var rnd=gd().pass||0; if(rnd===0&&gd().pass2===true)rnd=1;
+	   var wkPayload={user_name:name, week_start:ws, vocab_score:finalVocab, vocab_round:rnd, victory_msg:vm, updated_at:new Date().toISOString()};
    if(wkCheck.ok){
     var wkRows=await wkCheck.json();
     if(wkRows&&wkRows.length>0){
@@ -3904,18 +3905,33 @@ function bindSpeak(scope,text){const b=scope.querySelector("#spk");if(b)b.onclic
 
 /* ============ ROUTER ============ */
 const app=document.getElementById("app");
-function go(s){render(s);}
-let _curScreenName=null,_firstRender=true;
-function render(s){window.scrollTo(0,0);_curScreenName=(typeof s==="string")?s:s.name;
- var state=typeof s==="string"?{screen:s}:{screen:s.name,arg:s.arg};
- if(_firstRender){_firstRender=false;history.replaceState(state,'','');}
- else history.pushState(state,'','');
- if(typeof s==="string")SCREENS[s]();else SCREENS[s.name](s.arg);}
-window.addEventListener('popstate',function(e){
- if(e.state&&e.state.screen){window.scrollTo(0,0);_curScreenName=e.state.screen;
-  if(e.state.arg!==undefined)SCREENS[e.state.screen](e.state.arg);
-  else SCREENS[e.state.screen]();}
-});
+let _curScreenName=null;
+function _renderScreen(s){
+  window.scrollTo(0,0);
+  _curScreenName=typeof s==="string"?s:s.name;
+  if(typeof s==="string")SCREENS[s]();
+  else SCREENS[s.name](s.arg);
+}
+function go(s){
+  var name=typeof s==="string"?s:s.name;
+  var arg=typeof s==="object"&&s.arg!==undefined?s.arg:undefined;
+  var hash=arg!==undefined?"#"+name+"/"+encodeURIComponent(arg):"#"+name;
+  if(decodeURIComponent(location.hash)===hash){_renderScreen(s);}
+  else{location.hash=hash;}
+}
+function _handleHash(){
+  var h=decodeURIComponent(location.hash.slice(1));
+  if(!h){_renderScreen("home");return;}
+  var idx=h.indexOf("/");
+  var name=idx>=0?h.slice(0,idx):h;
+  var rawArg=idx>=0?h.slice(idx+1):undefined;
+  var arg=rawArg!==undefined?(isNaN(rawArg)?rawArg:Number(rawArg)):undefined;
+  if(SCREENS[name]){
+    if(arg!==undefined)_renderScreen({name:name,arg:arg});
+    else _renderScreen(name);
+  }else{_renderScreen("home");}
+}
+window.addEventListener("hashchange",_handleHash);
 
 /* ============ HELPERS ============ */
 function levelOf(p){let l=LEVELS[0];for(const x of LEVELS)if(p>=x.min)l=x;return l;}
@@ -4261,17 +4277,20 @@ function runSpellingQuiz(u,pool,i,acc,mode){
 }
 
 function confirmPass2(){
+ const ROUND_NAMES=['一','二','三','四','五','六','七'];
+ var cur=gd().pass||0; if(cur===0&&gd().pass2===true)cur=1;
+ var next=cur+1; if(next>7)return;
  const m=document.getElementById("modal");
  m.innerHTML=`<div class="box">
-   <div class="rk">二刷模式</div>
+   <div class="rk">第${ROUND_NAMES[next-1]}刷</div>
    <div class="ring" style="font-size:32px;letter-spacing:0;animation:none">🔄</div>
-   <h2 style="font-size:19px;font-weight:600;margin:10px 0 6px;color:var(--ink)">第二遍比第一遍更重要</h2>
+   <h2 style="font-size:19px;font-weight:600;margin:10px 0 6px;color:var(--ink)">第${next}遍比上一遍更扎实</h2>
    <p style="font-size:13px;color:var(--soft);line-height:1.7;text-align:left">
      ✅ <b>全部单元</b>的闯关进度重置，重新开始<br>
      ✅ 已获得的<b>积分全部保留</b><br>
-     ✅ 解锁<b>拼写挑战模式</b>，比一刷获得更多积分
+     ${next===2?`✅ 解锁<b>拼写挑战模式</b>，比一刷获得更多积分`:`✅ 继续巩固，词汇量更扎实`}
    </p>
-   <button class="btn accent" id="p2ok">继续，开始二刷！</button>
+   <button class="btn accent" id="p2ok">继续，开始第${ROUND_NAMES[next-1]}刷！</button>
    <button class="btn line" id="p2cancel" style="margin-top:8px">再想想</button>
  </div>`;
  m.classList.add("show");
@@ -4279,7 +4298,7 @@ function confirmPass2(){
  m.querySelector("#p2ok").onclick=()=>{
    m.classList.remove("show");sfx.tap();
    UNITS.forEach(u=>{const st=unitStage(u.n);st.R=false;st.W=false;st.L=false;st.Rn=0;st.Wn=0;st.Ln=0;});
-   gd().pass2=true;save();go("home");
+   gd().pass=next;delete gd().pass2;save();go("home");
  };
 }
 
@@ -4675,8 +4694,9 @@ SCREENS.home=function(){clear();checkGodMaintained();
    return `<div class="jc-d${done?' jcd-done':prog?' jcd-prog':''}" data-u="${u.n}"></div>`;
  }).join('');
  // Bottom bar state
- const p2Cls='jc-key '+(allUnitsCleared()||gd().pass2?'jc-key-blue':'jc-key-dim');
- const p2Txt=gd().pass2?'二刷进行中':(allUnitsCleared()?'开始二刷':'二刷模式');
+ var passN=gd().pass||0; if(passN===0&&gd().pass2===true)passN=1;
+ const p2Cls='jc-key '+(allUnitsCleared()&&passN<7||passN>=1?'jc-key-blue':'jc-key-dim');
+ const p2Txt=passN>=1?(allUnitsCleared()&&passN<7?`开始${['二','三','四','五','六','七'][passN-1]}刷`:`${['一','二','三','四','五','六','七'][passN-1]}刷进行中`):(allUnitsCleared()?'开始二刷':'多刷模式');
  const dailyCls='jc-key '+(dailyDone()?'':'monsterUnlocked()'?'jc-key-red':'jc-key-amber');
  const d=document.createElement('div');d.className='screen active';
  d.innerHTML=`
@@ -4728,7 +4748,7 @@ SCREENS.home=function(){clear();checkGodMaintained();
  d.querySelector('#jk-medalbadge').onclick=()=>{sfx.tap();go('milestones');};
  d.querySelector('#jk-lb').onclick=()=>{sfx.tap();go('leaderboard');};
  d.querySelector('#jk-rc').onclick=()=>{sfx.tap();go('reviewCenter');};
- d.querySelector('#jk-p2').onclick=()=>{if(gd().pass2)return;if(!allUnitsCleared()){sfx.wrong();return;}sfx.tap();confirmPass2();};
+ d.querySelector('#jk-p2').onclick=()=>{var p=gd().pass||0;if(p>=7)return;if(!allUnitsCleared()){sfx.wrong();return;}sfx.tap();confirmPass2();};
  d.querySelector('#jk-eb').onclick=()=>{if(due){sfx.tap();go('review');}};
  d.querySelector('#jk-daily').onclick=()=>{if(!dailyDone()){sfx.tap();monsterUnlocked()?go('monster'):go('daily');}};
  d.querySelector('#jk-sp').onclick=()=>{sfx.tap();go('speed');};
@@ -4761,10 +4781,10 @@ SCREENS.unit=function(n){clear();const u=UNITS.find(x=>x.n===n);const st=unitSta
     <div class="stage-stars">${stagesArr.map(s=>`<span class="star ${s.done?'lit':''}">●</span>`).join("")}</div>
     <div class="stage-cap">${allDone?"🏆 本单元已全部征服！":`闯过 ${stageCount(u)} / ${stageTotal()} 关`}</div>
   </div>
-  ${gd().pass2?`<div class="pass2-banner">🔄 <b>二刷模式</b> · 开启拼写挑战可获得比一刷更多积分</div>`:''}
-  ${gd().pass2?`<div class="spell-toggle-row">
+  ${(gd().pass>=1||gd().pass2)?`<div class="pass2-banner">🔄 <b>多刷模式</b> · 开启拼写挑战可获得更多积分</div>`:''}
+  ${(gd().pass>=1||gd().pass2)?`<div class="spell-toggle-row">
     <div class="spell-toggle-label">拼写挑战模式
-      <span>二刷专属 · 开启后改为键盘输入答案</span>
+      <span>多刷专属 · 开启后改为键盘输入答案</span>
       <div class="spell-toggle-pts">开启 = 阅读+3分 写作+4分 听力+4分</div>
     </div>
     <label class="spell-switch">
@@ -4817,7 +4837,7 @@ function unitOf(w){return UNITS.find(u=>w.id>=u.lo&&w.id<=u.hi);}
 /* ---------- 第一关 阅读：看英文选中文（含短语） ---------- */
 SCREENS.reading=function(n){
  const u=UNITS.find(x=>x.n===n);
- if(spellModeOn()&&gd().pass2){
+ if(spellModeOn()&&(gd().pass>=1||gd().pass2)){
    return runSpellingQuiz(u,shuffle(quizPool(u).slice()),0,{got:0,gain:0,combo:0,maxCombo:0,wrong:0},"R");
  }
  const sv=loadQP(n,'R');
@@ -4860,7 +4880,7 @@ function runReading(u,pool,i,acc){
 /* ---------- 第二关 写作：看中文选英文（仅单词） ---------- */
 SCREENS.writing=function(n){
  const u=UNITS.find(x=>x.n===n);
- if(spellModeOn()&&gd().pass2){
+ if(spellModeOn()&&(gd().pass>=1||gd().pass2)){
    return runSpellingQuiz(u,shuffle(writePool(u).slice()),0,{got:0,gain:0,combo:0,maxCombo:0,wrong:0},"W");
  }
  const sv=loadQP(n,'W');
@@ -4902,7 +4922,7 @@ function runWriting(u,pool,i,acc){
 /* ---------- 第三关 听力：听发音选中文（仅单词，6选1） ---------- */
 SCREENS.listening=function(n){
  const u=UNITS.find(x=>x.n===n);
- if(spellModeOn()&&gd().pass2){
+ if(spellModeOn()&&(gd().pass>=1||gd().pass2)){
    return runSpellingQuiz(u,shuffle(writePool(u).slice()),0,{got:0,gain:0,combo:0,maxCombo:0,wrong:0},"L");
  }
  const sv=loadQP(n,'L');
@@ -6040,8 +6060,9 @@ if(!S.name){
   // ★ 性能关键：先用本地存档（localStorage）立即渲染首屏，不等待任何网络请求。
   // 云端同步改为后台静默任务，完成后如果数据确实有更新，才重新渲染一次当前页面
   // （SCREENS.* 都是"读取 S 最新状态来重建 DOM"的纯函数式写法，重新调用 go() 等价于局部刷新）。
-  if(!S.grade||!gradeById(S.grade)||!gradeById(S.grade).ready) go("grade");
-  else go("home");
+  if(location.hash&&location.hash.length>1){_handleHash();}
+  else if(!S.grade||!gradeById(S.grade)||!gradeById(S.grade).ready){go("grade");}
+  else{go("home");}
 
   // 后台静默云端同步：不阻塞、不显示加载态，完成后悄悄刷新
   (async()=>{
