@@ -901,6 +901,7 @@ function save(){
   if(!username)return;
   localStorage.setItem('jc_writing_'+username,JSON.stringify({
     correct:[...prog.correct],errors:prog.errors,totalScore:prog.totalScore}));
+  syncWritingProgress();
 }
 function load(){
   if(!username)return;
@@ -932,30 +933,74 @@ function dispAns(ans){
 
 /* ── SUPABASE SYNC ── */
 function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function parseCloudProgress(raw){if(!raw)return {};if(typeof raw==='string'){try{return JSON.parse(raw)||{};}catch(e){return {};}}return raw||{};}
+function writingProgressPayload(){return{correct:[...prog.correct],errors:prog.errors,totalScore:prog.totalScore,updated_at:new Date().toISOString()};}
+async function fetchUserProgress(){
+  try{var r=await fetch(`${SB}/rest/v1/user_progress?user_name=eq.${encodeURIComponent(username)}&select=progress_data&limit=1`,{headers:SH});
+  var rows=r.ok?await r.json():[];return rows&&rows[0]?parseCloudProgress(rows[0].progress_data):{};}catch(e){return {};}
+}
+async function syncWritingProgress(){
+  if(!username)return;
+  try{var root=await fetchUserProgress();root.writing=writingProgressPayload();
+  await fetch(`${SB}/rest/v1/user_progress?on_conflict=user_name`,{method:'POST',
+    headers:{...SH,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'},
+    body:JSON.stringify({user_name:username,progress_data:root,updated_at:new Date().toISOString()})});}catch(e){}
+}
+async function restoreWritingProgress(){
+  if(!username)return;
+  try{var root=await fetchUserProgress();var w=root.writing;if(!w)return;
+  var localScore=prog.totalScore||0,cloudScore=w.totalScore||0;
+  if(cloudScore>=localScore){
+    prog.correct=new Set(w.correct||[]);
+    prog.errors=w.errors||[];
+    prog.totalScore=cloudScore;
+    localStorage.setItem('jc_writing_'+username,JSON.stringify({correct:[...prog.correct],errors:prog.errors,totalScore:prog.totalScore}));
+    showHome();
+  }else syncWritingProgress();}catch(e){}
+}
+function writingWeekKey(){return 'jc_writing_week_'+username+'_'+getWeekStart();}
+function getWritingWeekScore(){return parseInt(localStorage.getItem(writingWeekKey())||'0')||0;}
+function addWritingWeekScore(n){localStorage.setItem(writingWeekKey(),getWritingWeekScore()+n);}
 async function syncScore(){
   if(!username)return;
+  addWritingWeekScore(15);
   try{
     var ws=getWeekStart();
     var r=await fetch(`${SB}/rest/v1/weekly_scores?user_name=eq.${encodeURIComponent(username)}&week_start=eq.${ws}&select=id,writing_score`,{headers:SH});
     var rows=r.ok?await r.json():[];
     var cur=0,eid=null;
     if(rows&&rows.length){cur=rows[0].writing_score||0;eid=rows[0].id;}
-    var payload={user_name:username,week_start:ws,writing_score:cur+15,updated_at:new Date().toISOString()};
+    var payload={user_name:username,week_start:ws,writing_score:Math.max(cur,getWritingWeekScore()),updated_at:new Date().toISOString()};
     if(eid)payload.id=eid;
     await fetch(`${SB}/rest/v1/weekly_scores`,{method:'POST',
       headers:{...SH,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'},
       body:JSON.stringify(payload)});
   }catch(e){}
+  syncWritingTotal();
+}
+async function syncWritingTotal(){
+  if(!username)return;
+  try{
+    var r=await fetch(`${SB}/rest/v1/writing_scores?user_name=eq.${encodeURIComponent(username)}&select=score&limit=1`,{headers:SH});
+    var rows=r.ok?await r.json():[];
+    var cur=rows&&rows.length?rows[0].score||0:0;
+    await fetch(`${SB}/rest/v1/writing_scores?on_conflict=user_name`,{method:'POST',
+      headers:{...SH,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'},
+      body:JSON.stringify({user_name:username,score:Math.max(cur,prog.totalScore||0),updated_at:new Date().toISOString()})});
+  }catch(e){}
 }
 async function startupSync(){
-  if(!username||!prog.totalScore)return;
+  if(!username)return;
+  syncWritingTotal();
+  var want=getWritingWeekScore();
+  if(!want)return;
   try{
     var ws=getWeekStart();
-    var r=await fetch(`${SB}/rest/v1/weekly_scores?user_name=eq.${encodeURIComponent(username)}&week_start=eq.${ws}&select=writing_score`,{headers:SH});
+    var r=await fetch(`${SB}/rest/v1/weekly_scores?user_name=eq.${encodeURIComponent(username)}&week_start=eq.${ws}&select=id,writing_score`,{headers:SH});
     var rows=r.ok?await r.json():[];
-    if(!rows||!rows.length||!(rows[0].writing_score>0)){
+    if(!rows||!rows.length||(rows[0].writing_score||0)<want){
       var eid=rows&&rows.length?rows[0].id:null;
-      var payload={user_name:username,week_start:ws,writing_score:prog.totalScore,updated_at:new Date().toISOString()};
+      var payload={user_name:username,week_start:ws,writing_score:want,updated_at:new Date().toISOString()};
       if(eid)payload.id=eid;
       await fetch(`${SB}/rest/v1/weekly_scores`,{method:'POST',
         headers:{...SH,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'},
@@ -967,9 +1012,9 @@ async function loadLB(){
   const w=document.getElementById('lb-wrap');
   w.innerHTML='<div class="empty"><div class="empty-txt">加载中…</div></div>';
   try{
-    const r=await fetch(`${SB}/rest/v1/weekly_scores?select=user_name,writing_score&order=writing_score.desc&limit=20`,{headers:SH});
+    const r=await fetch(`${SB}/rest/v1/writing_scores?select=user_name,score&order=score.desc&limit=20`,{headers:SH});
     const d=await r.json();
-    const valid=(d||[]).filter(row=>(row.writing_score||0)>0);
+    const valid=(d||[]).filter(row=>(row.score||0)>0);
     if(!valid.length){
       w.innerHTML='<div class="empty"><div class="empty-icon">○</div><div class="empty-txt">还没人上榜，抢第一！</div></div>';
       return;
@@ -978,7 +1023,7 @@ async function loadLB(){
     w.innerHTML=valid.map((row,i)=>`<div class="lb-row${row.user_name===username?' me':''}">
       <div class="lb-rank ${rc[i]||''}">${i+1}</div>
       <span class="lb-name">${esc(row.user_name)}</span>
-      <span class="lb-score">${row.writing_score||0}</span></div>`).join('');
+      <span class="lb-score">${row.score||0}</span></div>`).join('');
   }catch(e){w.innerHTML='<div class="empty"><div class="empty-txt">加载失败，请重试</div></div>';}
 }
 
@@ -1314,6 +1359,7 @@ if(!username){
   }
 }
 load();showHome();
+restoreWritingProgress();
 if(!sessionStorage.getItem('intro_seen'))
   document.getElementById('intro-ov').classList.add('show');
 startupSync();
