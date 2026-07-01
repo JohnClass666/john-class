@@ -103,12 +103,13 @@ async function checkReturning(name){
       Promise.all([
         fetch(SB_URL+'/rest/v1/leaderboard?name=eq.'+encodeURIComponent(name)+'&select=score&limit=1',{headers:sbH()}),
         fetch(SB_URL+'/rest/v1/reading_progress?user_name=eq.'+encodeURIComponent(name)+'&select=total_completed&limit=1',{headers:sbH()}),
-        fetch(SB_URL+'/rest/v1/vocab_progress?user_name=eq.'+encodeURIComponent(name)+'&select=progress_data&limit=1',{headers:sbH()})
+        fetch(SB_URL+'/rest/v1/vocab_progress?user_name=eq.'+encodeURIComponent(name)+'&select=progress_data&limit=1',{headers:sbH()}),
+        fetch(SB_URL+'/rest/v1/user_progress?user_name=eq.'+encodeURIComponent(name)+'&select=progress_data&limit=1',{headers:sbH()})
       ]),
       new Promise(function(_,reject){setTimeout(function(){reject(new Error('timeout'));},4000);})
     ]);
     var data = await Promise.all(resp.map(function(r){return r.ok?r.json():Promise.resolve([]);}));
-    return (data[0].length>0&&data[0][0].score>0)||(data[1].length>0&&data[1][0].total_completed>0)||(data[2].length>0&&data[2][0].progress_data);
+    return (data[0].length>0&&data[0][0].score>0)||(data[1].length>0&&data[1][0].total_completed>0)||(data[2].length>0&&data[2][0].progress_data)||(data[3].length>0&&data[3][0].progress_data);
   }catch(e){return false;}
 }
 
@@ -117,7 +118,8 @@ async function pullAndRestore(name){
   try{
     var resp = await Promise.all([
       fetch(SB_URL+'/rest/v1/reading_progress?user_name=eq.'+encodeURIComponent(name)+'&select=*&limit=1',{headers:sbH()}),
-      fetch(SB_URL+'/rest/v1/vocab_progress?user_name=eq.'+encodeURIComponent(name)+'&select=progress_data&limit=1',{headers:sbH()})
+      fetch(SB_URL+'/rest/v1/vocab_progress?user_name=eq.'+encodeURIComponent(name)+'&select=progress_data&limit=1',{headers:sbH()}),
+      fetch(SB_URL+'/rest/v1/user_progress?user_name=eq.'+encodeURIComponent(name)+'&select=progress_data&limit=1',{headers:sbH()})
     ]);
     var data = await Promise.all(resp.map(function(r){return r.ok?r.json():Promise.resolve([]);}));
     if(data[0].length>0){
@@ -126,6 +128,7 @@ async function pullAndRestore(name){
       if(rp.total_completed)lsSet('jc_reading_total',rp.total_completed);
     }
     if(data[1].length>0&&data[1][0].progress_data)lsSet('jc_vocab_progress_sync',JSON.stringify(data[1][0].progress_data));
+    if(data[2].length>0&&data[2][0].progress_data)lsSet('jc_user_progress_sync',JSON.stringify(data[2][0].progress_data));
     lsSet('jc_synced',name);
     return true;
   }catch(e){return false;}
