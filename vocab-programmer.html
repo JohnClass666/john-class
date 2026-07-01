@@ -868,14 +868,24 @@ let G={pool:[],cur:0,score:0,combo:0,maxCombo:0,got:0,wrong:0,
 let retryIdx=-1;
 
 // ── STORAGE ──
-const pts=()=>parseInt(localStorage.getItem('jc_prog_vocab_pts')||'0');
-const plays=()=>parseInt(localStorage.getItem('jc_prog_vocab_plays')||'0');
+function progName(){return localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name')||'';}
+function namedKey(k){var n=progName();return n?k+'_'+n:k;}
+const pts=()=>parseInt(localStorage.getItem(namedKey('jc_prog_vocab_pts'))||localStorage.getItem('jc_prog_vocab_pts')||'0');
+const plays=()=>parseInt(localStorage.getItem(namedKey('jc_prog_vocab_plays'))||localStorage.getItem('jc_prog_vocab_plays')||'0');
 const levelOf=p=>{let lv=LEVELS[0];for(const l of LEVELS)if(p>=l.min)lv=l;return lv;};
 const nextLv=p=>LEVELS.find(l=>l.min>p)||null;
-const getErrors=()=>JSON.parse(localStorage.getItem('jc_prog_errors')||'[]');
-const saveErrors=arr=>localStorage.setItem('jc_prog_errors',JSON.stringify(arr));
-const todayKey=()=>'jc_prog_daily_'+(function(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+const getErrors=()=>JSON.parse(localStorage.getItem(namedKey('jc_prog_errors'))||localStorage.getItem('jc_prog_errors')||'[]');
+const saveErrors=arr=>{localStorage.setItem(namedKey('jc_prog_errors'),JSON.stringify(arr));syncVocabProgress();};
+const todayKey=()=>namedKey('jc_prog_daily_'+(function(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})());
 const dailyDone=()=>!!localStorage.getItem(todayKey());
+function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function getProgWeekKey(){return 'jc_programmer_week_'+getWeekStart();}
+function getProgWeekScore(){return parseInt(localStorage.getItem(getProgWeekKey())||'0')||0;}
+function addProgWeekScore(n){localStorage.setItem(getProgWeekKey(),getProgWeekScore()+n);}
+function parseCloudProgress(raw){if(!raw)return {};if(typeof raw==='string'){try{return JSON.parse(raw)||{};}catch(e){return {};}}return raw||{};}
+async function fetchUserProgress(nm){try{var r=await fetch(SB+'/rest/v1/user_progress?user_name=eq.'+encodeURIComponent(nm)+'&select=progress_data&limit=1',{headers:SH});var rows=r.ok?await r.json():[];return rows&&rows[0]?parseCloudProgress(rows[0].progress_data):{};}catch(e){return {};}}
+async function syncVocabProgress(){const nm=progName();if(!nm)return;try{var root=await fetchUserProgress(nm);if(!root.programmer)root.programmer={};root.programmer.vocab={pts:pts(),plays:plays(),errors:getErrors(),updated_at:new Date().toISOString()};await fetch(SB+'/rest/v1/user_progress?on_conflict=user_name',{method:'POST',headers:{...SH,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_name:nm,progress_data:root,updated_at:new Date().toISOString()})});}catch(e){}}
+async function restoreVocabProgress(){const nm=progName();if(!nm)return;try{var root=await fetchUserProgress(nm);var v=root.programmer&&root.programmer.vocab;if(!v)return;if((v.pts||0)>=pts()){localStorage.setItem(namedKey('jc_prog_vocab_pts'),v.pts||0);localStorage.setItem(namedKey('jc_prog_vocab_plays'),v.plays||0);localStorage.setItem(namedKey('jc_prog_errors'),JSON.stringify(v.errors||[]));buildHome();}else syncVocabProgress();}catch(e){}}
 
 // ── AUDIO ──
 let ac;
@@ -912,19 +922,25 @@ async function syncScore(add){
   const nm=localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name');
   if(!nm||add<=0)return;
   const nv=pts()+add;
-  localStorage.setItem('jc_prog_vocab_pts',nv);
-  localStorage.setItem('jc_prog_vocab_plays',plays()+1);
-  const spk=parseInt(localStorage.getItem('jc_prog_speak_pts')||'0');
-  const oral=parseInt(localStorage.getItem('jc_prog_oral_pts')||'0');
-  try{await fetch(SB+'/rest/v1/programmer_scores',{method:'POST',
+  localStorage.setItem(namedKey('jc_prog_vocab_pts'),nv);
+  localStorage.setItem(namedKey('jc_prog_vocab_plays'),plays()+1);
+  syncVocabProgress();
+  addProgWeekScore(add);
+  const spk=parseInt(localStorage.getItem(namedKey('jc_prog_speak_pts'))||localStorage.getItem('jc_prog_speak_pts')||'0');
+  const oral=parseInt(localStorage.getItem(namedKey('jc_prog_oral_pts'))||localStorage.getItem('jc_prog_oral_pts')||'0');
+  try{
+    var cr=await fetch(SB+'/rest/v1/programmer_scores?user_name=eq.'+encodeURIComponent(nm)+'&select=score,vocab_score&limit=1',{headers:SH});
+    var rows=cr.ok?await cr.json():[],cur=rows&&rows.length?rows[0]:{};
+    await fetch(SB+'/rest/v1/programmer_scores?on_conflict=user_name',{method:'POST',
     headers:{...SH,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},
-    body:JSON.stringify({user_name:nm,score:spk+oral+nv,vocab_score:nv})});}catch(e){}
+    body:JSON.stringify({user_name:nm,score:Math.max(cur.score||0,spk+oral+nv),vocab_score:Math.max(cur.vocab_score||0,nv),updated_at:new Date().toISOString()})});
+  }catch(e){}
   // weekly_scores
-  try{var d=new Date();d.setDate(d.getDate()-d.getDay());var ws=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  try{var ws=getWeekStart();
   var wr=await fetch(SB+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(nm)+'&week_start=eq.'+ws+'&select=id,programmer_score',{headers:SH});
   var wRows=wr.ok?await wr.json():[];var wCur=0,wEid=null;
   if(wRows&&wRows.length){wCur=wRows[0].programmer_score||0;wEid=wRows[0].id;}
-  var wPayload={user_name:nm,week_start:ws,programmer_score:wCur+add,updated_at:new Date().toISOString()};
+  var wPayload={user_name:nm,week_start:ws,programmer_score:Math.max(wCur+add,getProgWeekScore()),updated_at:new Date().toISOString()};
   if(wEid)wPayload.id=wEid;
   await fetch(SB+'/rest/v1/weekly_scores',{method:'POST',headers:{...SH,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},body:JSON.stringify(wPayload)});}catch(e){}
 }
@@ -1278,6 +1294,7 @@ function showLB(){showV('v-lb');loadLB();}
 
 // ── INIT ──
 buildHome();
+restoreVocabProgress();
 </script>
 </body>
 </html>
