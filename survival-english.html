@@ -379,7 +379,7 @@ body{font-family:var(--fnt);color:var(--ink);
       <div class="board-overlay" id="boardOverlay" onclick="hideSurvivalBoard()">
         <div class="board-popup" onclick="event.stopPropagation()">
           <div class="board-title">🏆 生存英语排行榜</div>
-          <div class="board-sub">本周积分排名</div>
+          <div class="board-sub">永久累计排名</div>
           <div id="boardList"></div>
           <button class="btn" onclick="hideSurvivalBoard()" style="margin-top:16px">关闭</button>
         </div>
@@ -834,17 +834,17 @@ function showSurvivalBoard(){document.getElementById('boardOverlay').classList.a
 function hideSurvivalBoard(){document.getElementById('boardOverlay').classList.remove('on');}
 async function loadSurvivalBoard(){
   var el=document.getElementById('boardList');el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:16px">加载中...</div>';
-  try{var ws=getWeekStart();
-  var r=await fetch(SB_URL+'/rest/v1/weekly_scores?week_start=eq.'+ws+'&select=user_name,survival_score&order=survival_score.desc&limit=10',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-  if(!r.ok){el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:16px">本周还没有人上榜</div>';return;}
+  try{
+  var r=await fetch(SB_URL+'/rest/v1/speaking_scores?select=user_name,score&order=score.desc&limit=10',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+  if(!r.ok){el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:16px">还没有人上榜</div>';return;}
   var rows=await r.json();
-  var filtered=rows.filter(function(r){return(r.survival_score||0)>0;});
-  if(!filtered.length){el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:16px">本周还没有人上榜，完成场景来当第一个！</div>';return;}
+  var filtered=rows.filter(function(r){return(r.score||0)>0;});
+  if(!filtered.length){el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:16px">还没有人上榜，完成场景来当第一个！</div>';return;}
   var medals=['🥇','🥈','🥉'];
   el.innerHTML=filtered.map(function(r,i){
     var isMe=r.user_name===userName;
     var rc=i<3?'board-rank-'+(i+1):'';
-    return '<div class="board-item'+(isMe?' board-item-you':'')+'"><div class="board-rank-num '+rc+'">'+(i<3?medals[i]:(i+1))+'</div><div class="board-item-name">'+escHTML(r.user_name)+(isMe?' (你)':'')+'</div><div class="board-item-pts">'+(r.survival_score||0)+'分</div></div>';
+    return '<div class="board-item'+(isMe?' board-item-you':'')+'"><div class="board-rank-num '+rc+'">'+(i<3?medals[i]:(i+1))+'</div><div class="board-item-name">'+escHTML(r.user_name)+(isMe?' (你)':'')+'</div><div class="board-item-pts">'+(r.score||0)+'分</div></div>';
   }).join('');}catch(e){el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:16px">加载中，请重试</div>';}
 }
 
