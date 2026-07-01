@@ -783,28 +783,52 @@ var dialogueResults=[],isRecording=false,recognition=null,recTimer=null;
 var pendingFinal='',PASS_THRESHOLD=80,SCENE_PTS=500;
 
 function getProgKey(){return 'jc_survival_prog_'+getWeekStart();}
+function getAllProgKey(){return 'jc_survival_all_'+userName;}
 function getProgress(){try{var r=localStorage.getItem(getProgKey());return r?JSON.parse(r):{};}catch(e){return{};}}
 function saveProgress(p){try{localStorage.setItem(getProgKey(),JSON.stringify(p));}catch(e){}}
-function isSceneDone(id){var sp=getProgress()[id];return sp&&sp.done;}
-function getSceneAvg(id){var sp=getProgress()[id];return sp?sp.avg:null;}
+function getAllProgress(){try{var r=localStorage.getItem(getAllProgKey());return r?JSON.parse(r):getProgress();}catch(e){return getProgress();}}
+function saveAllProgress(p){try{localStorage.setItem(getAllProgKey(),JSON.stringify(p));}catch(e){}}
+function isSceneDone(id){var sp=getAllProgress()[id];return sp&&sp.done;}
+function getSceneAvg(id){var sp=getAllProgress()[id];return sp?sp.avg:null;}
 function getTotalPts(){var p=getProgress(),t=0;Object.keys(p).forEach(function(k){if(p[k].done)t+=SCENE_PTS;});return t;}
-function getDoneCount(){var p=getProgress(),c=0;Object.keys(p).forEach(function(k){if(p[k].done)c++;});return c;}
+function getDoneCount(){var p=getAllProgress(),c=0;Object.keys(p).forEach(function(k){if(p[k].done)c++;});return c;}
 
 // ── Progress sync & Leaderboard ──
+function parseCloudProgress(raw){
+  if(!raw)return {};
+  if(typeof raw==='string'){try{return JSON.parse(raw)||{};}catch(e){return {};}}
+  return raw||{};
+}
 async function syncProgressToCloud(){
   if(!userName||userName==='guest')return;
-  try{var p={week_start:getWeekStart(),scenes:getProgress()};var payload={user_name:userName,progress_data:JSON.stringify(p),updated_at:new Date().toISOString()};
-  await fetch(SB_URL+'/rest/v1/vocab_progress',{method:'POST',headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates','Content-Type':'application/json'}),body:JSON.stringify(payload)});}catch(e){}
+  try{
+    var root={};
+    var old=await fetch(SB_URL+'/rest/v1/user_progress?user_name=eq.'+encodeURIComponent(userName)+'&select=progress_data&limit=1',{headers:sbHeaders()});
+    if(old.ok){var rows=await old.json();if(rows[0]&&rows[0].progress_data)root=parseCloudProgress(rows[0].progress_data);}
+    root.survival={week_start:getWeekStart(),week_scenes:getProgress(),scenes:getAllProgress(),updated_at:new Date().toISOString()};
+    var payload={user_name:userName,progress_data:root,updated_at:new Date().toISOString()};
+    await fetch(SB_URL+'/rest/v1/user_progress?on_conflict=user_name',{method:'POST',headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates','Content-Type':'application/json'}),body:JSON.stringify(payload)});
+  }catch(e){}
 }
 async function restoreProgressFromCloud(){
   if(!userName||userName==='guest')return false;
-  try{var r=await fetch(SB_URL+'/rest/v1/vocab_progress?user_name=eq.'+encodeURIComponent(userName)+'&select=progress_data&limit=1',{headers:sbHeaders()});
-  if(!r.ok)return false;var rows=await r.json();if(!rows[0]||!rows[0].progress_data)return false;
-  var raw=typeof rows[0].progress_data==='string'?JSON.parse(rows[0].progress_data):rows[0].progress_data;
-  if(!raw||raw.week_start!==getWeekStart()||!raw.scenes)return false;
-  var cloud=raw.scenes;var local=getProgress(),merged=false;
+  var raw=null;
+  try{var r=await fetch(SB_URL+'/rest/v1/user_progress?user_name=eq.'+encodeURIComponent(userName)+'&select=progress_data&limit=1',{headers:sbHeaders()});
+  if(r.ok){var rows=await r.json();if(rows[0]&&rows[0].progress_data)raw=parseCloudProgress(rows[0].progress_data).survival;}}catch(e){}
+  if(!raw){
+    try{var old=await fetch(SB_URL+'/rest/v1/vocab_progress?user_name=eq.'+encodeURIComponent(userName)+'&select=progress_data&limit=1',{headers:sbHeaders()});
+    if(old.ok){var oldRows=await old.json();if(oldRows[0]&&oldRows[0].progress_data){var oldRaw=parseCloudProgress(oldRows[0].progress_data);raw=oldRaw.survival||oldRaw;}}}catch(e){}
+  }
+  if(!raw||!raw.scenes)return false;
+  var cloud=raw.scenes,local=getAllProgress(),merged=false;
   for(var k in cloud){if(!local[k]||(cloud[k].done&&!local[k].done)){local[k]=cloud[k];merged=true;}}
-  if(merged)saveProgress(local);return merged;}catch(e){return false;}
+  if(merged)saveAllProgress(local);
+  if(raw.week_start===getWeekStart()&&raw.week_scenes){
+    var wc=raw.week_scenes,wl=getProgress(),wm=false;
+    for(var wk in wc){if(!wl[wk]||(wc[wk].done&&!wl[wk].done)){wl[wk]=wc[wk];wm=true;}}
+    if(wm)saveProgress(wl);
+  }
+  return merged;
 }
 function showSurvivalBoard(){document.getElementById('boardOverlay').classList.add('on');loadSurvivalBoard();}
 function hideSurvivalBoard(){document.getElementById('boardOverlay').classList.remove('on');}
@@ -1162,17 +1186,19 @@ function finishScene(){
   var avg=Math.round(sum/scores.length);
   var passed=avg>=PASS_THRESHOLD;
 
-  var p=getProgress();
-  var prev=p[currentScene.id];
+  var p=getProgress(),all=getAllProgress();
+  var prev=all[currentScene.id];
   var alreadyDone=prev&&prev.done;
 
   if(passed&&!alreadyDone){
     p[currentScene.id]={scores:scores,avg:avg,done:true};
+    all[currentScene.id]={scores:scores,avg:avg,done:true};
     saveProgress(p);
+    saveAllProgress(all);
     sbUpsertScore(userName,SCENE_PTS);
     syncProgressToCloud();
   }else if(!alreadyDone){
-    if(!prev||avg>prev.avg){p[currentScene.id]={scores:scores,avg:avg,done:false};saveProgress(p);}
+    if(!prev||avg>prev.avg){p[currentScene.id]={scores:scores,avg:avg,done:false};all[currentScene.id]={scores:scores,avg:avg,done:false};saveProgress(p);saveAllProgress(all);syncProgressToCloud();}
   }
 
   // Build review UI
