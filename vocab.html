@@ -3724,12 +3724,19 @@ const _sb = {
  async upsertProgress(name, gdData, grade){
   if(!LB_ONLINE||!name) return false;
   try{
+   var root={};
+   try{
+    const old=await fetch(`${SUPABASE_URL}/rest/v1/user_progress?user_name=eq.${encodeURIComponent(name)}&select=progress_data&limit=1`,
+     {headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}});
+    if(old.ok){const rows=await old.json();root=parseMaybeJSON(rows[0]&&rows[0].progress_data)||{};}
+   }catch(e){}
+   root.vocab={version:2,grade:grade||"",gd:gdData||{},updated_at:new Date().toISOString()};
    const payload={
     user_name:name,
-    progress_data:{version:2,grade:grade||"",gd:gdData||{},updated_at:new Date().toISOString()},
+    progress_data:root,
     updated_at:new Date().toISOString()
    };
-   const res=await fetch(`${SUPABASE_URL}/rest/v1/vocab_progress`, {
+   const res=await fetch(`${SUPABASE_URL}/rest/v1/user_progress?on_conflict=user_name`, {
     method:'POST',
     headers:{
      'apikey': SUPABASE_KEY,
@@ -3758,6 +3765,14 @@ const _sb = {
  async fetchProgress(name){
   if(!LB_ONLINE) return null;
   try{
+   const up=await fetch(
+    `${SUPABASE_URL}/rest/v1/user_progress?user_name=eq.${encodeURIComponent(name)}&select=progress_data&limit=1`,
+    {headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}}
+   );
+   if(up.ok){
+    const urows=await up.json();
+    if(urows[0]&&urows[0].progress_data)return urows[0].progress_data;
+   }
    const res=await fetch(
     `${SUPABASE_URL}/rest/v1/vocab_progress?user_name=eq.${encodeURIComponent(name)}&select=progress_data&limit=1`,
     {headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}}
@@ -3814,6 +3829,12 @@ function load(){
  if(!S.gd)S.gd={};
  migrateLevelCaps();
  if(unified) S.name = unified;
+ if(unified){
+  try{
+   const nr=lsGet(KEY+'_'+unified);
+   if(nr){S=Object.assign(S,JSON.parse(nr));S.name=unified;if(!S.gd)S.gd={};migrateLevelCaps();}
+  }catch(e){}
+ }
  // 确保 jc_username 同步
  if(S.name) lsSet('jc_username', S.name);
  // 周分检测：新周自动重置本周得分
@@ -3832,11 +3853,12 @@ function migrateLevelCaps(){
    if(hp<HEALTH_PASS)g.capLv=levelOf(p).name;
  }
 }
-function save(){try{lsSet(KEY,JSON.stringify(S));}catch(e){}cloudProgressUpdate();}
+function save(){try{const raw=JSON.stringify(S);lsSet(KEY,raw);if(S.name)lsSet(KEY+'_'+S.name,raw);}catch(e){}cloudProgressUpdate();}
 function parseMaybeJSON(v){if(!v)return null;if(typeof v==="string"){try{return JSON.parse(v);}catch(e){return null;}}return v;}
 function cloudGdFrom(raw){
  raw=parseMaybeJSON(raw);
  if(!raw)return null;
+ if(raw.vocab)return cloudGdFrom(raw.vocab);
  if(raw.gd&&typeof raw.gd==="object")return raw.gd;
  if(raw.progress_data)return cloudGdFrom(raw.progress_data);
  for(const gid in raw){if(gradeById(gid)&&raw[gid]&&typeof raw[gid]==="object")return raw;}
