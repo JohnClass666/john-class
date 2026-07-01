@@ -386,21 +386,30 @@ async function sbGet(t,q){try{var r=await fetch(SB_URL+'/rest/v1/'+t+'?'+q,{head
 async function sbUpsert(t,data){try{await fetch(SB_URL+'/rest/v1/'+t,{method:'POST',headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates'}),body:JSON.stringify(data)});}catch(e){}}
 
 // ── PROGRESS ──
-function getProgressKey(){return 'jc_prog_speak_'+getWeekStart();}
+function oldProgressKey(){return 'jc_prog_speak_'+getWeekStart();}
+function getProgressKey(){return 'jc_prog_speak_'+userName+'_'+getWeekStart();}
 function getProgress(){
-  try{var r=localStorage.getItem(getProgressKey());return r?JSON.parse(r):{done:[],pts:0};}
+  try{var r=localStorage.getItem(getProgressKey())||localStorage.getItem(oldProgressKey());return r?JSON.parse(r):{done:[],pts:0};}
   catch(e){return{done:[],pts:0};}
 }
-function saveProgress(p){try{localStorage.setItem(getProgressKey(),JSON.stringify(p));}catch(e){}}
+function saveProgress(p){try{localStorage.setItem(getProgressKey(),JSON.stringify(p));}catch(e){}syncProgrammerProgress('speak',p);}
+function parseCloudProgress(raw){if(!raw)return {};if(typeof raw==='string'){try{return JSON.parse(raw)||{};}catch(e){return {};}}return raw||{};}
+async function fetchUserProgress(){try{var r=await fetch(SB_URL+'/rest/v1/user_progress?user_name=eq.'+encodeURIComponent(userName)+'&select=progress_data&limit=1',{headers:sbHeaders()});var rows=r.ok?await r.json():[];return rows&&rows[0]?parseCloudProgress(rows[0].progress_data):{};}catch(e){return {};}}
+async function syncProgrammerProgress(part,p){if(!userName)return;try{var root=await fetchUserProgress();if(!root.programmer)root.programmer={};root.programmer[part]=Object.assign({},p,{updated_at:new Date().toISOString()});await fetch(SB_URL+'/rest/v1/user_progress?on_conflict=user_name',{method:'POST',headers:Object.assign({},sbHeaders(),{'Prefer':'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify({user_name:userName,progress_data:root,updated_at:new Date().toISOString()})});}catch(e){}}
+async function restoreProgrammerProgress(){if(!userName)return;try{var root=await fetchUserProgress();var p=root.programmer&&root.programmer.speak;if(!p)return;var local=getProgress();if((p.pts||0)>=(local.pts||0)){localStorage.setItem(getProgressKey(),JSON.stringify({done:p.done||[],pts:p.pts||0}));updateProgUI();}else syncProgrammerProgress('speak',local);}catch(e){}}
 function isDone(id){return getProgress().done.indexOf(id)!==-1;}
+function getProgWeekKey(){return 'jc_programmer_week_'+getWeekStart();}
+function getProgWeekScore(){return parseInt(localStorage.getItem(getProgWeekKey())||'0')||0;}
+function addProgWeekScore(n){localStorage.setItem(getProgWeekKey(),getProgWeekScore()+n);}
 
 async function addPoints(){
   if(!userName)return;
+  addProgWeekScore(POINTS);
   var ws=getWeekStart();
   var rows=await sbGet('weekly_scores','user_name=eq.'+encodeURIComponent(userName)+'&week_start=eq.'+ws+'&select=id,programmer_score');
   var cur=0,eid=null;
   if(rows&&rows.length){cur=rows[0].programmer_score||0;eid=rows[0].id;}
-  var payload={user_name:userName,week_start:ws,programmer_score:cur+POINTS,updated_at:new Date().toISOString()};
+  var payload={user_name:userName,week_start:ws,programmer_score:Math.max(cur+POINTS,getProgWeekScore()),updated_at:new Date().toISOString()};
   if(eid)payload.id=eid;
   await sbUpsert('weekly_scores',payload);
   // cumulative programmer_scores (permanent, never resets)
@@ -408,8 +417,22 @@ async function addPoints(){
   var cCur=cRows&&cRows.length?cRows[0].score||0:0;
   await sbUpsert('programmer_scores',{user_name:userName,score:cCur+POINTS,updated_at:new Date().toISOString()});
   // local display cache
-  var spk=parseInt(localStorage.getItem('jc_prog_speak_pts')||'0')+POINTS;
-  localStorage.setItem('jc_prog_speak_pts',spk);
+  var spk=parseInt(localStorage.getItem('jc_prog_speak_pts_'+userName)||localStorage.getItem('jc_prog_speak_pts')||'0')+POINTS;
+  localStorage.setItem('jc_prog_speak_pts_'+userName,spk);
+}
+async function syncSavedPoints(){
+  if(!userName)return;
+  var p=getProgress(), ws=getWeekStart();
+  try{
+    var rows=await sbGet('weekly_scores','user_name=eq.'+encodeURIComponent(userName)+'&week_start=eq.'+ws+'&select=id,programmer_score');
+    var cur=0,eid=null;if(rows&&rows.length){cur=rows[0].programmer_score||0;eid=rows[0].id;}
+    var want=Math.max(getProgWeekScore(),p.pts||0);
+    if(want>cur){var payload={user_name:userName,week_start:ws,programmer_score:want,updated_at:new Date().toISOString()};if(eid)payload.id=eid;await sbUpsert('weekly_scores',payload);}
+    var total=(parseInt(localStorage.getItem('jc_prog_speak_pts_'+userName)||localStorage.getItem('jc_prog_speak_pts')||'0')||0)+(parseInt(localStorage.getItem('jc_prog_oral_pts_'+userName)||localStorage.getItem('jc_prog_oral_pts')||'0')||0)+(parseInt(localStorage.getItem('jc_prog_vocab_pts_'+userName)||localStorage.getItem('jc_prog_vocab_pts')||'0')||0);
+    var cRows=await sbGet('programmer_scores','user_name=eq.'+encodeURIComponent(userName)+'&select=score');
+    var cCur=cRows&&cRows.length?cRows[0].score||0:0;
+    if(total>cCur)await sbUpsert('programmer_scores',{user_name:userName,score:total,updated_at:new Date().toISOString()});
+  }catch(e){}
 }
 
 // ── SHUFFLE (seeded by module name so different from oral) ──
@@ -715,6 +738,7 @@ function init(){
 
   updateEntryUI();
   updateProgUI();
+  restoreProgrammerProgress().then(syncSavedPoints);
 
   document.getElementById('btnStart').addEventListener('click',function(){
     renderSentence();
@@ -731,4 +755,3 @@ init();
 </script>
 </body>
 </html>
-
