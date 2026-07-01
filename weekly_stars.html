@@ -292,7 +292,7 @@ async function load(){
   document.getElementById('week-label').textContent = '本周（'+formatWeek(ws)+'）';
 
   try{
-    var r = await fetch(SB_URL+'/rest/v1/weekly_scores?week_start=eq.'+ws+'&select=user_name,reading_score,vocab_score,vocab_round,survival_score,programmer_score,grammar_score,writing_score,victory_msg&limit=100',
+    var r = await fetch(SB_URL+'/rest/v1/weekly_scores?week_start=eq.'+ws+'&select=user_name,reading_score,vocab_score,vocab_round,survival_score,programmer_score,grammar_score,writing_score,victory_msg&limit=1000',
       {headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}});
     if(!r.ok) throw new Error('HTTP '+r.status);
     _data = await r.json();
