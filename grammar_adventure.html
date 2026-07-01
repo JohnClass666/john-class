@@ -644,13 +644,15 @@ let currentMode = null; // 'normal' | 'forest'
 let normalOpenLevelId = null;
 let forestCurrentId = 1;
 
+function grammarName(){return localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name')||'';}
+function grammarStoreKey(){var n=grammarName();return n?SK+'_'+n:SK;}
 function loadProg() {
-  try { const r = localStorage.getItem(SK); if (r) { const p = JSON.parse(r); progress = { ...progress, ...p }; } } catch(e) {}
+  try { const r = localStorage.getItem(grammarStoreKey())||localStorage.getItem(SK); if (r) { const p = JSON.parse(r); progress = { ...progress, ...p }; } } catch(e) {}
   if (!progress.completed) progress.completed = [];
   forestCurrentId = progress.forestCurrentId || 1;
   while (progress.completed.includes(forestCurrentId) && forestCurrentId < LEVELS.length) forestCurrentId++;
 }
-function saveProg() { progress.forestCurrentId = forestCurrentId; localStorage.setItem(SK, JSON.stringify(progress)); }
+function saveProg() { progress.forestCurrentId = forestCurrentId; localStorage.setItem(grammarStoreKey(), JSON.stringify(progress)); syncGrammarProgress(); }
 function isDone(id) { return progress.completed.includes(id); }
 function allDone() { return LEVELS.every(l => isDone(l.id)); }
 function unlockChallengeBtn(){
@@ -679,7 +681,12 @@ function getGrammarWeek(){try{return JSON.parse(localStorage.getItem('jc_grammar
 function saveGrammarWeek(a){localStorage.setItem('jc_grammar_week_'+getWeekStart(),JSON.stringify(a));}
 function getGrammarCumu(){try{return JSON.parse(localStorage.getItem('jc_grammar_cumulative')||'[]');}catch(e){return[];}}
 function saveGrammarCumu(a){localStorage.setItem('jc_grammar_cumulative',JSON.stringify(a));}
+function parseCloudProgress(raw){if(!raw)return {};if(typeof raw==='string'){try{return JSON.parse(raw)||{};}catch(e){return {};}}return raw||{};}
+async function fetchUserProgress(name){try{var r=await fetch(SB_URL+'/rest/v1/user_progress?user_name=eq.'+encodeURIComponent(name)+'&select=progress_data&limit=1',{headers:sbH()});var rows=r.ok?await r.json():[];return rows&&rows[0]?parseCloudProgress(rows[0].progress_data):{};}catch(e){return {};}}
+async function syncGrammarProgress(){var name=grammarName();if(!name||name==='同学')return;try{var root=await fetchUserProgress(name);root.grammar={completed:progress.completed||[],quizResults:progress.quizResults||{},forestCurrentId:forestCurrentId,updated_at:new Date().toISOString()};await fetch(SB_URL+'/rest/v1/user_progress?on_conflict=user_name',{method:'POST',headers:Object.assign({},sbH(),{'Prefer':'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify({user_name:name,progress_data:root,updated_at:new Date().toISOString()})});}catch(e){}}
+async function restoreGrammarProgress(){var name=grammarName();if(!name||name==='同学')return;try{var root=await fetchUserProgress(name);var g=root.grammar;if(!g)return;var localN=(progress.completed||[]).length,cloudN=(g.completed||[]).length;if(cloudN>=localN){progress.completed=g.completed||[];progress.quizResults=g.quizResults||{};forestCurrentId=g.forestCurrentId||1;while(progress.completed.includes(forestCurrentId)&&forestCurrentId<LEVELS.length)forestCurrentId++;localStorage.setItem(grammarStoreKey(),JSON.stringify(progress));if(allDone())unlockChallengeBtn();if(location.hash&&location.hash.length>1)_handleGHash();}else syncGrammarProgress();}catch(e){}}
 function isGrammarWeekDone(id){return getGrammarWeek().indexOf(id)!==-1;}
+
 function isGrammarCumuDone(id){return getGrammarCumu().indexOf(id)!==-1;}
 
 async function awardGrammarScore(levelId,pts){
@@ -1430,9 +1437,10 @@ function resetChallenge() {
 // ══════════════════════════════════════════════════════════
 function resetAll() {
   if (confirm('确定要重置所有学习进度吗？')) {
-    localStorage.removeItem(SK);
+    localStorage.removeItem(grammarStoreKey());
     progress = { completed: [], quizResults: {} };
     forestCurrentId = 1;
+    saveProg();
     quizAnswers = {};
     var b = document.getElementById('nChallengeBtn'); if (b) { b.style.opacity = '0.4'; b.style.cursor = 'default'; b.textContent = '终极挑战'; b.title = '需通关全部32关后解锁'; b.onclick = function(){ if(allDone())startChallenge(); }; }
     backToEntry();
@@ -1463,7 +1471,7 @@ async function grammarStartupSync(){
   gw.forEach(function(id){expected+=id===32?100:id==='challenge'?1000:20;});
   try{
     var ws=getWeekStart();
-    var r=await fetch(SB_URL+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+ws+'&select=grammar_score',{headers:sbH()});
+    var r=await fetch(SB_URL+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+ws+'&select=id,grammar_score',{headers:sbH()});
     var rows=r.ok?await r.json():[];
     if(!rows||!rows.length||!(rows[0].grammar_score>0)){
       var eid=rows&&rows.length?rows[0].id:null;
@@ -1498,6 +1506,7 @@ async function loadGrammarBoard(){
 //  初始化
 // ══════════════════════════════════════════════════════════
 loadProg();
+restoreGrammarProgress();
 if (allDone()) unlockChallengeBtn();
 grammarStartupSync();
 if(location.hash&&location.hash.length>1){_handleGHash();}
