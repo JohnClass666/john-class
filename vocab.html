@@ -3631,7 +3631,7 @@ function playCheer(){if(S.muted||!CHEER_AUDIO||CHEER_AUDIO==="data:audio/mp4;bas
 /* ===== 老师可配置项 ===== */
 const REPORT_URL="";          // 把腾讯问卷/金数据表单链接填在这里（留空则隐藏上报按钮）
 const JOHN_WECHAT="JiahaoLee6666";     // 显示给学生看的微信名/称呼
-const BRAG_LEVEL="白银";       // 达到该等级及以上可炫耀
+const BRAG_LEVEL="尖子生";     // 达到该等级及以上可炫耀
 const BRAG_COMBO=8;           // 单次连续答对达到该数可炫耀
 
 /* ============ STATE ============ */
@@ -3687,13 +3687,13 @@ const _sb = {
       'Prefer': 'resolution=merge-duplicates'
      },
      body: JSON.stringify({name, score, grade, data: S.gd, updated_at: new Date().toISOString()})
-    });
-   }
+   });
+  }
+   await this.upsertProgress(name, S.gd, S.grade);
 
    // 同时写入 weekly_scores 供明星榜使用（不受 leaderboard 分值限制）
    // 周日为每周第一天（周六晚12点一过自动重置）
-   var d=new Date(); d.setDate(d.getDate()-d.getDay());
-   var ws=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+   var ws=weekStartStr();
    // 先查已有记录的 id 和 vocab_score，防多端登录覆盖高分
    var wkCheck=await fetch(SUPABASE_URL+'/rest/v1/weekly_scores?user_name=eq.'+encodeURIComponent(name)+'&week_start=eq.'+ws+'&select=id,vocab_score&limit=1',
     {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}});
@@ -3721,6 +3721,27 @@ const _sb = {
    });
   }catch(e){}
  },
+ async upsertProgress(name, gdData, grade){
+  if(!LB_ONLINE||!name) return false;
+  try{
+   const payload={
+    user_name:name,
+    progress_data:{version:2,grade:grade||"",gd:gdData||{},updated_at:new Date().toISOString()},
+    updated_at:new Date().toISOString()
+   };
+   const res=await fetch(`${SUPABASE_URL}/rest/v1/vocab_progress`, {
+    method:'POST',
+    headers:{
+     'apikey': SUPABASE_KEY,
+     'Authorization': `Bearer ${SUPABASE_KEY}`,
+     'Content-Type': 'application/json',
+     'Prefer': 'resolution=merge-duplicates,return=minimal'
+    },
+    body: JSON.stringify(payload)
+   });
+   return res.ok;
+  }catch(e){return false;}
+ },
  async fetchMine(name){
   if(!LB_ONLINE) return null;
   try{
@@ -3732,6 +3753,18 @@ const _sb = {
    const rows=await res.json();
    if(!rows[0]) return null;
    return {data:rows[0].data||null, score:rows[0].score||0, grade:rows[0].grade||''};
+  }catch(e){return null;}
+ },
+ async fetchProgress(name){
+  if(!LB_ONLINE) return null;
+  try{
+   const res=await fetch(
+    `${SUPABASE_URL}/rest/v1/vocab_progress?user_name=eq.${encodeURIComponent(name)}&select=progress_data&limit=1`,
+    {headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}}
+   );
+   if(!res.ok) return null;
+   const rows=await res.json();
+   return rows[0]?rows[0].progress_data:null;
   }catch(e){return null;}
  },
  async getTop(limit=100){
@@ -3753,7 +3786,7 @@ function lbCacheSave(rows){try{lsSet(LB_KEY,JSON.stringify({rows,ts:Date.now()})
 function lbCacheLoad(){try{const r=JSON.parse(lsGet(LB_KEY)||"{}");return r.rows||[];}catch(e){return [];}}
 
 /* ---- 上传当前分数（每次得分时调用，带防抖） ---- */
-let _lbTimer=null,_stageAborted=false;
+let _lbTimer=null,_progressTimer=null,_stageAborted=false,_cloudSyncReady=false;
 function lbUpdate(){
  if(!S||!S.name)return;
  clearTimeout(_lbTimer);
@@ -3762,6 +3795,13 @@ function lbUpdate(){
   const myGrade=S.grade?((gradeById(S.grade)||{}).label||S.grade):"";
   await _sb.upsert(S.name, myScore, myGrade, S.weekPoints||0);
  }, 3000);
+}
+function cloudProgressUpdate(delay=1500){
+ if(!_cloudSyncReady||!S||!S.name)return;
+ clearTimeout(_progressTimer);
+ _progressTimer=setTimeout(async()=>{
+  await _sb.upsertProgress(S.name, S.gd||{}, S.grade||"");
+ }, delay);
 }
 /* S：全局信息 + 各年级独立存档
    S.grade = 当前年级 id；S.gd[gradeId] = {points, prog} */
@@ -3777,8 +3817,7 @@ function load(){
  // 确保 jc_username 同步
  if(S.name) lsSet('jc_username', S.name);
  // 周分检测：新周自动重置本周得分
- var d=new Date(); d.setDate(d.getDate()-d.getDay());
- var thisWeek=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ var thisWeek=weekStartStr();
  if(S.weekStart !== thisWeek){ S.weekStart = thisWeek; S.weekPoints = 0; }
 }
 // ★ 老用户升级兼容：以前没有"错词健康度"这套机制，不能让新规则一上线就把老用户打回起点。
@@ -3793,11 +3832,100 @@ function migrateLevelCaps(){
    if(hp<HEALTH_PASS)g.capLv=levelOf(p).name;
  }
 }
-function save(){try{lsSet(KEY,JSON.stringify(S));}catch(e){}}
+function save(){try{lsSet(KEY,JSON.stringify(S));}catch(e){}cloudProgressUpdate();}
+function parseMaybeJSON(v){if(!v)return null;if(typeof v==="string"){try{return JSON.parse(v);}catch(e){return null;}}return v;}
+function cloudGdFrom(raw){
+ raw=parseMaybeJSON(raw);
+ if(!raw)return null;
+ if(raw.gd&&typeof raw.gd==="object")return raw.gd;
+ if(raw.progress_data)return cloudGdFrom(raw.progress_data);
+ for(const gid in raw){if(gradeById(gid)&&raw[gid]&&typeof raw[gid]==="object")return raw;}
+ return null;
+}
+function progressWeight(g){
+ if(!g)return 0;
+ let n=(g.points||0)*2;
+ const P=g.prog||{};
+ for(const id in P){
+  const r=P[id]||{};
+  n+=1+(r.seenR?2:0)+(r.seenW?2:0)+(r.grad?8:0)+(r.box>=0?Math.min(5,r.box+1):0);
+ }
+ const st=g.stages||{};
+ for(const u in st){
+  const s=st[u]||{};
+  n+=(s.R?20:0)+(s.W?20:0)+(s.L?20:0)+(s.Rn||0)+(s.Wn||0)+(s.Ln||0);
+ }
+ n+=(g.pass||0)*100+(g.pass2?80:0)+(g.monsterCount||0)*10+(g.dailyCount||0)*10+(g.exemptGiven||0)*5;
+ return n;
+}
+function recWeight(r){
+ if(!r)return 0;
+ return (r.grad?100:0)+(r.seenR?10:0)+(r.seenW?10:0)+(r.box>=0?Math.min(20,(r.box+1)*3):0)+(r.last==="good"?5:0)+(r.due?1:0);
+}
+function mergeProg(a,b){
+ const out=Object.assign({},a||{});
+ for(const id in (b||{})){
+  const old=out[id]||{}, cur=b[id]||{};
+  out[id]=recWeight(cur)>recWeight(old)?Object.assign({},old,cur):Object.assign({},cur,old);
+  if(old.grad||cur.grad)out[id].grad=1;
+  if(old.seenR||cur.seenR)out[id].seenR=1;
+  if(old.seenW||cur.seenW)out[id].seenW=1;
+  if(old.last==="bad"||cur.last==="bad")out[id].last="bad";
+ }
+ return out;
+}
+function mergeStages(a,b){
+ const out=Object.assign({},a||{});
+ for(const u in (b||{})){
+  const old=out[u]||{}, cur=b[u]||{};
+  out[u]=Object.assign({},old,cur);
+  out[u].R=!!(old.R||cur.R);out[u].W=!!(old.W||cur.W);out[u].L=!!(old.L||cur.L);
+  out[u].Rn=Math.max(old.Rn||0,cur.Rn||0);out[u].Wn=Math.max(old.Wn||0,cur.Wn||0);out[u].Ln=Math.max(old.Ln||0,cur.Ln||0);
+ }
+ return out;
+}
+function mergeGradeData(local,cloud){
+ local=local||{};cloud=cloud||{};
+ const out=Object.assign({},local,cloud);
+ out.points=Math.max(local.points||0,cloud.points||0);
+ out.prog=mergeProg(local.prog,cloud.prog);
+ out.stages=mergeStages(local.stages,cloud.stages);
+ ["pass","monsterCount","dailyCount","exemptGiven"].forEach(k=>{out[k]=Math.max(local[k]||0,cloud[k]||0);});
+ out.pass2=!!(local.pass2||cloud.pass2);
+ out.act=Object.assign({},cloud.act||{},local.act||{});
+ out.qp=Object.assign({},cloud.qp||{},local.qp||{});
+ return out;
+}
+function mergeCloudGd(raw){
+ const cg=cloudGdFrom(raw);
+ if(!cg)return false;
+ let changed=false;
+ if(!S.gd)S.gd={};
+ for(const gid in cg){
+  if(!gradeById(gid)||!cg[gid])continue;
+  const localReset=(S.gd[gid]&&S.gd[gid].resetAt)||0;
+  const cloudReset=cg[gid].resetAt||0;
+  if(localReset&&cloudReset<=localReset)continue;
+  if(cloudReset&&cloudReset>localReset&&progressWeight(cg[gid])<progressWeight(S.gd[gid])){
+   S.gd[gid]=Object.assign({points:0,prog:{}},cg[gid]);
+   changed=true;
+   continue;
+  }
+  const before=progressWeight(S.gd[gid]);
+  const merged=mergeGradeData(S.gd[gid],cg[gid]);
+  const after=progressWeight(merged);
+  if(!S.gd[gid]||after>before){
+   S.gd[gid]=merged;
+   changed=true;
+  }
+ }
+ return changed;
+}
 // 当前年级存档（懒创建）
 function gd(){if(!S.grade)return {points:0,prog:{}};if(!S.gd[S.grade])S.gd[S.grade]={points:0,prog:{}};return S.gd[S.grade];}
 function rec(id){const g=gd();if(!g.prog[id])g.prog[id]={seenR:0,seenW:0,box:-1,due:0,last:""};return g.prog[id];}
 function now(){return Date.now();}
+function localDateStr(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 
 /* ============ AUDIO ============ */
 let AC=null;
@@ -3948,7 +4076,7 @@ function dueWordsToday(){const P=gd().prog;return Object.keys(P).filter(id=>{con
 function points(){return gd().points;}
 // 总榜用跨年级累计积分
 function totalPoints(){return Object.values(S.gd||{}).reduce((s,g)=>s+(g.points||0),0);}
-function addPoints(n){var d=new Date();d.setDate(d.getDate()-d.getDay());var tw=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');if(S.weekStart!==tw){S.weekStart=tw;S.weekPoints=0;}gd().points+=n;S.weekPoints=(S.weekPoints||0)+n;updateLevelCap();save();lbUpdate();}
+function addPoints(n){var tw=weekStartStr();if(S.weekStart!==tw){S.weekStart=tw;S.weekPoints=0;}gd().points+=n;S.weekPoints=(S.weekPoints||0)+n;updateLevelCap();save();lbUpdate();}
 function clear(){app.innerHTML="";}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function greetWord(){const h=new Date().getHours();return h<6?"凌晨好":h<11?"早上好":h<13?"中午好":h<18?"下午好":"晚上好";}
@@ -3985,8 +4113,8 @@ function loadQP(n,key){const g=gd();return(g.qp&&g.qp[n+'_'+key])||null;}
 function clearQP(n,key){const g=gd();if(g.qp&&g.qp[n+'_'+key]){delete g.qp[n+'_'+key];save();}}
 
 /* ===== 连续打卡 streak ===== */
-function todayStr(){return new Date().toISOString().slice(0,10);}
-function yesterdayStr(){const d=new Date();d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
+function todayStr(){return localDateStr();}
+function yesterdayStr(){const d=new Date();d.setDate(d.getDate()-1);return localDateStr(d);}
 function checkStreak(){
  const g=gd();const today=todayStr();
  if(g.lastDay===today)return; // 今天已经登记过
@@ -4019,7 +4147,7 @@ function checkGodMaintained(){
 function currentLevelName(){return isGodLevel()?GOD_LEVEL.name:realLevelOf(points()).name;}
 function currentLevelIcon(){return isGodLevel()?GOD_LEVEL.icon:realLevelOf(points()).icon;}
 const DAILY_N=20;
-function dailyStr(){return new Date().toISOString().slice(0,10);}
+function dailyStr(){return todayStr();}
 function seededRand(seed){let s=seed;return()=>{s=(s*1664525+1013904223)&0xffffffff;return(s>>>0)/0xffffffff;};}
 function getDailyPool(){
  // 用日期+年级做种子，保证同一天同一年级题目相同
@@ -4499,12 +4627,12 @@ function markResult(w,good,mode){const r=rec(w.id);
 function logActivity(isNew,correct,graduated){const g=gd();if(!g.act)g.act={};const d=todayStr();
  if(!g.act[d])g.act[d]={n:0,c:0,w:0,nw:0,gr:0};
  g.act[d].n++; if(correct)g.act[d].c++; else g.act[d].w++; if(isNew)g.act[d].nw++; if(graduated)g.act[d].gr++;}
-function weekStartStr(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function weekStartStr(){var d=new Date();d.setDate(d.getDate()-d.getDay());return localDateStr(d);}
 function weekActivity(){const g=gd();const ws=weekStartStr();let nw=0,c=0,w=0,n=0,gr=0,days=0;
  if(g.act){for(const d in g.act){if(d>=ws){const a=g.act[d];nw+=a.nw||0;c+=a.c||0;w+=a.w||0;n+=a.n||0;gr+=a.gr||0;days++;}}}
  return {newWords:nw,correct:c,wrong:w,total:n,graduated:gr,activeDays:days};}
 // 最近7天每日新学单词（用于柱状图）
-function last7Activity(){const g=gd();const out=[];for(let i=6;i>=0;i--){const dt=new Date();dt.setDate(dt.getDate()-i);const ds=dt.toISOString().slice(0,10);
+function last7Activity(){const g=gd();const out=[];for(let i=6;i>=0;i--){const dt=new Date();dt.setDate(dt.getDate()-i);const ds=localDateStr(dt);
   const a=(g.act&&g.act[ds])||{nw:0,n:0,c:0};out.push({date:ds,day:'日一二三四五六'[dt.getDay()],nw:a.nw||0,n:a.n||0,c:a.c||0});}return out;}
 // 已掌握(毕业)单词数：包含"一次就答对"和"错词复习5轮通过"两类
 function masteredCount(){const P=gd().prog;let m=0;for(const id in P){if(P[id].grad)m++;}return m;}
@@ -5393,7 +5521,7 @@ function confirmReset(){const m=document.getElementById("modal");const gl=gradeB
  m.classList.add("show");
  m.querySelector("#cancel").onclick=()=>{m.classList.remove("show");sfx.tap();};
  m.querySelector("#doreset").onclick=()=>{
-   if(S.grade)S.gd[S.grade]={points:0,prog:{},stages:{},exemptGiven:0};
+   if(S.grade)S.gd[S.grade]={points:0,prog:{},stages:{},exemptGiven:0,resetAt:Date.now()};
    save();_prevLv=realLevelOf(0).name;
    m.classList.remove("show");sfx.levelup();go("home");
  };
@@ -5432,7 +5560,8 @@ function afterPoint(then){const cur=realLevelOf(points()).name;
   if(checkGodLevel()){setTimeout(()=>celebrateGod(then),300);}else then();}}
 function celebrate(name,then){sfx.levelup();const m=document.getElementById("modal");
  const idx=LEVELS.findIndex(l=>l.name===name);const lv=LEVELS[idx]||{};
- const canBrag=idx>=LEVELS.findIndex(l=>l.name===BRAG_LEVEL);
+ const bragIdx=LEVELS.findIndex(l=>l.name===BRAG_LEVEL);
+ const canBrag=bragIdx>=0&&idx>=bragIdx;
  m.innerHTML=`<div class="box"><div class="rk">Level Up !</div>
    <div style="margin:0 auto 14px;display:flex;justify-content:center;animation:ringpulse 1.4s ease-in-out infinite;border-radius:50%">${medalSVG(idx,96,true)}</div>
    <h2 style="margin:12px 0 4px;font-size:18px;font-weight:700;color:var(--ink)">${name}</h2><p style="font-size:14px;color:var(--soft)">${lv.desc||""}</p>
@@ -5467,7 +5596,7 @@ function confirmGodReset(){const m=document.getElementById("modal");const gl=gra
  m.classList.add("show");
  m.querySelector("#cancel").onclick=()=>{m.classList.remove("show");sfx.tap();};
  m.querySelector("#doreset").onclick=()=>{
-   if(S.grade)S.gd[S.grade]={points:0,prog:{},stages:{},exemptGiven:0,monsterCount:0,dailyCount:0};
+   if(S.grade)S.gd[S.grade]={points:0,prog:{},stages:{},exemptGiven:0,monsterCount:0,dailyCount:0,resetAt:Date.now()};
    save();_prevLv=realLevelOf(0).name;
    m.classList.remove("show");sfx.levelup();go("home");
  };
@@ -6046,6 +6175,14 @@ SCREENS.leaderboard=function(){
  d.querySelector("#refresh").onclick=()=>{sfx.tap();render();};
 };
 load();initTTS();
+try{
+ const pulled=lsGet('jc_vocab_progress_sync');
+ if(pulled&&mergeCloudGd(pulled)){
+  migrateLevelCaps();
+  lsRemove('jc_vocab_progress_sync');
+  save();
+ }
+}catch(e){}
 // ★ 词汇舞台(vocab-stage.html)直达：接收 ?grade= 参数，仅在年级有效且已上线时生效
 (function(){try{var _g=new URLSearchParams(location.search).get('grade');
  if(_g&&gradeById(_g)&&gradeById(_g).ready){S.grade=_g;save();}}catch(e){}})();
@@ -6068,26 +6205,25 @@ if(!S.name){
   (async()=>{
     try{
       const cloud=await _sb.fetchMine(S.name);
-      if(cloud&&cloud.data){
-        let changed=false;
-        for(const gid in cloud.data){
-          if(!S.gd[gid]||((cloud.data[gid].points||0)>(S.gd[gid].points||0))){
-            S.gd[gid]=Object.assign({points:0,prog:{}},S.gd[gid],cloud.data[gid]);
-            changed=true;
-          }
-        }
-        if(changed){
-          migrateLevelCaps(); // 云端数据可能也是老版本存的，同样要补一次 capLv
-          save();
-          // 数据确实有更新才考虑重新渲染；且只在用户仍停留在 home/grade 这类安全页面时才刷新，
-          // 避免打断正在答题等进行中的活动——数据已经存进 localStorage，下次进首页自然生效
-          if(_curScreenName==="home"||_curScreenName==="grade"){
-            const cur=S.grade&&gradeById(S.grade)&&gradeById(S.grade).ready?"home":"grade";
-            go(cur);
-          }
+      const progress=await _sb.fetchProgress(S.name);
+      let changed=false;
+      if(cloud&&cloud.data)changed=mergeCloudGd(cloud.data)||changed;
+      if(progress)changed=mergeCloudGd(progress)||changed;
+      if(changed){
+        migrateLevelCaps(); // 云端数据可能也是老版本存的，同样要补一次 capLv
+        save();
+        // 数据确实有更新才考虑重新渲染；且只在用户仍停留在 home/grade 这类安全页面时才刷新，
+        // 避免打断正在答题等进行中的活动——数据已经存进 localStorage，下次进首页自然生效
+        if(_curScreenName==="home"||_curScreenName==="grade"){
+          const cur=S.grade&&gradeById(S.grade)&&gradeById(S.grade).ready?"home":"grade";
+          go(cur);
         }
       }
-    }catch(e){}
+      _cloudSyncReady=true;
+      cloudProgressUpdate(500);
+    }catch(e){
+      _cloudSyncReady=true;
+    }
   })();
 }
 </script>
