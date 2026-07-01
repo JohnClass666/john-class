@@ -1202,6 +1202,9 @@ function getWeekStart(){
   d.setDate(d.getDate()-d.getDay());
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
+function getReadingWeekKey(){return 'jc_reading_week_'+userName+'_'+getWeekStart();}
+function getReadingWeekScore(){return parseInt(localStorage.getItem(getReadingWeekKey())||'0')||0;}
+function addReadingWeekScore(n){localStorage.setItem(getReadingWeekKey(),getReadingWeekScore()+n);}
 
 // ── SUPABASE ──
 function sbHeaders(){
@@ -1224,14 +1227,16 @@ async function sbUpsert(table,data){
 async function loadProgress(){
   var rows=await sbGet('reading_progress','user_name=eq.'+encodeURIComponent(userName)+'&select=*');
   if(rows&&rows.length>0){
-    currentId=rows[0].current_sentence_id||1;
+    var completed=rows[0].total_completed||Math.max(0,(rows[0].current_sentence_id||1)-1);
+    currentId=Math.min(200,completed+1);
     savedIds=rows[0].saved_ids||[];
   }
 }
 async function saveProgress(completed){
   var weekStart=getWeekStart();
+  addReadingWeekScore(50);
   await sbUpsert('reading_progress',{
-    user_name:userName, current_sentence_id:currentId, saved_ids:savedIds,
+    user_name:userName, current_sentence_id:Math.min(200,completed+1), saved_ids:savedIds,
     total_completed:completed, updated_at:new Date().toISOString()
   });
 
@@ -1242,20 +1247,30 @@ async function saveProgress(completed){
     curReading=wRows[0].reading_score||0;
     existingId=wRows[0].id;
   }
-  var newReading=curReading+50;
+  var newReading=Math.max(curReading,getReadingWeekScore());
   var msg = localStorage.getItem('jc_victory_msg')||'';
   var payload={user_name:userName, week_start:weekStart, reading_score:newReading, victory_msg:msg, updated_at:new Date().toISOString()};
   if(existingId) payload.id=existingId;   // 带 id 才能 update 而不 insert 新行
   await sbUpsert('weekly_scores',payload);
 }
-async function loadLeaderboard(){
+async function syncReadingWeek(){
+  var want=getReadingWeekScore();
+  if(!want)return;
   var weekStart=getWeekStart();
-  // 只查阅读分，按 reading_score 排序，不混入口语等其他分数
-  var rows=await sbGet('weekly_scores','week_start=eq.'+weekStart+'&select=user_name,reading_score&order=reading_score.desc&limit=10');
+  var wRows=await sbGet('weekly_scores','user_name=eq.'+encodeURIComponent(userName)+'&week_start=eq.'+weekStart+'&select=id,reading_score');
+  var cur=0,eid=null;
+  if(wRows&&wRows.length>0){cur=wRows[0].reading_score||0;eid=wRows[0].id;}
+  if(cur>=want)return;
+  var payload={user_name:userName,week_start:weekStart,reading_score:want,updated_at:new Date().toISOString()};
+  if(eid)payload.id=eid;
+  await sbUpsert('weekly_scores',payload);
+}
+async function loadLeaderboard(){
+  var rows=await sbGet('reading_progress','select=user_name,total_completed&order=total_completed.desc&limit=20');
   var el=$('board-list');
   if(!rows||rows.length===0){el.innerHTML='<div style="font-size:13px;color:#B5A080;padding:20px">本周还没有人上榜，快去练习！</div>';return;}
   el.innerHTML=rows.map(function(r,i){
-    var pts = r.reading_score||0;
+    var pts = (r.total_completed||0)*50;
     if(pts===0) return ''; // 跳过 0 分
     var rankCls=i<3?'board-rank top3':'board-rank';
     var medal=i===0?'&#127947;':i===1?'&#129352;':i===2?'&#129353;':String(i+1);
@@ -1429,6 +1444,7 @@ function init(){
 
 async function startWithUser(){
   await loadProgress();
+  syncReadingWeek();
 
   var pct = Math.round((currentId-1)/200*100);
   $('prog-fill').style.width = pct+'%';
