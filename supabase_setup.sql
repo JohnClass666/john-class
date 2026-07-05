@@ -220,3 +220,4 @@ CREATE TABLE IF NOT EXISTS daily_logs (
 ALTER TABLE daily_logs ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "allow_all_daily_logs" ON daily_logs;
 CREATE POLICY "allow_all_daily_logs" ON daily_logs FOR ALL USING (true) WITH CHECK (true);
+
