@@ -203,3 +203,20 @@ CREATE TABLE IF NOT EXISTS bulletin (
 ALTER TABLE bulletin ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "allow_all_bulletin" ON bulletin;
 CREATE POLICY "allow_all_bulletin" ON bulletin FOR ALL USING (true) WITH CHECK (true);
+
+-- ════════════════════════════════════════
+-- 14. 每日学习战报
+-- jc-daily.js 自动写入：学习时间、当日各板块得分、战报数据
+-- ════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS daily_logs (
+  id            UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_name     TEXT NOT NULL,
+  log_date      DATE NOT NULL,
+  progress_data JSONB DEFAULT '{}',
+  updated_at    TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (user_name, log_date)
+);
+
+ALTER TABLE daily_logs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "allow_all_daily_logs" ON daily_logs;
+CREATE POLICY "allow_all_daily_logs" ON daily_logs FOR ALL USING (true) WITH CHECK (true);
