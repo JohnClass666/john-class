@@ -261,7 +261,16 @@ html[data-incoming-slide="1"] .page-wrap{transform:translateY(100%)}
   <div class="slbl">学习工具</div>
   <div class="grid" id="toolGrid"></div>
 
-  <div class="bulletin" id="bulletin" ondblclick="bulletinDblClick()">
+  <a class="crown" href="daily-report-demo.html" onclick="go(event,'daily-report-demo.html')" style="margin-top:28px;margin-bottom:0">
+    <div class="crown-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#FFF8E8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l2-9 4 4 3-7 3 7 4-4 2 9z"/><path d="M5 20h14"/><path d="M9 14h6"/></svg></div>
+    <div class="crown-tx">
+      <b>结束学习</b>
+      <span>生成今日战报 · 截图向家长或 John 炫耀</span>
+    </div>
+    <div class="crown-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#FFF8E8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>
+  </a>
+
+  <div class="bulletin" id="bulletin" ondblclick="bulletinDblClick()" style="display:none">
     <div class="bulletin-pin">
       <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -469,5 +478,6 @@ window.addEventListener('pageshow',function(){
   setTimeout(cleanup, 420);
 })();
 </script>
+  <script src="jc-daily.js"></script>
 </body>
 </html>
