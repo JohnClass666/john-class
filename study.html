@@ -571,6 +571,7 @@ function reportCardHTML(d){
 }
 function openDailyReport(e){
   if(e)e.preventDefault();
+  if(window.JCDaily&&JCDaily.flush)JCDaily.flush(true);
   var host=document.getElementById('reportHost');
   host.innerHTML=reportCardHTML(dailyReportData());
   document.getElementById('reportModal').classList.add('show');
