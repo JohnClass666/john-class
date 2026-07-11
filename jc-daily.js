@@ -61,6 +61,7 @@
   function normalizeModule(m){return MODULES[PAGE]&&MODULES[PAGE].id||m||'study';}
   function recordScore(module,points,label,count,unit){
     points=parseInt(points,10)||0;if(points<=0)return;
+    flushTimeNow(true);
     module=normalizeModule(module);label=label||LABELS[module]||module;unit=unit||UNITS[module]||'分';
     var log=read(), cur=log.modules[module]||{label:label,points:0,count:0,unit:unit};
     cur.label=label;cur.unit=unit;cur.points=(cur.points||0)+points;
@@ -156,18 +157,19 @@
   var lastActive=Date.now(), lastMark=nowMs();
   function markActive(){lastActive=Date.now();}
   ['click','keydown','touchstart','input','change','pointerdown','scroll','mousemove'].forEach(function(ev){window.addEventListener(ev,markActive,{passive:true});});
+  function flushTimeNow(countEvenIfHidden){
+    if(!current)return;
+    var now=nowMs(), delta=Math.max(0,now-lastMark);
+    lastMark=now;
+    if(document.hidden&&!countEvenIfHidden)return;
+    if(current.passive||Date.now()-lastActive<=IDLE_LIMIT)addElapsed(delta);
+  }
   if(current){
-    function flushTime(countEvenIfHidden){
-      var now=nowMs(), delta=Math.max(0,now-lastMark);
-      lastMark=now;
-      if(document.hidden&&!countEvenIfHidden)return;
-      if(current.passive||Date.now()-lastActive<=IDLE_LIMIT)addElapsed(delta);
-    }
-    setInterval(flushTime,TICK);
-    document.addEventListener('visibilitychange',function(){flushTime(document.hidden);lastMark=nowMs();if(!document.hidden)markActive();});
-    window.addEventListener('pagehide',function(){flushTime(true);});
-    window.addEventListener('beforeunload',function(){flushTime(true);});
+    setInterval(flushTimeNow,TICK);
+    document.addEventListener('visibilitychange',function(){flushTimeNow(document.hidden);lastMark=nowMs();if(!document.hidden)markActive();});
+    window.addEventListener('pagehide',function(){flushTimeNow(true);});
+    window.addEventListener('beforeunload',function(){flushTimeNow(true);});
   }
   setTimeout(installWrappers,0);setTimeout(installWrappers,800);setTimeout(installWrappers,2500);patchFetch();
-  window.JCDaily={recordScore:recordScore,summary:summary,read:read,write:write,addTime:addTime};
+  window.JCDaily={recordScore:recordScore,summary:summary,read:read,write:write,addTime:addTime,flush:flushTimeNow};
 })();
