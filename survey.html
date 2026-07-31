@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>问卷调查 · John Class</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5EDD8;--paper:#FFFDF6;--ink:#2A1E08;--soft:#9A8060;--gold:#B8956A;--line:rgba(184,149,106,.24);--deep:#2A1E08;--green:#4A7C3F}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+.layout{display:flex;min-height:100vh}
+.left{position:fixed;top:0;left:0;width:42%;height:100vh;overflow:hidden}
+.left img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.left::after{content:'';position:absolute;top:0;right:0;width:90px;height:100%;background:linear-gradient(to right,transparent,var(--bg))}
+.right{margin-left:42%;flex:1;min-height:100vh;padding:44px 42px 56px 24px;position:relative}
+.right::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 86% 10%,rgba(201,169,110,.08),transparent 42%),radial-gradient(circle at 18% 82%,rgba(120,160,80,.05),transparent 38%);pointer-events:none}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px;position:relative;z-index:1}
+.brand{font-size:13px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);text-decoration:none;font-family:'Noto Serif SC',Georgia,serif}
+.back{font-size:12px;color:var(--soft);text-decoration:none;display:flex;align-items:center;gap:5px}
+.wrap{position:relative;z-index:1;max-width:760px}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px}
+h1{font-family:'Noto Serif SC',Georgia,serif;font-size:clamp(28px,4vw,42px);line-height:1.16;font-weight:700;letter-spacing:-.03em;margin-bottom:10px}
+.sub{font-size:14px;color:var(--soft);line-height:1.8;max-width:620px;margin-bottom:24px}
+.card{background:rgba(255,255,255,.62);border:1px solid var(--line);border-radius:18px;padding:18px 20px;margin-bottom:14px;backdrop-filter:blur(5px)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field label{display:block;font-size:12px;color:var(--soft);margin-bottom:7px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:rgba(255,255,255,.86);border:1.5px solid rgba(184,149,106,.28);border-radius:12px;outline:none;transition:border-color .18s,box-shadow .18s}
+input,select{height:44px;padding:0 12px}
+textarea{min-height:92px;resize:vertical;padding:12px 14px;line-height:1.7}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,149,106,.12)}
+.q{padding:18px 0;border-top:1px solid rgba(184,149,106,.18)}
+.q:first-child{border-top:none;padding-top:0}
+.q-title{font-size:15px;font-weight:650;line-height:1.55;margin-bottom:12px}
+.opts{display:grid;gap:8px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border:1px solid rgba(184,149,106,.2);border-radius:12px;background:rgba(255,253,246,.62);cursor:pointer;transition:border-color .16s,background .16s}
+.opt:hover{border-color:rgba(184,149,106,.45);background:rgba(255,253,246,.9)}
+.opt input{width:17px;height:17px;margin-top:1px;accent-color:#7A5414;flex:0 0 auto}
+.opt span{font-size:13.5px;line-height:1.55}
+.actions{display:flex;gap:10px;align-items:center;margin-top:18px}
+.btn{border:none;border-radius:14px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;height:48px;padding:0 22px;letter-spacing:.02em;transition:all .18s;display:flex;align-items:center;justify-content:center}
+.primary{background:var(--deep);color:#F5EDD8;box-shadow:0 6px 20px rgba(42,30,8,.18)}
+.primary:hover{background:#3D2E14;transform:translateY(-1px)}
+.ghost{background:rgba(255,255,255,.62);color:var(--ink);border:1.5px solid rgba(184,149,106,.3)}
+.ghost:hover{background:rgba(255,255,255,.86);border-color:var(--gold);transform:translateY(-1px);box-shadow:0 6px 20px rgba(42,30,8,.08)}
+.btn:active{transform:scale(.97)}
+.status{font-size:13px;color:var(--soft);line-height:1.6}
+.done{display:none;text-align:center;padding:38px 24px}
+.done.on{display:block}
+.done-mark{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#4A7C3F,#7AA56C);color:#FFFDF6;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.done h2{font-family:'Noto Serif SC',Georgia,serif;font-size:26px;margin-bottom:8px}
+.hidden{display:none}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 18px}
+.pill{font-size:12px;color:#7A5414;background:rgba(184,149,106,.12);border:1px solid rgba(184,149,106,.22);border-radius:999px;padding:6px 10px}
+.warn{color:#C0392B}
+.right>*{animation:fi .6s cubic-bezier(.22,1,.36,1) both}
+.nav{animation-delay:.04s}.wrap{animation-delay:.12s}
+@keyframes fi{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+@media(max-width:760px){.layout{display:block}.left{position:relative;width:100%;height:46vw;min-height:170px;max-height:300px}.left::after{top:auto;bottom:0;left:0;width:100%;height:70px;background:linear-gradient(to bottom,transparent,var(--bg))}.right{margin-left:0;padding:28px 18px 46px}.grid{grid-template-columns:1fr}.card{border-radius:16px;padding:16px}.actions{flex-direction:column;align-items:stretch}.btn{width:100%}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="left"><img src="bg.png" alt="John Class"></div>
+  <main class="right">
+    <div class="nav">
+      <a class="brand" href="index.html">John Class</a>
+      <a class="back" href="index.html" onclick="go(event,'index.html')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>返回
+      </a>
+    </div>
+    <section class="wrap" id="formWrap">
+      <div class="eyebrow">Course Reflection</div>
+      <h1>问卷调查</h1>
+      <p class="sub">这份问卷用来帮助 John 更了解你的学习目标、课堂感受和下一步需要。选择最接近你的答案就好，没有标准答案。</p>
+
+      <div class="card">
+        <div class="grid">
+          <div class="field">
+            <label for="studentName">你的名字</label>
+            <input id="studentName" maxlength="40" placeholder="例如：A / David / 小王">
+          </div>
+          <div class="field">
+            <label for="className">班级或备注</label>
+            <input id="className" maxlength="60">
+          </div>
+          <div class="field">
+            <label for="courseType">课程类型</label>
+            <select id="courseType" onchange="renderSurvey()">
+              <option value="programmer_english">程序员英语小班</option>
+              <option value="k12_exam">K12 应试提升</option>
+              <option value="oral_growth">能力提升 / 口语表达</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="surveyStage">问卷阶段</label>
+            <select id="surveyStage" onchange="renderSurvey()">
+              <option value="start">开课第一天</option>
+              <option value="finish">结课最后一天</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="pill-row" id="surveyTags"></div>
+      <form class="card" id="surveyForm"></form>
+      <div class="actions">
+        <button class="btn primary" id="submitBtn" onclick="submitSurvey(event)">提交问卷</button>
+        <button class="btn ghost" onclick="resetSurvey(event)">重新选择</button>
+        <div class="status" id="statusText"></div>
+      </div>
+    </section>
+
+    <section class="wrap done" id="doneWrap">
+      <div class="card">
+        <div class="done-mark">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <h2>已经收到</h2>
+        <p class="sub" id="doneText">谢谢你认真填写。John 会根据这些内容调整课程。</p>
+        <button class="btn primary" onclick="go(null,'index.html')">回到首页</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const SB_URL='https://ghunrrtrdgicbmixsqrc.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdodW5ycnRyZGdpY2JtaXhzcXJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mzg3OTMsImV4cCI6MjA5NjMxNDc5M30.n3_yRr6iR0gtEo7HSxGWO1jBGs1aaALAchVhqjgnOqs';
+const COURSE_LABELS={programmer_english:'程序员英语小班',k12_exam:'K12 应试提升',oral_growth:'能力提升 / 口语表达'};
+const STAGE_LABELS={start:'开课第一天',finish:'结课最后一天'};
+
+const SURVEYS={
+programmer_english:{
+tags:['企业内部小班','英语听说','技术沟通'],
+start:[
+['你现在听懂英文技术交流的把握是？',['基本听不懂','能听懂少量关键词','能听懂大概意思','能听懂多数内容','能较轻松听懂并跟上讨论'],'listening'],
+['你现在用英语解释技术问题或工作内容的把握是？',['基本说不出来','只能说零散词句','能简单说明','能比较清楚地说明','能有条理地说明并补充细节'],'speaking'],
+['你现在在英文会议或讨论中开口的状态是？',['基本不敢开口','很少开口','被问到时可以简单回答','能主动表达一些想法','能自然参与讨论'],'confidence'],
+['遇到没听懂的英文内容时，你通常能否追问或确认？',['基本不会追问','偶尔能追问','能用简单句确认','能较清楚地追问细节','能自然澄清、确认和推进对话'],'repair'],
+['你最希望这次课程优先提升哪项能力？',['听懂英文会议/讨论','用英语解释代码、需求或问题','更敢开口表达','学会追问、确认和沟通细节','提升技术场景中的常用表达'],'need'],
+['你最常遇到的英文工作场景是？',['听英文会议或线上讨论','阅读/理解英文技术资料后口头交流','向同事说明进度、问题或方案','和海外同事/客户沟通需求','做英文技术分享或演示'],'scene'],
+['你希望结课后最明显的变化是？',['听英文内容更轻松','说技术内容更清楚','更敢在小组或会议中开口','更会追问和确认信息','能把课堂表达直接用到工作里'],'goal'],
+['开放题：你希望老师提前了解哪个真实英文工作场景或沟通困难？',null,'open']
+],
+finish:[
+['经过这段课程，你在听英文技术内容时，已经能做到哪一步？',['能抓到更多关键词','能听懂大概主题','能听懂部分细节','能跟上多数讨论内容','能听懂后继续参与交流'],'listening'],
+['现在让你用英语说明一个工作内容，你已经更接近哪种状态？',['能说出关键词','能说出简单句','能说明基本背景','能讲清楚问题或方案','能有条理地补充原因和细节'],'speaking'],
+['在英文讨论或小组练习中，你现在的开口状态更像是？',['比以前更愿意尝试','被问到时能回答一句','能完成简单表达','能主动说出想法','能自然接上别人的话'],'confidence'],
+['遇到没听懂的英文内容时，你现在更能做到什么？',['能意识到哪里没听懂','能请对方重复','能确认关键词','能追问具体细节','能澄清信息并继续沟通'],'repair'],
+['这次课程让你最有“我能用上”的收获是？',['常用技术表达','听力抓重点的方法','解释代码/需求/问题的表达框架','会议中追问和确认的句型','更敢开口的状态'],'gain'],
+['哪种课堂练习最让你感觉自己有进步？',['听力跟读和复述','技术话题表达','会议讨论模拟','追问、确认、澄清训练','工作场景角色扮演'],'practice'],
+['下一阶段你最想把英语用到哪个更真实的工作场景？',['听懂英文会议','解释自己的工作进度','说明技术问题','参与需求讨论','做一次简短英文技术分享'],'next'],
+['开放题：请写下一个你现在比开课前更敢说、听得更懂，或更会表达的具体场景。',null,'open']
+]},
+k12_exam:{
+tags:['学生应试','信心建设','方法复盘'],
+start:[
+['你现在对这门学科的信心是？',['很没有信心','有一点信心','一般','比较有信心','很有信心'],'confidence'],
+['你现在对基础知识的掌握是？',['很不牢固','有不少漏洞','一般','比较牢固','很牢固'],'foundation'],
+['你现在做题时最常见的情况是？',['经常不会下手','会做一部分','简单题可以，难题困难','大多数题能完成','能比较稳定地完成不同题型'],'problem_solving'],
+['你现在考试或练习中的主要问题是？',['基础不牢','审题不准','做题速度慢','容易粗心','难题缺少思路'],'barrier'],
+['你最希望这次课程帮助你提升什么？',['补基础','学解题方法','提高做题速度','减少粗心错误','提高考试信心'],'need'],
+['你希望课堂练习的方式更偏向哪种？',['老师多讲知识点','老师多讲例题','课堂多练题','多讲错题','多总结考试方法'],'practice'],
+['你希望结课后最明显的变化是？',['基础更牢','做题更有思路','速度更快','错误更少','考试更有信心'],'goal'],
+['开放题：你最希望老师怎么帮助你？',null,'open']
+],
+finish:[
+['经过这段课程，你觉得自己在这门学科上已经做到哪一点？',['比以前更愿意学','能听懂更多知识点','能做对更多基础题','遇到题目更知道怎么想','对考试更有信心'],'confidence'],
+['现在看到一道题时，你的状态更像是？',['会先读题再想办法','能找到题目中的关键信息','能想到老师讲过的方法','能按步骤完成一部分','能比较稳定地完成同类题'],'problem_solving'],
+['这段课让你在哪方面最有进步感？',['基础知识更清楚','审题更认真','做题方法更多','错题原因更明白','考试时更不慌'],'gain'],
+['以前容易错的地方，现在你已经更能做到什么？',['知道自己常错在哪里','会检查一部分题','会整理错题原因','会用老师讲的方法改错','能提醒自己避免同类错误'],'self_check'],
+['哪种课堂内容最让你觉得“我会了”？',['知识点梳理','例题讲解','课堂练习','错题分析','考试方法总结'],'practice'],
+['你觉得这次课程最帮助你建立了哪种能力？',['听懂知识点','独立做题','找到解题步骤','检查和改错','面对考试更有信心'],'ability'],
+['下一阶段你最想继续提升哪一点？',['基础更牢','做题更快','难题更有思路','错题更少','考试发挥更稳定'],'next'],
+['开放题：请写下这段课里一个让你觉得“我比以前会了”的小变化。',null,'open']
+]},
+oral_growth:{
+tags:['口语表达','真实场景','成长复盘'],
+start:[
+['你现在开口表达的信心是？',['很害怕开口','有点害怕','一般','比较敢说','很敢说'],'confidence'],
+['你现在表达时的流利程度是？',['经常说不出来','经常停顿','能说但不连贯','比较连贯','很自然流利'],'fluency'],
+['你现在表达内容的清楚程度是？',['经常表达不清','有时别人听不明白','基本能表达清楚','大多数时候清楚','能清楚、有条理地表达'],'clarity'],
+['你现在听到问题后的反应能力是？',['经常不知道怎么回答','需要很久思考','能回答简单问题','能较快回答常见问题','能自然回应并追问'],'response'],
+['你最希望这次课程提升什么？',['更敢开口','表达更流利','发音/用词更准确','表达更有逻辑','更能应对真实场景'],'need'],
+['你最希望课堂练习哪类场景？',['日常交流','学校/考试表达','工作或面试沟通','演讲展示','即兴问答'],'scene'],
+['你希望结课后最明显的变化是？',['更敢说','说得更顺','说得更准确','说得更有条理','能在真实场景中使用'],'goal'],
+['开放题：你最想在哪个真实场景里用到这项能力？',null,'open']
+],
+finish:[
+['经过这段课程，你现在开口表达时更接近哪种状态？',['比以前更愿意尝试','能说出简单想法','能把一句话说完整','能连续说几句话','能比较自然地表达观点'],'confidence'],
+['现在表达一个话题时，你已经更能做到什么？',['想到关键词','说出基本意思','按顺序表达','补充例子或原因','有条理地完成一段表达'],'clarity'],
+['和别人互动时，你现在更能做到哪一步？',['听懂对方部分意思','能做简单回应','能回答常见问题','能追问或补充','能让对话继续下去'],'interaction'],
+['这段课程让你在哪方面最有进步感？',['更敢开口','说得更顺','表达更清楚','反应更快','更能应对真实场景'],'gain'],
+['哪种练习最让你感觉“我真的能说出来”？',['跟读和模仿','句型替换','话题表达','情景对话','即兴问答/展示'],'practice'],
+['你现在最愿意尝试哪个表达挑战？',['主动说一句完整表达','完成一个 30 秒表达','和同伴进行一段对话','回答一个临场问题','做一次简短展示'],'challenge'],
+['下一阶段你最想继续提升哪一点？',['更敢说','更流利','更准确','更有逻辑','更适应真实场景'],'next'],
+['开放题：请写下一个你现在比开课前更敢表达、说得更顺，或更有信心的具体时刻。',null,'open']
+]}
+};
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function currentQuestions(){return SURVEYS[courseType.value][surveyStage.value];}
+function renderSurvey(){
+  var type=courseType.value, stage=surveyStage.value, qs=currentQuestions();
+  surveyTags.innerHTML=SURVEYS[type].tags.concat([STAGE_LABELS[stage]]).map(function(t){return '<span class="pill">'+esc(t)+'</span>';}).join('');
+  surveyForm.innerHTML=qs.map(function(q,i){
+    var title='<div class="q-title">'+(i+1)+'. '+esc(q[0])+'</div>';
+    if(q[2]==='open') return '<div class="q">'+title+'<textarea id="q'+i+'" maxlength="500" placeholder="写一两句话就好，John 会认真看。"></textarea></div>';
+    return '<div class="q">'+title+'<div class="opts">'+q[1].map(function(opt,j){
+      return '<label class="opt"><input type="radio" name="q'+i+'" value="'+j+'"><span>'+esc(opt)+'</span></label>';
+    }).join('')+'</div></div>';
+  }).join('');
+  statusText.textContent='';
+  try{localStorage.setItem('jc_survey_type',type);localStorage.setItem('jc_survey_stage',stage);}catch(e){}
+}
+function restore(){
+  var saved=localStorage.getItem('jc_username')||localStorage.getItem('jc_student_name')||localStorage.getItem('jc_reading_name')||'';
+  studentName.value=saved&&saved!=='同学'?saved:'';
+  var t=localStorage.getItem('jc_survey_type'), s=localStorage.getItem('jc_survey_stage');
+  if(t&&SURVEYS[t]) courseType.value=t;
+  if(s&&(s==='start'||s==='finish')) surveyStage.value=s;
+  renderSurvey();
+}
+function collectAnswers(){
+  var qs=currentQuestions();
+  return qs.map(function(q,i){
+    if(q[2]==='open') return {question:q[0],dimension:q[2],text:document.getElementById('q'+i).value.trim()};
+    var picked=document.querySelector('input[name="q'+i+'"]:checked');
+    if(!picked) return null;
+    var idx=Number(picked.value);
+    return {question:q[0],dimension:q[2],score:idx+1,choice:q[1][idx],choice_index:idx};
+  });
+}
+function validate(answers){
+  if(!studentName.value.trim()) return '请先填写你的名字。';
+  for(var i=0;i<answers.length;i++){ if(!answers[i]) return '第 '+(i+1)+' 题还没有选择。'; }
+  return '';
+}
+async function submitSurvey(e){
+  if(e)e.preventDefault();
+  var answers=collectAnswers();
+  var msg=validate(answers);
+  if(msg){statusText.innerHTML='<span class="warn">'+msg+'</span>';return;}
+  var btn=document.getElementById('submitBtn');
+  btn.disabled=true;btn.textContent='提交中...';statusText.textContent='正在保存你的问卷。';
+  var payload={
+    student_name:studentName.value.trim(),
+    class_name:className.value.trim(),
+    course_type:courseType.value,
+    survey_stage:surveyStage.value,
+    answers:answers,
+    open_answer:(answers.find(function(a){return a.dimension==='open';})||{}).text||'',
+    created_at:new Date().toISOString()
+  };
+  try{
+    var res=await fetch(SB_URL+'/rest/v1/survey_responses',{
+      method:'POST',
+      headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+      body:JSON.stringify(payload)
+    });
+    if(!res.ok) throw new Error(res.status);
+    localStorage.setItem('jc_username',payload.student_name);
+    formWrap.classList.add('hidden');
+    doneWrap.classList.add('on');
+    doneText.textContent=surveyStage.value==='finish'?'谢谢你完成这次阶段复盘。下一步不是从零开始，而是在已经做到的基础上继续提高。':'谢谢你认真填写。John 会根据这些内容安排更适合你的课堂。';
+  }catch(err){
+    statusText.innerHTML='<span class="warn">保存失败。可能是 Supabase 还没有创建 survey_responses 表。</span>';
+    btn.disabled=false;btn.textContent='提交问卷';
+  }
+}
+function resetSurvey(e){if(e)e.preventDefault();surveyForm.reset();statusText.textContent='已清空当前选择。';}
+function go(e,href){if(e)e.preventDefault();window.location.href=href;}
+restore();
+</script>
+<script src="audio.js"></script>
+<script src="bgm-cross.js"></script>
+</body>
+</html>
