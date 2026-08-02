@@ -501,8 +501,8 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
   </div>
   <div class="center-body">
     <div class="stagebadge pass" id="done-icon">&#127769;</div>
-    <div class="done-h" id="done-title">今天先休息一下</div>
-    <div class="done-rest" id="done-msg">两句已完成。大脑需要时间消化，明天继续。</div>
+    <div class="done-h" id="done-title">阶段完成</div>
+    <div class="done-rest" id="done-msg">你可以继续下一句，也可以回到地图复习。</div>
     <div style="width:100%">
       <button class="btn accent" id="btn-xuao">&#127942;&nbsp; 炫耀一下</button>
       <div style="font-size:12px;color:var(--faint);text-align:center;margin-bottom:14px">拍下写好的句子找 John 打卡</div>
@@ -1129,8 +1129,9 @@ function appendSpans(spans, comps, fullText){
   });
 }
 
-// ═══════════ 每日打卡限制 ═══════════
-var DAILY_LIMIT = 2; // 每天最多做2句新句子
+// ═══════════ 连续训练设置 ═══════════
+// 保持句子按顺序解锁，但取消“每天最多 2 句”的限制。
+var DAILY_LIMIT = Infinity;
 
 function getToday(){
   return (function(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})(); // YYYY-MM-DD
@@ -1154,12 +1155,12 @@ function saveDailyState(state){
 }
 
 function isDailyLocked(){
-  return getDailyState().count >= DAILY_LIMIT;
+  return false;
 }
 
 function incrementDailyCount(){
   var state = getDailyState();
-  state.count = Math.min(state.count + 1, DAILY_LIMIT);
+  state.count = state.count + 1;
   saveDailyState(state);
   return state;
 }
@@ -1414,17 +1415,9 @@ async function completeAndNext(save){
   }
 
   currentId++;
-  if(isDailyLocked()){
-    // 今日名额用完，展示完成屏
-    $('done-icon').textContent = '\u{1F319}';
-    $('done-title').textContent = '今天先休息一下';
-    $('done-msg').textContent = '今日两句已完成！大脑需要时间消化，明天继续新句子。\n已完成的句子随时可以在地图上复习。';
-    show('p-done');
-  } else {
-    var s = getSentence(currentId);
-    setTag(s); setDots(1); startCD();
-    show('p1'); step=1;
-  }
+  var s = getSentence(currentId);
+  setTag(s); setDots(1); startCD();
+  show('p1'); step=1;
 }
 
 // ── INIT ──
@@ -1502,11 +1495,11 @@ async function startWithUser(){
     }
   }, 100);
 
-  // Click handler for current day（新句子，受每日限制）
+  // Click handler for current day（新句子，按顺序解锁，不再受每日次数限制）
   var curNode2 = $('hall-grid').querySelector('.current');
   if(curNode2) curNode2.addEventListener('click',function(){
     clickSound();
-    if(isDailyLocked()){ show('p-locked'); updateLockScreen(); } else { goToPractice(); }
+    goToPractice();
   });
 
   // Click handlers for done days（复习，不受每日限制）
@@ -1524,7 +1517,7 @@ async function startWithUser(){
 
 // ── EVENTS ──
 $('btn-start').addEventListener('click',function(){
-  if(isDailyLocked()){ show('p-locked'); updateLockScreen(); } else { goToPractice(); }
+  goToPractice();
 });
 $('btn-board-open').addEventListener('click',function(){loadLeaderboard();show('p-board');});
 $('btn-lock-board').addEventListener('click',function(){loadLeaderboard();show('p-board');});
