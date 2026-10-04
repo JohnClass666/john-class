@@ -333,6 +333,36 @@ body{font-family:var(--fnt);color:var(--ink);-webkit-font-smoothing:antialiased;
 .portal-meta{font-size:12px;font-weight:700;color:var(--accent-deep);margin-top:14px}
 .portal-mark{position:absolute;right:18px;bottom:8px;font-family:var(--fnt-serif);font-size:86px;line-height:1;color:rgba(122,84,20,.12);font-weight:700}
 .portal-card.dark .portal-mark{color:rgba(255,248,232,.14)}
+/* ══ 雅思板块 ══ */
+.portal-card.ielts{background:linear-gradient(150deg,#FFF6DF 0%,#F3DDA8 100%)}
+.iw-sec{margin-bottom:22px}
+.iw-sec-hd{display:flex;align-items:baseline;justify-content:space-between;margin:0 2px 8px}
+.iw-sec-hd b{font-size:15px;color:var(--ink);font-family:var(--fnt-serif)}
+.iw-sec-hd span{font-size:12px;color:var(--soft);font-weight:600}
+.iw-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--hair);border-radius:var(--r-md);background:var(--bg3);margin-bottom:8px;cursor:pointer}
+.iw-row:active{transform:translateY(1px)}
+.iw-row .st{width:28px;height:28px;flex:0 0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:var(--hair);color:var(--soft)}
+.iw-row.done .st{background:var(--accent);color:#FDF8F0}
+.iw-row.cur{border-color:var(--accent);background:var(--accent-soft)}
+.iw-row.cur .st{background:#FDF8F0;color:var(--accent-deep);border:1.5px solid var(--accent)}
+.iw-row.lock{opacity:.45;cursor:not-allowed}
+.iw-row .tx{flex:1;min-width:0;font-size:14px;line-height:1.5;color:var(--ink)}
+.iw-row .tx small{display:block;font-size:11.5px;color:var(--soft);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iw-row .pt{font-size:11.5px;font-weight:700;color:var(--accent-deep);flex:0 0 auto}
+.iw-cn{font-size:19px;line-height:1.7;color:var(--ink);font-family:var(--fnt-serif)}
+.iw-note{display:inline-block;margin-top:8px;font-size:11.5px;color:var(--accent-deep);background:var(--accent-soft);border-radius:var(--r-pill);padding:2px 9px}
+.iw-input{width:100%;min-height:96px;padding:13px 14px;border:1.5px solid var(--hair);border-radius:var(--r-md);background:#FFFDF8;
+  font-size:16px;line-height:1.6;color:var(--ink);font-family:var(--fnt);resize:vertical;outline:none;-webkit-appearance:none}
+.iw-input.short{min-height:52px}
+.iw-input:focus{border-color:var(--accent)}
+.iw-input:disabled{opacity:.6}
+.iw-ans{margin-top:8px;padding:12px 14px;border-radius:14px;background:#FFFDF8;border:1.5px dashed var(--accent);font-size:16px;line-height:1.7;color:var(--ink);font-family:var(--fnt-serif)}
+.iw-ans mark{background:#FBE3A6;color:var(--ink);border-radius:4px;padding:0 2px}
+.iw-ans .alt{display:block;font-size:12.5px;color:var(--soft);font-family:var(--fnt);margin-top:6px}
+.iw-yours{font-size:13px;color:var(--soft);margin-top:8px;line-height:1.6}
+.iw-yours s{color:var(--warn);text-decoration-thickness:1.5px}
+.iw-tries{font-size:12px;color:var(--soft);margin-left:auto}
+.iw-link{display:block;margin:10px auto 0;background:none;border:none;color:var(--soft);font-size:13px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-family:var(--fnt)}
 .range-card{position:relative;padding:24px 20px 20px}
 .range-head{display:flex;align-items:center;justify-content:flex-start;margin-bottom:16px;padding-right:96px}
 .range-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:var(--r-pill);
@@ -431,6 +461,13 @@ body{font-family:var(--fnt);color:var(--ink);-webkit-font-smoothing:antialiased;
       <div class="portal-sub">丰富性训练：炼词、炼句、炼意、炼篇，再进试炼场。</div>
       <div class="portal-meta">会升级，表达更美 · 试炼通过 +3000</div>
       <div class="portal-mark">炼</div>
+    </div>
+    <div class="portal-card ielts" onclick="showIelts()">
+      <div class="portal-k">IELTS Writing</div>
+      <div class="portal-title">雅思写作</div>
+      <div class="portal-sub">十大句式 + 十大话题词汇，中译英一个个磨：错了看答案、记住、再挑战。</div>
+      <div class="portal-meta">单词 +3 · 短语 +8 · 长句 +20</div>
+      <div class="portal-mark">雅</div>
     </div>
   </div>
 
@@ -622,6 +659,66 @@ body{font-family:var(--fnt);color:var(--ink);-webkit-font-smoothing:antialiased;
   </div>
 </div>
 
+<!-- ══ IELTS HUB ══ -->
+<div class="screen" id="s-ielts">
+  <div class="bar">
+    <button class="back" onclick="showHome()">‹</button>
+    <span class="htitle">雅思写作</span>
+    <span class="sp"></span>
+    <span class="meta">中译英</span>
+  </div>
+  <div style="font-size:13px;color:var(--soft);line-height:1.7;margin-bottom:18px">看中文写英文，单词要和标准答案一模一样（标点、大小写不计较）。错了会给出答案，记住后答案消失、重新挑战，磨出来才能解锁下一个。</div>
+  <div class="slabel">选择板块</div>
+  <div class="lvls" id="iw-hub"></div>
+</div>
+
+<!-- ══ IELTS LIST ══ -->
+<div class="screen" id="s-ielts-list">
+  <div class="bar">
+    <button class="back" onclick="showIelts()">‹</button>
+    <span class="htitle" id="iw-list-title"></span>
+    <span class="sp"></span>
+    <span class="meta" id="iw-list-meta"></span>
+  </div>
+  <button class="btn accent" id="iw-continue" onclick="iwContinue()" style="margin-bottom:22px">继续挑战</button>
+  <div id="iw-list"></div>
+</div>
+
+<!-- ══ IELTS DRILL ══ -->
+<div class="screen" id="s-ielts-drill">
+  <div class="bar">
+    <button class="back" onclick="iwExitDrill()">‹</button>
+    <span class="htitle" id="iw-drill-title"></span>
+    <span class="sp"></span>
+    <span class="meta" id="iw-drill-prog"></span>
+  </div>
+  <div class="qcard range-card">
+    <div class="range-head" style="padding-right:0">
+      <div class="range-chip" id="iw-chip"></div>
+      <span class="iw-tries" id="iw-tries"></span>
+    </div>
+    <div class="range-block">
+      <div class="range-lbl">中文</div>
+      <div class="iw-cn" id="iw-cn"></div>
+      <div id="iw-note"></div>
+    </div>
+    <div class="range-block answer">
+      <div class="range-lbl">写出英文</div>
+      <textarea class="iw-input" id="iw-in" placeholder="在这里输入英文…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+    </div>
+    <div class="fbk" id="iw-fbk">
+      <div class="fbk-row"><span class="fbk-icon" id="iw-fbk-icon"></span><span class="fbk-title" id="iw-fbk-title"></span></div>
+      <div id="iw-fbk-body"></div>
+    </div>
+    <div class="drill-acts" style="margin-top:10px">
+      <button class="btn accent" id="iw-sub" onclick="iwSubmit(false)" style="flex:1">提交</button>
+      <button class="btn line" id="iw-again" onclick="iwAgain()" style="display:none;flex:1">我记住了，再挑战</button>
+      <button class="btn accent" id="iw-next" onclick="iwNext()" style="display:none;flex:1">下一个 →</button>
+    </div>
+    <button class="iw-link" id="iw-giveup" onclick="iwSubmit(true)">我不会，先看答案</button>
+  </div>
+</div>
+
 <!-- ══ ERRORS ══ -->
 <div class="screen" id="s-errors">
   <div class="bar">
@@ -732,8 +829,8 @@ const CATS=[
     [`Ten dollars ______ (be) enough.`,['is']],
     [`Physics ______ (be) difficult for me.`,['is']],
     [`The news ______ (surprise) us.`,['surprises']],
-    [`My family ______ (be) having dinner now.`,['are']],
-    [`The police ______ (search) for the thief.`,['are']],
+    [`My family ______ (be) having dinner now.`,['are','is']],
+    [`The police ______ (search) for the thief now.`,['are searching']],
     [`Bread and butter ______ (be) his favorite breakfast.`,['is']],
     [`Neither of the answers ______ (be) correct.`,['is']],
     [`Everyone ______ (like) the idea.`,['likes']],
@@ -792,14 +889,14 @@ const CATS=[
     [`She ______ (be) a teacher since she graduated.`,['has been']],
     [`I ______ (never be) to London.`,[`have never been`]],
     [`He ______ (just leave).`,['has just left']],
-    [`When I got home, my mom ______ (cook).`,['was cooking']],
+    [`When I got home, my mom ______ (cook) dinner.`,['was cooking','had cooked']],
   ]},
   {name:'困难',sub:'虚拟语气 & 复杂时态',qs:[
     [`By next month, I ______ (work) here for 10 years.`,['will have worked']],
     [`She looked tired because she ______ (work) all day.`,['had been working']],
     [`If I ______ (be) you, I would accept the offer.`,['were']],
     [`I wish I ______ (know) the answer.`,['knew']],
-    [`He suggested that she ______ (go) early.`,['go']],
+    [`He suggested that she ______ (go) early.`,['go','should go']],
     [`It is high time we ______ (leave).`,['left']],
     [`Had I known, I ______ (not go).`,[`would not have gone`,`wouldn't have gone`]],
     [`She ______ (write) three reports so far this week.`,['has written']],
@@ -809,7 +906,7 @@ const CATS=[
     [`I would rather you ______ (not smoke) here.`,[`didn't smoke`,`did not smoke`]],
     [`By the time we arrive, they ______ (leave).`,['will have left']],
     [`She told me she ______ (finish) the work the next day.`,['would finish']],
-    [`I ______ (think) of going, but I changed my mind.`,['had thought']],
+    [`I ______ (think) of going, but I changed my mind.`,['had thought','was thinking','thought']],
   ]},
  ]},
 {name:'冠词误用',en:'Article Misuse',note:'填入 a / an / the，零冠词填 /',
@@ -824,7 +921,7 @@ const CATS=[
     [`They went to ______ Great Wall.`,['the']],
     [`I have ______ breakfast at 7.`,['/','']],
     [`He is ______ tallest boy.`,['the']],
-    [`______ Amazon is the longest river.`,['the']],
+    [`______ Nile is the longest river in the world.`,['the']],
     [`I need ______ new phone.`,['a']],
     [`She is ______ honest person.`,['an']],
     [`______ water is essential.`,['/','']],
@@ -849,7 +946,7 @@ const CATS=[
     [`He plays ______ violin very well.`,['the']],
   ]},
   {name:'困难',sub:'难点冠词辨析',qs:[
-    [`He is ______ Newton of our age.`,['the']],
+    [`He is ______ Newton of our age.`,['the','a']],
     [`______ more you read, the more you know.`,['the']],
     [`She is by far ______ better student.`,['the']],
     [`He was elected ______ chairman.`,['/','']],
@@ -886,7 +983,7 @@ const CATS=[
     [`Those ______ (family) are happy.`,['families']],
   ]},
   {name:'中等',sub:'不规则与集合名词',qs:[
-    [`I saw two ______ (passer-by).`,['passers-by']],
+    [`I saw two ______ (passer-by).`,['passers-by','passersby']],
     [`The ______ (police) are coming.`,['police']],
     [`He bought a pair of ______ (shoe).`,['shoes']],
     [`The ______ (cattle) are grazing.`,['cattle']],
@@ -899,14 +996,14 @@ const CATS=[
     [`Some ______ (deer) are in the forest.`,['deer']],
     [`These ______ (phenomenon) are rare.`,['phenomena']],
     [`Keep your ______ (belonging) safe.`,['belongings']],
-    [`I have two ______ (scissor).`,['scissors']],
+    [`I need a pair of ______ (scissor).`,['scissors']],
     [`They bought new ______ (furniture).`,['furniture']],
   ]},
   {name:'困难',sub:'学术 & 难点名词',qs:[
     [`The ______ (crisis) are severe.`,['crises']],
     [`Three ______ (analysis) were presented.`,['analyses']],
     [`He has several ______ (medium) of communication.`,['media']],
-    [`A number of ______ (passerby) gathered.`,['passersby']],
+    [`A number of ______ (passerby) gathered.`,['passersby','passers-by']],
     [`The ______ (phenomenon) is strange.`,['phenomenon']],
     [`Too much ______ (homework) was assigned.`,['homework']],
     [`Some ______ (fish) are swimming in the pond.`,['fish']],
@@ -950,7 +1047,7 @@ const CATS=[
     [`We are looking forward ______ your visit.`,['to']],
     [`The key ______ success is hard work.`,['to']],
     [`I have no interest ______ politics.`,['in']],
-    [`He is concerned ______ his health.`,['about']],
+    [`He is concerned ______ his health.`,['about','for']],
     [`I prefer coffee ______ tea.`,['to']],
     [`She is capable ______ doing it.`,['of']],
     [`They are busy ______ their homework.`,['with']],
@@ -968,7 +1065,7 @@ const CATS=[
     [`We need to invest ______ education.`,['in']],
     [`He is deficient ______ vitamin D.`,['in']],
     [`The company provides us ______ tools.`,['with']],
-    [`I'm hopeful ______ success.`,['of']],
+    [`I'm hopeful ______ success.`,['of','about']],
     [`They are innocent ______ the crime.`,['of']],
     [`This song is familiar ______ me.`,['to']],
     [`We must comply ______ the rules.`,['with']],
@@ -997,13 +1094,13 @@ const CATS=[
     [`We must ______ (strength) our unity.`,['strengthen']],
     [`There is a ______ (possible) that he will come.`,['possibility']],
     [`He is a very ______ (create) person.`,['creative']],
-    [`I ______ (apology) for my mistake.`,['apologize']],
+    [`I ______ (apology) for my mistake.`,['apologize','apologise']],
     [`His ______ (explain) was clear.`,['explanation']],
     [`They are ______ (pride) of their son.`,['proud']],
     [`She showed great ______ (brave) during the fire.`,['bravery']],
     [`He needs to ______ (wide) his knowledge.`,['widen']],
     [`The ______ (long) of the bridge is 200 meters.`,['length']],
-    [`We should ______ (modern) the equipment.`,['modernize']],
+    [`We should ______ (modern) the equipment.`,['modernize','modernise']],
     [`Her ______ (arrive) was unexpected.`,['arrival']],
     [`I ______ (simple) don't understand.`,['simply']],
     [`The movie had a surprising ______ (end).`,['ending']],
@@ -1013,7 +1110,7 @@ const CATS=[
   {name:'困难',sub:'高频混淆辨析',qs:[
     [`The government introduced new ______ (economy) policies.`,['economic']],
     [`We need to be more ______ (sense) with money.`,['sensible']],
-    [`This is a ______ (history) event.`,['historic']],
+    [`This is a ______ (history) event.`,['historic','historical']],
     [`He is very ______ (competition).`,['competitive']],
     [`I have ______ (confident) in you.`,['confidence']],
     [`She is ______ (ambition) to succeed.`,['ambitious']],
@@ -1032,11 +1129,11 @@ const CATS=[
  levels:[
   {name:'简单',sub:'基础并列连词',qs:[
     [`I was tired, ______ I went to bed early.`,['so']],
-    [`She likes coffee, ______ he likes tea.`,['but']],
+    [`She likes coffee, ______ he likes tea.`,['but','while','whereas']],
     [`We can go by bus, ______ we can walk.`,['or']],
     [`He studied hard, ______ he passed the test.`,['so']],
     [`It's raining, ______ I will stay home.`,['so']],
-    [`She is tall, ______ her brother is short.`,['but']],
+    [`She is tall, ______ her brother is short.`,['but','while','whereas']],
     [`I wanted to call, ______ my phone was dead.`,['but']],
     [`He can play guitar, ______ he can sing.`,['and']],
     [`You must hurry, ______ you will be late.`,['or']],
@@ -1053,7 +1150,7 @@ const CATS=[
     [`She was reading ______ the doorbell rang.`,['when']],
     [`You will succeed ______ you work hard.`,['if']],
     [`The book ______ I borrowed is fascinating.`,['that','which']],
-    [`I'll call you ______ I arrive.`,['when']],
+    [`I'll call you ______ I arrive.`,['when','as soon as','once']],
     [`He didn't come ______ he was invited.`,['although','though','even though']],
     [`______ she didn't study, she failed.`,['because','since','as']],
     [`The man ______ is standing there is my uncle.`,['who']],
@@ -1074,9 +1171,9 @@ const CATS=[
     [`We talked to the professor, ______ advice was very helpful.`,['whose']],
     [`The team won, ______ was unexpected.`,['which']],
     [`He moved to London, ______ he found a job.`,['where']],
-    [`I will lend you the money, ______ you promise to pay back.`,['as long as','provided that']],
-    [`They left early, ______ they could catch the train.`,['so that']],
-    [`______ hard he tried, he couldn't open the door.`,['however']],
+    [`I will lend you the money, ______ you promise to pay it back.`,['as long as','provided that','providing that','if']],
+    [`They left early, ______ they could catch the train.`,['so that','in order that']],
+    [`______ hard he tried, he couldn't open the door.`,['however','no matter how']],
     [`He kept working, ______ he was exhausted.`,['even though','although','though']],
     [`We arrived late, ______ caused a problem.`,['which']],
     [`He made several mistakes, ______ was due to carelessness.`,['which']],
@@ -1146,7 +1243,7 @@ const RANGE_BANK={
    "hint": "请翻译：我已经养成了阅读的习惯。",
    "answers": [
     "I have developed a habit of reading.",
-    "I develop a habit of reading."
+    "I have formed a habit of reading."
    ],
    "must": [
     "habit",
@@ -1457,13 +1554,18 @@ const RANGE_BANK={
    "hint": "请翻译：我照顾我的妹妹。",
    "answers": [
     "I take care of my little sister.",
-    "I take care of my family members."
+    "I take care of my sister.",
+    "I look after my little sister."
    ],
    "must": [
-    "take",
     "care"
    ],
-   "any": [],
+   "any": [
+    [
+     "take care of",
+     "look after"
+    ]
+   ],
    "feedback": "正确！take care of 让表达更自然。",
    "wrongTip": "这题要用到：take care of。"
   },
@@ -2376,7 +2478,8 @@ const RANGE_BANK={
    "prompt": "主题：家庭\\n扩展句子：My parents love me.",
    "hint": "请翻译：当我遇到困难时，父母给我支持和鼓励。",
    "answers": [
-    "My parents give me support and encouragement when I meet difficulties."
+    "My parents give me support and encouragement when I have difficulties.",
+    "My parents give me support and encouragement when I run into difficulties."
    ],
    "must": [
     "parents"
@@ -2683,14 +2786,21 @@ const RANGE_BANK={
    "prompt": "主题：我最喜欢的爱好\\n段落任务：总结爱好价值",
    "hint": "请翻译：总之，阅读让我的生活更加丰富多彩。",
    "answers": [
-    "In a word, reading makes my life more colorful."
+    "In a word, reading makes my life more colorful.",
+    "In short, reading makes my life more colorful.",
+    "In conclusion, reading makes my life more colorful."
    ],
    "must": [
-    "in a word",
     "reading",
     "life"
    ],
    "any": [
+    [
+     "in a word",
+     "in short",
+     "in conclusion",
+     "all in all"
+    ],
     [
      "colorful",
      "meaningful"
@@ -2956,13 +3066,20 @@ const RANGE_BANK={
    "prompt": "主题：一次难忘的经历\\n段落任务：介绍经历",
    "hint": "请翻译：上周，我参加了一场运动会。",
    "answers": [
-    "Last week, I took part in a sports meeting."
+    "Last week, I took part in a sports meeting.",
+    "Last week, I took part in a sports day.",
+    "Last week, I took part in a sports meet."
    ],
    "must": [
-    "took part",
-    "sports meeting"
+    "took part"
    ],
-   "any": [],
+   "any": [
+    [
+     "sports meeting",
+     "sports day",
+     "sports meet"
+    ]
+   ],
    "feedback": "正确！这句可以直接放进 An Unforgettable Experience 类作文。",
    "wrongTip": "这题要完成段落功能：开头句。"
   },
@@ -3051,14 +3168,19 @@ const RANGE_BANK={
    "prompt": "主题：保护环境\\n段落任务：引出环保主题",
    "hint": "请翻译：保护环境是每个人的责任。",
    "answers": [
+    "Protecting the environment is everyone's responsibility.",
     "Protecting the environment is everyone's duty."
    ],
    "must": [
     "protecting",
-    "environment",
-    "duty"
+    "environment"
    ],
-   "any": [],
+   "any": [
+    [
+     "responsibility",
+     "duty"
+    ]
+   ],
    "feedback": "正确！这句可以直接放进 Protect the Environment 类作文。",
    "wrongTip": "这题要完成段落功能：开头句。"
   },
@@ -3127,7 +3249,7 @@ const XUEBA_BANK={
    "prompt": "主题：学习\\n普通表达：I study hard.",
    "hint": "请翻译：我会继续努力并取得进步。",
    "answers": [
-    "I keep working hard and make progress.",
+    "I will keep working hard and make progress.",
     "I will keep working hard to make progress."
    ],
    "must": [
@@ -3696,10 +3818,11 @@ const XUEBA_BANK={
    "key": "sentence",
    "forge": "炼句",
    "theme": "学习",
-   "prompt": "主题：学习\\n合并句子：I review lessons every day. I remember knowledge better.",
-   "hint": "请翻译：我每天复习功课，这样我就能更好地记住知识。",
+   "prompt": "主题：学习\\n合并句子：I review lessons every day. I remember what I learn better.",
+   "hint": "请翻译：我每天复习功课，这样我就能更好地记住所学的知识。",
    "answers": [
-    "I review lessons every day so that I can remember knowledge better."
+    "I review lessons every day so that I can remember what I learn better.",
+    "I review my lessons every day so that I can remember what I have learned better."
    ],
    "must": [
     "so that",
@@ -4317,6 +4440,7 @@ const XUEBA_BANK={
    "prompt": "主题：健康\\n扩展句子：Sleep matters.",
    "hint": "请翻译：足够的睡眠给我们能量，并帮助我们更好地学习。",
    "answers": [
+    "Getting enough sleep gives us energy and helps us study better.",
     "Enough sleep gives us energy and helps us study better."
    ],
    "must": [
@@ -4613,15 +4737,16 @@ const XUEBA_BANK={
    "prompt": "主题：社会规则\\n扩展句子：Rules are necessary.",
    "hint": "请翻译：规则是必要的，因为它们保护我们的安全。",
    "answers": [
-    "Rules are necessary because they protect our safety."
+    "Rules are necessary because they keep us safe.",
+    "Rules are necessary because they protect us and keep us safe."
    ],
    "must": [
-    "rules",
-    "safety"
+    "rules"
    ],
    "any": [
     [
-     "protect"
+     "safe",
+     "safety"
     ]
    ],
    "feedback": "正确！表达更成熟了。",
@@ -4752,7 +4877,8 @@ const XUEBA_BANK={
    "prompt": "主题：阅读习惯\\n段落任务：总结号召",
    "hint": "请翻译：让我们从现在开始花更多时间阅读。",
    "answers": [
-    "Let us spend more time reading from now on."
+    "Let us spend more time reading from now on.",
+    "Let's spend more time reading from now on."
    ],
    "must": [
     "spend more time",
@@ -4848,6 +4974,7 @@ const XUEBA_BANK={
    "prompt": "主题：健康生活\\n段落任务：说明手机限制",
    "hint": "请翻译：我们应该控制屏幕时间来保护视力。",
    "answers": [
+    "We should limit our screen time to protect our eyesight.",
     "We should control screen time to protect our eyesight."
    ],
    "must": [
@@ -4857,6 +4984,7 @@ const XUEBA_BANK={
    "any": [
     [
      "control",
+     "limit",
      "protect"
     ]
    ],
@@ -5046,7 +5174,8 @@ const XUEBA_BANK={
    "prompt": "主题：保护环境\\n段落任务：开头引出环保",
    "hint": "请翻译：保护环境是我们所有人的责任。",
    "answers": [
-    "Protecting the environment is a responsibility for all of us."
+    "Protecting the environment is the responsibility of all of us.",
+    "Protecting the environment is everyone's responsibility."
    ],
    "must": [
     "protecting",
@@ -5081,12 +5210,17 @@ const XUEBA_BANK={
    "prompt": "主题：旅行见闻\\n段落任务：说明旅行收获",
    "hint": "请翻译：旅行帮助我们了解不同的文化。",
    "answers": [
-    "Travelling helps us learn about different cultures."
+    "Travelling helps us learn about different cultures.",
+    "Traveling helps us learn about different cultures.",
+    "Travel helps us learn about different cultures."
    ],
-   "must": [
-    "travelling"
-   ],
+   "must": [],
    "any": [
+    [
+     "travelling",
+     "traveling",
+     "travel"
+    ],
     [
      "cultures"
     ]
@@ -5134,14 +5268,14 @@ function ensureRangeProgress(){
 
 /* ── STATE ── */
 let username=localStorage.getItem('jc_username')||'';
-let prog={correct:new Set(),errors:[],totalScore:0,range:{done:{},trials:{}}};
+let prog={correct:new Set(),errors:[],totalScore:0,range:{done:{},trials:{}},ielts:{done:{}}};
 let ds={catI:0,levI:0,qs:[],qi:0,sessScore:0,answered:false};
 let retryIdx=-1;
 
 function save(){
   if(!username)return;
   localStorage.setItem('jc_writing_'+username,JSON.stringify({
-    correct:[...prog.correct],errors:prog.errors,totalScore:prog.totalScore,range:prog.range||{done:{},trials:{}}}));
+    correct:[...prog.correct],errors:prog.errors,totalScore:prog.totalScore,range:prog.range||{done:{},trials:{}},ielts:prog.ielts||{done:{}}}));
   syncWritingProgress();
 }
 function load(){
@@ -5150,7 +5284,8 @@ function load(){
     prog.correct=new Set(d.correct||[]);
     prog.errors=d.errors||[];
     prog.totalScore=d.totalScore||0;
-    prog.range=d.range||{done:{},trials:{}};}catch(e){}
+    prog.range=d.range||{done:{},trials:{}};
+    prog.ielts=d.ielts||{done:{}};}catch(e){}
 }
 
 /* ── ANSWER CHECKING ── */
@@ -5176,10 +5311,10 @@ function dispAns(ans){
 /* ── SUPABASE SYNC ── */
 function getWeekStart(){var d=new Date();d.setDate(d.getDate()-d.getDay());return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function parseCloudProgress(raw){if(!raw)return {};if(typeof raw==='string'){try{return JSON.parse(raw)||{};}catch(e){return {};}}return raw||{};}
-function writingProgressPayload(){return{correct:[...prog.correct],errors:prog.errors,totalScore:prog.totalScore,range:prog.range||{done:{},trials:{}},updated_at:new Date().toISOString()};}
+function writingProgressPayload(){return{correct:[...prog.correct],errors:prog.errors,totalScore:prog.totalScore,range:prog.range||{done:{},trials:{}},ielts:prog.ielts||{done:{}},updated_at:new Date().toISOString()};}
 async function fetchUserProgress(){
   try{var r=await fetch(`${SB}/rest/v1/user_progress?user_name=eq.${encodeURIComponent(username)}&select=progress_data&limit=1`,{headers:SH});
-  var rows=r.ok?await r.json():[];return rows&&rows[0]?parseCloudProgress(rows[0].progress_data):{};}catch(e){return {};}
+  if(!r.ok)throw new Error('cloud read failed');var rows=await r.json();return rows&&rows[0]?parseCloudProgress(rows[0].progress_data):{};}catch(e){throw e;} /* 读云端失败就别往下写，免得用空数据把单词等其它模块的云端进度整个覆盖掉 */
 }
 async function syncWritingProgress(){
   if(!username)return;
@@ -5192,14 +5327,19 @@ async function restoreWritingProgress(){
   if(!username)return;
   try{var root=await fetchUserProgress();var w=root.writing;if(!w)return;
   var localScore=prog.totalScore||0,cloudScore=w.totalScore||0;
+  // 五试炼、雅思的完成记录：本机和云端合并（任何一台设备做过的都算），不会因为换手机丢失
+  var mergeMap=function(a,b){var o=Object.assign({},b||{});for(var k in (a||{}))if(!o[k])o[k]=a[k];return o;};
+  var cr=w.range||{},lr=prog.range||{};
+  prog.range={done:mergeMap(lr.done,cr.done),trials:mergeMap(lr.trials,cr.trials)};
+  prog.ielts={done:mergeMap((prog.ielts||{}).done,(w.ielts||{}).done)};
   if(cloudScore>=localScore){
     prog.correct=new Set(w.correct||[]);
     prog.errors=w.errors||[];
     prog.totalScore=cloudScore;
-    localStorage.setItem('jc_writing_'+username,JSON.stringify({correct:[...prog.correct],errors:prog.errors,totalScore:prog.totalScore,range:prog.range||{done:{},trials:{}}}));
+    localStorage.setItem('jc_writing_'+username,JSON.stringify({correct:[...prog.correct],errors:prog.errors,totalScore:prog.totalScore,range:prog.range,ielts:prog.ielts}));
     syncWritingTotal();
-    showHome();
-  }else syncWritingProgress();}catch(e){}
+    if(document.getElementById('s-home').classList.contains('active'))showHome();
+  }else save();}catch(e){}
 }
 function writingWeekKey(){return 'jc_writing_week_'+username+'_'+getWeekStart();}
 function getWritingWeekScore(){return parseInt(localStorage.getItem(writingWeekKey())||'0')||0;}
@@ -5430,7 +5570,7 @@ function renderQ(){
 function submitAns(){
   if(ds.answered)return;
   const val=document.getElementById('din').value;
-  if(!val.trim()&&!CATS[ds.catI].levels[ds.levI].qs[0][1].some(a=>a===''||a==='/')){
+  if(!val.trim()&&!ds.qs[ds.qi].q[1].some(a=>a===''||a==='/')){
     document.getElementById('din').focus();return;
   }
   const item=ds.qs[ds.qi];
@@ -5506,6 +5646,7 @@ function showComplete(ci,li,ss){
 function exitDrill(){showCat(ds.catI);}
 
 /* ── ERROR BANK ── */
+function errItem(e){const q=CATS[e.catI]&&CATS[e.catI].levels[e.levI]&&CATS[e.catI].levels[e.levI].qs[e.qi];return q?{q:q[0],a:q[1]}:{q:e.q,a:e.a};} // 错题本永远用题库里最新的题目和答案
 function renderErrors(){
   const list=document.getElementById('err-list');
   document.getElementById('err-cnt').textContent=prog.errors.length?prog.errors.length+' 题':'';
@@ -5515,9 +5656,9 @@ function renderErrors(){
   }
   list.innerHTML=prog.errors.map((e,i)=>`<div class="rc-card">
     <div class="rc-cat">${esc(e.catName)}</div>
-    <div class="rc-q">${esc(e.q)}</div>
+    <div class="rc-q">${esc(errItem(e).q)}</div>
     <div class="rc-wrong">你的答案：${esc(e.wrong)}</div>
-    <div class="rc-right">正确答案：${esc(dispAns(e.a))}</div>
+    <div class="rc-right">正确答案：${esc(dispAns(errItem(e).a))}</div>
     <button class="rc-retry" onclick="openRetry(${i})">重做这题</button>
   </div>`).join('');
 }
@@ -5525,7 +5666,7 @@ function renderErrors(){
 function openRetry(idx){
   retryIdx=idx;const e=prog.errors[idx];
   document.getElementById('ret-cat').textContent=e.catName;
-  document.getElementById('ret-q').textContent=e.q;
+  document.getElementById('ret-q').textContent=errItem(e).q;
   const inp=document.getElementById('ret-in');
   inp.value='';inp.disabled=false;
   document.getElementById('ret-sub').disabled=false;
@@ -5539,21 +5680,22 @@ function openRetry(idx){
 function submitRetry(){
   const e=prog.errors[retryIdx];
   const val=document.getElementById('ret-in').value;
-  const isOk=ok(val,e.a);
+  const isOk=ok(val,errItem(e).a);
   const fbk=document.getElementById('ret-fbk');
   fbk.style.display='block';
   document.getElementById('ret-sub').disabled=true;
   document.getElementById('ret-in').disabled=true;
   if(isOk){
     fbk.className='ret-fbk ok';
-    fbk.textContent='正确！+15 分，已从错题本移除';
-    if(!prog.correct.has(e.id)){prog.correct.add(e.id);prog.totalScore+=15;}
+    const fresh=!prog.correct.has(e.id);   // 已经得过分的题，重做不再重复往周榜加分
+    fbk.textContent=fresh?'正确！+15 分，已从错题本移除':'正确！已从错题本移除';
+    if(fresh){prog.correct.add(e.id);prog.totalScore+=15;}
     prog.errors.splice(retryIdx,1);
-    save();syncScore();
+    save();if(fresh)syncScore();
     document.getElementById('ret-nxt').textContent='太好了，关闭';
   }else{
     fbk.className='ret-fbk no';
-    fbk.textContent='还不对，正确答案：'+dispAns(e.a);
+    fbk.textContent='还不对，正确答案：'+dispAns(errItem(e).a);
     prog.errors[retryIdx].wrong=val||'（空）';
     save();
     setTimeout(()=>{
@@ -5686,7 +5828,14 @@ function renderRangeQ(){
 }
 function normRange(s){
   return String(s||'').toLowerCase().trim()
-    .replace(/[’‘]/g,"'").replace(/[“”]/g,'"')
+    .replace(/[’‘`´]/g,"'").replace(/[“”]/g,'"')
+    // 英式/美式拼写统一（colourful=colorful、travelling=traveling 等），学生写哪种都算对
+    .replace(/colour/g,'color').replace(/favour/g,'favor').replace(/behaviour/g,'behavior').replace(/neighbour/g,'neighbor').replace(/honour/g,'honor')
+    .replace(/travell/g,'travel').replace(/centre/g,'center').replace(/practise/g,'practice')
+    .replace(/(organi|reali|recogni|apologi|memori|moderni|summari|emphasi|criti|categori|minimi|maximi)s(e|ed|es|ing|ation)\b/g,'$1z$2')
+    .replace(/\blet's\b/g,'let us').replace(/\bi've\b/g,'i have').replace(/\bwe're\b/g,'we are').replace(/\bthey're\b/g,'they are')
+    .replace(/\byou're\b/g,'you are').replace(/\bhe's\b/g,'he is').replace(/\bshe's\b/g,'she is').replace(/\bthat's\b/g,'that is')
+    .replace(/\b(do|does|did|is|are|was|were|has|have|had|should|would|could)n't\b/g,'$1 not')
     .replace(/\bi'm\b/g,'i am').replace(/\bit's\b/g,'it is')
     .replace(/\bdon't\b/g,'do not').replace(/\bdidn't\b/g,'did not')
     .replace(/\bcan't\b/g,'cannot').replace(/\bwon't\b/g,'will not')
@@ -5790,6 +5939,148 @@ function showRangeComplete(){
   showScreen('range-done');
 }
 function exitRangeDrill(){showRangeMaster();}
+
+
+/* ══════ 雅思写作：两个板块（按 PDF 原名），中译英逐个解锁 ══════
+   规则：看中文写英文，单词要和标准答案一模一样（大小写、标点、连字符、撇号、多余空格都不计较）。
+   答错 → 显示答案让学生记 → 点「我记住了」答案消失、清空重写 → 一直到写对才解锁下一个。
+   分值：单词 +3、短语 +8、长句 +20；每个只在第一次写对时加分。
+   进度存在 prog.ielts.done（本机 + 云端），id 固定，以后改内容不要改 id。 */
+const IW_DATA={"S": [{"name": "否定句", "items": [{"id": "iw1_1", "cn": "应该教孩子们如何从互联网获取有益的信息，而不是沉溺于玩电脑游戏。", "en": "Instead of indulging in playing computer games, children should be taught how to benefit from useful information on the internet.", "alt": [], "note": "", "k": "s"}, {"id": "iw1_2", "cn": "我们绝不能忽视知识的巨大价值。", "en": "On no account can we ignore the immense value of knowledge.", "alt": ["Under no circumstances can we ignore the immense value of knowledge."], "note": "", "k": "s"}, {"id": "iw1_3", "cn": "大学生参加兼职工作不是为了赚更多钱，而是为了更好地了解社会。", "en": "College students take part-time jobs not for more money but for a better understanding of societies.", "alt": [], "note": "", "k": "s"}, {"id": "iw1_4", "cn": "一个人的工资与其说取决于他的教育背景倒不如说取决于他的能力和对社会的贡献。", "en": "One's salary does not depend so much on his educational background as on his ability and contribution to the society.", "alt": [], "note": "", "k": "s"}, {"id": "iw1_5", "cn": "从营养角度来说，快餐远非令人满意。", "en": "In terms of nutrition, fast food is far from satisfactory.", "alt": [], "note": "", "k": "s"}, {"id": "iw1_6", "cn": "父母们不能指望孩子们不经过刻苦努力就可以成才。", "en": "Parents would not expect their children to become useful persons without working hard.", "alt": [], "note": "", "k": "s"}]}, {"name": "非限制性定语从句", "items": [{"id": "iw2_1", "cn": "毫无疑问，实用性课程可以用于实际中，这对于他们未来发展是非常重要的。", "en": "Undoubtedly, practical courses can be applied to reality, which is of vital importance to their development in the future.", "alt": [], "note": "", "k": "s"}, {"id": "iw2_2", "cn": "孩子们倾向于模仿大众媒体上的所见所闻，这在有时是危险和有害的。", "en": "Children tend to imitate what they have seen and heard on mass media, which is sometimes dangerous and harmful.", "alt": [], "note": "", "k": "s"}, {"id": "iw2_3", "cn": "大部分学生相信业余工作会使他们有更多机会发展人际交往能力，这对他们未来找工作是非常有好处的。", "en": "The majority of students believe that part-time jobs will provide them with more opportunities to develop their interpersonal skills, which may put them in a favorable position in the future job markets.", "alt": [], "note": "", "k": "s"}]}, {"name": "让步句", "items": [{"id": "iw3_1", "cn": "这个观点被广泛认可，然而，几乎没有证据表明吸烟对人们健康有利。", "en": "This view is widely acknowledged; however, there is little evidence that smoking is beneficial to people's health.", "alt": [], "note": "", "k": "s"}, {"id": "iw3_2", "cn": "尽管计算机已经广泛用于课堂，但是它不能取代教师的作用。", "en": "Although the computer has been widely used in class, it cannot replace the role of teachers.", "alt": ["Whilst the computer has been widely used in class, it cannot replace the role of teachers."], "note": "", "k": "s"}, {"id": "iw3_3", "cn": "虽然这个观点听起来有道理，但是它经不住分析。", "en": "Reasonable as the opinion sounds, it cannot bear much analysis.", "alt": [], "note": "", "k": "s"}, {"id": "iw3_4", "cn": "尽管汽车给人们的生活带来了许多便利，但是也产生了一系列严重的问题。", "en": "In spite of a lot of conveniences that cars bring to people's life, they can create a series of serious problems.", "alt": [], "note": "", "k": "s"}]}, {"name": "It 引导的句子", "items": [{"id": "iw4_1", "cn": "很难想象如果现代社会没有了计算机，我们的生活会变成什么样子。", "en": "It is hard to imagine what our life would look like without computers in modern society.", "alt": [], "note": "", "k": "s"}, {"id": "iw4_2", "cn": "可想而知，积极参加体育活动有利于身体健康。", "en": "It is conceivable that being physically active does good to health.", "alt": [], "note": "", "k": "s"}, {"id": "iw4_3", "cn": "女性是否应该参军是一个非常有争议的问题。", "en": "It is a highly controversial issue whether women should join the armed forces or not.", "alt": [], "note": "", "k": "s"}, {"id": "iw4_4", "cn": "人们普遍认为，水和空气对人类不可缺少。", "en": "It is universally acknowledged that water and air are indispensable to human beings.", "alt": [], "note": "", "k": "s"}, {"id": "iw4_5", "cn": "保护濒危的动物物种免遭残杀是必需的。", "en": "It is essential that endangered species of animals be protected against being killed.", "alt": [], "note": "", "k": "s"}, {"id": "iw4_6", "cn": "该是政府采取有效措施来解决这些问题的时候了。", "en": "It is high time that the government took effective measures to solve these problems.", "alt": [], "note": "", "k": "s"}, {"id": "iw4_7", "cn": "现代人很容易通过互联网在几秒钟内就取得联系。", "en": "It has been made easier for modern people to communicate with each other by the internet in a few seconds.", "alt": [], "note": "", "k": "s"}, {"id": "iw4_8", "cn": "关心孩子们的行为方式是值得的。", "en": "It is worth caring about the way a child behaves.", "alt": [], "note": "", "k": "s"}, {"id": "iw4_9", "cn": "覆水难收。", "en": "It is no use crying over spilt milk.", "alt": [], "note": "", "k": "s"}, {"id": "iw4_10", "cn": "自从计算机问世以来已经有几十年的时间了。", "en": "It has been a few decades since the computer came into being.", "alt": [], "note": "", "k": "s"}]}, {"name": "假设句", "items": [{"id": "iw5_1", "cn": "如果我们推倒老房子，就要破坏传统的文化和遗产。", "en": "If we destroy old buildings, then we will ruin the traditional culture and heritage.", "alt": [], "note": "", "k": "s"}, {"id": "iw5_2", "cn": "假如你在家上网，你就会失去与其他同学交流的机会。", "en": "You would miss the chance to interact with other students if you used the internet at home.", "alt": [], "note": "", "k": "s"}, {"id": "iw5_3", "cn": "一旦你变换了现在的工作，就面临着失业的危险。", "en": "Once you change your present job, you will be faced with the danger of being unemployed.", "alt": [], "note": "", "k": "s"}]}, {"name": "倒装句", "items": [{"id": "iw6_1", "cn": "只有这样才能妥善地解决这个问题。", "en": "Only in this way can the problem be tackled properly.", "alt": [], "note": "", "k": "s"}, {"id": "iw6_2", "cn": "只有当孩子们付出艰苦的努力他们才能获得成功。", "en": "Only when children make arduous efforts can they become successful.", "alt": [], "note": "", "k": "s"}, {"id": "iw6_3", "cn": "在校学习不仅为了学术目的，而且还可以学会如何处理人际关系。", "en": "Not only does studying in school serve academic purposes, but students also learn how to handle interpersonal relations.", "alt": [], "note": "", "k": "s"}, {"id": "iw6_4", "cn": "青少年决不应当盲从大众媒体上的不良信息。", "en": "Under no circumstances should youngsters follow negative information on mass media blindly.", "alt": [], "note": "", "k": "s"}, {"id": "iw6_5", "cn": "水是如此珍贵，我们经不起浪费它。", "en": "So valuable is water that we cannot afford to waste it.", "alt": [], "note": "", "k": "s"}, {"id": "iw6_6", "cn": "如今对青少年最为危险的事情是倾向于过多地玩电脑游戏。", "en": "Nowadays, most dangerous for youngsters is the tendency to indulge in playing PC games.", "alt": [], "note": "", "k": "s"}]}, {"name": "强调句", "items": [{"id": "iw7_1", "cn": "正是为了维持生态平衡，人类才应该保护地球上濒危的动物物种。", "en": "It is for the benefit of maintaining the ecological balance that human beings ought to protect the endangered animal species.", "alt": [], "note": "", "k": "s"}, {"id": "iw7_2", "cn": "直到人们患了像非典和爱滋病这样致命的疾病时，才意识到政府把更多的钱投入到医疗上的重要性。", "en": "It is not until people suffer from some fatal diseases such as SARS and AIDS that they become aware of how significant it is for the government to invest more money in medical care.", "alt": [], "note": "", "k": "s"}, {"id": "iw7_3", "cn": "世界上没有比健康更重要的了。", "en": "Nothing in the world is more valuable than health.", "alt": [], "note": "", "k": "s"}]}, {"name": "比较句", "items": [{"id": "iw8_1", "cn": "研究表明来自单亲家庭的青少年犯罪率是来自传统家庭的两倍。", "en": "Studies show that juvenile delinquency rates are twice as high for youngsters from single-parent families as for those in traditional households.", "alt": [], "note": "同级比较", "k": "s"}, {"id": "iw8_2", "cn": "一般说来，现代人比过去享有更少的休闲时间。", "en": "Generally speaking, people in modern times enjoy less leisure time than they did previously.", "alt": [], "note": "比较级", "k": "s"}, {"id": "iw8_3", "cn": "与不同能力的孩子相比，聪明的孩子在学业和智力测验方面表现更加突出。", "en": "Compared with those with different abilities, children with intelligence do better in their school work and intelligence tests.", "alt": [], "note": "", "k": "s"}, {"id": "iw8_4", "cn": "与明星不同，其他专业人员如医生和教师为社会创造了真正的价值。", "en": "Contrary to pop stars, other professionals like doctors and teachers create the true value for their society.", "alt": [], "note": "", "k": "s"}, {"id": "iw8_5", "cn": "空气对人类就如同水对鱼一样。", "en": "Air is to humans what water is to fish.", "alt": ["Air is to humans as water is to fish."], "note": "", "k": "s"}]}, {"name": "插入语", "items": [{"id": "iw9_1", "cn": "最重要的是，计算机在世界范围内建立了广泛的交流。", "en": "Computers, most important of all, create wide communication around the world.", "alt": [], "note": "", "k": "s"}, {"id": "iw9_2", "cn": "从长远的利益来看，提供更多的停车位证明是许多世界大城市切实可行的出路。", "en": "Providing more parking areas, in the long run, has proved to be a practical way out in many large cities in the world.", "alt": [], "note": "", "k": "s"}, {"id": "iw9_3", "cn": "无论是否意识到，遵循当地的文化可以减少冒犯当地人的机会，否则，就会导致尴尬甚至冲突。", "en": "Observing local culture, consciously or unconsciously, can reduce the chance of offending the locals, or it will lead to embarrassment and even conflict.", "alt": [], "note": "", "k": "s"}, {"id": "iw9_4", "cn": "有人相信空间探索将会带来意想不到的发现。", "en": "Space exploration, some people believe, will bring some unexpected discoveries.", "alt": [], "note": "", "k": "s"}]}, {"name": "原因句", "items": [{"id": "iw10_1", "cn": "暴力影片对年轻人是有害的，因为其中包含大量负面信息。", "en": "Violent films can do harm to young people, because they contain a great deal of negative information.", "alt": [], "note": "", "k": "s"}, {"id": "iw10_2", "cn": "野生动物灭绝的主要责任在人类。", "en": "Human beings are chiefly responsible for wild animal extinction.", "alt": [], "note": "", "k": "s"}, {"id": "iw10_3", "cn": "我们应该把医学的发展归因于动物对实验做出的巨大贡献。", "en": "We should attribute medical advances to the animals which make substantial contributions to the experiments.", "alt": ["We should ascribe medical advances to the animals which make substantial contributions to the experiments."], "note": "", "k": "s"}, {"id": "iw10_4", "cn": "由于人口过剩，水短缺已经成为一个最严重的问题。", "en": "Because of overpopulation, water shortage has become one of the most serious problems.", "alt": [], "note": "", "k": "s"}, {"id": "iw10_5", "cn": "由于当今世界的激烈竞争，大量的年轻人承受巨大的压力。", "en": "Owing to the fierce competition in today's world, a great many young people find themselves under great pressure.", "alt": [], "note": "", "k": "s"}]}], "V": [{"name": "教育", "items": [{"id": "iv1_1", "cn": "学校教育", "en": "schooling", "alt": [], "k": "w"}, {"id": "iv1_2", "cn": "家庭教育", "en": "upbringing", "alt": ["parenting"], "k": "w"}, {"id": "iv1_3", "cn": "远程教育", "en": "tele-education", "alt": ["distance education"], "k": "w"}, {"id": "iv1_4", "cn": "素质教育", "en": "quality-oriented education", "alt": [], "k": "p"}, {"id": "iv1_5", "cn": "小学教育", "en": "primary education", "alt": [], "k": "p"}, {"id": "iv1_6", "cn": "中学教育", "en": "secondary education", "alt": [], "k": "p"}, {"id": "iv1_7", "cn": "高等教育", "en": "tertiary education", "alt": ["higher education"], "k": "p"}, {"id": "iv1_8", "cn": "男女同校", "en": "co-education", "alt": [], "k": "w"}, {"id": "iv1_9", "cn": "获取知识", "en": "acquire knowledge", "alt": [], "k": "p"}, {"id": "iv1_10", "cn": "传授知识", "en": "impart knowledge", "alt": ["inculcate knowledge"], "k": "p"}, {"id": "iv1_11", "cn": "灌输高尚的道德观", "en": "instill high moral values", "alt": ["instil high moral values"], "k": "p"}, {"id": "iv1_12", "cn": "教学方法", "en": "teaching method", "alt": ["teaching methods"], "k": "p"}, {"id": "iv1_13", "cn": "学习成绩", "en": "academic performance", "alt": [], "k": "p"}, {"id": "iv1_14", "cn": "受过良好教育的", "en": "well-educated", "alt": [], "k": "w"}, {"id": "iv1_15", "cn": "学科", "en": "discipline", "alt": [], "k": "w"}, {"id": "iv1_16", "cn": "专业知识", "en": "expertise", "alt": [], "k": "w"}, {"id": "iv1_17", "cn": "死记硬背", "en": "learn things by rote", "alt": [], "k": "p"}, {"id": "iv1_18", "cn": "创造力", "en": "creativity", "alt": [], "k": "w"}, {"id": "iv1_19", "cn": "塑造性格", "en": "shape one's character", "alt": ["mould one's character", "mold one's character"], "k": "p"}, {"id": "iv1_20", "cn": "学生的反馈", "en": "students' feedback", "alt": ["students' input"], "k": "p"}, {"id": "iv1_21", "cn": "评价老师的教学", "en": "evaluate teachers' performance", "alt": [], "k": "p"}, {"id": "iv1_22", "cn": "理论知识", "en": "theoretical knowledge", "alt": [], "k": "p"}]}, {"name": "现代科技与大众媒体", "items": [{"id": "iv2_1", "cn": "信息时代", "en": "information age", "alt": ["information era"], "k": "p"}, {"id": "iv2_2", "cn": "不断进步的技术", "en": "advancing technology", "alt": [], "k": "p"}, {"id": "iv2_3", "cn": "跟上科学的发展", "en": "keep ahead of scientific advances", "alt": ["keep up with scientific advances"], "k": "p"}, {"id": "iv2_4", "cn": "获取最新的信息", "en": "acquire the latest information", "alt": [], "k": "p"}, {"id": "iv2_5", "cn": "做些累人又复杂的工作", "en": "do some tiring and complicated work", "alt": [], "k": "p"}, {"id": "iv2_6", "cn": "大众媒体", "en": "mass media", "alt": [], "k": "p"}, {"id": "iv2_7", "cn": "信息量大的", "en": "informative", "alt": [], "k": "w"}, {"id": "iv2_8", "cn": "缺乏感情交流", "en": "lack emotional exchanges", "alt": ["lack of emotional exchanges"], "k": "p"}, {"id": "iv2_9", "cn": "新闻报道", "en": "coverage", "alt": [], "k": "w"}, {"id": "iv2_10", "cn": "了解国内外发生的一切", "en": "learn what is happening at home and abroad", "alt": [], "k": "p"}, {"id": "iv2_11", "cn": "收视率", "en": "audience ratings", "alt": [], "k": "p"}, {"id": "iv2_12", "cn": "有教育意义的", "en": "instructive", "alt": [], "k": "w"}, {"id": "iv2_13", "cn": "接触不良信息", "en": "have access to negative information", "alt": ["be exposed to negative information", "have access to some negative information", "be exposed to some negative information"], "k": "p"}, {"id": "iv2_14", "cn": "有误导性的", "en": "misleading", "alt": [], "k": "w"}, {"id": "iv2_15", "cn": "虚假广告", "en": "false advertising", "alt": ["cheating advertising"], "k": "p"}, {"id": "iv2_16", "cn": "掩盖真相", "en": "cover up the truth", "alt": ["mask the truth", "gloss over the truth", "whitewash the truth"], "k": "p"}, {"id": "iv2_17", "cn": "名人", "en": "celebrities", "alt": ["celebrity"], "k": "w"}, {"id": "iv2_18", "cn": "丑闻", "en": "scandal", "alt": [], "k": "w"}, {"id": "iv2_19", "cn": "侵犯隐私", "en": "invade one's privacy", "alt": ["violate one's privacy", "infringe on one's privacy", "intrude on one's privacy"], "k": "p"}, {"id": "iv2_20", "cn": "道德准则", "en": "code of ethics", "alt": ["code of conduct"], "k": "p"}]}, {"name": "全球化及其影响", "items": [{"id": "iv3_1", "cn": "经济全球化", "en": "economic globalisation", "alt": ["economic globalization"], "k": "p"}, {"id": "iv3_2", "cn": "文化同一性", "en": "cultural uniformity", "alt": [], "k": "p"}, {"id": "iv3_3", "cn": "文化多元化", "en": "cultural diversity", "alt": [], "k": "p"}, {"id": "iv3_4", "cn": "文化冲击", "en": "culture shock", "alt": ["cultural shock"], "k": "p"}, {"id": "iv3_5", "cn": "主流文化", "en": "dominant culture", "alt": [], "k": "p"}, {"id": "iv3_6", "cn": "促进文化的融合", "en": "promote cultural integration", "alt": [], "k": "p"}, {"id": "iv3_7", "cn": "融入新的文化", "en": "merge into a new culture", "alt": ["integrate into a new culture"], "k": "p"}, {"id": "iv3_8", "cn": "参与国际贸易", "en": "participate in world trade", "alt": ["participate in the world trade"], "k": "p"}, {"id": "iv3_9", "cn": "相互认同", "en": "mutual acceptance", "alt": [], "k": "p"}, {"id": "iv3_10", "cn": "双赢局面", "en": "win-win situation", "alt": ["a win-win situation"], "k": "p"}, {"id": "iv3_11", "cn": "接受不同的文化和价值观", "en": "embrace different cultures and values", "alt": [], "k": "p"}, {"id": "iv3_12", "cn": "开拓全球市场", "en": "explore the global market", "alt": [], "k": "p"}, {"id": "iv3_13", "cn": "扩大出口", "en": "expand exports", "alt": ["expand export"], "k": "p"}, {"id": "iv3_14", "cn": "吸引外资", "en": "attract foreign capital", "alt": [], "k": "p"}, {"id": "iv3_15", "cn": "面对面交流", "en": "face-to-face communication", "alt": [], "k": "p"}, {"id": "iv3_16", "cn": "友好和好客", "en": "be friendly and hospitable", "alt": [], "k": "p"}, {"id": "iv3_17", "cn": "变得西方化", "en": "become westernised", "alt": ["become westernized"], "k": "p"}, {"id": "iv3_18", "cn": "加大贫富差距", "en": "widen the gap between the rich and the poor", "alt": [], "k": "p"}, {"id": "iv3_19", "cn": "对国内企业构成威胁", "en": "pose threats to domestic enterprises", "alt": ["pose a threat to domestic enterprises"], "k": "p"}, {"id": "iv3_20", "cn": "激怒当地人", "en": "irritate local people", "alt": [], "k": "p"}]}, {"name": "文化与习俗", "items": [{"id": "iv4_1", "cn": "跨文化交流", "en": "cross-cultural communication", "alt": [], "k": "p"}, {"id": "iv4_2", "cn": "传统文化", "en": "traditional culture", "alt": [], "k": "p"}, {"id": "iv4_3", "cn": "文化同化", "en": "cultural assimilation", "alt": [], "k": "p"}, {"id": "iv4_4", "cn": "文化遗产", "en": "cultural heritage", "alt": [], "k": "p"}, {"id": "iv4_5", "cn": "文化习俗的象征", "en": "symbol of cultural customs", "alt": ["a symbol of cultural customs"], "k": "p"}, {"id": "iv4_6", "cn": "接受外来文化", "en": "embrace exotic culture", "alt": ["embrace exotic cultures"], "k": "p"}, {"id": "iv4_7", "cn": "缩小文化差距", "en": "bridge cultural gaps", "alt": ["bridge the cultural gap"], "k": "p"}, {"id": "iv4_8", "cn": "民族特性", "en": "national identity", "alt": [], "k": "p"}, {"id": "iv4_9", "cn": "民族自豪感", "en": "a sense of national pride", "alt": [], "k": "p"}, {"id": "iv4_10", "cn": "归属感", "en": "a sense of belonging", "alt": [], "k": "p"}, {"id": "iv4_11", "cn": "相互交流文化", "en": "exchange cultures", "alt": [], "k": "p"}, {"id": "iv4_12", "cn": "吸取精华，去其糟粕", "en": "absorb the essence and discard the dross", "alt": [], "k": "p"}, {"id": "iv4_13", "cn": "旅游景点", "en": "tourist attraction", "alt": ["tourist attractions"], "k": "p"}, {"id": "iv4_14", "cn": "风土人情", "en": "local customs and practices", "alt": [], "k": "p"}, {"id": "iv4_15", "cn": "促进当地经济的发展", "en": "boost the growth of the local economy", "alt": ["boost the growth of local economy"], "k": "p"}, {"id": "iv4_16", "cn": "和平共处", "en": "coexist in harmony", "alt": [], "k": "p"}, {"id": "iv4_17", "cn": "消除偏见和敌意", "en": "dispel prejudice and hostility", "alt": ["remove prejudice and hostility"], "k": "p"}, {"id": "iv4_18", "cn": "展示光辉灿烂的文化和悠久的历史", "en": "display the brilliant culture and long history", "alt": [], "k": "p"}, {"id": "iv4_19", "cn": "本土语言", "en": "indigenous language", "alt": [], "k": "p"}, {"id": "iv4_20", "cn": "不知不觉地消失", "en": "fade away unnoticed", "alt": [], "k": "p"}]}, {"name": "政府", "items": [{"id": "iv5_1", "cn": "有关当局", "en": "the authorities concerned", "alt": ["authorities concerned"], "k": "p"}, {"id": "iv5_2", "cn": "政府投资", "en": "government investment", "alt": ["investment of the government"], "k": "p"}, {"id": "iv5_3", "cn": "削减预算", "en": "cut the budget", "alt": ["cut budget"], "k": "p"}, {"id": "iv5_4", "cn": "增加税收", "en": "increase revenues", "alt": ["increase revenue"], "k": "p"}, {"id": "iv5_5", "cn": "削减开支", "en": "curtail expenditure", "alt": [], "k": "p"}, {"id": "iv5_6", "cn": "经济援助", "en": "financial assistance", "alt": [], "k": "p"}, {"id": "iv5_7", "cn": "符合公众利益", "en": "be in line with general interest", "alt": ["be in keeping with general interest", "be in line with the public interest"], "k": "p"}, {"id": "iv5_8", "cn": "社会福利", "en": "social welfare", "alt": [], "k": "p"}, {"id": "iv5_9", "cn": "武器", "en": "weapons", "alt": ["arms", "armaments"], "k": "w"}, {"id": "iv5_10", "cn": "基础设施", "en": "infrastructure", "alt": [], "k": "w"}, {"id": "iv5_11", "cn": "空间探索", "en": "space exploration", "alt": [], "k": "p"}, {"id": "iv5_12", "cn": "提高国际地位", "en": "raise the international status", "alt": ["upgrade the international status"], "k": "p"}, {"id": "iv5_13", "cn": "人道主义援助", "en": "humanitarian aid", "alt": [], "k": "p"}, {"id": "iv5_14", "cn": "摆脱贫困", "en": "get rid of poverty", "alt": ["shake off poverty"], "k": "p"}, {"id": "iv5_15", "cn": "医疗保健体系", "en": "health care system", "alt": ["healthcare system"], "k": "p"}, {"id": "iv5_16", "cn": "健康的生活方式", "en": "healthy lifestyle", "alt": ["a healthy lifestyle"], "k": "p"}, {"id": "iv5_17", "cn": "公共交通", "en": "public transport", "alt": ["public transportation"], "k": "p"}, {"id": "iv5_18", "cn": "丰富人们的精神生活", "en": "enrich people's spiritual life", "alt": [], "k": "p"}, {"id": "iv5_19", "cn": "高尚的精神追求", "en": "lofty spiritual pursuit", "alt": [], "k": "p"}, {"id": "iv5_20", "cn": "视觉享受", "en": "visual enjoyment", "alt": [], "k": "p"}]}, {"name": "犯罪", "items": [{"id": "iv6_1", "cn": "犯罪分子", "en": "criminal", "alt": ["criminals"], "k": "w"}, {"id": "iv6_2", "cn": "犯罪", "en": "commit a crime", "alt": ["commit crimes"], "k": "p"}, {"id": "iv6_3", "cn": "滋生犯罪", "en": "breed crimes", "alt": ["breed crime"], "k": "p"}, {"id": "iv6_4", "cn": "青少年犯罪率上升", "en": "a rising juvenile delinquency rate", "alt": [], "k": "p"}, {"id": "iv6_5", "cn": "有罪的", "en": "be guilty of", "alt": [], "k": "p"}, {"id": "iv6_6", "cn": "社会安全和稳定", "en": "social security and stability", "alt": [], "k": "p"}, {"id": "iv6_7", "cn": "暴力和色情", "en": "violence and pornography", "alt": [], "k": "p"}, {"id": "iv6_8", "cn": "抵挡不住诱惑", "en": "fail to resist the lure", "alt": ["fail to resist temptation"], "k": "p"}, {"id": "iv6_9", "cn": "误入歧途", "en": "go astray", "alt": [], "k": "p"}, {"id": "iv6_10", "cn": "惩罚", "en": "punish", "alt": ["give punishment"], "k": "w"}, {"id": "iv6_11", "cn": "关进监狱", "en": "put into prison", "alt": ["put somebody into prison", "put sb into prison"], "k": "p"}, {"id": "iv6_12", "cn": "宠坏孩子", "en": "spoil the child", "alt": ["spoil children"], "k": "p"}, {"id": "iv6_13", "cn": "家长的溺爱", "en": "parental permissiveness", "alt": [], "k": "p"}, {"id": "iv6_14", "cn": "单亲家庭", "en": "single-parent family", "alt": ["single-parent families"], "k": "p"}, {"id": "iv6_15", "cn": "家庭暴力", "en": "domestic violence", "alt": [], "k": "p"}, {"id": "iv6_16", "cn": "缺乏家庭关爱", "en": "lack of parental love", "alt": ["the lack of parental love"], "k": "p"}, {"id": "iv6_17", "cn": "监护人", "en": "guardian", "alt": ["custodian"], "k": "w"}, {"id": "iv6_18", "cn": "监管不严", "en": "slack supervision", "alt": [], "k": "p"}, {"id": "iv6_19", "cn": "分辨是非", "en": "distinguish right from wrong", "alt": [], "k": "p"}, {"id": "iv6_20", "cn": "净化社会环境", "en": "purify the social environment", "alt": [], "k": "p"}]}, {"name": "动物", "items": [{"id": "iv7_1", "cn": "栖息地", "en": "habitat", "alt": [], "k": "w"}, {"id": "iv7_2", "cn": "保持生态平衡", "en": "maintain the ecological balance", "alt": ["maintain ecological balance"], "k": "p"}, {"id": "iv7_3", "cn": "保护濒危的动物物种", "en": "preserve endangered animal species", "alt": ["protect endangered animal species"], "k": "p"}, {"id": "iv7_4", "cn": "营养物", "en": "nutrient", "alt": ["nourishment"], "k": "w"}, {"id": "iv7_5", "cn": "均衡饮食", "en": "a balanced diet", "alt": ["balanced diet"], "k": "p"}, {"id": "iv7_6", "cn": "拿动物做实验", "en": "perform experiments on animals", "alt": ["subject animals to experimentation"], "k": "p"}, {"id": "iv7_7", "cn": "活体解剖", "en": "vivisection", "alt": [], "k": "w"}, {"id": "iv7_8", "cn": "逃脱不了被残杀的厄运", "en": "cannot escape the fate of being killed", "alt": [], "k": "p"}, {"id": "iv7_9", "cn": "剥夺动物的生存权利", "en": "deprive animals of their right to survive", "alt": [], "k": "p"}, {"id": "iv7_10", "cn": "染上传染病", "en": "contract infectious diseases", "alt": ["catch infectious diseases", "contract an infectious disease", "catch an infectious disease"], "k": "p"}, {"id": "iv7_11", "cn": "电脑模拟", "en": "computer simulation", "alt": [], "k": "p"}, {"id": "iv7_12", "cn": "破坏自然环境", "en": "destroy the natural environment", "alt": ["disrupt the natural environment", "destroy natural environment"], "k": "p"}, {"id": "iv7_13", "cn": "濒临灭绝", "en": "be on the verge of extinction", "alt": ["border on extinction", "be in imminent danger of extinction"], "k": "p"}, {"id": "iv7_14", "cn": "满足人们的胃口", "en": "satisfy people's appetite", "alt": [], "k": "p"}, {"id": "iv7_15", "cn": "素食主义者", "en": "vegetarian", "alt": [], "k": "w"}, {"id": "iv7_16", "cn": "陪伴某人", "en": "keep somebody company", "alt": ["keep sb company"], "k": "p"}, {"id": "iv7_17", "cn": "忠实和温顺的伴侣", "en": "loyal and obedient companion", "alt": ["a loyal and obedient companion"], "k": "p"}, {"id": "iv7_18", "cn": "消除孤独", "en": "dispel one's loneliness", "alt": ["reduce one's loneliness"], "k": "p"}, {"id": "iv7_19", "cn": "孩子的替代品", "en": "surrogate for children", "alt": ["substitute for children", "a surrogate for children"], "k": "p"}, {"id": "iv7_20", "cn": "预防接种", "en": "inoculation", "alt": ["vaccination"], "k": "w"}]}, {"name": "环境保护", "items": [{"id": "iv8_1", "cn": "环境污染", "en": "environmental pollution", "alt": [], "k": "p"}, {"id": "iv8_2", "cn": "污染严重的", "en": "highly polluted", "alt": [], "k": "p"}, {"id": "iv8_3", "cn": "有毒的烟雾", "en": "poisonous smoke", "alt": [], "k": "p"}, {"id": "iv8_4", "cn": "废气", "en": "waste gas", "alt": ["exhaust gas"], "k": "p"}, {"id": "iv8_5", "cn": "二氧化碳", "en": "carbon dioxide", "alt": [], "k": "p"}, {"id": "iv8_6", "cn": "倒垃圾", "en": "dump rubbish", "alt": [], "k": "p"}, {"id": "iv8_7", "cn": "乱扔垃圾", "en": "litter rubbish everywhere", "alt": [], "k": "p"}, {"id": "iv8_8", "cn": "浪费自然资源", "en": "squander natural resources", "alt": ["squander natural resource", "waste natural resources"], "k": "p"}, {"id": "iv8_9", "cn": "不卫生的做法", "en": "unsanitary practice", "alt": ["unsanitary practices"], "k": "p"}, {"id": "iv8_10", "cn": "无污染的燃料", "en": "pollution-free fuel", "alt": [], "k": "p"}, {"id": "iv8_11", "cn": "回收垃圾", "en": "recycle rubbish", "alt": [], "k": "p"}, {"id": "iv8_12", "cn": "垃圾的处理", "en": "disposal of rubbish", "alt": ["rubbish disposal"], "k": "p"}, {"id": "iv8_13", "cn": "自然进化过程", "en": "a natural evolutionary process", "alt": ["natural evolutionary process"], "k": "p"}, {"id": "iv8_14", "cn": "适者生存", "en": "survival of the fittest", "alt": ["the survival of the fittest"], "k": "p"}, {"id": "iv8_15", "cn": "毁林", "en": "deforestation", "alt": [], "k": "w"}, {"id": "iv8_16", "cn": "不可弥补的损失", "en": "irreparable damage", "alt": [], "k": "p"}, {"id": "iv8_17", "cn": "生态灾难", "en": "ecological disaster", "alt": [], "k": "p"}, {"id": "iv8_18", "cn": "自然选择", "en": "natural selection", "alt": [], "k": "p"}, {"id": "iv8_19", "cn": "水资源短缺", "en": "water shortage", "alt": ["the scarcity of water resources", "scarcity of water resources"], "k": "p"}, {"id": "iv8_20", "cn": "节约用水", "en": "save water", "alt": ["economise water", "economize water"], "k": "p"}]}, {"name": "平等", "items": [{"id": "iv9_1", "cn": "男女平等", "en": "gender equality", "alt": ["equality between the sexes"], "k": "p"}, {"id": "iv9_2", "cn": "男女生来平等", "en": "men and women are born equal", "alt": [], "k": "p"}, {"id": "iv9_3", "cn": "男女搭配，干活不累", "en": "when men and women work together, neither of them will feel tired", "alt": [], "k": "p"}, {"id": "iv9_4", "cn": "性别歧视", "en": "sexual discrimination", "alt": ["sex discrimination", "gender discrimination"], "k": "p"}, {"id": "iv9_5", "cn": "离婚率", "en": "divorce rate", "alt": [], "k": "p"}, {"id": "iv9_6", "cn": "经济独立", "en": "be financially independent", "alt": [], "k": "p"}, {"id": "iv9_7", "cn": "享受平等的权利", "en": "enjoy equal rights", "alt": ["share equal rights"], "k": "p"}, {"id": "iv9_8", "cn": "女性在护理、艺术和语言方面比男性更有天赋", "en": "show more talents than men in nursing, arts and language", "alt": [], "k": "p"}, {"id": "iv9_9", "cn": "追求事业", "en": "pursue a career", "alt": [], "k": "p"}, {"id": "iv9_10", "cn": "具有同样资格", "en": "be equally qualified", "alt": [], "k": "p"}, {"id": "iv9_11", "cn": "与男性享有同样的权利", "en": "share the same rights as men", "alt": [], "k": "p"}, {"id": "iv9_12", "cn": "特权", "en": "privilege", "alt": [], "k": "w"}, {"id": "iv9_13", "cn": "自尊", "en": "self-respect", "alt": ["self-esteem"], "k": "w"}, {"id": "iv9_14", "cn": "为女性保留一定比例的高层职位", "en": "reserve a percentage of high-level jobs for females", "alt": ["reserve a percentage of high-level jobs for women"], "k": "p"}, {"id": "iv9_15", "cn": "高工资", "en": "high salary", "alt": ["a high salary"], "k": "p"}, {"id": "iv9_16", "cn": "工资差别", "en": "differential between salaries", "alt": ["salary differentials"], "k": "p"}, {"id": "iv9_17", "cn": "拥有的财富量", "en": "own the amount of monetary wealth", "alt": [], "k": "p"}, {"id": "iv9_18", "cn": "对……做出很大贡献", "en": "make great contributions to", "alt": [], "k": "p"}, {"id": "iv9_19", "cn": "付出更多的努力", "en": "exert more efforts", "alt": ["make more efforts"], "k": "p"}, {"id": "iv9_20", "cn": "创造财富", "en": "create wealth", "alt": [], "k": "p"}, {"id": "iv9_21", "cn": "评价社会地位", "en": "value social status", "alt": [], "k": "p"}]}, {"name": "社会生活", "items": [{"id": "iv10_1", "cn": "人才流动", "en": "personnel flow", "alt": [], "k": "p"}, {"id": "iv10_2", "cn": "有雄心壮志的", "en": "be ambitious", "alt": [], "k": "p"}, {"id": "iv10_3", "cn": "展示才能", "en": "display one's talent", "alt": ["display one's talents"], "k": "p"}, {"id": "iv10_4", "cn": "学会竞争与合作", "en": "learn to compete and cooperate", "alt": [], "k": "p"}, {"id": "iv10_5", "cn": "人际交往技能", "en": "interpersonal skills", "alt": [], "k": "p"}, {"id": "iv10_6", "cn": "具有挑战性的工作", "en": "a challenging job", "alt": ["challenging job"], "k": "p"}, {"id": "iv10_7", "cn": "收入颇丰", "en": "a fat salary", "alt": ["fat salary"], "k": "p"}, {"id": "iv10_8", "cn": "丰富一个人的社会经历", "en": "enrich one's social experience", "alt": [], "k": "p"}, {"id": "iv10_9", "cn": "提高某人能力", "en": "improve one's capabilities", "alt": ["improve one's capability"], "k": "p"}, {"id": "iv10_10", "cn": "下岗", "en": "lay off", "alt": ["be laid off"], "k": "p"}, {"id": "iv10_11", "cn": "城市扩张", "en": "urban sprawl", "alt": [], "k": "p"}, {"id": "iv10_12", "cn": "涌进大城市", "en": "flood into large cities", "alt": ["flood into big cities"], "k": "p"}, {"id": "iv10_13", "cn": "监控摄像头", "en": "surveillance camera", "alt": ["surveillance cameras"], "k": "p"}, {"id": "iv10_14", "cn": "缓解交通压力", "en": "ease the traffic pressure", "alt": ["ease traffic pressure"], "k": "p"}, {"id": "iv10_15", "cn": "人口激增", "en": "population explosion", "alt": [], "k": "p"}, {"id": "iv10_16", "cn": "第三产业", "en": "tertiary industry", "alt": [], "k": "p"}, {"id": "iv10_17", "cn": "更好的医疗服务", "en": "better medical services", "alt": [], "k": "p"}, {"id": "iv10_18", "cn": "保持身体健康", "en": "keep physically fit", "alt": ["keep fit"], "k": "p"}, {"id": "iv10_19", "cn": "积极参加体育锻炼", "en": "be physically active", "alt": ["take an active part in physical exercises", "take an active part in physical exercise"], "k": "p"}]}]};
+const IW_SECTIONS=[
+  {key:'S',name:'雅思写作十大句式',sub:'49 个高分句式 · 一句一句磨',cats:IW_DATA.S},
+  {key:'V',name:'雅思大作文常见的十大话题及200个相关分类词汇',sub:'10 大话题 · 单词和短语',cats:IW_DATA.V},
+];
+const IW_PTS={w:3,p:8,s:20};
+const IW_KIND={w:'单词',p:'短语',s:'长句'};
+let iwSec=null,iwIdx=0,iwTries=0,iwState='input',iwReview=false;
+function iwProg(){if(!prog.ielts)prog.ielts={done:{}};if(!prog.ielts.done)prog.ielts.done={};return prog.ielts;}
+function iwFlat(sec){const out=[];sec.cats.forEach((c,ci)=>c.items.forEach(it=>out.push(Object.assign({cat:c.name,ci},it))));return out;}
+function iwSecByKey(k){return IW_SECTIONS.find(s=>s.key===k);}
+function iwFirstUndone(list){const d=iwProg().done;const i=list.findIndex(it=>!d[it.id]);return i<0?list.length:i;}
+function iwNorm(s){return String(s||'').toLowerCase().replace(/[’‘`´']/g,'')
+  .replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim();}   // 标点、连字符、撇号都不计较，只看单词
+function iwOk(input,it){const v=iwNorm(input);if(!v)return false;return [it.en].concat(it.alt||[]).some(a=>iwNorm(a)===v);}
+function iwEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+/* 逐词比对：标出学生漏写/写错的词，帮他记住哪里不一样 */
+function iwDiff(user,ans){
+  const A=ans.split(/\s+/),U=String(user||'').trim().split(/\s+/).filter(Boolean);
+  const a=A.map(iwNorm),u=U.map(iwNorm);
+  const n=a.length,m=u.length,L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=a[i]===u[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  const okA=new Array(n).fill(false),okU=new Array(m).fill(false);
+  let i=0,j=0;while(i<n&&j<m){if(a[i]===u[j]){okA[i]=okU[j]=true;i++;j++;}else if(L[i+1][j]>=L[i][j+1])i++;else j++;}
+  return {ans:A.map((w,k)=>okA[k]?iwEsc(w):'<mark>'+iwEsc(w)+'</mark>').join(' '),
+          you:U.map((w,k)=>okU[k]?iwEsc(w):'<s>'+iwEsc(w)+'</s>').join(' ')};
+}
+function showIelts(){
+  const d=iwProg().done;
+  document.getElementById('iw-hub').innerHTML=IW_SECTIONS.map((s,i)=>{
+    const list=iwFlat(s),done=list.filter(it=>d[it.id]).length,total=list.length;
+    const pts=list.reduce((a,it)=>a+IW_PTS[it.k],0);
+    return `<div><div class="lvl" onclick="showIeltsList('${s.key}')">
+      <div class="lvl-dot">${s.key==='S'?'句':'词'}</div>
+      <div class="lvl-tx"><div class="lvl-no">Part ${i+1}</div><b>${s.name}</b><p>${s.sub} · 全部完成共 ${pts} 分</p>
+      <span class="lvl-tag">${done===total?'✓ 已全部磨完':'进度 '+done+' / '+total}</span></div>
+      <span class="chev">›</span></div>${i<IW_SECTIONS.length-1?'<div class="lvl-link"></div>':''}</div>`;}).join('');
+  showScreen('ielts');document.getElementById('tab-home').classList.add('on');
+}
+function showIeltsList(key){
+  iwSec=iwSecByKey(key);const list=iwFlat(iwSec),d=iwProg().done,cur=iwFirstUndone(list);
+  document.getElementById('iw-list-title').textContent=key==='S'?'十大句式':'十大话题词汇';
+  document.getElementById('iw-list-meta').textContent=(list.filter(it=>d[it.id]).length)+' / '+list.length;
+  const cb=document.getElementById('iw-continue');
+  cb.style.display=cur<list.length?'':'none';
+  cb.textContent=cur===0?'开始挑战':'继续挑战（第 '+(cur+1)+' 个）';
+  let html='',k=0;
+  iwSec.cats.forEach((c,ci)=>{
+    const n=c.items.length,dn=c.items.filter(it=>d[it.id]).length;
+    html+=`<div class="iw-sec"><div class="iw-sec-hd"><b>${ci+1}. ${iwEsc(c.name)}</b><span>${dn}/${n}</span></div>`;
+    c.items.forEach(it=>{
+      const idx=k++,done=!!d[it.id],isCur=idx===cur,lock=idx>cur;
+      html+=`<div class="iw-row${done?' done':''}${isCur?' cur':''}${lock?' lock':''}" onclick="iwOpen(${idx})">
+        <div class="st">${done?'✓':lock?'🔒':idx+1}</div>
+        <div class="tx">${iwEsc(it.cn)}${done?`<small>${iwEsc(it.en)}</small>`:''}</div>
+        <div class="pt">${done?'已磨出':'+'+IW_PTS[it.k]}</div></div>`;
+    });
+    html+='</div>';
+  });
+  document.getElementById('iw-list').innerHTML=html;
+  showScreen('ielts-list');document.getElementById('tab-home').classList.add('on');
+  const c=document.querySelector('#iw-list .iw-row.cur');if(c&&cur>3)setTimeout(()=>c.scrollIntoView({block:'center'}),60);
+}
+function iwContinue(){const list=iwFlat(iwSec);iwOpen(iwFirstUndone(list));}
+function iwOpen(idx){
+  const list=iwFlat(iwSec),cur=iwFirstUndone(list);
+  if(idx>cur||idx>=list.length)return;          // 还没解锁
+  iwIdx=idx;iwTries=0;iwReview=!!iwProg().done[list[idx].id];
+  iwRender();showScreen('ielts-drill');
+}
+function iwRender(){
+  const list=iwFlat(iwSec),it=list[iwIdx];
+  document.getElementById('iw-drill-title').textContent=it.cat;
+  document.getElementById('iw-drill-prog').textContent=(iwIdx+1)+' / '+list.length;
+  document.getElementById('iw-chip').textContent=IW_KIND[it.k]+(iwReview?' · 复习（不加分）':' · +'+IW_PTS[it.k]+' 分');
+  document.getElementById('iw-cn').textContent=it.cn;
+  document.getElementById('iw-note').innerHTML=it.note?`<span class="iw-note">${iwEsc(it.note)}</span>`:'';
+  const inp=document.getElementById('iw-in');
+  inp.value='';inp.disabled=false;inp.className='iw-input'+(it.k==='s'?'':' short');
+  inp.placeholder=it.k==='s'?'在这里输入整句英文…':'在这里输入英文…';
+  document.getElementById('iw-fbk').style.display='none';
+  document.getElementById('iw-sub').style.display='';
+  document.getElementById('iw-again').style.display='none';
+  document.getElementById('iw-next').style.display='none';
+  document.getElementById('iw-giveup').style.display='';
+  document.getElementById('iw-tries').textContent=iwTries?'第 '+(iwTries+1)+' 次挑战':'';
+  iwState='input';
+  setTimeout(()=>inp.focus(),120);
+}
+function iwSubmit(giveUp){
+  if(iwState!=='input')return;
+  const list=iwFlat(iwSec),it=list[iwIdx],inp=document.getElementById('iw-in'),val=inp.value;
+  if(!giveUp&&!val.trim()){inp.focus();return;}
+  const right=!giveUp&&iwOk(val,it);
+  inp.disabled=true;
+  const fbk=document.getElementById('iw-fbk'),body=document.getElementById('iw-fbk-body');
+  fbk.className='fbk '+(right?'ok':'no');fbk.style.display='block';
+  document.getElementById('iw-sub').style.display='none';
+  document.getElementById('iw-giveup').style.display='none';
+  if(right){
+    iwState='done';
+    let gain=0;const p=iwProg();
+    if(!p.done[it.id]){p.done[it.id]=new Date().toISOString();gain=IW_PTS[it.k];prog.totalScore+=gain;save();syncScoreAmount(gain);}
+    document.getElementById('iw-fbk-icon').textContent='✓';
+    document.getElementById('iw-fbk-title').textContent=gain?`磨出来了！+${gain} 分`:(iwReview?'完全正确！（复习不重复加分）':'完全正确！');
+    body.innerHTML=`<div class="iw-ans">${iwEsc(it.en)}</div>`;
+    const nb=document.getElementById('iw-next');nb.style.display='';
+    nb.textContent=iwIdx+1<list.length?'下一个 →':'全部完成，返回';
+  }else{
+    iwState='wrong';iwTries++;
+    document.getElementById('iw-fbk-icon').textContent='✗';
+    document.getElementById('iw-fbk-title').textContent=giveUp?'先把答案记下来':'还不一样，记住正确答案';
+    const df=iwDiff(val,it.en);
+    body.innerHTML=`<div class="iw-ans">${df.ans}${(it.alt&&it.alt.length)?`<span class="alt">也可以写：${it.alt.map(iwEsc).join(' / ')}</span>`:''}</div>`+
+      (!giveUp&&val.trim()?`<div class="iw-yours">你写的：${df.you}</div>`:'');
+    document.getElementById('iw-again').style.display='';
+  }
+  setTimeout(()=>{const b=document.getElementById(right?'iw-next':'iw-again');if(b)b.scrollIntoView({behavior:'smooth',block:'center'});},60);
+}
+function iwAgain(){iwRender();document.getElementById('iw-tries').textContent='第 '+(iwTries+1)+' 次挑战 · 答案已隐藏';}
+function iwNext(){
+  const list=iwFlat(iwSec);
+  if(iwIdx+1>=list.length){showIeltsList(iwSec.key);return;}
+  const cur=iwFirstUndone(list);
+  iwIdx=iwReview?Math.min(iwIdx+1,cur):iwIdx+1;
+  if(iwIdx>=list.length){showIeltsList(iwSec.key);return;}
+  iwTries=0;iwReview=!!iwProg().done[list[iwIdx].id];iwRender();
+}
+function iwExitDrill(){showIeltsList(iwSec.key);}
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter'||e.shiftKey)return;
+  const scr=document.getElementById('s-ielts-drill');if(!scr||!scr.classList.contains('active'))return;
+  e.preventDefault();
+  if(iwState==='input')iwSubmit(false);else if(iwState==='wrong')iwAgain();else if(iwState==='done')iwNext();
+});
 
 /* ── INTRO ── */
 function dismissIntro(){
