@@ -466,6 +466,18 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 @keyframes ringpulse{0%,100%{box-shadow:0 0 0 0 rgba(200,144,48,.2)}50%{box-shadow:0 0 0 14px rgba(200,144,48,0)}}
 .modal h2{font-size:15px;font-weight:500;color:var(--soft);margin-bottom:6px}
 .modal .btn{margin-top:30px}
+/* 一次性公告：词库上新 */
+.news-box{max-width:320px!important;padding:28px 22px 18px!important;text-align:left!important}
+.news-box .rk{text-align:center;margin-bottom:10px}
+.news-box h2{font-size:22px!important;font-weight:700!important;color:var(--ink)!important;text-align:center;letter-spacing:-.02em;margin-bottom:6px!important}
+.news-sub{font-size:13px;color:var(--soft);text-align:center;line-height:1.6;margin-bottom:16px}
+.news-item{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--r-md);background:var(--bg3);border:1px solid var(--hair);margin-bottom:10px}
+.news-item .ic{font-size:24px;line-height:1}
+.news-item b{display:block;font-size:15px;color:var(--ink);margin-bottom:3px}
+.news-item p{font-size:12.5px;color:var(--soft);line-height:1.55}
+.news-item .tag{display:inline-block;font-size:10px;font-weight:700;color:var(--accent-deep);background:var(--accent-soft);border-radius:var(--r-pill);padding:1px 7px;margin-left:6px;vertical-align:2px}
+.news-box .btn{margin-top:10px!important}
+.news-box .btn.ghost{margin-top:2px!important;font-size:14px}
 
 .foot{text-align:center;font-size:11px;color:var(--faint);margin-top:40px;letter-spacing:.02em}
 
@@ -16014,7 +16026,8 @@ const _sb = {
    {const rows=await old.json();root=parseMaybeJSON(rows[0]&&rows[0].progress_data)||{};}
    // ★ 先把云端（可能来自另一台设备）的进度合并进本机，再上传合并结果，而不是用本机整份覆盖云端
    if(name===S.name&&root.vocab){try{if(mergeCloudGd(root)){saveLocalOnly();}}catch(e){}gdData=S.gd;}
-   root.vocab={version:2,grade:grade||S.grade||"",gd:gdData||{},updated_at:new Date().toISOString()};
+   if(name===S.name)mergeCloudFlags(root);
+   root.vocab={version:2,grade:grade||S.grade||"",gd:gdData||{},flags:(name===S.name?S.flags:null)||(root.vocab&&parseMaybeJSON(root.vocab)&&parseMaybeJSON(root.vocab).flags)||{},updated_at:new Date().toISOString()};
    const payload={
     user_name:name,
     progress_data:root,
@@ -17774,6 +17787,37 @@ SCREENS.daily=function(){
 };
 
 /* 怪物副本进化弹窗 */
+/* ===== 一次性公告：高中 + 雅思词库上新 =====
+   每个学生只弹一次：弹出的那一刻就记下标记（存本机 + 同步云端），换手机/清缓存也不会再弹。
+   以后要发新公告，换一个 NEWS_ID 即可。 */
+const NEWS_ID='2026-10-gk-ielts';
+function newsSeen(){return !!(S.flags&&S.flags[NEWS_ID]);}
+function markNewsSeen(){if(!S.flags)S.flags={};S.flags[NEWS_ID]=Date.now();saveLocalOnly();if(_cloudSyncReady)cloudProgressUpdate(0);}
+let _newsTries=0;
+function maybeShowNews(){
+ if(newsSeen()||!S.name)return;
+ const m=document.getElementById('modal');
+ const busy=document.querySelector('.hype')||(m&&m.classList.contains('show'))||!(_curScreenName==='home'||_curScreenName==='grade'||_curScreenName==='stage');
+ if(busy){if(++_newsTries<120)setTimeout(maybeShowNews,1500);return;} // 正在答题/有别的弹窗：等回到首页再弹
+ markNewsSeen();
+ m.innerHTML=`<div class="box news-box">
+   <div class="rk">John Class · 词库大升级</div>
+   <h2>两大词库，正式上线！</h2>
+   <div class="news-sub">${S.name}，你的单词战场变大了 👀</div>
+   <div class="news-item"><div class="ic">🎓</div><div><b>高中 3500 词<span class="tag">更强</span></b><p>3862 个高考词，77 组闯关，从易到难一路打上去</p></div></div>
+   <div class="news-item"><div class="ic">🏆</div><div><b>雅思 8000 词<span class="tag">最强</span></b><p>7949 个词，159 组，全站最硬核词库，敢来挑战吗？</p></div></div>
+   <button class="btn accent" id="nw-gk">去看高中词库</button>
+   <button class="btn line" id="nw-ie">挑战雅思词库</button>
+   <button class="btn ghost" id="nw-ok">先背我现在的</button>
+ </div>`;
+ m.classList.add('show');try{sfx.levelup();}catch(e){}
+ const close=()=>m.classList.remove('show');
+ m.querySelector('#nw-gk').onclick=()=>{try{sfx.tap();}catch(e){}close();go({name:'stage',arg:'high'});};
+ m.querySelector('#nw-ie').onclick=()=>{try{sfx.tap();}catch(e){}close();go({name:'stage',arg:'college'});};
+ m.querySelector('#nw-ok').onclick=()=>{try{sfx.tap();}catch(e){}close();};
+}
+function mergeCloudFlags(raw){try{const pv=parseMaybeJSON(raw);const v=pv&&parseMaybeJSON(pv.vocab);const f=v&&v.flags;
+ if(f&&typeof f==='object'){if(!S.flags)S.flags={};let ch=false;for(const k in f){if(!S.flags[k]){S.flags[k]=f[k];ch=true;}}if(ch)saveLocalOnly();}}catch(e){}}
 function showMonsterEvo(then){
  const m=document.getElementById("modal");
  m.innerHTML=`<div class="box">
@@ -18790,6 +18834,7 @@ if(!S.name){
       let changed=false;
       if(cloud&&cloud.data)changed=mergeCloudGd(cloud.data)||changed;
       if(progress)changed=mergeCloudGd(progress)||changed;
+      if(progress)mergeCloudFlags(progress);
       // ★ 新手机/清过缓存：本机没有"当前年级"，但云端有进度 → 自动回到上次的年级，
       //   不然学生停在选年级页，选错年级会以为进度全没了
       if(!S.grade||!gradeById(S.grade)||!gradeById(S.grade).ready){
@@ -18813,7 +18858,9 @@ if(!S.name){
     }catch(e){
       _cloudSyncReady=true;
     }
+    setTimeout(maybeShowNews,600);
   })();
+  setTimeout(()=>{if(!_cloudSyncReady)maybeShowNews();},4000); // 云端迟迟不回来：照样弹（标记会在联网后补传）
 }
 </script>
   <script src="jc-daily.js"></script>
