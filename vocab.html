@@ -537,6 +537,8 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 .rc-ph{font-size:11px;color:var(--faint)}
 .rc-cn{font-size:12.5px;color:var(--soft)}
 .rc-word-tag{flex:0 0 auto;font-size:11px;font-weight:600;color:var(--soft);background:var(--bg2);border:1px solid var(--hair);padding:4px 9px;border-radius:99px;white-space:nowrap}
+.rc-book{display:inline-block;align-self:flex-start;width:auto;font-size:10px;font-weight:600;color:var(--accent-deep,var(--soft));background:var(--bg2);border:1px solid var(--hair);padding:1px 6px;border-radius:99px;margin:2px 0 1px;vertical-align:1px}
+.rc-books{font-size:12px;color:var(--soft);text-align:center;margin:-4px 20px 10px;line-height:1.5}
 .rc-word-tag.due{color:#fff;background:var(--warn);border-color:var(--warn)}
 .rc-word-tag.grad{color:var(--ok);background:rgba(90,138,48,.12);border-color:var(--ok)}
 .rc-empty{text-align:center;padding:40px 20px;color:var(--faint);font-size:14px;line-height:1.8}
@@ -16155,7 +16157,8 @@ function migrateLevelCaps(){
    const p=g.points||0;const P=g.prog||{};let inBox=0,overdue=0;
    for(const id in P){const r=P[id];if(r.box>=0&&r.box<INTERVALS.length){inBox++;if(Date.now()-r.due>OVERDUE_GRACE)overdue++;}}
    const hp=inBox===0?100:Math.round((1-overdue/inBox)*100);
-   if(hp<HEALTH_PASS)g.capLv=levelOf(p).name;
+   // 健康度现在汇总所有课本，原来达标的课本也可能突然不达标 → 一律把当前等级记为保底（冻结而不倒退）
+   void hp;g.capLv=levelOf(p).name;
  }
 }
 /* 本机保存：每答一题就同步写一次，退出/刷新都不会丢。
@@ -16288,7 +16291,9 @@ function mergeCloudGd(raw){
 }
 // 当前年级存档（懒创建）
 function gd(){if(!S.grade)return {points:0,prog:{}};if(!S.gd[S.grade])S.gd[S.grade]={points:0,prog:{}};return S.gd[S.grade];}
-function rec(id){const g=gd();if(!g.prog[id])g.prog[id]={seenR:0,seenW:0,box:-1,due:0,last:""};return g.prog[id];}
+function gdOf(gid){if(!gid||gid===S.grade)return gd();if(!S.gd[gid])S.gd[gid]={points:0,prog:{}};if(!S.gd[gid].prog)S.gd[gid].prog={};return S.gd[gid];}
+// rec(id, gid)：gid 省略 = 当前课本；跨课本复习的词会带上 gid，结果记回它原来那本书
+function rec(id,gid){const g=gdOf(gid);if(!g.prog[id])g.prog[id]={seenR:0,seenW:0,box:-1,due:0,last:""};return g.prog[id];}
 function customWords(){const g=gd();if(!Array.isArray(g.customWords))g.customWords=[];return g.customWords;}
 function customWordById(id){return customWords().find(w=>w.id===id);}
 function customWordObject(en,cn,note,oldId){
@@ -16307,13 +16312,8 @@ function customScoreMap(){const g=gd();if(!g.customScore)g.customScore={};return
 function customAlreadyScored(id){return !!customScoreMap()[id];}
 function awardCustomWord(id){if(customAlreadyScored(id))return 0;customScoreMap()[id]=1;addPoints(2);save();return 2;}
 function wrongBookWords(){
- const P=gd().prog||{},out=[];
- for(const id in P){
-  const r=P[id];if(!r||(!r.last&&r.box<0&&!r.seenR&&!r.seenW))continue;
-  if(r.last==='bad'||(r.box>=0&&!r.grad)){
-   const w=WORDS.find(x=>String(x.id)===String(id));if(w)out.push(w);
-  }
- }
+ const out=[];
+ eachReviewRec((r,w,gid)=>{if(r.last==='bad'||(r.box>=0&&!r.grad))out.push(reviewWord(w,gid));});
  return out;
 }
 function now(){return Date.now();}
@@ -16468,10 +16468,18 @@ function writePool(u){return u.words.filter(w=>w.type==="word");}
 function unitStats(u){const pool=quizPool(u);let seen=0,known=0,rev=0;const P=gd().prog;
  pool.forEach(w=>{const r=P[w.id];if(r&&(r.seenR||r.seenW)){seen++;if(r.last==="bad")rev++;else if(r.last==="good")known++;}});
  return{total:pool.length,seen,known,rev};}
-function dueWords(){const P=gd().prog;return Object.keys(P).filter(id=>{const r=P[id];return r.box>=0&&r.box<INTERVALS.length;})
- .map(id=>WORDS.find(w=>w.id==id)).filter(w=>w&&w.type!=="name");}
-function dueWordsToday(){const P=gd().prog;return Object.keys(P).filter(id=>{const r=P[id];return r.box>=0&&r.box<INTERVALS.length&&r.due<=now();})
- .map(id=>WORDS.find(w=>w.id==id)).filter(w=>w&&w.type!=="name");}
+/* ★ 艾宾浩斯复习跨课本汇总：错词按"课本"分开存（S.gd[课本].prog），但复习队列、遗忘曲线、健康度汇总所有课本。
+   以前只看当前课本，学生学完七上换到七下，七上的错词就从复习中心"消失"了（数据还在，但没人复习、一直逾期）。
+   返回的词是带 _g（来源课本 id）的副本，答题结果通过 rec(w.id,w._g) 记回原来那本书；_book 是非当前课本的书名，用于显示标签。 */
+function reviewGrades(){return GRADES.filter(g=>g.ready&&Array.isArray(g.words)&&S.gd&&S.gd[g.id]&&S.gd[g.id].prog);}
+function gradeWordMap(g){if(!g._wmap||g._wmapN!==g.words.length){const m=new Map();g.words.forEach(w=>{if(w.type!=="name")m.set(String(w.id),w);});g._wmap=m;g._wmapN=g.words.length;}return g._wmap;}
+function reviewWord(w,gid){const o=Object.assign({},w,{_g:gid});if(gid!==S.grade)o._book=(gradeById(gid)||{}).label||"";return o;}
+// 遍历所有课本里"仍存在于词表"的进度记录：fn(r, w, gid)
+function eachReviewRec(fn){reviewGrades().forEach(g=>{const P=S.gd[g.id].prog;const M=gradeWordMap(g);
+ for(const id in P){const r=P[id];if(!r)continue;const w=M.get(String(id));if(w)fn(r,w,g.id);}});}
+function recOfWord(w){const sd=S.gd&&S.gd[w._g||S.grade];return (sd&&sd.prog&&sd.prog[w.id])||{box:-1,due:0};}
+function dueWords(){const out=[];eachReviewRec((r,w,gid)=>{if(r.box>=0&&r.box<INTERVALS.length)out.push(reviewWord(w,gid));});return out;}
+function dueWordsToday(){const t=now(),out=[];eachReviewRec((r,w,gid)=>{if(r.box>=0&&r.box<INTERVALS.length&&r.due<=t)out.push(reviewWord(w,gid));});return out;}
 function points(){return gd().points;}
 // 总榜用跨年级累计积分
 function totalPoints(){return Object.values(S.gd||{}).reduce((s,g)=>s+(g.points||0),0);}
@@ -16745,7 +16753,8 @@ function _core(t){return _stripZh(t).replace(/[的地]$/,'');}
    学生写出的是另一个词条，且词性相同、那个词条的意思完全覆盖题干意思，也判为正确。 */
 function sameMeaningAlt(v,w){
  const tk=meaningKeys(w);if(!tk.size)return null;const pos=String(w.s[0][0]||"").replace(/\([^)]*\)/g,"").trim();
- for(const x of WORDS){if(x.id===w.id||x.type==="name")continue;
+ const src=(w._g&&gradeById(w._g)&&gradeById(w._g).words)||WORDS; // 跨课本复习的词：在它自己那本书里找同义词条
+ for(const x of src){if(x.id===w.id||x.type==="name")continue;
    if(!enAnswerVariants(x.en).includes(v))continue;
    const xp=String(x.s[0][0]||"").replace(/\([^)]*\)/g,"").trim();if(xp!==pos)continue;
    const xk=meaningKeys(x);if([...tk].every(k=>xk.has(k)))return x;}
@@ -17057,7 +17066,7 @@ function dueAfterDays(n){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getD
 /* 艾宾浩斯排期：答错的那天记为第 0 天，之后在第 1、2、4、7、15 天各复习一次（INTERVALS 是"距答错那天的天数"）。
    box = 当前等待的是第几轮复习（0~4）。到期后答对 → 进入下一轮，间隔 = 两轮节点之差（1,2,3,8 天）；第 5 轮答对即毕业。
    还没到期的词（提前练习、在单元关卡里又碰到）答对只记"答对"，不推进轮次，防止一天之内刷完 5 轮。 */
-function markResult(w,good,mode){const r=rec(w.id);
+function markResult(w,good,mode){const r=rec(w.id,w._g);
  const wasNew=(!r.seenR&&!r.seenW);
  if(mode==="R")r.seenR=1;else r.seenW=1;
  let graduated=false;
@@ -17100,8 +17109,9 @@ const OVERDUE_GRACE=DAY;   // 到期后留 1 天缓冲期，刚答错的词不�
 // 接触过的词总数（曾经答过一次的词，无论对错）
 function encounteredCount(){const P=gd().prog;let n=0;for(const id in P){if(P[id].seenR||P[id].seenW)n++;}return n;}
 // 错词健康度：错词本里"真正被放置太久"（逾期超过缓冲期）的比例。错词本是空的时候视为 100%（没有欠账）
-function healthScore(){const P=gd().prog;let inBox=0,overdue=0;const ok=new Set(WORDS.filter(w=>w.type!=="name").map(w=>String(w.id)));
- for(const id in P){const r=P[id];if(r.box>=0&&r.box<INTERVALS.length&&(!WORDS.length||ok.has(String(id)))){inBox++;if(now()-r.due>OVERDUE_GRACE)overdue++;}}
+// ★ 汇总所有课本的错词：换了课本，旧课本的错词照样要按时复习，不能放着逾期
+function healthScore(){let inBox=0,overdue=0;const t=now();
+ eachReviewRec(r=>{if(r.box>=0&&r.box<INTERVALS.length){inBox++;if(t-r.due>OVERDUE_GRACE)overdue++;}});
  if(inBox===0)return 100;
  return Math.round((1-overdue/inBox)*100);}
 // 掌握深度：接触过的词里，真正记住（已掌握）的比例
@@ -17648,7 +17658,7 @@ function runReview(pool,i,acc,revenge){
  _stageAborted=false;
  clear();const w=pool[i];const d=document.createElement("div");d.className="screen active";
  const title=acc.early?"错词练习（提前）":revenge?"⚔️ 错词复仇":"错词复习";
- const r=rec(w.id);
+ const r=rec(w.id,w._g);
  const boxLabel=["第1天","第2天","第4天","第7天","第15天"];
  let ebHint="";
  if(r.box>=0&&r.box<INTERVALS.length){
@@ -17663,6 +17673,7 @@ function runReview(pool,i,acc,revenge){
   <div class="qhud"><div class="tk"><i style="width:${i/pool.length*100}%"></i></div><div class="ct">${i+1} / ${pool.length}</div></div>
   <div class="qcn"><div class="ql">看中文，拼出这个${w.type==="phrase"?"短语":"单词"}</div><div class="qt">${cnPromptHTML(w)}</div></div>
   ${ebHint}
+  ${w._book?`<div style="font-size:11px;color:var(--soft);text-align:center;margin-top:4px">📘 来自「${w._book}」</div>`:""}
   <div class="spell-input-wrap" style="margin:14px 0 10px">
     <input class="spell-input" id="sinput" type="text" placeholder="输入英文${w.type==="phrase"?"短语":"单词"}…"
       autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
@@ -18421,9 +18432,9 @@ function ebbinghausCurveSVG(){
 }
 // 复习计划：未来 16 天每天到期词数
 function reviewForecast(){
- const P=gd().prog;const buckets=new Array(16).fill(0);
- for(const id in P){const r=P[id];if(r.box>=0&&r.box<INTERVALS.length){
-   const d=Math.max(0,Math.ceil((r.due-now())/86400000));if(d<=15)buckets[d]++;}}
+ const buckets=new Array(16).fill(0);
+ eachReviewRec(r=>{if(r.box>=0&&r.box<INTERVALS.length){
+   const d=Math.max(0,Math.ceil((r.due-now())/86400000));if(d<=15)buckets[d]++;}});
  return buckets;
 }
 function reviewForecastSVG(){
@@ -18445,13 +18456,15 @@ SCREENS.reviewCenter=function(){
  clear();
  const due=dueWords();              // 全部仍在复习队列的错词
  const dueT=dueWordsToday();        // 今日到期
- const P=gd().prog;
- // 错词按艾宾浩斯阶段分组
+ // 错词按艾宾浩斯阶段分组（汇总所有课本）
  const stageLabel=["第1天","第2天","第4天","第7天","第15天"];
  const byStage=[[],[],[],[],[]];
- due.forEach(w=>{const r=P[w.id];if(r.box>=0&&r.box<5)byStage[r.box].push(w);});
+ due.forEach(w=>{const r=recOfWord(w);if(r.box>=0&&r.box<5)byStage[r.box].push(w);});
  // 对词（已毕业 / 已掌握）
- const mastered=[];for(const id in P){if(P[id].grad){const w=WORDS.find(x=>x.id==id);if(w)mastered.push(w);}}
+ const mastered=[];eachReviewRec((r,w,gid)=>{if(r.grad)mastered.push(reviewWord(w,gid));});
+ // 当前课本的词排前面
+ mastered.sort((a,b)=>(a._book?1:0)-(b._book?1:0));
+ const otherBooks=[...new Set(due.filter(w=>w._book).map(w=>w._book))];
  let curTab="plan"; // plan | wrong | right
 
  const d=document.createElement("div");d.className="screen active";
@@ -18470,6 +18483,7 @@ SCREENS.reviewCenter=function(){
   ${dueT.length? `<button class="btn accent rc-go" id="rc-go">开始今日复习 · ${dueT.length} 词</button>`
     : (due.length? `<div class="rc-rest">今日已无到期词 · ${due.length} 个词在记忆周期中</div>`
       : `<div class="rc-rest">错词本已清空，继续保持！</div>`)}
+  ${otherBooks.length?`<div class="rc-books">已包含其他课本的错词：${otherBooks.join("、")}</div>`:''}
   <div class="rc-tabs">
     <div class="rc-tab active" data-t="plan">复习计划</div>
     <div class="rc-tab" data-t="wrong">错词 ${due.length}</div>
@@ -18505,7 +18519,7 @@ SCREENS.reviewCenter=function(){
  const wordRow=(w,tag,tagcls)=>{
    const cn=w.s.map(x=>`${x[0]?`<i>${x[0]}</i>`:""}${x[1]}`).join("；");
    return `<div class="rc-word" data-en="${w.en}">
-     <div class="rc-word-l"><b>${w.en}</b>${w.ph?`<span class="rc-ph">${w.ph}</span>`:""}<span class="rc-cn">${cn}</span></div>
+     <div class="rc-word-l"><b>${w.en}</b>${w._book?`<span class="rc-book">${w._book}</span>`:""}${w.ph?`<span class="rc-ph">${w.ph}</span>`:""}<span class="rc-cn">${cn}</span></div>
      <div class="rc-word-tag ${tagcls}">${tag}</div></div>`;
  };
  const renderWrong=()=>{
@@ -18513,7 +18527,7 @@ SCREENS.reviewCenter=function(){
    let h="";
    for(let i=0;i<5;i++){if(!byStage[i].length)continue;
      h+=`<div class="rc-grp-t">艾宾浩斯第${i+1}轮 · ${stageLabel[i]} <span>${byStage[i].length}词</span></div>`;
-     byStage[i].forEach(w=>{const r=P[w.id];const dl=Math.ceil((r.due-now())/86400000);
+     byStage[i].forEach(w=>{const r=recOfWord(w);const dl=Math.ceil((r.due-now())/86400000);
        const tag=dl<=0?"今日复习":dl+"天后";const tc=dl<=0?"due":"";
        h+=wordRow(w,tag,tc);});
    }
