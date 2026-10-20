@@ -412,6 +412,15 @@ body{font-family:var(--fnt);color:var(--ink);-webkit-font-smoothing:antialiased;
 .ai-right{color:var(--accent-deep);font-weight:700}
 .ai-why{font-size:12.5px;color:var(--soft);margin-top:4px}
 .ai-good{font-family:var(--fnt-serif);color:var(--ink)}
+.ai-dim{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-top:1px solid var(--hair)}
+.ai-dim:first-child{border-top:none}
+.ai-dn{flex:0 0 64px;font:700 13px var(--fnt);color:var(--ink)}
+.ai-dn small{display:block;font-weight:600;font-size:11px;color:var(--faint);margin-top:2px}
+.ai-dots{display:flex;gap:4px;margin-bottom:5px}
+.ai-dots i{width:16px;height:6px;border-radius:3px;background:var(--hair)}
+.ai-dots i.on{background:var(--accent)}
+.ai-dc{font-size:13px;line-height:1.6;color:var(--soft)}
+.ai-type{display:inline-block;font-size:11px;font-weight:700;color:var(--accent-deep);background:var(--accent-soft);border-radius:var(--r-pill);padding:1px 8px;margin-right:6px;vertical-align:1px}
 .ai-pol{font:15px/1.8 var(--fnt-serif);color:var(--ink);white-space:pre-wrap}
 </style>
 </head>
@@ -775,7 +784,7 @@ body{font-family:var(--fnt);color:var(--ink);-webkit-font-smoothing:antialiased;
   <div class="card" style="margin-bottom:16px" id="ai-box">
     <div class="kicker" style="margin-bottom:14px">AI Instant Feedback</div>
     <div style="font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin-bottom:6px">AI 秒批 · 立刻出分</div>
-    <div style="font-size:13px;color:var(--soft);line-height:1.7;margin-bottom:16px">按中考书面表达 15 分制打分<br>挑错 · 夸亮点 · 送你高分句</div>
+    <div style="font-size:13px;color:var(--soft);line-height:1.7;margin-bottom:16px">按湖南中考 15 分制 · 词汇 / 语法 / 连贯三项打分<br>逐句挑错 · 换掉低级词 · 升级高分句式</div>
     <div class="ai-sel" id="ai-grade">
       <button data-g="g7" onclick="aiPick(this)">七年级</button>
       <button data-g="g8" onclick="aiPick(this)" class="on">八年级</button>
@@ -6153,7 +6162,7 @@ function aiLeftTxt(){const n=AI_DAILY-aiUsed();document.getElementById('ai-left'
 function aiPick(b){document.querySelectorAll('#ai-grade button').forEach(x=>x.classList.remove('on'));b.classList.add('on');try{localStorage.setItem('jc_ai_grade_lv',b.dataset.g);}catch(e){}}
 function aiCount(){const t=document.getElementById('ai-essay').value.trim();document.getElementById('ai-wc').textContent=(t?t.split(/\s+/).length:0)+' 词';}
 function aiShowErr(m){const e=document.getElementById('ai-err');e.textContent=m;e.style.display=m?'block':'none';}
-function aiTag(s){return s>=13?'学霸级，直接贴墙上':s>=10?'稳了，再冲一冲':s>=7?'有底子，细节要抠':'别慌，照着改就能涨分';}
+function aiTag(s,b){const t=s>=13?'学霸级，直接贴墙上':s>=10?'稳了，再冲一冲':s>=7?'有底子，细节要抠':'别慌，照着改就能涨分';return (b?b+' · ':'')+t;}
 async function aiGrade(){
   if(aiBusy)return;
   const essay=document.getElementById('ai-essay').value.trim();
@@ -6174,12 +6183,18 @@ async function aiGrade(){
 }
 function aiRender(d){
   const el=document.getElementById('ai-result');
+  const dimRow=(k,cn,en)=>{const x=(d.dims||{})[k]||{score:0,comment:''};return `<div class="ai-dim"><div class="ai-dn">${cn} ${x.score}/5<small>${en}</small></div><div style="flex:1"><div class="ai-dots">${[1,2,3,4,5].map(i=>`<i class="${i<=x.score?'on':''}"></i>`).join('')}</div><div class="ai-dc">${esc(x.comment)}</div></div></div>`;};
+  const errList=(arr)=>arr.map(e=>`<div class="ai-item">${e.type?`<span class="ai-type">${esc(e.type)}</span>`:''}<span class="ai-wrong">${esc(e.wrong||'')}</span> → <span class="ai-right">${esc(e.right||'')}</span><div class="ai-why">${esc(e.why||'')}</div></div>`).join('');
   let h=`<div class="kicker" style="margin-bottom:14px">AI Report</div>
   <div class="ai-score"><div class="ai-num"><b>${d.score}</b><span>/ 15</span></div>
-  <div><div class="ai-tag">${aiTag(d.score)}</div><div class="ai-sum">${esc(d.summary)}</div></div></div>`;
-  if(d.errors&&d.errors.length){h+=`<div class="ai-h">要改的地方 · ${d.errors.length}</div>`+d.errors.map(e=>`<div class="ai-item"><span class="ai-wrong">${esc(e.wrong||'')}</span> → <span class="ai-right">${esc(e.right||'')}</span><div class="ai-why">${esc(e.why||'')}</div></div>`).join('');}
+  <div><div class="ai-tag">${aiTag(d.score,d.band)}</div><div class="ai-sum">${esc(d.summary)}</div></div></div>
+  <div class="ai-item" style="padding:4px 13px">${dimRow('vocab','词汇','Lexical')}${dimRow('grammar','语法','Grammar')}${dimRow('coherence','连贯','Coherence')}</div>`;
+  const ve=d.vocab_errors||[],vu=d.vocab_upgrades||[],ge=d.grammar_errors||[],su=d.sentence_upgrades||[];
+  if(ve.length)h+=`<div class="ai-h">词汇纠错 · ${ve.length}</div>`+errList(ve);
+  if(vu.length)h+=`<div class="ai-h">低级词替换</div>`+vu.map(u=>`<div class="ai-item"><b>${esc(u.word||'')}</b>${u.times?`<span style="color:var(--faint);font-size:12px"> 用了 ${esc(u.times)} 次</span>`:''} → <span class="ai-right">${(u.better||[]).map(esc).join(' / ')}</span>${u.example?`<div class="ai-why ai-good">${esc(u.example)}</div>`:''}</div>`).join('');
+  if(ge.length)h+=`<div class="ai-h">语法纠错 · ${ge.length}</div>`+errList(ge);
+  if(su.length)h+=`<div class="ai-h">句式升级</div>`+su.map(u=>`<div class="ai-item">${u.pattern?`<span class="ai-type">${esc(u.pattern)}</span>`:''}<div style="color:var(--soft);margin-top:4px">${esc(u.from||'')}</div><div class="ai-right" style="margin-top:4px">↑ ${esc(u.to||'')}</div><div class="ai-why">${esc(u.why||'')}</div></div>`).join('');
   if(d.highlights&&d.highlights.length){h+=`<div class="ai-h">写得漂亮</div>`+d.highlights.map(x=>`<div class="ai-item ai-good">✦ ${esc(x)}</div>`).join('');}
-  if(d.upgrades&&d.upgrades.length){h+=`<div class="ai-h">高分句升级</div>`+d.upgrades.map(u=>`<div class="ai-item"><div style="color:var(--soft)">${esc(u.from||'')}</div><div class="ai-right" style="margin-top:4px">↑ ${esc(u.to||'')}</div><div class="ai-why">${esc(u.why||'')}</div></div>`).join('');}
   if(d.polished){h+=`<div class="ai-h">润色版全文</div><div class="ai-item ai-pol" id="ai-pol">${esc(d.polished)}</div>
   <button class="btn line sm" style="width:100%;margin-top:6px" onclick="aiCopy(this)">复制润色版</button>`;}
   h+=`<div style="font-size:12px;color:var(--faint);margin-top:14px;line-height:1.6">AI 批改仅供参考，想要更细致的点评，发给 John 亲自批 ↓</div>`;
