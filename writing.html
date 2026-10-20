@@ -421,6 +421,13 @@ body{font-family:var(--fnt);color:var(--ink);-webkit-font-smoothing:antialiased;
 .ai-dots i.on{background:var(--accent)}
 .ai-dc{font-size:13px;line-height:1.6;color:var(--soft)}
 .ai-type{display:inline-block;font-size:11px;font-weight:700;color:var(--accent-deep);background:var(--accent-soft);border-radius:var(--r-pill);padding:1px 8px;margin-right:6px;vertical-align:1px}
+.ai-sen{background:#FFFDF8;border:1.5px solid var(--hair);border-radius:var(--r-md);padding:12px 13px;margin-bottom:10px}
+.ai-sen.ok{opacity:.8}
+.ai-sn{font:700 11px var(--fnt);letter-spacing:.1em;color:var(--faint);margin-bottom:6px}
+.ai-so{font:15px/1.7 var(--fnt-serif);color:var(--ink)}
+.ai-sf{font:15px/1.7 var(--fnt-serif);color:var(--accent-deep);font-weight:700;margin-top:6px;padding-top:6px;border-top:1px dashed var(--hair)}
+.ai-se{margin-top:8px;padding:8px 10px;background:var(--bg);border-radius:var(--r-sm);font-size:13.5px;line-height:1.6}
+.ai-se+.ai-se{margin-top:6px}
 .ai-pol{font:15px/1.8 var(--fnt-serif);color:var(--ink);white-space:pre-wrap}
 </style>
 </head>
@@ -784,7 +791,7 @@ body{font-family:var(--fnt);color:var(--ink);-webkit-font-smoothing:antialiased;
   <div class="card" style="margin-bottom:16px" id="ai-box">
     <div class="kicker" style="margin-bottom:14px">AI Instant Feedback</div>
     <div style="font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin-bottom:6px">AI 秒批 · 立刻出分</div>
-    <div style="font-size:13px;color:var(--soft);line-height:1.7;margin-bottom:16px">按湖南中考 15 分制 · 词汇 / 语法 / 连贯三项打分<br>逐句挑错 · 换掉低级词 · 升级高分句式</div>
+    <div style="font-size:13px;color:var(--soft);line-height:1.7;margin-bottom:16px">按湖南中考 15 分制 · 词汇 / 语法 / 连贯三项打分<br>逐句精批 · 每个错误讲清楚 · 最后送润色全文</div>
     <div class="ai-sel" id="ai-grade">
       <button data-g="g7" onclick="aiPick(this)">七年级</button>
       <button data-g="g8" onclick="aiPick(this)" class="on">八年级</button>
@@ -6189,10 +6196,13 @@ function aiRender(d){
   <div class="ai-score"><div class="ai-num"><b>${d.score}</b><span>/ 15</span></div>
   <div><div class="ai-tag">${aiTag(d.score,d.band)}</div><div class="ai-sum">${esc(d.summary)}</div></div></div>
   <div class="ai-item" style="padding:4px 13px">${dimRow('vocab','词汇','Lexical')}${dimRow('grammar','语法','Grammar')}${dimRow('coherence','连贯','Coherence')}</div>`;
-  const ve=d.vocab_errors||[],vu=d.vocab_upgrades||[],ge=d.grammar_errors||[],su=d.sentence_upgrades||[];
-  if(ve.length)h+=`<div class="ai-h">词汇纠错 · ${ve.length}</div>`+errList(ve);
+  const ss=d.sentences||[],vu=d.vocab_upgrades||[],su=d.sentence_upgrades||[];
+  const allE=ss.flatMap(x=>x.errors||[]);const nV=allE.filter(e=>e.cat==='词汇').length,nG=allE.length-nV;
+  const mark=(orig,errs)=>{let t=esc(orig);(errs||[]).forEach(e=>{const w=esc(e.wrong||'');if(w&&t.includes(w))t=t.replace(w,`<span class="ai-wrong">${w}</span>`);});return t;};
+  if(ss.length){h+=`<div class="ai-h">逐句精批 · 共 ${allE.length} 处错误（词汇 ${nV} · 语法/标点 ${nG}）</div>`+ss.map((x,i)=>{const es=x.errors||[];
+    return `<div class="ai-sen${es.length?'':' ok'}"><div class="ai-sn">第 ${i+1} 句${es.length?` · ${es.length} 处错误`:' · 没毛病 ✓'}</div><div class="ai-so">${mark(x.orig,es)}</div>`+
+    (es.length?`<div class="ai-sf">✎ ${esc(x.fixed||'')}</div>`+es.map(e=>`<div class="ai-se"><span class="ai-type">${esc(e.type||e.cat||'')}</span><span class="ai-wrong">${esc(e.wrong||'')}</span> → <span class="ai-right">${esc(e.right||'')}</span><div class="ai-why">${esc(e.why||'')}</div></div>`).join(''):'')+`</div>`;}).join('');}
   if(vu.length)h+=`<div class="ai-h">低级词替换</div>`+vu.map(u=>`<div class="ai-item"><b>${esc(u.word||'')}</b>${u.times?`<span style="color:var(--faint);font-size:12px"> 用了 ${esc(u.times)} 次</span>`:''} → <span class="ai-right">${(u.better||[]).map(esc).join(' / ')}</span>${u.example?`<div class="ai-why ai-good">${esc(u.example)}</div>`:''}</div>`).join('');
-  if(ge.length)h+=`<div class="ai-h">语法纠错 · ${ge.length}</div>`+errList(ge);
   if(su.length)h+=`<div class="ai-h">句式升级</div>`+su.map(u=>`<div class="ai-item">${u.pattern?`<span class="ai-type">${esc(u.pattern)}</span>`:''}<div style="color:var(--soft);margin-top:4px">${esc(u.from||'')}</div><div class="ai-right" style="margin-top:4px">↑ ${esc(u.to||'')}</div><div class="ai-why">${esc(u.why||'')}</div></div>`).join('');
   if(d.highlights&&d.highlights.length){h+=`<div class="ai-h">写得漂亮</div>`+d.highlights.map(x=>`<div class="ai-item ai-good">✦ ${esc(x)}</div>`).join('');}
   if(d.polished){h+=`<div class="ai-h">润色版全文</div><div class="ai-item ai-pol" id="ai-pol">${esc(d.polished)}</div>
