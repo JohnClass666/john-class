@@ -389,6 +389,30 @@ body{font-family:var(--fnt);color:var(--ink);-webkit-font-smoothing:antialiased;
 
 /* ── FOOT ── */
 .foot{text-align:center;font-size:11px;color:var(--faint);margin-top:30px;letter-spacing:.04em}
+
+/* ── AI 批改 ── */
+.ai-sel{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.ai-sel button{flex:1;min-width:60px;padding:9px 0;border-radius:var(--r-pill);border:1.5px solid var(--hair);background:#FFFDF8;color:var(--soft);font:600 13px var(--fnt);cursor:pointer}
+.ai-sel button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-deep)}
+.ai-in{width:100%;box-sizing:border-box;border:1.5px solid var(--hair);border-radius:var(--r-md);background:#FFFDF8;color:var(--ink);font:15px/1.7 var(--fnt-serif);padding:12px 14px;outline:none;resize:vertical}
+.ai-in:focus{border-color:var(--accent)}
+.ai-topic{min-height:0;height:46px;font-family:var(--fnt);font-size:14px;margin-bottom:10px;resize:none}
+.ai-essay{min-height:200px}
+.ai-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--faint);margin:6px 2px 14px}
+.ai-err{color:var(--warn);font-size:13px;margin:-4px 2px 12px;display:none}
+.ai-score{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+.ai-num{width:84px;height:84px;border-radius:50%;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--accent-soft);border:3px solid var(--accent);color:var(--accent-deep)}
+.ai-num b{font:700 32px/1 var(--fnt-serif)}
+.ai-num span{font-size:11px;margin-top:2px}
+.ai-tag{font:700 17px var(--fnt);color:var(--ink);margin-bottom:4px}
+.ai-sum{font-size:14px;line-height:1.75;color:var(--ink)}
+.ai-h{font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--soft);margin:18px 0 8px}
+.ai-item{background:#FFFDF8;border:1.5px solid var(--hair);border-radius:var(--r-md);padding:11px 13px;margin-bottom:8px;font-size:14px;line-height:1.65}
+.ai-wrong{color:var(--warn);text-decoration:line-through;text-decoration-thickness:1.5px}
+.ai-right{color:var(--accent-deep);font-weight:700}
+.ai-why{font-size:12.5px;color:var(--soft);margin-top:4px}
+.ai-good{font-family:var(--fnt-serif);color:var(--ink)}
+.ai-pol{font:15px/1.8 var(--fnt-serif);color:var(--ink);white-space:pre-wrap}
 </style>
 </head>
 <body>
@@ -748,9 +772,25 @@ body{font-family:var(--fnt);color:var(--ink);-webkit-font-smoothing:antialiased;
   <div class="bar">
     <span class="htitle">写作批改</span>
   </div>
+  <div class="card" style="margin-bottom:16px" id="ai-box">
+    <div class="kicker" style="margin-bottom:14px">AI Instant Feedback</div>
+    <div style="font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin-bottom:6px">AI 秒批 · 立刻出分</div>
+    <div style="font-size:13px;color:var(--soft);line-height:1.7;margin-bottom:16px">按中考书面表达 15 分制打分<br>挑错 · 夸亮点 · 送你高分句</div>
+    <div class="ai-sel" id="ai-grade">
+      <button data-g="g7" onclick="aiPick(this)">七年级</button>
+      <button data-g="g8" onclick="aiPick(this)" class="on">八年级</button>
+      <button data-g="g9" onclick="aiPick(this)">九年级</button>
+    </div>
+    <textarea class="ai-in ai-topic" id="ai-topic" placeholder="作文题目（选填），如 My Best Friend"></textarea>
+    <textarea class="ai-in ai-essay" id="ai-essay" placeholder="把你的英语作文敲进来…" oninput="aiCount()" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+    <div class="ai-meta"><span id="ai-wc">0 词</span><span id="ai-left"></span></div>
+    <div class="ai-err" id="ai-err"></div>
+    <button class="btn accent" id="ai-btn" onclick="aiGrade()">交给 AI 老师批改</button>
+  </div>
+  <div class="card" style="margin-bottom:16px;display:none" id="ai-result"></div>
   <div class="card" style="margin-bottom:16px">
     <div class="kicker" style="margin-bottom:14px">Writing Feedback</div>
-    <div style="font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin-bottom:6px">发作文给 John 批改</div>
+    <div style="font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin-bottom:6px">想让 John 亲自批改？</div>
     <div style="font-size:13px;color:var(--soft);line-height:1.7;margin-bottom:18px">
       任何英语作文都可以发给 John<br>语法纠错 · 结构优化 · 高分建议
     </div>
@@ -5434,7 +5474,7 @@ function switchTab(t){
   document.getElementById('tab-'+t).classList.add('on');
   if(t==='home')showHome();
   else if(t==='errors'){renderErrors();showScreen('errors');}
-  else if(t==='submit')showScreen('submit');
+  else if(t==='submit'){showScreen('submit');aiLeftTxt();try{const g=localStorage.getItem('jc_ai_grade_lv');const b=g&&document.querySelector(`#ai-grade button[data-g="${g}"]`);if(b)aiPick(b);}catch(e){}}
   else{showScreen('lb');loadLB();}
 }
 
@@ -6103,6 +6143,49 @@ function copyWx(){
   setTimeout(()=>{btn.textContent='复制微信号，去发作文';},2500);
 }
 
+
+/* ── AI 批改（智谱 GLM-4-Flash，经 Supabase Edge Function 中转） ── */
+const AI_DAILY=5;
+let aiBusy=false;
+function aiKey(){return 'jc_ai_grade_'+username+'_'+new Date().toLocaleDateString('sv');}
+function aiUsed(){return parseInt(localStorage.getItem(aiKey())||'0')||0;}
+function aiLeftTxt(){const n=AI_DAILY-aiUsed();document.getElementById('ai-left').textContent=n>0?`今天还能批 ${n} 次`:'今天次数用完啦，明天再来';}
+function aiPick(b){document.querySelectorAll('#ai-grade button').forEach(x=>x.classList.remove('on'));b.classList.add('on');try{localStorage.setItem('jc_ai_grade_lv',b.dataset.g);}catch(e){}}
+function aiCount(){const t=document.getElementById('ai-essay').value.trim();document.getElementById('ai-wc').textContent=(t?t.split(/\s+/).length:0)+' 词';}
+function aiShowErr(m){const e=document.getElementById('ai-err');e.textContent=m;e.style.display=m?'block':'none';}
+function aiTag(s){return s>=13?'学霸级，直接贴墙上':s>=10?'稳了，再冲一冲':s>=7?'有底子，细节要抠':'别慌，照着改就能涨分';}
+async function aiGrade(){
+  if(aiBusy)return;
+  const essay=document.getElementById('ai-essay').value.trim();
+  const topic=document.getElementById('ai-topic').value.trim();
+  const grade=(document.querySelector('#ai-grade button.on')||{}).dataset?.g||'g8';
+  if(essay.split(/\s+/).length<20){aiShowErr('至少写 20 个词再来哦');return;}
+  if(aiUsed()>=AI_DAILY){aiShowErr('今天的 AI 批改次数用完啦，明天再来，或者发给 John 亲自批');return;}
+  aiShowErr('');aiBusy=true;
+  const btn=document.getElementById('ai-btn');btn.textContent='AI 老师正在逐句看…（约 10-30 秒）';btn.disabled=true;
+  try{
+    const r=await fetch(`${SB}/functions/v1/ai-grade`,{method:'POST',headers:{...SH,'Content-Type':'application/json'},body:JSON.stringify({essay,topic,grade})});
+    const d=await r.json().catch(()=>({error:'网络开小差了，再试一次'}));
+    if(!r.ok||d.error){aiShowErr(d.error||'批改失败，再试一次');return;}
+    localStorage.setItem(aiKey(),aiUsed()+1);aiLeftTxt();
+    aiRender(d);
+  }catch(e){aiShowErr('网络开小差了，再试一次');}
+  finally{aiBusy=false;btn.textContent='交给 AI 老师批改';btn.disabled=false;}
+}
+function aiRender(d){
+  const el=document.getElementById('ai-result');
+  let h=`<div class="kicker" style="margin-bottom:14px">AI Report</div>
+  <div class="ai-score"><div class="ai-num"><b>${d.score}</b><span>/ 15</span></div>
+  <div><div class="ai-tag">${aiTag(d.score)}</div><div class="ai-sum">${esc(d.summary)}</div></div></div>`;
+  if(d.errors&&d.errors.length){h+=`<div class="ai-h">要改的地方 · ${d.errors.length}</div>`+d.errors.map(e=>`<div class="ai-item"><span class="ai-wrong">${esc(e.wrong||'')}</span> → <span class="ai-right">${esc(e.right||'')}</span><div class="ai-why">${esc(e.why||'')}</div></div>`).join('');}
+  if(d.highlights&&d.highlights.length){h+=`<div class="ai-h">写得漂亮</div>`+d.highlights.map(x=>`<div class="ai-item ai-good">✦ ${esc(x)}</div>`).join('');}
+  if(d.upgrades&&d.upgrades.length){h+=`<div class="ai-h">高分句升级</div>`+d.upgrades.map(u=>`<div class="ai-item"><div style="color:var(--soft)">${esc(u.from||'')}</div><div class="ai-right" style="margin-top:4px">↑ ${esc(u.to||'')}</div><div class="ai-why">${esc(u.why||'')}</div></div>`).join('');}
+  if(d.polished){h+=`<div class="ai-h">润色版全文</div><div class="ai-item ai-pol" id="ai-pol">${esc(d.polished)}</div>
+  <button class="btn line sm" style="width:100%;margin-top:6px" onclick="aiCopy(this)">复制润色版</button>`;}
+  h+=`<div style="font-size:12px;color:var(--faint);margin-top:14px;line-height:1.6">AI 批改仅供参考，想要更细致的点评，发给 John 亲自批 ↓</div>`;
+  el.innerHTML=h;el.style.display='block';el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function aiCopy(b){const t=document.getElementById('ai-pol').textContent;if(navigator.clipboard)navigator.clipboard.writeText(t);b.textContent='已复制！';setTimeout(()=>{b.textContent='复制润色版';},2000);}
 /* ── KEYBOARD ── */
 document.getElementById('din').addEventListener('keydown',e=>{
   if(e.key==='Enter'){if(!ds.answered)submitAns();else nextQ();}
