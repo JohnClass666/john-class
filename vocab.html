@@ -16232,7 +16232,7 @@ function mergeStages(a,b){
  for(const u in (b||{})){
   const old=out[u]||{}, cur=b[u]||{};
   out[u]=Object.assign({},old,cur);
-  out[u].R=!!(old.R||cur.R);out[u].W=!!(old.W||cur.W);out[u].L=!!(old.L||cur.L);
+  out[u].R=!!(old.R||cur.R);out[u].W=!!(old.W||cur.W);out[u].L=!!(old.L||cur.L);if(old.x2||cur.x2)out[u].x2=true;if(old.rwAt||cur.rwAt)out[u].rwAt=Math.min(old.rwAt||Infinity,cur.rwAt||Infinity);
   out[u].Rn=Math.max(old.Rn||0,cur.Rn||0);out[u].Wn=Math.max(old.Wn||0,cur.Wn||0);out[u].Ln=Math.max(old.Ln||0,cur.Ln||0);
  }
  return out;
@@ -16336,7 +16336,9 @@ const sfx={
 };
 
 /* ============ TTS 语音（自然音色优先） ============ */
-const TTS={ok:false,voice:null};
+// ok = 能发音（手机自带英语声音 或 有道在线真人发音兜底）；native = 手机自带英语声音可用
+// 安卓/微信等没有英语语音引擎的环境，以前会整个隐藏播放按钮和听力关，现在自动改用有道在线发音
+const TTS={ok:true,native:false,voice:null,settled:false};
 // 优先级最高的高质量声音（按优先级排序）
 const PREFERRED_VOICES=[
  // iOS/macOS 高质量
@@ -16381,19 +16383,24 @@ function pickBestVoice(vs){
 }
 
 function initTTS(){
- if(!("speechSynthesis"in window))return;
+ const done=()=>{if(TTS.settled)return;TTS.settled=true;grandfatherNoListen();};
+ if(!("speechSynthesis"in window)){done();return;}
  const pick=()=>{
-  const vs=speechSynthesis.getVoices().filter(v=>/^en(-|_|$)/i.test(v.lang));
-  if(!vs.length)return;
-  TTS.voice=pickBestVoice(vs);
-  TTS.ok=true;
+  try{
+   const vs=speechSynthesis.getVoices().filter(v=>/^en(-|_|$)/i.test(v.lang));
+   if(!vs.length||TTS.native)return;
+   TTS.voice=pickBestVoice(vs);
+   TTS.native=true;
+  }catch(e){}
  };
  pick();
- if(!TTS.ok)speechSynthesis.onvoiceschanged=pick;
+ try{if(!TTS.native)speechSynthesis.onvoiceschanged=pick;}catch(e){}
  // 部分浏览器需要延迟
- setTimeout(()=>{if(!TTS.ok){const vs=speechSynthesis.getVoices().filter(v=>/^en(-|_|$)/i.test(v.lang));if(vs.length){TTS.voice=pickBestVoice(vs);TTS.ok=true;}}},500);
+ setTimeout(pick,500);
+ setTimeout(done,1500);
 }
 function toggleVoice(){
+ if(!TTS.native)return;
  // 在可用声音中循环切换
  const vs=speechSynthesis.getVoices().filter(v=>/^en(-|_|$)/i.test(v.lang));
  if(!vs.length)return;
@@ -16405,8 +16412,35 @@ function toggleVoice(){
  const btn=document.getElementById('voicetgl');
  if(btn)btn.textContent='🔊 '+(TTS.voice?TTS.voice.name.split(' ').slice(0,2).join(' '):'切换声音');
 }
+// ★ 有道在线真人发音（免费、无需密钥、国内稳定）：手机没有英语声音时自动使用
+const YD_AUDIO={el:null,failToastAt:0};
+function ydUrl(text){return "https://dict.youdao.com/dictvoice?audio="+encodeURIComponent(String(text).trim())+"&type=2";}
+function speakOnline(text){
+ try{
+  if(!YD_AUDIO.el){YD_AUDIO.el=new Audio();YD_AUDIO.el.preload="auto";
+   YD_AUDIO.el.onerror=()=>{if(YD_AUDIO.el&&YD_AUDIO.el.getAttribute('src'))toastNoAudio();};}
+  const a=YD_AUDIO.el;
+  try{a.pause();}catch(e){}
+  a.src=ydUrl(text);
+  const p=a.play();
+  if(p&&p.catch)p.catch(err=>{
+   // NotAllowedError = 浏览器要求先点一下屏幕，不算失败，学生点 ▶ 即可
+   if(err&&err.name==="NotAllowedError")return;
+   if(err&&err.name==="AbortError")return; // 连点切换单词时上一个被打断，正常
+   toastNoAudio();
+  });
+ }catch(e){toastNoAudio();}
+}
+function toastNoAudio(){
+ const now=Date.now();if(now-YD_AUDIO.failToastAt<8000)return;YD_AUDIO.failToastAt=now;
+ const t=document.createElement('div');
+ t.style.cssText='position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 14px);transform:translateX(-50%);z-index:9999;max-width:88%;background:var(--warn);color:#FDF8F0;font-size:13px;line-height:1.5;padding:10px 14px;border-radius:12px;box-shadow:var(--shadow-md);text-align:center';
+ t.textContent='发音没加载出来，网络好一点再点一下 ▶ 试试';
+ document.body.appendChild(t);setTimeout(()=>{t.style.transition='opacity .5s';t.style.opacity='0';setTimeout(()=>t.remove(),600);},3500);
+}
 function speak(text){
- if(!TTS.ok||S.muted||!text)return;
+ if(S.muted||!text)return;
+ if(!TTS.native){speakOnline(text);return;}
  try{
   speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(text);
@@ -16415,9 +16449,14 @@ function speak(text){
   u.rate=0.85;   // 稍慢，更清晰
   u.pitch=1.0;   // 自然音调（不调高，避免机械感）
   u.volume=1.0;
-  u.onerror=()=>{};
+  let started=false,fell=false;
+  // 自带声音"假可用"（列出了英语声音但实际不出声）→ 本次及以后都改用在线发音
+  const fallback=()=>{if(fell||started)return;fell=true;TTS.native=false;try{speechSynthesis.cancel();}catch(e){}speakOnline(text);};
+  u.onstart=()=>{started=true;};
+  u.onerror=(e)=>{if(e&&(e.error==="interrupted"||e.error==="canceled"))return;fallback();};
   speechSynthesis.speak(u);
- }catch(e){}
+  setTimeout(()=>{if(!started&&!speechSynthesis.speaking)fallback();},2000);
+ }catch(e){TTS.native=false;speakOnline(text);}
 }
 // 朗读按钮 HTML（仅在有语音引擎时插入）
 function speakBtn(){return TTS.ok?`<button class="spk" id="spk" aria-label="朗读">▶</button>`:"";}
@@ -16491,8 +16530,19 @@ function greetWord(){const h=new Date().getHours();return h<6?"凌晨好":h<11?"
 /* ===== 关卡完成状态 ===== gd().stages[unitN] = {R,W,L} 各关是否通关 */
 function stages(){const g=gd();if(!g.stages)g.stages={};return g.stages;}
 function unitStage(n){const s=stages();if(!s[n])s[n]={R:false,W:false,L:false};return s[n];}
-function clearStage(n,key){const st=unitStage(n);if(!st[key])st[key]=true;const ck=key+"n";st[ck]=(st[ck]||0)+1;save();}
-function unitCleared(u){const st=unitStage(u.n);return st.R&&st.W&&(TTS.ok?st.L:true);}
+function clearStage(n,key){const st=unitStage(n);const hadRW=st.R&&st.W;if(!st[key])st[key]=true;if(!hadRW&&st.R&&st.W&&!st.rwAt)st.rwAt=Date.now();const ck=key+"n";st[ck]=(st[ck]||0)+1;save();}
+function unitCleared(u){const st=unitStage(u.n);return !!(st.R&&st.W&&(st.L||st.x2));}
+// 老存档保护：以前没有英语语音的手机只有 2 关，那时"读+写"通关的单元继续算通关，不用回头补听力。
+// 只在本机没有自带英语声音时执行（这类学生以前看到的就是 2 关）；rwAt 是本次升级后才记录的，没有它说明是老存档。
+function grandfatherNoListen(){
+ try{
+  if(TTS.native||!S.gd)return;
+  let ch=false;
+  for(const gid in S.gd){const st=S.gd[gid]&&S.gd[gid].stages;if(!st)continue;
+   for(const n in st){const x=st[n];if(x&&x.R&&x.W&&!x.L&&!x.x2&&!x.rwAt){x.x2=true;ch=true;}}}
+  if(ch){save();if(location.hash==="#home")try{_renderScreen("home");}catch(e){}}
+ }catch(e){}
+}
 // 重刷积分衰减：第1次满分，第2次30%，第3次起10%（最少1分）
 function repeatMult(unitN,key){
   const st=unitStage(unitN);
@@ -16502,8 +16552,8 @@ function repeatMult(unitN,key){
   if(n===1)return 0.3;
   return 0.1;
 } // 无语音时听力关不计
-function stageCount(u){const st=unitStage(u.n);let c=0;if(st.R)c++;if(st.W)c++;if(st.L)c++;return c;}
-function stageTotal(){return TTS.ok?3:2;} // 无语音引擎时只有 2 关
+function stageCount(u){const st=unitStage(u.n);let c=0;if(st.R)c++;if(st.W)c++;if(st.L||st.x2)c++;return c;}
+function stageTotal(){return 3;} // 有在线发音兜底，人人都有 3 关
 
 /* ===== 免考奖励：每完成 EXEMPT_EVERY 个单元的"全部关卡"，奖励一次 ===== */
 function unitsFullyCleared(){return UNITS.filter(u=>u.ready&&unitCleared(u)).length;}
@@ -17368,7 +17418,7 @@ SCREENS.unit=function(n){clear();const u=UNITS.find(x=>x.n===n);if(!u){go('home'
    {key:"R",m:"reading",label:"第一关",name:"阅读词汇",desc:"看英文 → 从 6 个意思里选对的",done:st.R,open:true},
    {key:"W",m:"writing",label:"第二关",name:"写作词汇",desc:"看中文 → 从 6 个单词里选对的",done:st.W,open:st.R},
  ];
- if(TTS.ok)stagesArr.push({key:"L",m:"listening",label:"第三关",name:"听力词汇",desc:"听发音 → 从 6 个意思里选对的",done:st.L,open:st.W});
+ if(TTS.ok)stagesArr.push({key:"L",m:"listening",label:"第三关",name:"听力词汇",desc:"听发音 → 从 6 个意思里选对的",done:!!(st.L||st.x2),open:st.W});
  const allDone=stagesArr.every(s=>s.done);
  let lvls="";
  stagesArr.forEach((s,idx)=>{
