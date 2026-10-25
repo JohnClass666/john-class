@@ -543,6 +543,9 @@ body{font-family:var(--fnt);color:var(--ink);background:var(--bg);
 .rc-word-tag.grad{color:var(--ok);background:rgba(90,138,48,.12);border-color:var(--ok)}
 .rc-empty{text-align:center;padding:40px 20px;color:var(--faint);font-size:14px;line-height:1.8}
 .rc-more{text-align:center;font-size:12px;color:var(--faint);margin-top:8px}
+.rc-meta{font-size:11px;color:var(--warn);margin-top:1px}
+.rc-arch-note{font-size:12px;color:var(--soft);line-height:1.6;background:var(--bg2);border-radius:12px;padding:10px 12px;margin-bottom:4px}
+.cw-moved{margin:22px 0 8px;padding:13px 14px;border:1.5px dashed var(--hair);border-radius:14px;background:var(--bg2);font-size:13px;color:var(--soft);text-align:center;cursor:pointer}
 
 /* ═══════════════════════════════════════════
    进步可视化 · Progress Visualization
@@ -16032,7 +16035,7 @@ const LEVELS=[
 ];
 // 学神不在 LEVELS 里，单独里程碑检测
 const GOD_LEVEL={name:"学神",icon:"✨"};
-const PT={read:2,write:3,listen:3,comboStep:2,comboFrom:5,graduate:8};
+const PT={read:2,write:3,listen:3,comboStep:2,comboFrom:5,graduate:8,soon:1}; // soon：马上再练答对的小奖励（每词每天一次）
 const INTERVALS=[1,2,4,7,15];
 const DAY=86400000;
 const EXEMPT_EVERY=3;          // 每完成 N 个单元的量，奖励一次单词免考
@@ -16429,11 +16432,7 @@ function deleteCustomWord(id){
 function customScoreMap(){const g=gd();if(!g.customScore)g.customScore={};return g.customScore;}
 function customAlreadyScored(id){return !!customScoreMap()[id];}
 function awardCustomWord(id){if(customAlreadyScored(id))return 0;customScoreMap()[id]=1;addPoints(2);save();return 2;}
-function wrongBookWords(){
- const out=[];
- eachReviewRec((r,w,gid)=>{if(r.last==='bad'||(r.box>=0&&!r.grad))out.push(reviewWord(w,gid));});
- return out;
-}
+function wrongBookWords(){return wrongArchive();} // 兼容旧调用：错词本已并入复习中心的"错词档案"
 function now(){return Date.now();}
 function localDateStr(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 
@@ -16636,7 +16635,14 @@ function eachReviewRec(fn){reviewGrades().forEach(g=>{const P=S.gd[g.id].prog;co
  for(const id in P){const r=P[id];if(!r)continue;const w=M.get(String(id));if(w)fn(r,w,g.id);}});}
 function recOfWord(w){const sd=S.gd&&S.gd[w._g||S.grade];return (sd&&sd.prog&&sd.prog[w.id])||{box:-1,due:0};}
 function dueWords(){const out=[];eachReviewRec((r,w,gid)=>{if(r.box>=0&&r.box<INTERVALS.length)out.push(reviewWord(w,gid));});return out;}
-function dueWordsToday(){const t=now(),out=[];eachReviewRec((r,w,gid)=>{if(r.box>=0&&r.box<INTERVALS.length&&r.due<=t)out.push(reviewWord(w,gid));});return out;}
+/* ★ 2026-10 复习合并：错词本并入复习中心。
+   今日待复习 = 马上再练（今天刚答错、还没重练过的词）+ 正式复习（艾宾浩斯到期的词），两组互不重叠。 */
+function inReview(r){return r.box>=0&&r.box<INTERVALS.length;}
+function soonWords(){const t=now(),out=[];eachReviewRec((r,w,gid)=>{if(inReview(r)&&r.soon&&r.due>t)out.push(reviewWord(w,gid));});return out;}
+function officialDueWords(){const t=now(),out=[];eachReviewRec((r,w,gid)=>{if(inReview(r)&&r.due<=t)out.push(reviewWord(w,gid));});return out;}
+function dueWordsToday(){const t=now(),out=[];eachReviewRec((r,w,gid)=>{if(inReview(r)&&(r.due<=t||r.soon))out.push(reviewWord(w,gid));});return out;}
+// 错词档案：所有错过的词（复习中 + 已掌握），掌握后不删除，只改状态
+function wrongArchive(){const out=[];eachReviewRec((r,w,gid)=>{if(inReview(r)||(r.wn>0))out.push(reviewWord(w,gid));});return out;}
 function points(){return gd().points;}
 // 总榜用跨年级累计积分
 function totalPoints(){return Object.values(S.gd||{}).reduce((s,g)=>s+(g.points||0),0);}
@@ -17233,7 +17239,10 @@ async function endSpeedGame(score,survived){
 function dueAfterDays(n){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+n);return d.getTime();}
 /* 艾宾浩斯排期：答错的那天记为第 0 天，之后在第 1、2、4、7、15 天各复习一次（INTERVALS 是"距答错那天的天数"）。
    box = 当前等待的是第几轮复习（0~4）。到期后答对 → 进入下一轮，间隔 = 两轮节点之差（1,2,3,8 天）；第 5 轮答对即毕业。
-   还没到期的词（提前练习、在单元关卡里又碰到）答对只记"答对"，不推进轮次，防止一天之内刷完 5 轮。 */
+   还没到期的词（提前练习、在单元关卡里又碰到）答对只记"答对"，不推进轮次，防止一天之内刷完 5 轮。
+   ★ 2026-10 加"马上再练"：答错时记 r.soon（答错时间），当天就出现在复习中心，答对一次即清掉 soon；
+     它只是当天巩固，不推进轮次、不改 due（明天的第 1 轮照常），所以健康度、家长端的逾期算法都不受影响。
+     r.wn = 累计答错次数，用于错词档案；掌握后记录保留，不再从档案里消失。 */
 function markResult(w,good,mode){const r=rec(w.id,w._g);
  const wasNew=(!r.seenR&&!r.seenW);
  if(mode==="R")r.seenR=1;else r.seenW=1;
@@ -17247,9 +17256,10 @@ function markResult(w,good,mode){const r=rec(w.id,w._g);
      }
    }
    else if(r.box===-1&&!r.grad){r.grad=1;} // 第一次就答对：计入"掌握深度"统计，但毕业奖励分留给真正走完错词复习周期的词，避免一次蒙对就拿满分
+   r.soon=0; // 马上再练完成（或正式复习答对）
    r.last="good";
  }
- else{r.box=0;r.due=dueAfterDays(INTERVALS[0]);r.last="bad";if(r.grad){r.grad=0;}} // 答错：从第 1 轮重新排期（明天复习）；"已掌握"状态作废
+ else{r.box=0;r.due=dueAfterDays(INTERVALS[0]);r.soon=now();r.wn=(r.wn||0)+1;r.last="bad";if(r.grad){r.grad=0;}} // 答错：当天进"马上再练"，明天第 1 轮正式复习；"已掌握"状态作废
  logActivity(wasNew,good,graduated);updateLevelCap();checkGodMaintained();save();return graduated;}
 /* ===== 进步可视化：每日学习活动记录 gd().act[YYYY-MM-DD]={n,c,w,nw,gr} ===== */
 function logActivity(isNew,correct,graduated){const g=gd();if(!g.act)g.act={};const d=todayStr();
@@ -17423,7 +17433,7 @@ SCREENS.home=function(){clear();checkGodMaintained();
  const pct=god?100:capped?100:(nx?Math.max(4,Math.round((points()-lv.min)/(nx.min-lv.min)*100)):100);
  const dispLv=god?GOD_LEVEL:lv;
  const dispIdx=god?6:LEVELS.indexOf(lv);
- const due=dueWords().length,dueT=dueWordsToday().length;
+ const dueT=dueWordsToday().length;
  const inProg=UNITS.find(u=>u.ready&&!unitCleared(u)&&stageCount(u)>0);
  // 分组式年级（高中）只摆当前难度区的书，其余难度区用上方切换条切换
  const tiered=isTiered(),T=tiersOf(),ct=tiered?curTier():0;
@@ -17495,9 +17505,8 @@ SCREENS.home=function(){clear();checkGodMaintained();
   <div class="jc-btm">
     <div class="jc-keys">
       <button class="jc-key jc-key-trophy" id="jk-lb">排行榜</button>
-      <button class="jc-key jc-key-blue" id="jk-rc" style="position:relative">复习中心${dueWordsToday().length?`<div class="jc-key-badge">${dueWordsToday().length>9?'9+':dueWordsToday().length}</div>`:''}</button>
+      <button class="jc-key jc-key-blue" id="jk-rc" style="position:relative">复习中心${dueT?`<div class="jc-key-badge">${dueT>9?'9+':dueT}</div>`:''}</button>
       <button class="${p2Cls}" id="jk-p2">${p2Txt}</button>
-      <button class="jc-key jc-key-red" id="jk-eb" style="position:relative">错词本${due?`<div class="jc-key-badge">${due>9?'9+':due}</div>`:''}</button>
       <button class="jc-key${dailyDone()?'':monsterUnlocked()?' jc-key-red':' jc-key-amber'}" id="jk-daily">${monsterUnlocked()?'怪物副本':'今日挑战'}</button>
       <button class="jc-key jc-key-amber" id="jk-sp">速度挑战</button>
       <button class="jc-key" id="jk-ms">我的目标</button>
@@ -17522,7 +17531,6 @@ SCREENS.home=function(){clear();checkGodMaintained();
  d.querySelector('#jk-lb').onclick=()=>{sfx.tap();go('leaderboard');};
  d.querySelector('#jk-rc').onclick=()=>{sfx.tap();go('reviewCenter');};
   d.querySelector('#jk-p2').onclick=()=>{var p=gd().pass||0;if(p>=7)return;if(!allUnitsCleared()){sfx.wrong();return;}sfx.tap();confirmPass2();};
-  d.querySelector('#jk-eb').onclick=()=>{if(due){sfx.tap();go('review');}};
   d.querySelector('#jk-daily').onclick=()=>{if(!dailyDone()){sfx.tap();monsterUnlocked()?go('monster'):go('daily');}};
  d.querySelector('#jk-sp').onclick=()=>{sfx.tap();go('speed');};
  d.querySelector('#jk-ms').onclick=()=>{sfx.tap();go('milestones');};
@@ -17812,30 +17820,40 @@ SCREENS.ultimate=function(){go("monster");}; // 兼容旧存档跳转
 
 
 /* ---------- REVIEW (错词复习 / 复仇模式) ---------- */
-SCREENS.review=function(){
- const all=dueWords();if(!all.length)return go("home");
- // 有今天到期的词 → 正式复习（推进艾宾浩斯轮次、计分）；没有 → 提前练习（不计分、不改变排期，答错仍会重新排期）
- const today=dueWordsToday();
- const early=today.length===0;
- const pool=shuffle((early?all:today).slice());
- const isRevenge=!early&&allUnitsClearedForRevenge();
- runReview(pool,0,{got:0,gain:0,combo:0,early},isRevenge);
+/* 复习模式（都从复习中心进入）：
+   arg="soon" → 马上再练：今天刚答错的词，当天巩固一次，不计分、不推进轮次
+   默认       → 正式复习：艾宾浩斯到期的词，推进轮次、计分；没有到期词时变成"提前练习"（不计分、不改排期）
+   每一组里答错的词，本轮结束前会再出现一次（只重来一次，不计分）。 */
+SCREENS.review=function(arg){
+ const all=dueWords();if(!all.length)return go("reviewCenter");
+ const soon=arg==="soon";
+ const official=officialDueWords();
+ const early=!soon&&official.length===0;
+ const base=soon?soonWords():(early?all:official);
+ if(!base.length)return go("reviewCenter");
+ const pool=shuffle(base.slice());
+ const isRevenge=!soon&&!early&&allUnitsClearedForRevenge();
+ runReview(pool,0,{got:0,gain:0,combo:0,early,soon,rq:{}},isRevenge);
 };
 function runReview(pool,i,acc,revenge){
- if(i>=pool.length){const fin=()=>showResult(acc.early?"提前练习完成 · 到期那天记得正式复习":revenge?"⚔️ 复仇完成！错词已被你征服":"复习完成 · 又记牢了一些",acc,()=>go("home"));return afterPoint(fin);}
+ if(i>=pool.length){const fin=()=>showResult(acc.soon?"马上再练完成 · 明天正式复习":acc.early?"提前练习完成 · 到期那天记得正式复习":revenge?"⚔️ 复仇完成！错词已被你征服":"复习完成 · 又记牢了一些",acc,()=>go("reviewCenter"));return afterPoint(fin);}
  _stageAborted=false;
  clear();const w=pool[i];const d=document.createElement("div");d.className="screen active";
- const title=acc.early?"错词练习（提前）":revenge?"⚔️ 错词复仇":"错词复习";
+ const title=acc.soon?"马上再练":acc.early?"错词练习（提前）":revenge?"⚔️ 错词复仇":"错词复习";
  const r=rec(w.id,w._g);
+ const pts=(acc.early||w._rq)?0:acc.soon?(r.spd===todayStr()?0:PT.soon):PT_SPELL.W; // 马上再练 +1，同一个词一天只奖励一次，防止反复答错刷分
  const boxLabel=["第1天","第2天","第4天","第7天","第15天"];
  let ebHint="";
- if(r.box>=0&&r.box<INTERVALS.length){
+ if(w._rq){
+  ebHint=`<div style="font-size:11px;color:var(--warn);text-align:center;margin-top:6px">↻ 刚才拼错了，再来一次（不计分）</div>`;
+ }else if(acc.soon){
+  ebHint=`<div style="font-size:11px;color:var(--warn);text-align:center;margin-top:6px">⚡ 今天刚答错 · 马上再练一次${pts?"，答对 +1 分":""}，明天正式复习</div>`;
+ }else if(r.box>=0&&r.box<INTERVALS.length){
   const daysLeft=r.due>0?Math.ceil((r.due-now())/86400000):0;
   const stageText=boxLabel[r.box]||"";
   if(daysLeft<=0)ebHint=`<div style="font-size:11px;color:var(--warn);text-align:center;margin-top:6px">⏰ 今天应复习 · 艾宾浩斯第${r.box+1}轮 (${stageText})</div>`;
   else ebHint=`<div style="font-size:11px;color:var(--soft);text-align:center;margin-top:6px">📅 ${daysLeft} 天后正式复习 · 提前练习不计分、不推进轮次</div>`;
  }
- const pts=acc.early?0:PT_SPELL.W;
  d.innerHTML=`
   <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">${title}</div></div>
   <div class="qhud"><div class="tk"><i style="width:${i/pool.length*100}%"></i></div><div class="ct">${i+1} / ${pool.length}</div></div>
@@ -17850,7 +17868,7 @@ function runReview(pool,i,acc,revenge){
   <div class="spell-answer" id="sanswer"></div>
   <button class="spell-submit" id="ssubmit">确认</button>`;
  app.appendChild(d);
- d.querySelector("#bk").onclick=()=>{sfx.tap();_stageAborted=true;go("home");};
+ d.querySelector("#bk").onclick=()=>{sfx.tap();_stageAborted=true;go("reviewCenter");};
  const inp=d.querySelector("#sinput");
  const answerEl=d.querySelector("#sanswer");
  const submitBtn=d.querySelector("#ssubmit");
@@ -17866,12 +17884,15 @@ function runReview(pool,i,acc,revenge){
       setTimeout(()=>tip.remove(),1200);
     }
     const grad=markResult(w,true,"W");acc.got++;if(grad)acc.gain+=PT.graduate;
-    if(pts){acc.gain+=pts;addPoints(pts);}sfx.correct();
+    if(pts){if(acc.soon)r.spd=todayStr();acc.gain+=pts;addPoints(pts);}sfx.correct();
     setTimeout(()=>{if(!_stageAborted)runReview(pool,i+1,acc,revenge);},900);
   }else{
     inp.classList.add('wrong');
     answerEl.style.color='var(--warn)';answerEl.textContent=`✗ 正确答案：${w.en}`;
     markResult(w,false,"W");sfx.wrong();
+    // 本轮结束前再出现一次（每个词只重来一次）
+    const k=(w._g||S.grade)+":"+w.id;
+    if(!w._rq&&!acc.rq[k]){acc.rq[k]=1;pool.push(Object.assign({},w,{_rq:1}));}
     setTimeout(()=>{if(!_stageAborted)runReview(pool,i+1,acc,revenge);},1600);
   }
  };
@@ -18028,7 +18049,7 @@ SCREENS.monster=function(){
 };
 
 /* ---------- RESULT ---------- */
-function showResult(title,acc,next){clear();const lv=realLevelOf(points());
+function showResult(title,acc,next){clear();const lv=realLevelOf(points());const soonN=soonWords().length;
  const canBrag=(acc.maxCombo||0)>=BRAG_COMBO;
  const d=document.createElement("div");d.className="screen active res";
  d.innerHTML=`<div class="ava"></div><div class="rk">${title}</div>
@@ -18036,8 +18057,10 @@ function showResult(title,acc,next){clear();const lv=realLevelOf(points());
   <div class="stats"><div class="st"><b>${acc.got}</b><span>答对 / 记得</span></div><div class="st"><b>${acc.maxCombo||0}</b><span>最高连击</span></div><div class="st"><b>${lv.name}</b><span>当前等级</span></div></div>
   ${canBrag?`<button class="btn accent" id="brag">🔥 向 ${JOHN_WECHAT} 炫耀 ${acc.maxCombo} 连击</button>`:""}
   <button class="btn ${canBrag?'line':'accent'}" id="cont">继续</button>
+  ${soonN?`<button class="btn line" id="soon">⚡ 马上再练 ${soonN} 个刚错的词</button>`:''}
   <button class="btn ghost" id="home">回到首页</button>`;
  app.appendChild(d);
+ if(soonN)d.querySelector("#soon").onclick=()=>{sfx.tap();go({name:"review",arg:"soon"});};
  if(canBrag)d.querySelector("#brag").onclick=()=>{sfx.tap();bragScreen("combo",acc.maxCombo,()=>showResult(title,Object.assign({},acc,{maxCombo:0}),next));};
  d.querySelector("#cont").onclick=()=>{sfx.tap();next();};
  d.querySelector("#home").onclick=()=>{sfx.tap();go("home");};
@@ -18183,7 +18206,7 @@ SCREENS.card=function(){clear();checkGodMaintained();const lv=isGodLevel()?GOD_L
     <div class="sc-head"><div class="ava"></div><div><div class="nm">${S.name}</div><div class="dt">English Adventure · ${ds}</div></div></div>
     <div class="sc-score"><div class="huge n">${points()}</div><div class="t">${lv.name}</div></div>
     ${rows}
-    <div class="sc-row"><b>错词本</b><span class="vr">${due} 个（今天应复习 ${dueT} 个）</span></div>
+    <div class="sc-row"><b>复习中心</b><span class="vr">${due} 个（今天应复习 ${dueT} 个）</span></div>
   </div>
   <button class="btn" id="dl">保存成绩卡图片</button>
   ${REPORT_URL?`<button class="btn line" id="report">上报成绩给老师</button>`:""}
@@ -18203,7 +18226,7 @@ SCREENS.card=function(){clear();checkGodMaintained();const lv=isGodLevel()?GOD_L
 SCREENS.customBook=function(editId){
  clear();
  const list=customWords();
- const wrongs=wrongBookWords();
+ const wrongN=wrongArchive().length;
  const editing=editId?customWordById(editId):null;
  const showForm=editId==='new'||!!editing;
  const d=document.createElement("div");d.className="screen active";
@@ -18235,14 +18258,7 @@ SCREENS.customBook=function(editId){
     ${w.note?`<div class="cw-note">${esc(w.note).replace(/\n/g,'<br>')}</div>`:''}
     <div class="rc-ph" style="margin-top:6px">${customAlreadyScored(w.id)?'已拿过 +2 分':'练对可得 +2 分'}</div>
   </div>`).join(''):`<div class="cw-empty">还没有自己添加的词。<br>点击上方按钮，把不会的词存进来。</div>`;
- const wrongRows=wrongs.length?wrongs.slice(0,80).map(w=>`
-  <div class="cw-item">
-    <div class="cw-top">
-      <div><div class="cw-en">${esc(w.en)}</div>${w.ph?`<div class="rc-ph">${esc(w.ph)}</div>`:''}</div>
-      ${TTS.ok?`<button class="cw-mini" data-speak="${escAttr(w.en)}">发音</button>`:''}
-    </div>
-    <div class="cw-cn">${esc(wordMeaningText(w))}</div>
-  </div>`).join(''):`<div class="cw-empty">还没有错词，继续保持。</div>`;
+
  d.innerHTML=`
   <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">我的词库</div></div>
   <div class="cw-form">
@@ -18254,11 +18270,11 @@ SCREENS.customBook=function(editId){
   ${form}
   <div class="slabel">自己添加 · ${list.length} 个</div>
   <div class="cw-list">${customRows}</div>
-  <div class="slabel">错词本 · ${wrongs.length} 个</div>
-  <div class="cw-list">${wrongRows}</div>`;
+  <div class="cw-moved" id="cw-rc">课本里答错的词在「复习中心 → 错词档案」${wrongN?` · ${wrongN} 个`:''} ›</div>`;
  app.appendChild(d);
  d.querySelector("#bk").onclick=()=>{sfx.tap();go("home");};
  d.querySelector("#cw-add").onclick=()=>{sfx.tap();go({name:"customBook",arg:"new"});};
+ d.querySelector("#cw-rc").onclick=()=>{sfx.tap();go({name:"reviewCenter",arg:"wrong"});};
  d.querySelector("#cw-practice").onclick=()=>{if(list.length){sfx.tap();go("customPractice");}};
  if(showForm){
   const en=d.querySelector("#cw-en"),cn=d.querySelector("#cw-cn"),note=d.querySelector("#cw-note");
@@ -18338,7 +18354,7 @@ function drawCard(lv,due,ds){const W=750,H=1000,c=document.createElement("canvas
   // rows
   let y=340;x.strokeStyle="#ececee";x.lineWidth=1;
   const rows=cardRows().map(r=>[r[0],r[1],"#0a84ff"]);
-  rows.push(["错词本待复习",due+" 个","#ff453a"]);
+  rows.push(["错词待复习",due+" 个","#ff453a"]);
   rows.forEach(r=>{x.beginPath();x.moveTo(52,y);x.lineTo(W-52,y);x.stroke();
    x.fillStyle="#111113";x.font="500 24px -apple-system,sans-serif";x.textAlign="left";x.fillText(r[0],52,y+42);
    x.fillStyle=r[2];x.font="600 24px -apple-system,sans-serif";x.textAlign="right";x.fillText(r[1],W-52,y+42);y+=66;});
@@ -18620,47 +18636,58 @@ function reviewForecastSVG(){
    ${bars}</svg>`;
 }
 
-SCREENS.reviewCenter=function(){
+SCREENS.reviewCenter=function(tab){
  clear();
+ const t0=now();
  const due=dueWords();              // 全部仍在复习队列的错词
- const dueT=dueWordsToday();        // 今日到期
+ const soon=soonWords();            // 马上再练：今天刚错、还没重练
+ const official=officialDueWords(); // 正式复习：艾宾浩斯今天到期
+ const todayN=soon.length+official.length;
+ const archive=wrongArchive();      // 错词档案：错过的词全部保留
  // 错词按艾宾浩斯阶段分组（汇总所有课本）
  const stageLabel=["第1天","第2天","第4天","第7天","第15天"];
  const byStage=[[],[],[],[],[]];
  due.forEach(w=>{const r=recOfWord(w);if(r.box>=0&&r.box<5)byStage[r.box].push(w);});
  // 对词（已毕业 / 已掌握）
  const mastered=[];eachReviewRec((r,w,gid)=>{if(r.grad)mastered.push(reviewWord(w,gid));});
- // 当前课本的词排前面
- mastered.sort((a,b)=>(a._book?1:0)-(b._book?1:0));
+ mastered.sort((a,b)=>(a._book?1:0)-(b._book?1:0)); // 当前课本的词排前面
+ const archMastered=archive.filter(w=>recOfWord(w).grad);
  const otherBooks=[...new Set(due.filter(w=>w._book).map(w=>w._book))];
- let curTab="plan"; // plan | wrong | right
+ let curTab=(tab==="wrong"||tab==="right")?tab:"plan"; // plan | wrong | right
+
+ let actions="";
+ if(soon.length)actions+=`<button class="btn accent rc-go" id="rc-soon">⚡ 马上再练 · ${soon.length} 个刚错的词</button>`;
+ if(official.length)actions+=`<button class="btn ${soon.length?'line':'accent'} rc-go" id="rc-go">开始今日复习 · ${official.length} 词</button>`;
+ if(!todayN)actions+=due.length
+   ?`<div class="rc-rest">今日复习已完成 · ${due.length} 个词在记忆周期中</div><button class="btn ghost rc-go" id="rc-early" style="margin-top:8px">提前练一练（不计分）</button>`
+   :`<div class="rc-rest">错词已全部清空，继续保持！</div>`;
 
  const d=document.createElement("div");d.className="screen active";
  d.innerHTML=`
   <div class="bar"><button class="back" id="bk">‹</button><div class="htitle">复习中心</div></div>
   <div class="rc-hero">
     <div class="rc-hero-l">
-      <div class="rc-bignum">${dueT.length}</div>
+      <div class="rc-bignum">${todayN}</div>
       <div class="rc-bigsub">今日待复习</div>
     </div>
     <div class="rc-hero-stats">
       <div class="rc-stat"><b>${due.length}</b><span>复习中</span></div>
-      <div class="rc-stat"><b>${mastered.length}</b><span>已毕业</span></div>
+      <div class="rc-stat"><b>${archMastered.length}</b><span>错词已攻克</span></div>
     </div>
   </div>
-  ${dueT.length? `<button class="btn accent rc-go" id="rc-go">开始今日复习 · ${dueT.length} 词</button>`
-    : (due.length? `<div class="rc-rest">今日已无到期词 · ${due.length} 个词在记忆周期中</div>`
-      : `<div class="rc-rest">错词本已清空，继续保持！</div>`)}
+  ${actions}
   ${otherBooks.length?`<div class="rc-books">已包含其他课本的错词：${otherBooks.join("、")}</div>`:''}
   <div class="rc-tabs">
-    <div class="rc-tab active" data-t="plan">复习计划</div>
-    <div class="rc-tab" data-t="wrong">错词 ${due.length}</div>
-    <div class="rc-tab" data-t="right">对词 ${mastered.length}</div>
+    <div class="rc-tab${curTab==='plan'?' active':''}" data-t="plan">复习计划</div>
+    <div class="rc-tab${curTab==='wrong'?' active':''}" data-t="wrong">错词档案 ${archive.length}</div>
+    <div class="rc-tab${curTab==='right'?' active':''}" data-t="right">对词 ${mastered.length}</div>
   </div>
   <div id="rc-body"></div>`;
  app.appendChild(d);
  d.querySelector("#bk").onclick=()=>{sfx.tap();go("home");};
- const goBtn=d.querySelector("#rc-go");if(goBtn)goBtn.onclick=()=>{sfx.tap();go("review");};
+ const b1=d.querySelector("#rc-soon");if(b1)b1.onclick=()=>{sfx.tap();go({name:"review",arg:"soon"});};
+ const b2=d.querySelector("#rc-go");if(b2)b2.onclick=()=>{sfx.tap();go("review");};
+ const b3=d.querySelector("#rc-early");if(b3)b3.onclick=()=>{sfx.tap();go("review");};
 
  const body=d.querySelector("#rc-body");
  const renderPlan=()=>{
@@ -18668,13 +18695,13 @@ SCREENS.reviewCenter=function(){
    body.innerHTML=`
     <div class="rc-card">
       <div class="rc-card-t">艾宾浩斯遗忘曲线</div>
-      <div class="rc-card-s">不复习时记忆快速流失（红色虚线）；在 1·2·4·7·15 天的节点复习，记忆每次回升并越来越牢（金色实线）。</div>
+      <div class="rc-card-s">答错的词当天先"马上再练"一次，之后在 1·2·4·7·15 天的节点正式复习，记忆每次回升并越来越牢（金色实线）；不复习时记忆快速流失（红色虚线）。</div>
       ${ebbinghausCurveSVG()}
       <div class="rc-legend"><span><i style="background:var(--warn)"></i>不复习</span><span><i style="background:var(--accent)"></i>按计划复习</span></div>
     </div>
     <div class="rc-card">
       <div class="rc-card-t">未来 16 天复习计划</div>
-      <div class="rc-card-s">今天 ${fc[0]} 个待复习，未来 ${upcoming} 个将陆续到期。每个错词都按它自己的记忆周期自动排期。</div>
+      <div class="rc-card-s">今天 ${todayN} 个待复习${soon.length?`（其中 ${soon.length} 个是刚错的，马上再练）`:''}，未来 ${upcoming} 个将陆续到期。每个错词都按它自己的记忆周期自动排期。</div>
       ${reviewForecastSVG()}
     </div>
     <div class="rc-stages">
@@ -18684,27 +18711,40 @@ SCREENS.reviewCenter=function(){
       </div>`).join("")}
     </div>`;
  };
- const wordRow=(w,tag,tagcls)=>{
+ const wordRow=(w,tag,tagcls,extra)=>{
    const cn=w.s.map(x=>`${x[0]?`<i>${x[0]}</i>`:""}${x[1]}`).join("；");
    return `<div class="rc-word" data-en="${w.en}">
-     <div class="rc-word-l"><b>${w.en}</b>${w._book?`<span class="rc-book">${w._book}</span>`:""}${w.ph?`<span class="rc-ph">${w.ph}</span>`:""}<span class="rc-cn">${cn}</span></div>
+     <div class="rc-word-l"><b>${w.en}</b>${w._book?`<span class="rc-book">${w._book}</span>`:""}${w.ph?`<span class="rc-ph">${w.ph}</span>`:""}<span class="rc-cn">${cn}</span>${extra?`<span class="rc-meta">${extra}</span>`:""}</div>
      <div class="rc-word-tag ${tagcls}">${tag}</div></div>`;
  };
+ const wrongMeta=r=>r.wn?`错过 ${r.wn} 次`:"";
  const renderWrong=()=>{
-   if(!due.length){body.innerHTML=`<div class="rc-empty">还没有错词，太棒了！</div>`;return;}
-   let h="";
-   for(let i=0;i<5;i++){if(!byStage[i].length)continue;
-     h+=`<div class="rc-grp-t">艾宾浩斯第${i+1}轮 · ${stageLabel[i]} <span>${byStage[i].length}词</span></div>`;
-     byStage[i].forEach(w=>{const r=recOfWord(w);const dl=Math.ceil((r.due-now())/86400000);
+   if(!archive.length){body.innerHTML=`<div class="rc-empty">还没有错词，太棒了！</div>`;return;}
+   let h=`<div class="rc-arch-note">答错过的词都会留在这里：复习中的按轮次排好，攻克之后标"已掌握"，不会消失。</div>`;
+   const soonSet=new Set(soon.map(w=>w._g+":"+w.id));
+   if(soon.length){
+     h+=`<div class="rc-grp-t">马上再练 · 今天刚错 <span>${soon.length}词</span></div>`;
+     soon.forEach(w=>{h+=wordRow(w,"马上再练","due",wrongMeta(recOfWord(w)));});
+   }
+   for(let i=0;i<5;i++){
+     const list=byStage[i].filter(w=>!soonSet.has(w._g+":"+w.id));if(!list.length)continue;
+     list.sort((a,b)=>recOfWord(a).due-recOfWord(b).due);
+     h+=`<div class="rc-grp-t">艾宾浩斯第${i+1}轮 · ${stageLabel[i]} <span>${list.length}词</span></div>`;
+     list.forEach(w=>{const r=recOfWord(w);const dl=Math.ceil((r.due-t0)/86400000);
        const tag=dl<=0?"今日复习":dl+"天后";const tc=dl<=0?"due":"";
-       h+=wordRow(w,tag,tc);});
+       h+=wordRow(w,tag,tc,wrongMeta(r));});
+   }
+   if(archMastered.length){
+     h+=`<div class="rc-grp-t">已掌握 · 错过但已攻克 <span>${archMastered.length}词</span></div>`;
+     archMastered.slice(0,80).forEach(w=>{h+=wordRow(w,"已掌握","grad",wrongMeta(recOfWord(w)));});
+     if(archMastered.length>80)h+=`<div class="rc-more">仅显示前 80 个，共 ${archMastered.length} 个</div>`;
    }
    body.innerHTML=h;bindSpeakRows(body);
  };
  const renderRight=()=>{
-   if(!mastered.length){body.innerHTML=`<div class="rc-empty">还没有毕业的词。<br>错词复习满 5 轮即可毕业到这里。</div>`;return;}
-   let h=`<div class="rc-grp-t">已掌握 · 完成全部 5 轮复习 <span>${mastered.length}词</span></div>`;
-   mastered.slice(0,60).forEach(w=>{h+=wordRow(w,"已毕业","grad");});
+   if(!mastered.length){body.innerHTML=`<div class="rc-empty">还没有掌握的词。<br>一次答对，或错词复习满 5 轮，都会出现在这里。</div>`;return;}
+   let h=`<div class="rc-grp-t">已掌握 <span>${mastered.length}词</span></div>`;
+   mastered.slice(0,60).forEach(w=>{h+=wordRow(w,"已掌握","grad");});
    if(mastered.length>60)h+=`<div class="rc-more">仅显示前 60 个，共 ${mastered.length} 个已掌握</div>`;
    body.innerHTML=h;bindSpeakRows(body);
  };
