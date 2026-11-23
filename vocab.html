@@ -16369,7 +16369,7 @@ function mergeGradeData(local,cloud){
  ["pass","monsterCount","dailyCount","exemptGiven"].forEach(k=>{out[k]=Math.max(local[k]||0,cloud[k]||0);});
  out.pass2=!!(local.pass2||cloud.pass2);
  out.act=Object.assign({},cloud.act||{},local.act||{});
- out.qp=Object.assign({},cloud.qp||{},local.qp||{});
+ out.qp=Object.assign({},local.qp||{});
  return out;
 }
 function mergeCustomWords(local,cloud){
